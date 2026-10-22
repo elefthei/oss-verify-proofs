@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: ron
+homepage: https://github.com/ron-rs/ron
+language: rust
+oss_fuzz:
+  path: projects/ron
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: rust

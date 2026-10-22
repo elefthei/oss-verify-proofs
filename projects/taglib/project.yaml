@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: taglib
+homepage: https://taglib.org
+language: c++
+oss_fuzz:
+  path: projects/taglib
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: taglib
+  repository: https://github.com/taglib/taglib
+  commit: 0faf7291ca654760b69599efdc3b21e6fbb28afa
+  licence: NOASSERTION
+harnesses:
+- name: taglib_fileref_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: taglib-bin.tar.zst
+    bytes: 2436083
+    sha256: fc6fd10a666757b9658d796dada6d850c6a4ab30620fd4345d16c7b4fb141d46
+  src:
+    release: v2026.10.0-src
+    file: taglib-src.tar.zst
+    bytes: 1331777
+    sha256: b6ef2860c7ad31249e96673086f654ff36603fef47324e7ccc8d20d90be01dff
+  src_manifest:
+    release: v2026.10.0-src
+    file: taglib-src.MANIFEST.tsv
+    bytes: 1684
+    sha256: 35d62556422d1ecd0070636a936cf41c326806afbff08bb22690867b49ff5bfb

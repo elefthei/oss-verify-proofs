@@ -1,0 +1,66 @@
+schema: oss-fuzz-theorems/project/1
+project: lzma
+homepage: https://www.7-zip.org/sdk.html
+language: c++
+oss_fuzz:
+  path: projects/lzma
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lzma-fuzz
+  repository: https://github.com/fancycode/lzma-fuzz
+  commit: d25e63d8f6b8186d04146cb19405bc5ad565412e
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: 7z_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: filters_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: lzma2dec_fuzzer
+  status: included
+  origin: upstream
+- name: lzma2enc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: lzmadec_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: lzmaenc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: ppmdenc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: xzdec_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: xzenc_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lzma-bin.tar.zst
+    bytes: 391993
+    sha256: 11be6968e9ecffc369738788d6f38da15c1dfb4efb77eddfad374c251f773c0e
+  src:
+    release: v2026.10.0-src
+    file: lzma-src.tar.zst
+    bytes: 1210083
+    sha256: 3da29a175c59874c7412ab92872fa7f43add560cc1fa69bc20923c5f8b70ec9e
+  src_manifest:
+    release: v2026.10.0-src
+    file: lzma-src.MANIFEST.tsv
+    bytes: 1342
+    sha256: e12f435edae836e4fa93f18e204c9fe32f91ecbc9e5a2fd86ba587e22d2336cd

@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: openthread
+homepage: https://github.com/openthread/openthread
+language: c++
+oss_fuzz:
+  path: projects/openthread
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openthread
+  repository: https://github.com/openthread/openthread
+  commit: 1b99faaf65aca4053a75d70a7ed812d5bdac573d
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cli-fuzzer
+  status: included
+  origin: upstream
+- name: icmp6-fuzzer
+  status: included
+  origin: upstream
+- name: ip6-fuzzer
+  status: included
+  origin: upstream
+- name: mdns-fuzzer
+  status: included
+  origin: upstream
+- name: radio-one-node-fuzzer
+  status: included
+  origin: upstream
+- name: trel-fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openthread-bin.tar.zst
+    bytes: 17234887
+    sha256: cdf7b378ca970e76436070158ade5e0769bb6960165495b0942a23fce9a94780
+  src:
+    release: v2026.10.0-src
+    file: openthread-src.tar.zst
+    bytes: 7506611
+    sha256: 7c1da68aa0fd811ada30d2b7d40a6bfd408a1ff69e160ecf451b85231bacd478
+  src_manifest:
+    release: v2026.10.0-src
+    file: openthread-src.MANIFEST.tsv
+    bytes: 4331
+    sha256: 6ea3ce7e79b542dca4ac8cc32834e10c275cd1ffd201d02a1845578eea24a181

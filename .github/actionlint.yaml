@@ -1,0 +1,5 @@
+# actionlint's configuration: the labels of runners it cannot know.
+# ubuntu-24.04-16core is a GitHub-hosted larger runner (16 cores, 64 GB) that an org admin created; the proof checks run on it.
+self-hosted-runner:
+  labels:
+    - ubuntu-24.04-16core

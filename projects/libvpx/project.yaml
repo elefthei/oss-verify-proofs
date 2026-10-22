@@ -1,0 +1,62 @@
+schema: oss-fuzz-theorems/project/1
+project: libvpx
+homepage: https://www.webmproject.org
+language: c++
+oss_fuzz:
+  path: projects/libvpx
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libvpx
+  repository: https://chromium.googlesource.com/webm/libvpx
+  commit: 5c880e08d21386049adec8e5537c4e726458b563
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: vpx_dec_fuzzer_vp8
+  status: not-included
+  reason: not-attempted
+- name: vpx_dec_fuzzer_vp8_nalloc
+  status: not-included
+  reason: not-attempted
+- name: vpx_dec_fuzzer_vp9
+  status: included
+  origin: upstream
+- name: vpx_dec_fuzzer_vp9_nalloc
+  status: not-included
+  reason: not-attempted
+- name: vpx_enc_fuzzer_vp8
+  status: not-included
+  reason: not-attempted
+- name: vpx_enc_fuzzer_vp8_nalloc
+  status: not-included
+  reason: not-attempted
+- name: vpx_enc_fuzzer_vp9
+  status: included
+  origin: upstream
+- name: vpx_enc_fuzzer_vp9_nalloc
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libvpx-bin.tar.zst
+    bytes: 3351037
+    sha256: 566c7b97cb2495e8a35d0bbfd5d56e1b327e83da85dd372cd3e1e363b0694ad1
+  src:
+    release: v2026.10.0-src
+    file: libvpx-src.tar.zst
+    bytes: 4520051
+    sha256: 1169aeab9d1cfe07a088a1cee703a75be9ccfe2d0cdf00c7087494c15b4f4cc4
+  src_manifest:
+    release: v2026.10.0-src
+    file: libvpx-src.MANIFEST.tsv
+    bytes: 1467
+    sha256: 3419c9daa427ffe035177e9056b256a8dfff15e0a68fedbcde5afb7ada70bbd1

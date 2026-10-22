@@ -1,0 +1,265 @@
+schema: oss-fuzz-theorems/harness/1
+project: libcoap
+harness: persist_fuzzer
+rocq: OssFuzzTheorems.libcoap.persist_fuzzer
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/persist_target.c
+  from:
+    repository: https://github.com/obgm/libcoap
+    commit: 19bc71e62086e382aa9a8496254011e2bf8d4fcd
+    path: tests/oss-fuzz/persist_target.c
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/obgm/libcoap
+  commit: 19bc71e62086e382aa9a8496254011e2bf8d4fcd
+  licence: NOASSERTION
+modifications:
+- Linked against libcoap at commit 19bc71e6.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: persist_fuzzer.plain
+    bytes: 2444456
+    sha256: 846b2b3a52912dc0e8b3f12e95f87887271d50bc4db707b0abce32ad3b521493
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libgnutls.a
+      kind: image-library
+      sha256: de9dea250646f133e34e37019cb959e5e0b6917162308341c54eeb63d524c482
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  ubsan:
+    file: persist_fuzzer.ubsan
+    bytes: 2489864
+    sha256: 464c730922a923e8700bc9c51a07d1c733cbf832199deae34548e6ca2ad911a2
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libgnutls.a
+      kind: image-library
+      sha256: de9dea250646f133e34e37019cb959e5e0b6917162308341c54eeb63d524c482
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan:
+    file: persist_fuzzer.asan
+    bytes: 3561144
+    sha256: b07b7196a04f8fb5170f7e18f63e6a06597fc4372c66c1bf80abbfb702cc2c20
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libgnutls.a
+      kind: image-library
+      sha256: de9dea250646f133e34e37019cb959e5e0b6917162308341c54eeb63d524c482
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan-ubsan:
+    file: persist_fuzzer.asan-ubsan
+    bytes: 3603032
+    sha256: ee8641f2df2cbb7228462f56008ceea1b5ff1d8787b79b8dd00118ea1a2d5d91
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libgnutls.a
+      kind: image-library
+      sha256: de9dea250646f133e34e37019cb959e5e0b6917162308341c54eeb63d524c482
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

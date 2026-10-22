@@ -1,0 +1,104 @@
+schema: oss-fuzz-theorems/project/1
+project: wolfssl
+homepage: https://www.wolfssl.com
+language: c++
+oss_fuzz:
+  path: projects/wolfssl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wolfssl
+  repository: https://github.com/wolfssl/wolfssl
+  commit: d80b4776a97551d828a1bde0b7a8031e8e866bdf
+  licence: GPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cryptofuzz-fastmath
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-heapmath
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-normal-math
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-openssl-api
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-sp-math
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-sp-math-all
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-sp-math-all-8bit
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssh-client
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssh-client-randomize
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssh-server
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssh-server-randomize
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-client
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-client-randomize
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-crl
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-misc
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-ocsp
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-rsa
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-server
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-server-randomize
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-srp
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-wolfssl-x509
+  status: not-included
+  reason: not-attempted
+- name: pem_cert
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wolfssl-bin.tar.zst
+    bytes: 805606
+    sha256: db954e795d98f218c694213357e99727983cb92312535e0e90b1bcc76479ff76
+  src:
+    release: v2026.10.0-src
+    file: wolfssl-src.tar.zst
+    bytes: 22202909
+    sha256: 002c45545130f7e76a2a729568a124acef704712d1e03adaa31004ca05d08043
+  src_manifest:
+    release: v2026.10.0-src
+    file: wolfssl-src.MANIFEST.tsv
+    bytes: 1799
+    sha256: f2ff1747680f5b99556663530c65d2e16e9878199a7522bfe44be7408daeff03

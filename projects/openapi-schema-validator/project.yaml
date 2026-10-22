@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: openapi-schema-validator
+homepage: https://github.com/p1c2u/openapi-schema-validator
+language: python
+oss_fuzz:
+  path: projects/openapi-schema-validator
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

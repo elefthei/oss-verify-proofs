@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: ua-parser-js
+homepage: https://github.com/faisalman/ua-parser-js
+language: javascript
+oss_fuzz:
+  path: projects/ua-parser-js
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: javascript

@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: picotls
+homepage: https://github.com/h2o/picotls
+language: c++
+oss_fuzz:
+  path: projects/picotls
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: picotls
+  repository: https://github.com/h2o/picotls
+  commit: f07f1c8c68b237f1468bc1f1fe1b68aba3ff23b4
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-asn1
+  status: included
+  origin: upstream
+- name: fuzz-client-hello
+  status: not-included
+  reason: not-attempted
+- name: fuzz-server-hello
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: picotls-bin.tar.zst
+    bytes: 504004
+    sha256: 3ba77464d343a0dc3cebd34cda96a707c98fb5b679ac590fcc3792778703a3d8
+  src:
+    release: v2026.10.0-src
+    file: picotls-src.tar.zst
+    bytes: 489458
+    sha256: 3e7ff729c54efd164c10c87bb89e3c77b1a0d126a3ac64dc0f38484d96449661
+  src_manifest:
+    release: v2026.10.0-src
+    file: picotls-src.MANIFEST.tsv
+    bytes: 1870
+    sha256: fe283aebc1ded1fcdc512fc9b9df20705d0e80fcd03f587fdd9aee9b015630da

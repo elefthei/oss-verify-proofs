@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: spice-usbredir
+homepage: https://www.spice-space.org/usbredir.html
+language: c++
+oss_fuzz:
+  path: projects/spice-usbredir
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: usbredir
+  repository: https://gitlab.freedesktop.org/spice/usbredir
+  commit: f4406c506726853d1795eba428256b3922e1a6ad
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: usbredirfilterfuzz
+  status: included
+  origin: upstream
+- name: usbredirparserfuzz
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: spice-usbredir-bin.tar.zst
+    bytes: 616707
+    sha256: 25fa1dffd7a2d464c211cb2bb20debdb3431f87561ece335367f906aac44dc4b
+  src:
+    release: v2026.10.0-src
+    file: spice-usbredir-src.tar.zst
+    bytes: 71978
+    sha256: a8b8a376a34b5c2da946a0968561c3d87e96e689cbd96e7909c2a7608c2394fd
+  src_manifest:
+    release: v2026.10.0-src
+    file: spice-usbredir-src.MANIFEST.tsv
+    bytes: 1599
+    sha256: 8bc94e9550f4a90827e24cf25b200757983d9430f467606c6736c4b6045ff7eb

@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: haproxy
+homepage: https://github.com/haproxy/haproxy
+language: c++
+oss_fuzz:
+  path: projects/haproxy
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: haproxy
+  repository: https://github.com/haproxy/haproxy
+  commit: cb1eebf9d985a2100c6eff4368cde539d89fd845
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_cfg_parser
+  status: included
+- name: fuzz_h1_htx
+  status: included
+- name: fuzz_h1_parse
+  status: included
+- name: fuzz_hpack_decode
+  status: included
+  origin: upstream
+- name: fuzz_http
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: haproxy-bin.tar.zst
+    bytes: 2908119
+    sha256: f05ec4853520611f0febb384697d86d32d090c5179cc0834347c2ffa8e983fc1
+  src:
+    release: v2026.10.0-src
+    file: haproxy-src.tar.zst
+    bytes: 4180144
+    sha256: 664c94a8ad617b587838c7003dfca6d1bd356e8379b77156a5aed6fe7c7f9478
+  src_manifest:
+    release: v2026.10.0-src
+    file: haproxy-src.MANIFEST.tsv
+    bytes: 2487
+    sha256: e8d4645eb34db20882f2b4a5e74d1fc1aeadfd682f6b9a1b377527b40e0d1483

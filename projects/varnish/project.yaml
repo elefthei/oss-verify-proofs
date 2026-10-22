@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: varnish
+homepage: https://varnish-cache.org
+language: c
+oss_fuzz:
+  path: projects/varnish
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: vinyl-cache
+  repository: https://code.vinyl-cache.org/vinyl-cache/vinyl-cache
+  commit: bc9eaf713fe9bd86fa39eee1774650e9d2386f84
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: esi_parse_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: varnish-bin.tar.zst
+    bytes: 347544
+    sha256: fb6b116ef7fe6cad25b7065c203a67695d64354d67af6b82eb31f612e4452354
+  src:
+    release: v2026.10.0-src
+    file: varnish-src.tar.zst
+    bytes: 2231049
+    sha256: c56c18e9fd507ba21924ea3e258b7a4704f729629be35b346cb9f641d5e92d72
+  src_manifest:
+    release: v2026.10.0-src
+    file: varnish-src.MANIFEST.tsv
+    bytes: 2043
+    sha256: d84cd9accb97e46a05e6b9ae953f42cceb508dad8ac94a2b5e1c5bedc7cba615

@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: w3m
+homepage: https://tracker.debian.org/pkg/w3m
+language: c
+oss_fuzz:
+  path: projects/w3m
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: w3m
+  repository: https://github.com/tats/w3m
+  commit: ee66aabc3987000c2851bce6ade4dcbb0b037d81
+  licence: NOASSERTION
+harnesses:
+- name: fuzz_conv
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: w3m-bin.tar.zst
+    bytes: 1039484
+    sha256: 1904e149785388893f2fcbb083b3aa9c0f18eecfc7a93a86978a989bc045f86c
+  src:
+    release: v2026.10.0-src
+    file: w3m-src.tar.zst
+    bytes: 1436883
+    sha256: 79407ffa31a9ae41b7de54f124180a50761d741831361d1a2ad5bfb2caaba628
+  src_manifest:
+    release: v2026.10.0-src
+    file: w3m-src.MANIFEST.tsv
+    bytes: 1289
+    sha256: 11fa593323d28175ab1a21b6080223b5dbefacf5828ae4dbd7b458338833a94f

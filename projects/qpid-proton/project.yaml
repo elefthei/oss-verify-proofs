@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: qpid-proton
+homepage: https://qpid.apache.org/proton
+language: c++
+oss_fuzz:
+  path: projects/qpid-proton
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: qpid-proton
+  repository: https://github.com/apache/qpid-proton
+  commit: caf0f45c5652d1576ca5af882fbc2be9b53800c0
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-connection-driver
+  status: not-included
+  reason: not-attempted
+- name: fuzz-message-decode
+  status: included
+  origin: upstream
+- name: fuzz-sniff-header
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: qpid-proton-bin.tar.zst
+    bytes: 410849
+    sha256: 28dec606928ecf0d2265aecc2951c436e854120ae0cd49831d646b8b1cf76bf6
+  src:
+    release: v2026.10.0-src
+    file: qpid-proton-src.tar.zst
+    bytes: 1149225
+    sha256: ebdf998168d052caaecec011599e610907cb6f68d53c5575438974b6024d8d24
+  src_manifest:
+    release: v2026.10.0-src
+    file: qpid-proton-src.MANIFEST.tsv
+    bytes: 1565
+    sha256: e3ad6b3f5b84c7b6eb0a689733c91b05fc42029d98b9fac400f98fd2d7bceaf4

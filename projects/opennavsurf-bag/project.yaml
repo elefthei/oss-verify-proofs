@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: opennavsurf-bag
+homepage: https://github.com/OpenNavigationSurface/BAG
+language: c++
+oss_fuzz:
+  path: projects/opennavsurf-bag
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: BAG
+  repository: https://github.com/OpenNavigationSurface/BAG
+  commit: b0c552586d19b3332f3fad0c0d1174feb793cb82
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: bag_extended_fuzzer
+  status: not-included
+  reason: setup-fails
+- name: bag_read_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opennavsurf-bag-bin.tar.zst
+    bytes: 10487719
+    sha256: 38f17c3be50967a2ee537ba3362043cfd4404d8708703b12c373c6c52d809a6a
+  src:
+    release: v2026.10.0-src
+    file: opennavsurf-bag-src.tar.zst
+    bytes: 69269433
+    sha256: 7053c38853201ce3f307474a17777e5333312f0076eea1a0881e78bef402dccc
+  src_manifest:
+    release: v2026.10.0-src
+    file: opennavsurf-bag-src.MANIFEST.tsv
+    bytes: 1923
+    sha256: 35caa8b62bf845ed4b09cbfe61517d7d44809cc461c560be6f27dc5a448641bd

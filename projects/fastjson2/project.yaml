@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: fastjson2
+homepage: https://github.com/alibaba/fastjson2
+language: jvm
+oss_fuzz:
+  path: projects/fastjson2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

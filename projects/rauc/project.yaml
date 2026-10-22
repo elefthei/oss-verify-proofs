@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: rauc
+homepage: https://rauc.io
+language: c
+oss_fuzz:
+  path: projects/rauc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rauc
+  repository: https://github.com/rauc/rauc
+  commit: 0fdbd8f9b7cc18bf8efb738fe26ba94e3d8271fb
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: bundle_fuzzer
+  status: included
+  origin: upstream
+- name: manifest_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rauc-bin.tar.zst
+    bytes: 6354805
+    sha256: 73eea49200cbf1087ba5bd17e02a2635faf5b88d09c53273f0344a3f2e1de061
+  src:
+    release: v2026.10.0-src
+    file: rauc-src.tar.zst
+    bytes: 1037199
+    sha256: c796c058f0137b891d88dd1fe92c096d09c5b603f949ea6668c819ec608044bb
+  src_manifest:
+    release: v2026.10.0-src
+    file: rauc-src.MANIFEST.tsv
+    bytes: 1422
+    sha256: b93d5ef10308970cb4c2936264de7a5bcb6ea89829b4493249927da4a0e69a2f

@@ -1,0 +1,223 @@
+schema: oss-fuzz-theorems/harness/1
+project: libtpms
+harness: fuzz
+rocq: OssFuzzTheorems.libtpms.fuzz
+origin: upstream
+summary: 'Checks 2 properties (listed below); the first, an API contract: TPMLIB_Process must return TPM_SUCCESS
+  (transport-level) for any fuzz command after Startup; TPM-level errors travel in the response buffer,
+  so this fails only on internal failures (e.g. response-buffer realloc failure).'
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/fuzz.cc
+  from:
+    repository: https://github.com/stefanberger/libtpms
+    commit: 529da95004916b4ce8cdff66d6df73bdc984b79e
+    path: tests/fuzz.cc
+  modified: false
+  licence: BSD-3-Clause
+library:
+  repository: https://github.com/stefanberger/libtpms
+  commit: 529da95004916b4ce8cdff66d6df73bdc984b79e
+  licence: BSD-3-Clause
+modifications:
+- Linked against libtpms at commit 529da950.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: fuzz.plain
+    bytes: 3033456
+    sha256: 5e5f793ce95c70175c564267c86c4ba4400952fe8418e0905e8eeb84f3523cf3
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+  ubsan:
+    file: fuzz.ubsan
+    bytes: 3067072
+    sha256: cf4f46a3a6de1accf80d3dca5c8f9e8f2697e3e5f81acfa6dcb50d4ac74ca806
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+  asan:
+    file: fuzz.asan
+    bytes: 4368648
+    sha256: 17637ab8e65bc8eba32d067bf8effb372fc55db56c0d418f4a56f4498a89a536
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: fuzz.asan-ubsan
+    bytes: 4391080
+    sha256: 1959977e60ec1e0dfe3b133289a19b450ba51ecfdc22d8129e017ed20518d1fd
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks:
+- kind: api-contract
+  strength: weak
+  stops_with: assert
+  live: unknown
+  where: source/fuzz.cc:115-117
+  what: TPMLIB_Process must return TPM_SUCCESS (transport-level) for any fuzz command after Startup; TPM-level
+    errors travel in the response buffer, so this fails only on internal failures (e.g. response-buffer
+    realloc failure).
+model_gap:
+- other-files
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    status: model-gap
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    status: model-gap
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    status: model-gap
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap

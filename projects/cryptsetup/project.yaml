@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: cryptsetup
+homepage: https://gitlab.com/cryptsetup/cryptsetup
+language: c
+oss_fuzz:
+  path: projects/cryptsetup
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cryptsetup
+  repository: https://gitlab.com/cryptsetup/cryptsetup
+  commit: 102e91cb0fee849bb86fb1ec4d6ea218e45563cd
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: crypt2_load_fuzz
+  status: included
+  origin: upstream
+- name: crypt2_load_ondisk_fuzz
+  status: included
+  origin: upstream
+- name: crypt_load_misc_fuzz
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cryptsetup-bin.tar.zst
+    bytes: 6522345
+    sha256: eb0b86709d2a4a81b15adbd375452e36367f00c8ecd0fd02e33f7cfa021f6750
+  src:
+    release: v2026.10.0-src
+    file: cryptsetup-src.tar.zst
+    bytes: 14337514
+    sha256: 431b554c452566f78413df462721c89cdbe5ac787d6f9a5777abfda555c765cf
+  src_manifest:
+    release: v2026.10.0-src
+    file: cryptsetup-src.MANIFEST.tsv
+    bytes: 4116
+    sha256: 52829349b91274678d846ea1536faa399333506c0a70361c92043ca5ac5ff00f

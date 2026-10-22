@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: opencensus-cpp
+homepage: https://opencensus.io
+language: c++
+oss_fuzz:
+  path: projects/opencensus-cpp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: opencensus-cpp
+  repository: https://github.com/census-instrumentation/opencensus-cpp
+  commit: 50eb5de762e5f87e206c011a4f930adb1a1775b1
+  licence: Apache-2.0
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: b3_fuzzer
+  status: included
+  origin: upstream
+- name: cloud_trace_context_fuzzer
+  status: included
+  origin: upstream
+- name: grpc_tags_bin_fuzzer
+  status: included
+  origin: upstream
+- name: grpc_trace_bin_fuzzer
+  status: included
+  origin: upstream
+- name: trace_context_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opencensus-cpp-bin.tar.zst
+    bytes: 1500053
+    sha256: 9b755dd3b242fb88f44b53910e8c33813083630359711fcdc7d29b95516c7b56
+  src:
+    release: v2026.10.0-src
+    file: opencensus-cpp-src.tar.zst
+    bytes: 2163312
+    sha256: 3db38a841036c4c01b30a8a7b6e7f0d1ee17f3a6fdee3ec2786735feccc9f76c
+  src_manifest:
+    release: v2026.10.0-src
+    file: opencensus-cpp-src.MANIFEST.tsv
+    bytes: 6755
+    sha256: 4b872cd8b1e13eb777c896c0400f989d19357b076aa21fe2a6c63a69a1a6ae25

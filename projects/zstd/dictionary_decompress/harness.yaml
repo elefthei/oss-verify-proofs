@@ -1,0 +1,259 @@
+schema: oss-fuzz-theorems/harness/1
+project: zstd
+harness: dictionary_decompress
+rocq: OssFuzzTheorems.zstd.dictionary_decompress
+origin: upstream
+summary: Train a dictionary from the input (FUZZ_train), load it by DDict/loadDictionary/refPrefix, then
+  decompress the input with it; the decompression result is ignored.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/dictionary_decompress.c
+  from:
+    repository: https://github.com/facebook/zstd
+    commit: 82d322c4973d9e2968d94047a40892bc6d9a9bdf
+    path: tests/fuzz/dictionary_decompress.c
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/facebook/zstd
+  commit: 82d322c4973d9e2968d94047a40892bc6d9a9bdf
+  licence: NOASSERTION
+modifications:
+- Linked against zstd at commit 82d322c4.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: dictionary_decompress.plain
+    bytes: 781488
+    sha256: 900d7a0129a1fece7009890884c6a42ddeb793357d1e6f22d843598c8763328c
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+  ubsan:
+    file: dictionary_decompress.ubsan
+    bytes: 828376
+    sha256: 9c21f18829c08fc0545ac3f6093d53c22757493b2504523f68599dd640c3a2c4
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+  asan:
+    file: dictionary_decompress.asan
+    bytes: 2217688
+    sha256: 3d825dcd76d7897fcf0402c788c240266992a7d7955f4cfaf026466b10b5535d
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: dictionary_decompress.asan-ubsan
+    bytes: 2121016
+    sha256: 6d4c1359a4e48234f49e8aaa0a11d560e5a92fab3d9ef562d8fac1c4d5f8b57f
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks:
+- kind: api-contract
+  strength: weak
+  stops_with: abort
+  live: unknown
+  where: source/dictionary_decompress.c:44-57
+  what: Creating/loading/referencing the trained dictionary must succeed (FUZZ_ASSERT(ddict) / FUZZ_ZASSERT);
+    near-trivially true because loading is lazy and any bytes are a valid raw-content dictionary.
+distribution:
+  file: Distribution.v
+  argv0: dictionary_decompress
+  input_file: input.bin
+  prefix_hex: 00000000000028b52ffd
+  payload:
+    length: geometric
+    p: 1/1025
+    mean_bytes: 1024
+    alphabet: bytes
+  components:
+    payload: 9/10
+    wrong_argc: 1/50
+    missing_file: 1/50
+    full_support: 3/50
+  mass: '1'
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    budgets: asan
+    status: open
+  asan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  asan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    budgets: standard
+    status: open
+  ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    budgets: asan
+    status: open
+  asan_ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

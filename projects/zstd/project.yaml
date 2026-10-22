@@ -1,0 +1,100 @@
+schema: oss-fuzz-theorems/project/1
+project: zstd
+language: c++
+oss_fuzz:
+  path: projects/zstd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: zstd
+  repository: https://github.com/facebook/zstd
+  commit: 82d322c4973d9e2968d94047a40892bc6d9a9bdf
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: block_decompress
+  status: included
+  origin: upstream
+- name: block_round_trip
+  status: included
+  origin: upstream
+- name: decompress_cross_format
+  status: included
+  origin: upstream
+- name: decompress_dstSize_tooSmall
+  status: included
+  origin: upstream
+- name: dictionary_decompress
+  status: included
+  origin: upstream
+- name: dictionary_loader
+  status: included
+  origin: upstream
+- name: dictionary_round_trip
+  status: not-included
+  reason: not-attempted
+- name: dictionary_stream_round_trip
+  status: not-included
+  reason: not-attempted
+- name: fse_read_ncount
+  status: included
+  origin: upstream
+- name: generate_sequences
+  status: not-included
+  reason: not-attempted
+- name: huf_decompress
+  status: included
+  origin: upstream
+- name: huf_round_trip
+  status: included
+  origin: upstream
+- name: raw_dictionary_round_trip
+  status: not-included
+  reason: not-attempted
+- name: seekable_roundtrip
+  status: not-included
+  reason: not-attempted
+- name: sequence_compression_api
+  status: included
+  origin: upstream
+- name: simple_compress
+  status: included
+  origin: upstream
+- name: simple_decompress
+  status: included
+  origin: upstream
+- name: simple_round_trip
+  status: not-included
+  reason: not-attempted
+- name: stream_decompress
+  status: included
+  origin: upstream
+- name: stream_round_trip
+  status: not-included
+  reason: not-attempted
+- name: zstd_frame_info
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: zstd-bin.tar.zst
+    bytes: 5073479
+    sha256: 299880f21e50d6ade9953d1d41f4ac2414bd6900cd0494f1fb4c66a4472568a8
+  src:
+    release: v2026.10.0-src
+    file: zstd-src.tar.zst
+    bytes: 1889020
+    sha256: 24167e2564425040cae6a73aefd72b96c7aff9f6b2fa96fd61bf1e61e8be7f93
+  src_manifest:
+    release: v2026.10.0-src
+    file: zstd-src.MANIFEST.tsv
+    bytes: 4068
+    sha256: 36fb2fc5c0b0226e96baca14cf145e8a5a32ce0be5c09aacb11108be098e920d

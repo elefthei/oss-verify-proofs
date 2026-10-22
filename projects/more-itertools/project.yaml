@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: more-itertools
+homepage: https://github.com/more-itertools/more-itertools
+language: python
+oss_fuzz:
+  path: projects/more-itertools
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

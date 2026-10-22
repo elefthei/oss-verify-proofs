@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: gnupg
+homepage: https://www.gnupg.org
+language: c++
+oss_fuzz:
+  path: projects/gnupg
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gnupg
+  repository: https://github.com/gpg/gnupg
+  commit: e660a0e145dc10b7a5d3e22023b8cbbf2417a469
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_decrypt
+  status: included
+- name: fuzz_import
+  status: included
+- name: fuzz_list
+  status: included
+- name: fuzz_verify
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gnupg-bin.tar.zst
+    bytes: 17566887
+    sha256: 9c84d0f5deaf31baa172b1be1887a85940da3bbf589fe279a44824d5630c54c8
+  src:
+    release: v2026.10.0-src
+    file: gnupg-src.tar.zst
+    bytes: 16060590
+    sha256: 8f534da40656bd89c3f2412dc1969d03595d094f7d8bc0a089f7b2fd51b06499
+  src_manifest:
+    release: v2026.10.0-src
+    file: gnupg-src.MANIFEST.tsv
+    bytes: 10187
+    sha256: fb94540b9ac8dcc2ccce7afdf36f94401ad18c7e7d063789471a158c63a662b1

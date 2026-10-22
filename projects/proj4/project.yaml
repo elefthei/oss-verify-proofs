@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: proj4
+homepage: https://proj.org
+language: c++
+oss_fuzz:
+  path: projects/proj4
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: PROJ
+  repository: https://github.com/OSGeo/PROJ
+  commit: 52da98bd995c7e52b194215d3bfa584abf0f3f20
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: proj_crs_to_crs_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: proj4-bin.tar.zst
+    bytes: 17261971
+    sha256: a281bc5af49cbd692240e59e111f73d03749c5c15c38cec7eff5b44bdcb7d7ce
+  src:
+    release: v2026.10.0-src
+    file: proj4-src.tar.zst
+    bytes: 49222326
+    sha256: 921b1c9785280e2be8e69402c94be3599d3f27d0ec46cd6a0ad8532496cdc248
+  src_manifest:
+    release: v2026.10.0-src
+    file: proj4-src.MANIFEST.tsv
+    bytes: 2031
+    sha256: cf23efbd12586e1944a8e4a104a7b03d37f523752cb7da2c934358ffc0ade68a

@@ -1,0 +1,274 @@
+schema: oss-fuzz-theorems/harness/1
+project: thrift-cpp
+harness: FuzzRoundtripBinary
+rocq: OssFuzzTheorems.thrift_cpp.FuzzRoundtripBinary
+origin: upstream
+summary: 'Checks one property, a round trip: Parse a FuzzTest struct with TBinaryProtocol, serialize it
+  back with the same protocol, re-parse the bytes, and require the two structs to be equal (generated
+  operator==, every field incl. containers, unions, recursive struct); the only tolerance is NaN in basic.double_field.'
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/FuzzRoundtripBinary.cpp
+  from:
+    repository: https://github.com/apache/thrift
+    commit: 588053de15907d2b769aeb4662e1e3c142000fe9
+    path: lib/cpp/test/fuzz/FuzzRoundtripBinary.cpp
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/apache/thrift
+  commit: 588053de15907d2b769aeb4662e1e3c142000fe9
+  licence: NOASSERTION
+modifications:
+- Linked against thrift at commit 588053de.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: FuzzRoundtripBinary.plain
+    bytes: 844200
+    sha256: 414b66afd6eb5af573eae076e2d03fd2744d82a1dcb3e50f9a86eace964acdb9
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  ubsan:
+    file: FuzzRoundtripBinary.ubsan
+    bytes: 861928
+    sha256: c68353902ae38055e72f1c45f0140ba5f752b5e3a1ca5d645dd4c569151008f2
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan:
+    file: FuzzRoundtripBinary.asan
+    bytes: 1631544
+    sha256: 80df0118ee993c8a2ceccf2620f512f293fc9202c977f470952e8f27b071c9a9
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: FuzzRoundtripBinary.asan-ubsan
+    bytes: 1657688
+    sha256: 8edc20893b7403375b6ac676abcb3eb0327b757b802d952297b3837c8b5b546d
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+distribution:
+  file: Distribution.v
+  argv0: FuzzRoundtripBinary
+  input_file: input.bin
+  prefix_hex: '000000000000'
+  payload:
+    length: geometric
+    p: 1/1025
+    mean_bytes: 1024
+    alphabet: bytes
+  components:
+    payload: 9/10
+    wrong_argc: 1/50
+    missing_file: 1/50
+    full_support: 3/50
+  mass: '1'
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  asan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    status: open
+  asan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    status: open
+  ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  asan_ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    status: open
+  asan_ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

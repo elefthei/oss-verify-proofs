@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: lxc
+homepage: https://github.com/lxc/lxc
+language: c
+oss_fuzz:
+  path: projects/lxc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lxc
+  repository: https://github.com/lxc/lxc
+  commit: 61d8ba0a959264dc0d281589526c1391f4406366
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz-lxc-cgroup-init
+  status: included
+  origin: upstream
+- name: fuzz-lxc-config-read
+  status: included
+  origin: upstream
+- name: fuzz-lxc-define-load
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lxc-bin.tar.zst
+    bytes: 7259594
+    sha256: d0d8fcaffd460bf8aebaa5c47702b2e0b607828063645de16545d27a0a3b9355
+  src:
+    release: v2026.10.0-src
+    file: lxc-src.tar.zst
+    bytes: 674275
+    sha256: bbb9ff62ff0119ca25ca8c79ac32a7ea0d71f178787b436514953b57434cf292
+  src_manifest:
+    release: v2026.10.0-src
+    file: lxc-src.MANIFEST.tsv
+    bytes: 1568
+    sha256: 8af723711d0b2651e86825648f47d78c5a5f5665bc200b9dcd8e8886b69e77c9

@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libconfig
+homepage: https://hyperrealm.github.io/libconfig
+language: c
+oss_fuzz:
+  path: projects/libconfig
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libconfig
+  repository: https://github.com/hyperrealm/libconfig
+  commit: e485a729d2cf27321a560a61af0816b123337d00
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: config_read_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libconfig-bin.tar.zst
+    bytes: 464107
+    sha256: 726aba9f428c7f084c6fb7bd38df64b6cdc92a556d10649c97ca60d9922a6479
+  src:
+    release: v2026.10.0-src
+    file: libconfig-src.tar.zst
+    bytes: 3048188
+    sha256: cbab5d4d1d04ca54e80f751f2ac849a3978bc891d05b0d3ef9498237b8fd9dea
+  src_manifest:
+    release: v2026.10.0-src
+    file: libconfig-src.MANIFEST.tsv
+    bytes: 1392
+    sha256: 8be34224878d53bd357c83253beb9dee34433063e1bcc233131604b3a8edc9e4

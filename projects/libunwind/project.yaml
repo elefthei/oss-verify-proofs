@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: libunwind
+homepage: https://www.nongnu.org/libunwind
+language: c
+oss_fuzz:
+  path: projects/libunwind
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libunwind
+  repository: https://github.com/libunwind/libunwind
+  commit: 54326ba759d82bdefa117a6d6fd8350a04787559
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_libunwind
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libunwind-bin.tar.zst
+    bytes: 447800
+    sha256: d57f56b508a4f236d5252aec3b0c126a154707ea9154aeadbfab5047453ad2ea
+  src:
+    release: v2026.10.0-src
+    file: libunwind-src.tar.zst
+    bytes: 467619
+    sha256: 61b1e18aaec62221573689fd662b3bc50a8c76a72f37ef59e8c8cbbf3a1de0f3
+  src_manifest:
+    release: v2026.10.0-src
+    file: libunwind-src.MANIFEST.tsv
+    bytes: 1559
+    sha256: 34e919cfe3b91733e9b28ebb062d9b6f39f6a39a90f20f2d5fb2835ed518a6b0

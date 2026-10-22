@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: bls-signatures
+homepage: https://github.com/supranational/blst
+language: c++
+oss_fuzz:
+  path: projects/bls-signatures
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: blst
+  repository: https://github.com/supranational/blst
+  commit: f7a88067ed98385ebc6cf41ccecf21ead706a5b7
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cryptofuzz-bls-signatures
+  status: included
+  origin: upstream
+- name: cryptofuzz-bls-signatures_optimize_size
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: bls-signatures-bin.tar.zst
+    bytes: 10567478
+    sha256: d777d8a900bd8e527bbb8f5251754cc830715478e0af3c5ced70be7006669801
+  src:
+    release: v2026.10.0-src
+    file: bls-signatures-src.tar.zst
+    bytes: 2784806
+    sha256: cb0950700a77e0b4d228b45a2054eb03d0e1071b2296d8f38b30f4c21bfdf299
+  src_manifest:
+    release: v2026.10.0-src
+    file: bls-signatures-src.MANIFEST.tsv
+    bytes: 2601
+    sha256: f80e708f4bfa00c9f42bb3dc848b38b4346a22703032a383829ae581821df001

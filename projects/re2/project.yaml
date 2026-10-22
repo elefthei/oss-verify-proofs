@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: re2
+homepage: https://github.com/google/re2
+language: c++
+oss_fuzz:
+  path: projects/re2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: re2
+  repository: https://github.com/google/re2
+  commit: 3a8436ac436124a57a4e22d5c8713a2d42b381d7
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: re2_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: re2-bin.tar.zst
+    bytes: 1460786
+    sha256: 8137e374c242bb6c6378854b9ceec7fd8600572ebbe38f73eff5dfd8fb148f72
+  src:
+    release: v2026.10.0-src
+    file: re2-src.tar.zst
+    bytes: 287148
+    sha256: a81e1196ea6bb61a92b7a4cde74f5334d03a60cbe734548236aa3076baa1ab73
+  src_manifest:
+    release: v2026.10.0-src
+    file: re2-src.MANIFEST.tsv
+    bytes: 1293
+    sha256: 8f9bd8dd4919f7365a95d295955443750aff7da225177fe4eab569f8940bf036

@@ -1,0 +1,62 @@
+schema: oss-fuzz-theorems/project/1
+project: sudoers
+homepage: https://github.com/sudo-project
+language: c
+oss_fuzz:
+  path: projects/sudoers
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: sudo
+  repository: https://github.com/sudo-project/sudo
+  commit: 2e18923c2e959fff57b60207a261080daa2ebee9
+  licence: Zlib
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_iolog_json
+  status: included
+  origin: upstream
+- name: fuzz_iolog_legacy
+  status: included
+  origin: upstream
+- name: fuzz_iolog_timing
+  status: included
+  origin: upstream
+- name: fuzz_logsrvd_conf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_policy
+  status: not-included
+  reason: not-attempted
+- name: fuzz_sudo_conf
+  status: included
+  origin: upstream
+- name: fuzz_sudoers
+  status: not-included
+  reason: not-attempted
+- name: fuzz_sudoers_ldif
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: sudoers-bin.tar.zst
+    bytes: 3161625
+    sha256: 34b3dcdc95dda802464227c635381862a5e18beab01351fe64a782ee2f60344c
+  src:
+    release: v2026.10.0-src
+    file: sudoers-src.tar.zst
+    bytes: 2636555
+    sha256: 2bd0c4a6395c66b7e8dd05741341f6111c8557876808d96b3c1f1195e19d36eb
+  src_manifest:
+    release: v2026.10.0-src
+    file: sudoers-src.MANIFEST.tsv
+    bytes: 1719
+    sha256: 431cb528790e6ffa875a3da5966bd54381ce9078a6646eac8df423103dfbee1f

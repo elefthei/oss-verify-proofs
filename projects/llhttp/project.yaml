@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: llhttp
+homepage: https://llhttp.org
+language: c
+oss_fuzz:
+  path: projects/llhttp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: llhttp
+  repository: https://github.com/nodejs/llhttp
+  commit: 0e815792b167a9bd8ace259b95b7da953776c288
+  licence: MIT
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_parser
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: llhttp-bin.tar.zst
+    bytes: 340994
+    sha256: b9685fb11ab74bdd9c6cb1e8566a2d2225ea8dae830caa76132a2fa7a89e8aad
+  src:
+    release: v2026.10.0-src
+    file: llhttp-src.tar.zst
+    bytes: 32906
+    sha256: 2296145540dd4d86679f1532ab17b0e63f4234fe187ae12bbe59aed08d20a208
+  src_manifest:
+    release: v2026.10.0-src
+    file: llhttp-src.MANIFEST.tsv
+    bytes: 1325
+    sha256: f032a7011b5c4b24fd0fe6d925fb39d39cec849cc6d1d3510f2c11b53a5ec384

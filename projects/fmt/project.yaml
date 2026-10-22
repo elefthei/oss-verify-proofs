@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: fmt
+homepage: https://github.com/fmtlib/fmt
+language: c++
+oss_fuzz:
+  path: projects/fmt
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: fmt
+  repository: https://github.com/fmtlib/fmt
+  commit: 21d4cc15c8a2a3536aab5623258ba3b3dae573ce
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: chrono-duration-fuzzer
+  status: included
+  origin: upstream
+- name: chrono-timepoint-fuzzer
+  status: included
+  origin: upstream
+- name: float-fuzzer
+  status: included
+  origin: upstream
+- name: named-arg-fuzzer
+  status: included
+  origin: upstream
+- name: one-arg-fuzzer
+  status: included
+  origin: upstream
+- name: two-args-fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: fmt-bin.tar.zst
+    bytes: 3688709
+    sha256: d371cc712ad636ccd4e90c7da177ad43504c96adaf4d30e44752e126a77bb2fd
+  src:
+    release: v2026.10.0-src
+    file: fmt-src.tar.zst
+    bytes: 571024
+    sha256: 997d69e5e6863a47c4455e7512d51f548d04f486bbbfaa1c3cd6820a0a0f4abf
+  src_manifest:
+    release: v2026.10.0-src
+    file: fmt-src.MANIFEST.tsv
+    bytes: 1628
+    sha256: fdd026e66bfe84903a08b68640b4361bf8bd9b2c4cb044a5802b678b61e143e6

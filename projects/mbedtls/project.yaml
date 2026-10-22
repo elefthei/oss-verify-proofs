@@ -1,0 +1,98 @@
+schema: oss-fuzz-theorems/project/1
+project: mbedtls
+homepage: https://developer.trustedfirmware.org/w/mbed-tls
+language: c++
+oss_fuzz:
+  path: projects/mbedtls
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: mbedtls
+  repository: https://github.com/Mbed-TLS/mbedtls
+  commit: 8d692f375d3b1babf1b1ee3b61d3a0579b840a71
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_client
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dtlsclient
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dtlsserver
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs7
+  status: included
+  origin: upstream
+- name: fuzz_privkey
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pubkey
+  status: not-included
+  reason: not-attempted
+- name: fuzz_server
+  status: not-included
+  reason: not-attempted
+- name: fuzz_x509crl
+  status: not-included
+  reason: not-attempted
+- name: fuzz_x509crt
+  status: not-included
+  reason: not-attempted
+- name: fuzz_x509csr
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_client
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_dtlsclient
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_dtlsserver
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_pkcs7
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_privkey
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_pubkey
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_server
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_x509crl
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_x509crt
+  status: not-included
+  reason: not-attempted
+- name: usepsa-fuzz_x509csr
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mbedtls-bin.tar.zst
+    bytes: 673094
+    sha256: 7861609441b91a9ebfe49dc25f2ba649c24cd3ed6a50ccd3cf6892e81f85592a
+  src:
+    release: v2026.10.0-src
+    file: mbedtls-src.tar.zst
+    bytes: 4025276
+    sha256: 1e78e26d4ed5fd639fd78b4e2b7b7fce7bd384e83afd0683542995c6240ccf9b
+  src_manifest:
+    release: v2026.10.0-src
+    file: mbedtls-src.MANIFEST.tsv
+    bytes: 1920
+    sha256: f843f749670299ae514bd291a1a12b60d2f0ed5fe5772487a6a2e3d9e9cf56f8

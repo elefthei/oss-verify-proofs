@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: wpantund
+homepage: https://github.com/openthread/wpantund
+language: c++
+oss_fuzz:
+  path: projects/wpantund
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wpantund
+  repository: https://github.com/openthread/wpantund
+  commit: 8b5ce64c2f5bbf106cabfd015bcb3bdb2e0248d3
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: wpantund-fuzz
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wpantund-bin.tar.zst
+    bytes: 1929710
+    sha256: aa8ecb6178f458cc016bb23332964b68560d9a834debc0e0444d6854b999ecb9
+  src:
+    release: v2026.10.0-src
+    file: wpantund-src.tar.zst
+    bytes: 668865
+    sha256: 210c4c4a9ffcb2c5ccf9aa4b6ec4e8a96bafaf61ccfa096c833bfe9065647b41
+  src_manifest:
+    release: v2026.10.0-src
+    file: wpantund-src.MANIFEST.tsv
+    bytes: 1367
+    sha256: 7dc7f86210cd822a7dfb49b7c809178494ea1c010d7c7572bc180bd4b66e0607

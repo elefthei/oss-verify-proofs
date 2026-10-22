@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: piex
+homepage: https://github.com/google/piex
+language: c++
+oss_fuzz:
+  path: projects/piex
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: piex
+  repository: https://android.googlesource.com/platform/external/piex
+  commit: eaddfa72c1693728db64101701431421371c38da
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer-piex
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: piex-bin.tar.zst
+    bytes: 595826
+    sha256: cace6654f441e2e7cef44c809a5f6d21e4bb193316139e9a6be2bb5b105991a5
+  src:
+    release: v2026.10.0-src
+    file: piex-src.tar.zst
+    bytes: 38604
+    sha256: 494e99bb820f11b45a3304fc6834612466d6c7906a1eddc3e928e45ffd232a2d
+  src_manifest:
+    release: v2026.10.0-src
+    file: piex-src.MANIFEST.tsv
+    bytes: 1473
+    sha256: a02fa3cb60f8027cae63f07c10427d5d69cc53ddf496192dd802d6d39f1aa391

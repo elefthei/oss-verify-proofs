@@ -1,0 +1,26 @@
+# counterexamples/<project>/<harness>/<statement>/expect.yaml: a failing run of the real binary,
+# re-run by CI under the pinned runner image, next to a control input that must exit normally.
+tag: oss-fuzz-theorems/counterexample/1
+root: {type: ref, name: counterexample}
+defs:
+  outcome:
+    type: object
+    fields:
+      build: {type: build-name}
+      exit: {type: int, min: 0, max: 255}
+      signal: {type: enum, values: [SIGABRT, SIGILL, SIGSEGV, SIGBUS, SIGFPE, SIGTRAP], optional: true}
+  counterexample:
+    type: object
+    fields:
+      schema: {type: const, value: oss-fuzz-theorems/counterexample/1}
+      statement: {type: statement-id}
+      input: {type: const, value: input.bin}
+      observed: {type: ref, name: outcome}
+      message: {type: text, max: 400, optional: true}
+      control:
+        type: object
+        fields:
+          input: {type: const, value: control.bin}
+          exit: {type: int, min: 0, max: 255}
+      disclosure: {type: const, value: public}            # a counterexample ships only once the defect it shows is public
+      note: {type: text, max: 800}

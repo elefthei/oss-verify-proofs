@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: libfdk-aac
+homepage: https://android.googlesource.com/platform/external/aac
+language: c++
+oss_fuzz:
+  path: projects/libfdk-aac
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: aac
+  repository: https://android.googlesource.com/platform/external/aac
+  commit: ee76460efbdb147e26d804c798949c23f174460b
+  licence: BSD-3-Clause
+harnesses:
+- name: aacDecoder_ConfigRaw
+  status: not-included
+  reason: not-attempted
+- name: aacDecoder_DecodeFrame
+  status: not-included
+  reason: not-attempted
+- name: aacDecoder_Open
+  status: not-included
+  reason: not-attempted
+- name: aac_dec_fuzzer
+  status: included
+  origin: upstream
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libfdk-aac-bin.tar.zst
+    bytes: 2544211
+    sha256: c81160e0929ae9a92b1e240cc0407242d97597e26b6bf8f4ebf0fd2764974e59
+  src:
+    release: v2026.10.0-src
+    file: libfdk-aac-src.tar.zst
+    bytes: 1824670
+    sha256: 981b7d31e01fa7103e049c929efb86e9bd7906f06ac05fb53f98d436786d8c65
+  src_manifest:
+    release: v2026.10.0-src
+    file: libfdk-aac-src.MANIFEST.tsv
+    bytes: 1400
+    sha256: 67bb54eee2aa87e7efe4bb2f5ed268cf3886922760d87dcbd66d41585d19041a

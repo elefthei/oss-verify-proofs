@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: pcapplusplus
+homepage: https://github.com/seladb/PcapPlusPlus
+language: c++
+oss_fuzz:
+  path: projects/pcapplusplus
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: PcapPlusPlus
+  repository: https://github.com/seladb/PcapPlusPlus
+  commit: 7f99131913bbd82e697e8c3f2a567e2bddfbc365
+  licence: Unlicense
+  patch_count: 2
+harnesses:
+- name: FuzzTarget
+  status: included
+  origin: upstream
+- name: FuzzTargetNg
+  status: not-included
+  reason: not-attempted
+- name: FuzzTargetSnoop
+  status: not-included
+  reason: not-attempted
+- name: FuzzWriter
+  status: included
+  origin: upstream
+- name: FuzzWriterNg
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pcapplusplus-bin.tar.zst
+    bytes: 3977074
+    sha256: 821e162504d178fbc5b39ed15f39cc2c7f968b65af6903dd34ee09f98b20e008
+  src:
+    release: v2026.10.0-src
+    file: pcapplusplus-src.tar.zst
+    bytes: 12371805
+    sha256: 83748a8e2786f320ff950c9f04f68370cde1a398a5cbcd679db5a9601e8a7d14
+  src_manifest:
+    release: v2026.10.0-src
+    file: pcapplusplus-src.MANIFEST.tsv
+    bytes: 1513
+    sha256: 43ed12b8b4f56f96dd169ff6da36df31984b75575062670f2e7466431a6da2b2

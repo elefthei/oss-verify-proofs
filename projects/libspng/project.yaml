@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: libspng
+homepage: https://libspng.org
+language: c++
+oss_fuzz:
+  path: projects/libspng
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libspng
+  repository: https://github.com/randy408/libspng
+  commit: adc94393dbeddf9e027d1b2dfff7c1bab975224e
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: spng_read_fuzzer
+  status: included
+  origin: upstream
+- name: spng_read_fuzzer_structure_aware
+  status: not-included
+  reason: not-attempted
+- name: spng_write_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libspng-bin.tar.zst
+    bytes: 582697
+    sha256: a8353a2f7a45eb77968e11a5817885e222981be67601f8965ced57e9fd607daf
+  src:
+    release: v2026.10.0-src
+    file: libspng-src.tar.zst
+    bytes: 135853
+    sha256: 7f482ad5ede48030ffa44f3595837d6eefef04d5422c45cd767d5cf3ad883e15
+  src_manifest:
+    release: v2026.10.0-src
+    file: libspng-src.MANIFEST.tsv
+    bytes: 1489
+    sha256: 802b7055912ae45ee4a3cc48c688af414e94e2592bdeec4d179e5d32f5e828df

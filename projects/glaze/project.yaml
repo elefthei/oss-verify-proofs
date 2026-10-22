@@ -1,0 +1,108 @@
+schema: oss-fuzz-theorems/project/1
+project: glaze
+homepage: https://github.com/stephenberry/glaze
+language: c++
+oss_fuzz:
+  path: projects/glaze
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: glaze
+  repository: https://github.com/stephenberry/glaze
+  commit: dce5e0f7ec572725ec369a0bc59a00eeb2270a9a
+  version: 8.3.0
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: binary_reflection
+  status: included
+  origin: upstream
+- name: cbor_reflection
+  status: not-included
+  reason: not-yet-included
+- name: cbor_roundtrip_floating
+  status: not-included
+  reason: not-yet-included
+- name: cbor_roundtrip_int
+  status: not-included
+  reason: not-yet-included
+- name: cbor_roundtrip_string
+  status: not-included
+  reason: not-yet-included
+- name: csv_parsing
+  status: not-included
+  reason: not-yet-included
+- name: json_generic
+  status: not-included
+  reason: not-yet-included
+- name: json_jmespath
+  status: not-included
+  reason: not-yet-included
+- name: json_minify
+  status: not-included
+  reason: not-yet-included
+- name: json_prettify
+  status: not-included
+  reason: not-yet-included
+- name: json_reflection
+  status: not-included
+  reason: not-yet-included
+- name: json_roundtrip_floating
+  status: not-included
+  reason: not-yet-included
+- name: json_roundtrip_int
+  status: not-included
+  reason: not-yet-included
+- name: json_roundtrip_string
+  status: not-included
+  reason: not-yet-included
+- name: json_with_comments
+  status: not-included
+  reason: not-yet-included
+- name: jsonb_reflection
+  status: not-included
+  reason: not-yet-included
+- name: jsonrpc_registry
+  status: not-included
+  reason: not-attempted
+- name: msgpack_reflection
+  status: not-included
+  reason: not-yet-included
+- name: msgpack_roundtrip_floating
+  status: not-included
+  reason: not-yet-included
+- name: msgpack_roundtrip_int
+  status: not-included
+  reason: not-yet-included
+- name: msgpack_roundtrip_string
+  status: not-included
+  reason: not-yet-included
+- name: repe_registry
+  status: not-included
+  reason: not-attempted
+- name: yaml_generic
+  status: not-included
+  reason: not-yet-included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: glaze-bin.tar.zst
+    bytes: 547569
+    sha256: 73cb2a0ee414f42f77565a6988c7b116adc2b8e02a484d31da095eb2dde35491
+  src:
+    release: v2026.10.0-src
+    file: glaze-src.tar.zst
+    bytes: 1542302
+    sha256: b0a6df66f95d39512585c1b70c8a77631611d467917e872ed58b1e1702316094
+  src_manifest:
+    release: v2026.10.0-src
+    file: glaze-src.MANIFEST.tsv
+    bytes: 1351
+    sha256: 4f6e628aa5627a4528cba55f17e3f0dcb8add8d0a40b120e7e55078686598959

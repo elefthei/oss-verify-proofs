@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: pyjson5
+homepage: https://github.com/dpranke/pyjson5
+language: python
+oss_fuzz:
+  path: projects/pyjson5
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

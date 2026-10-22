@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: opusfile
+homepage: https://opus-codec.org
+language: c
+oss_fuzz:
+  path: projects/opusfile
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: opusfile
+  repository: https://gitlab.xiph.org/xiph/opusfile
+  commit: 6dfd29e7adb87f2e193575fc3fa88cbf1a0b27df
+  licence: BSD-3-Clause
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: opusfile_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opusfile-bin.tar.zst
+    bytes: 862646
+    sha256: 1ed66c5bc7efa8171e152da2177ef24b69170f63601215ad868679cd532c21d5
+  src:
+    release: v2026.10.0-src
+    file: opusfile-src.tar.zst
+    bytes: 5012902
+    sha256: e93a10d48af8419f73efd3ec1a33b690736aadf40c750c0ed45040c056aa3763
+  src_manifest:
+    release: v2026.10.0-src
+    file: opusfile-src.MANIFEST.tsv
+    bytes: 2254
+    sha256: 38ed44c08f6b75727b1074a379bf8c42e8cd7ba1733f3c5c8990f166542a3df8

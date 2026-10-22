@@ -1,0 +1,65 @@
+schema: oss-fuzz-theorems/project/1
+project: spicy
+homepage: https://docs.zeek.org/projects/spicy/en/latest
+language: c++
+oss_fuzz:
+  path: projects/spicy
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: spicy
+  repository: https://github.com/zeek/spicy
+  commit: 877b266d1846ac4651cd3c440cfb142ad49df4d5
+  licence: BSD-3-Clause
+  patch_count: 1
+harnesses:
+- name: fuzz-DHCP_Message
+  status: not-included
+  reason: not-attempted
+- name: fuzz-HTTP_Replies
+  status: not-included
+  reason: not-attempted
+- name: fuzz-HTTP_Reply
+  status: not-included
+  reason: not-attempted
+- name: fuzz-HTTP_Request
+  status: not-included
+  reason: not-attempted
+- name: fuzz-HTTP_Requests
+  status: not-included
+  reason: not-attempted
+- name: fuzz-PNG_File
+  status: not-included
+  reason: not-attempted
+- name: fuzz-TFTP_Packet
+  status: not-included
+  reason: not-attempted
+- name: fuzz-dns_Message
+  status: not-included
+  reason: not-attempted
+- name: fuzz-pe_ImageFile
+  status: not-included
+  reason: not-attempted
+- name: utf8proc_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: spicy-bin.tar.zst
+    bytes: 437055
+    sha256: 2f5c6ed049ff4d266df50c9bb18033193e1db936f65313be4ec0e9351822edfe
+  src:
+    release: v2026.10.0-src
+    file: spicy-src.tar.zst
+    bytes: 18068580
+    sha256: 6db5ae3ef4b316026d05632f13f9794a6354807ea54865d59f21fee45c0259a2
+  src_manifest:
+    release: v2026.10.0-src
+    file: spicy-src.MANIFEST.tsv
+    bytes: 9953
+    sha256: f855df7d5d5f31971e479f16a474d9e6481b2de1ceb1acab9cee0068653cd047

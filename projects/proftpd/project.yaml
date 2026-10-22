@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: proftpd
+language: c
+oss_fuzz:
+  path: projects/proftpd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: proftpd
+  repository: https://github.com/proftpd/proftpd
+  commit: a8a98dc59743ea56f36d545c4c98c8545fe731f2
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: proftpd-bin.tar.zst
+    bytes: 639996
+    sha256: 2590fd9231221db9194d0b127056382bb6466ace4b8b4b12e3775a18c12bf5ac
+  src:
+    release: v2026.10.0-src
+    file: proftpd-src.tar.zst
+    bytes: 16582521
+    sha256: e1905cd323b69ed9b981c79805eba2e6f0ff47237103f0adce6a2e85f211fd9a
+  src_manifest:
+    release: v2026.10.0-src
+    file: proftpd-src.MANIFEST.tsv
+    bytes: 1348
+    sha256: 09e924a3bb04bb4081cdf909a8ef18a25b7789366358dd458d88a4f3ab9588c2

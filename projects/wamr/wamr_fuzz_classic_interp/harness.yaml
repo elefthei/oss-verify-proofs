@@ -1,0 +1,214 @@
+schema: oss-fuzz-theorems/harness/1
+project: wamr
+harness: wamr_fuzz_classic_interp
+rocq: OssFuzzTheorems.wamr.wamr_fuzz_classic_interp
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/wasm_mutator_fuzz.cc
+  from:
+    repository: https://github.com/bytecodealliance/wasm-micro-runtime
+    commit: ea5dd88e9ca40a44b6a5d9ffeb87a20833b13b8a
+    path: tests/fuzz/wasm-mutator-fuzz/wasm-mutator/wasm_mutator_fuzz.cc
+  modified: false
+  licence: Apache-2.0 WITH LLVM-exception
+library:
+  repository: https://github.com/bytecodealliance/wasm-micro-runtime
+  commit: ea5dd88e9ca40a44b6a5d9ffeb87a20833b13b8a
+  licence: NOASSERTION
+modifications:
+- Linked against wasm-micro-runtime at commit ea5dd88e.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: wamr_fuzz_classic_interp.plain
+    bytes: 981944
+    sha256: d52143ef53d8ff0af5c9c124305355c24e433c46d10b9689633402cb2577e3f6
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  ubsan:
+    file: wamr_fuzz_classic_interp.ubsan
+    bytes: 1039616
+    sha256: 23a3b8a10afbd35500c6b981c1e7c7034fcb2abb25c93627396de3206a5ef345
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan:
+    file: wamr_fuzz_classic_interp.asan
+    bytes: 1980056
+    sha256: 6290daa19446fb097dace8269a48d83f1feb14da6f0f0c50b72e42321527b771
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: wamr_fuzz_classic_interp.asan-ubsan
+    bytes: 2045976
+    sha256: b438af0685563b90a4695f2389a7d2e90748902d908c4f9891d8c07f9af9b12d
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

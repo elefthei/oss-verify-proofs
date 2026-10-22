@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: libhevc
+homepage: https://github.com/ittiam-systems/libhevc
+language: c++
+oss_fuzz:
+  path: projects/libhevc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libhevc
+  repository: https://github.com/ittiam-systems/libhevc
+  commit: 1a3c8d651a7ec18ff777de1ad8af40ae48ed914c
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: hevc_dec_fuzzer
+  status: included
+  origin: upstream
+- name: hevc_enc_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libhevc-bin.tar.zst
+    bytes: 1832641
+    sha256: 1c8c26980db17c61196c45da4fcdccda8e726037255616b5010f4ce1b8cd4d5e
+  src:
+    release: v2026.10.0-src
+    file: libhevc-src.tar.zst
+    bytes: 3066157
+    sha256: 9e8233cff76f915e667ab313b144a9de0d7f4fa95b882c2ddef949c9c24ba441
+  src_manifest:
+    release: v2026.10.0-src
+    file: libhevc-src.MANIFEST.tsv
+    bytes: 2591
+    sha256: dbbe73e8c6e1c1c7bc7fdda2b13fdfa806a7e796b426db3d4f568a080de2ae5c

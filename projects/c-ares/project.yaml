@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: c-ares
+homepage: https://c-ares.haxx.se
+language: c++
+oss_fuzz:
+  path: projects/c-ares
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: c-ares
+  repository: https://github.com/c-ares/c-ares
+  commit: 1ff6b69eb10f3a0eedeaef22d84af87e3a457832
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: ares_create_query_fuzzer
+  status: included
+  origin: upstream
+- name: ares_parse_reply_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: c-ares-bin.tar.zst
+    bytes: 808010
+    sha256: 5b64ef2c3b2f727d13ff67326265a5bd8920e49f99411b4ed61c3d20250ee97d
+  src:
+    release: v2026.10.0-src
+    file: c-ares-src.tar.zst
+    bytes: 516168
+    sha256: cb2482ebf5c37d962aed7e9a637861abd08543c61bcb462c9f279ec6b4d31737
+  src_manifest:
+    release: v2026.10.0-src
+    file: c-ares-src.MANIFEST.tsv
+    bytes: 1473
+    sha256: 561b4ead47f53fd6c30cf3a53208ebbfea46625d001906757f2a165566000ee7

@@ -1,0 +1,68 @@
+schema: oss-fuzz-theorems/project/1
+project: bind9
+homepage: https://gitlab.isc.org/isc-projects/bind9
+language: c
+oss_fuzz:
+  path: projects/bind9
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: bind9
+  repository: https://gitlab.isc.org/isc-projects/bind9
+  commit: d8a7f2a05c51d0b143c1838e2a308a3722ba1534
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: dns_master_load_fuzzer
+  status: included
+  origin: upstream
+- name: dns_message_checksig_fuzzer
+  status: not-included
+  reason: setup-fails
+- name: dns_message_parse_fuzzer
+  status: included
+  origin: upstream
+- name: dns_name_fromtext_target_fuzzer
+  status: included
+  origin: upstream
+- name: dns_name_fromwire_fuzzer
+  status: included
+  origin: upstream
+- name: dns_qp_fuzzer
+  status: not-included
+  reason: setup-fails
+- name: dns_qpkey_name_fuzzer
+  status: included
+  origin: upstream
+- name: dns_rdata_fromtext_fuzzer
+  status: included
+  origin: upstream
+- name: dns_rdata_fromwire_text_fuzzer
+  status: included
+  origin: upstream
+- name: isc_lex_getmastertoken_fuzzer
+  status: included
+  origin: upstream
+- name: isc_lex_gettoken_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: bind9-bin.tar.zst
+    bytes: 8471399
+    sha256: 051ac0a12435affa1a12ebebad446d060d1b8076f05c6a6139842a8f568c668b
+  src:
+    release: v2026.10.0-src
+    file: bind9-src.tar.zst
+    bytes: 17834680
+    sha256: ab0262471c82ecf62ddeb1068939aedf8742d0d75052c619d57b2fad90ee1f0b
+  src_manifest:
+    release: v2026.10.0-src
+    file: bind9-src.MANIFEST.tsv
+    bytes: 10298
+    sha256: beea21a6e1e51f799851f662e54eb9b8bd0c80bd012ae274e5e399c043386a13

@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: fast_float
+homepage: https://github.com/fastfloat/fast_float
+language: c++
+oss_fuzz:
+  path: projects/fast_float
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: fast_float
+  repository: https://github.com/fastfloat/fast_float
+  commit: a8a02f77480d10c5dc90d39f7b890bc1dff9c1b9
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: from_chars
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: fast_float-bin.tar.zst
+    bytes: 473443
+    sha256: 6f2b2eae8ee2bd21d16767af522c538d72b163e2e793a948e8f2a1b24b4c28c9
+  src:
+    release: v2026.10.0-src
+    file: fast_float-src.tar.zst
+    bytes: 117165
+    sha256: 9afc87fcefc25032c72b788db767978199863bcb834b06d174cedb9ad45a0067
+  src_manifest:
+    release: v2026.10.0-src
+    file: fast_float-src.MANIFEST.tsv
+    bytes: 1376
+    sha256: b7bbc058e0bd79aa940e03921c37c08684c2ba446dba2bc920bef87c027821ec

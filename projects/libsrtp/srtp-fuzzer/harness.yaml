@@ -1,0 +1,283 @@
+schema: oss-fuzz-theorems/harness/1
+project: libsrtp
+harness: srtp-fuzzer
+rocq: OssFuzzTheorems.libsrtp.srtp_fuzzer
+origin: upstream
+summary: Builds an SRTP session from input-derived policies (profile, SSRC, keys, MKIs, header-extension
+  ids, window), adds/removes streams, sets and gets ROCs, then repeatedly runs an input-chosen protect/unprotect
+  (RTP or RTCP) and a second input-chosen operation on the result. Status codes only steer control flow;
+  protect->unprotect output is never compared with the original packet, and the ROC read back after srtp_stream_set_roc
+  is not compared with the value set.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/fuzzer.c
+  from:
+    repository: https://github.com/cisco/libsrtp
+    commit: 2cb11879b40f9d5031958d2f9a10a8c2237ced7f
+    path: fuzzer/fuzzer.c
+  modified: false
+  licence: BSD-3-Clause
+library:
+  repository: https://github.com/cisco/libsrtp
+  commit: 2cb11879b40f9d5031958d2f9a10a8c2237ced7f
+  licence: BSD-3-Clause
+modifications:
+- Linked against libsrtp at commit 2cb11879.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: srtp-fuzzer.plain
+    bytes: 327712
+    sha256: 0900c0bdd261144f258acbb5b1a33fbc8942df9391ebb4b777b43f3130fc1bab
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  ubsan:
+    file: srtp-fuzzer.ubsan
+    bytes: 338152
+    sha256: 4d5d18e1318de3865b7a07cbc85980d783b4408b9d75f2f76ed4a4765c279884
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan:
+    file: srtp-fuzzer.asan
+    bytes: 942104
+    sha256: 1a0cf0c42da0dab916c9c2875eea424008eb0b9fd647135502104fcc1d0d2ab3
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: srtp-fuzzer.asan-ubsan
+    bytes: 931640
+    sha256: a8624c30787e774902dcc5621e8efc572686876649ff94b20e75f5ac09794f23
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks:
+- kind: invariant
+  strength: weak
+  stops_with: abort
+  live: unknown
+  where: source/fuzzer.c:382-387
+  what: abort() if an SRTP profile's master key + salt length exceeds SRTP_MAX_KEY_LEN ("Shouldn't happen
+    for a public profile") -- a check over the library's fixed profile table, trivially true.
+distribution:
+  file: Distribution.v
+  argv0: srtp-fuzzer
+  input_file: input.bin
+  prefix_hex: 000000000000ffff00000100000000000000800000000000000000030000000000000000010000000000000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d000100000000000000800000000000000000030000000000000001010000000000000000400000000000000000000000
+  payload:
+    length: geometric
+    p: 1/257
+    mean_bytes: 256
+    alphabet: bytes
+  components:
+    payload: 9/10
+    wrong_argc: 1/50
+    missing_file: 1/50
+    full_support: 3/50
+  mass: '1'
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    budgets: asan
+    abort: signal
+    status: open
+  asan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  asan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    budgets: standard
+    abort: signal
+    status: open
+  ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    budgets: asan
+    abort: signal
+    status: open
+  asan_ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

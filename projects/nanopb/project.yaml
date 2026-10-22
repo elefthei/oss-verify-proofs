@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: nanopb
+homepage: https://jpa.kapsi.fi/nanopb
+language: c++
+oss_fuzz:
+  path: projects/nanopb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: nanopb
+  repository: https://github.com/nanopb/nanopb
+  commit: d21fa5084287ab67da2f166f4def045bedcb535e
+  licence: Zlib
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzztest_io_errors
+  status: included
+  origin: upstream
+- name: fuzztest_proto2_pointer
+  status: not-included
+  reason: not-attempted
+- name: fuzztest_proto2_static
+  status: not-included
+  reason: not-attempted
+- name: fuzztest_proto3_pointer
+  status: not-included
+  reason: not-attempted
+- name: fuzztest_proto3_static
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: nanopb-bin.tar.zst
+    bytes: 358896
+    sha256: 9c97f2986d082bb19769aefd8d94bc38fd36e3465b8129f5b538a9c2fd0c6793
+  src:
+    release: v2026.10.0-src
+    file: nanopb-src.tar.zst
+    bytes: 961559
+    sha256: a2794f43dfdd4234ed588d5a836301c78c309930e22799344d093d6b3ef34493
+  src_manifest:
+    release: v2026.10.0-src
+    file: nanopb-src.MANIFEST.tsv
+    bytes: 1318
+    sha256: 33829fe011e319ec7db3b055566697c130d923de7017e8bacb0c9fc13efb8ef3

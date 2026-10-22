@@ -1,0 +1,40 @@
+Template for the header of projects/<project>/<harness>/Distribution.v.  The
+body under it is the distribution's Rocq definitions, unchanged; the header
+is rendered from harness.yaml's `distribution` fields, so `oft generate
+--check` can tell when the two disagree.
+
+@@ file
+(** * The input distribution for $project / $harness
+
+$text *)
+@@ text
+[w] is a probability distribution (total mass [M = $mass]) over finite process inputs: argv, envp, files and stdin.  The launch environment (user, groups, network, limits) is not drawn; the statements quantify over it.  An input is drawn like this:
+$components
+The first components exercise the driver's outcomes, and the last makes sure that no input is left out by having weight zero.  For a harness that expects structured input, almost every random payload is rejected early, so a bound under this distribution says mostly how the builds treat malformed input; it is not an estimate of risk on real inputs.  Built from the MeasureLib of linux-process-semantics; checked against [Measure.DISTRIBUTION] at the end of this file.
+
+@@ payload
+- $weight: argv = [$argv0; $input_file], no environment, empty stdin, and one file $input_file: $prefix followed by n $alphabet, with P(n) = p (1 - p)^n, p = $p (mean $mean);
+@@ wrong_argc
+- $weight: a wrong argument count (argv of length 1 or 3) with an empty $input_file;
+@@ missing_file
+- $weight: argv = [$argv0; $input_file] as in the first component, but with no file $input_file;
+@@ envp
+- $weight: the same argv and an empty $input_file, with one environment variable, equally likely each: $envp;
+@@ full_support
+- $weight: anything at all, with weights that shrink with size, so that every finite input has positive weight.
+
+@@ prefix_header
+the $n bytes $hex (the driver header: no config, no allocation mask)
+@@ prefix_header_and_payload
+the 6 bytes 00 00 00 00 00 00 (the driver header: no config, no allocation mask) and the fixed payload prefix $hex
+@@ prefix_other
+the $n fixed bytes $hex
+@@ prefix_long
+the $n fixed bytes of the body's [hdr] (the driver header, then a fixed payload prefix; SHA-256 $sha)
+
+@@ alphabet_bytes
+random bytes
+@@ alphabet_named
+random symbols of the $name alphabet ($size symbols, each equally likely)
+@@ alphabet_custom
+random symbols from a fixed set of $size bytes (each equally likely; the body lists them as [alpha])

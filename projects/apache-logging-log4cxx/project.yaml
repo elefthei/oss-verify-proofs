@@ -1,0 +1,89 @@
+schema: oss-fuzz-theorems/project/1
+project: apache-logging-log4cxx
+homepage: https://logging.apache.org/log4cxx
+language: c++
+oss_fuzz:
+  path: projects/apache-logging-log4cxx
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: logging-log4cxx
+  repository: https://github.com/apache/logging-log4cxx
+  commit: faf2dd5fdb9760d1fdf63f3b7d45775fd3813451
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: DOMConfiguratorFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: DOMConfiguratorFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: HTMLLayoutFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: HTMLLayoutFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: JSONLayoutFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: JSONLayoutFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: PatternConverterFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: PatternConverterFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: PatternLayoutFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: PatternLayoutFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: PatternParserFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: PatternParserFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: TimeBasedRollingPolicyFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: TimeBasedRollingPolicyFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: TranscoderFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: TranscoderFuzzer-wchar_t
+  status: included
+  origin: upstream
+- name: XMLLayoutFuzzer-utf-8
+  status: included
+  origin: upstream
+- name: XMLLayoutFuzzer-wchar_t
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: apache-logging-log4cxx-bin.tar.zst
+    bytes: 31734482
+    sha256: 51f7785d0a7c36d580c37013baa439f3b616e2699094b4e53c9df2658e97c17c
+  src:
+    release: v2026.10.0-src
+    file: apache-logging-log4cxx-src.tar.zst
+    bytes: 1038747
+    sha256: 6fa81202b3e7c5a67ce432f9087f0d0ea493ac649a47e9140de7d8e4475e58e3
+  src_manifest:
+    release: v2026.10.0-src
+    file: apache-logging-log4cxx-src.MANIFEST.tsv
+    bytes: 5397
+    sha256: 966036c9f9118fd97c8a1b2c7399b876409a31ebb50d0d5e740ee41b3446506c

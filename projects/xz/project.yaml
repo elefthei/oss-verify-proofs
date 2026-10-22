@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: xz
+homepage: https://tukaani.org/xz
+language: c++
+oss_fuzz:
+  path: projects/xz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: xz
+  repository: https://github.com/tukaani-project/xz
+  commit: 3d078b52adbff566ccfc51067dfbf742ecf3ef86
+  version: 5.8.2
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_decode_alone
+  status: included
+  origin: upstream
+- name: fuzz_decode_index
+  status: not-included
+  reason: not-attempted
+- name: fuzz_decode_stream
+  status: included
+  origin: upstream
+- name: fuzz_decode_stream_mt
+  status: included
+  origin: upstream
+- name: fuzz_encode_stream
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: xz-bin.tar.zst
+    bytes: 986944
+    sha256: c648d3f7f7bc967c5a082c6e2598fbc4d2c5839fb57a99f24f872e5cfaefab43
+  src:
+    release: v2026.10.0-src
+    file: xz-src.tar.zst
+    bytes: 998446
+    sha256: 825ee43be78124fcf43bef51fd89773ce70afbd08c62b8e13d19eab1b76ce38c
+  src_manifest:
+    release: v2026.10.0-src
+    file: xz-src.MANIFEST.tsv
+    bytes: 1656
+    sha256: 081f1060deedbd0ccc2f5a725c3f85493c8299935818aaf4ff6a94739a65f674

@@ -1,0 +1,131 @@
+schema: oss-fuzz-theorems/project/1
+project: fluent-bit
+homepage: https://github.com/fluent/fluent-bit
+language: c++
+oss_fuzz:
+  path: projects/fluent-bit
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: fluent-bit
+  repository: https://github.com/fluent/fluent-bit
+  commit: 37c279fc47f41c2e069163186d660e9998900b64
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: ares-test-fuzz
+  status: included
+  origin: upstream
+- name: flb-it-fuzz-aws_credentials_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-aws_util_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-base64_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-cmetrics_decode_fuzz_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-cmetrics_decode_prometheus_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-config_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-config_map_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-config_random_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-config_yaml_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-ctrace_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-engine_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-filter_stdout_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-flb_json_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-flb_mp_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-fstore_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-http_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-input_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-log_cache_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-msgpack_parse_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-msgpack_to_gelf_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-multiline_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-pack_json_state_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-parse_json_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-parse_logfmt_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-parse_ltsv_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-parser_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-record_ac_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-signv4_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-strp_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+- name: flb-it-fuzz-utils_fuzzer_OSSFUZZ
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: fluent-bit-bin.tar.zst
+    bytes: 435127
+    sha256: 73f009423e81850554ca1e046df7e322bc0f888648e5fad206f1577637d28f95
+  src:
+    release: v2026.10.0-src
+    file: fluent-bit-src.tar.zst
+    bytes: 32155134
+    sha256: 640d945b5aca6bcd1676898fdb68085211e6dee4ecfdf608768e601915309d2e
+  src_manifest:
+    release: v2026.10.0-src
+    file: fluent-bit-src.MANIFEST.tsv
+    bytes: 3132
+    sha256: 9410a285db28d945839141f5081c026e675432089d39d2712c8c4317506eded4

@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: cctz
+homepage: https://github.com/google/cctz
+language: c++
+oss_fuzz:
+  path: projects/cctz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cctz
+  repository: https://github.com/google/cctz
+  commit: 590b10c5208b36431d0de31b06996d8cb932e109
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_cctz
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cctz-bin.tar.zst
+    bytes: 800383
+    sha256: b0d90ce1fda11887502ef7b04ad0964549bf514ca8511830b700b6764aa40991
+  src:
+    release: v2026.10.0-src
+    file: cctz-src.tar.zst
+    bytes: 151250
+    sha256: 517475e0d247a4d1e56b26a6309c51011cdc2fa9157cec81820f5a6d1a51a744
+  src_manifest:
+    release: v2026.10.0-src
+    file: cctz-src.MANIFEST.tsv
+    bytes: 1435
+    sha256: 6c864e34e63aaaec2b8576ef6a70dd8ede708dbccdac29be818a22e229cb61d2

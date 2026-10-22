@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: c-blosc
+homepage: https://github.com/Blosc/c-blosc
+language: c++
+oss_fuzz:
+  path: projects/c-blosc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: c-blosc
+  repository: https://github.com/Blosc/c-blosc
+  commit: c8072c21dcce8daf6dd19a0bbae8c53458ad68cc
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: compress_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: c-blosc-bin.tar.zst
+    bytes: 2472085
+    sha256: 43fb3b6ef7363beab5cf14cd663e2bd7f797f48009f10d6f04d75688f6929893
+  src:
+    release: v2026.10.0-src
+    file: c-blosc-src.tar.zst
+    bytes: 1881774
+    sha256: 754d4499e2a410f7d9970582a333f9c74d276360feb7e1546008881d459be091
+  src_manifest:
+    release: v2026.10.0-src
+    file: c-blosc-src.MANIFEST.tsv
+    bytes: 1469
+    sha256: 5ffa0af16b37e8064123e6af5a8babb16ec2c5ed2750c0372bd9bb621a04aa6e

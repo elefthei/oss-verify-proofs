@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: libexif
+homepage: https://libexif.github.io
+language: c++
+oss_fuzz:
+  path: projects/libexif
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libexif
+  repository: https://github.com/libexif/libexif
+  commit: aebe2a7b61a2fcd95f8d72e2d317027faf73fdc1
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: exif_from_data_fuzzer
+  status: included
+- name: exif_loader_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libexif-bin.tar.zst
+    bytes: 792510
+    sha256: b54c0498863a7c9cc5a04ffc904a299786d48a2290cd895f60c12be3b015fed5
+  src:
+    release: v2026.10.0-src
+    file: libexif-src.tar.zst
+    bytes: 611897
+    sha256: 9e60e7fc08b246a0e94152faa967ec785c6cc483daa8a74c59999a3cc6633d62
+  src_manifest:
+    release: v2026.10.0-src
+    file: libexif-src.MANIFEST.tsv
+    bytes: 1877
+    sha256: 7c6784122203fa1e475f7f1b8a9321502905b2f279e32cd0d27852889ca72b00

@@ -1,0 +1,269 @@
+schema: oss-fuzz-theorems/harness/1
+project: ndpi
+harness: fuzz_libinjection
+rocq: OssFuzzTheorems.ndpi.fuzz_libinjection
+origin: upstream
+summary: libinjection SQLi detection in six quote/dialect modes, libinjection_sqli fingerprint, and XSS
+  detection over the raw bytes; verdicts discarded.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/fuzz_libinjection.c
+  from:
+    repository: https://github.com/ntop/nDPI
+    commit: 2b26905efaae62a631fdb7d96224213a1300c47c
+    path: fuzz/fuzz_libinjection.c
+  modified: false
+  licence: LGPL-3.0-or-later
+library:
+  repository: https://github.com/ntop/nDPI
+  commit: 2b26905efaae62a631fdb7d96224213a1300c47c
+  licence: LGPL-3.0-or-later
+modifications:
+- Linked against nDPI at commit 2b26905e.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: fuzz_libinjection.plain
+    bytes: 289424
+    sha256: 0d6efb89f9f3b3f971006ed881bcae71c2614720154ada932385df7b89b5517f
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+  ubsan:
+    file: fuzz_libinjection.ubsan
+    bytes: 295112
+    sha256: fb911fb35e38ffd08d5e238457b2aae860aaede3c2c645794118f0798504da94
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+  asan:
+    file: fuzz_libinjection.asan
+    bytes: 1811272
+    sha256: 850171bf9d402bf8d9ee34c547dc51d135fe6aac32b6d4e02ce9bb2f4e7ce95a
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: fuzz_libinjection.asan-ubsan
+    bytes: 1816632
+    sha256: b13cffa16440b4fbc291d7c26cef4b1b54c74bc8b3076d715fd5af64a7666fa0
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+distribution:
+  file: Distribution.v
+  argv0: fuzz_libinjection
+  input_file: input.bin
+  prefix_hex: '000000000000'
+  payload:
+    length: geometric
+    p: 1/17
+    mean_bytes: 16
+    alphabet: custom
+    alphabet_size: 102
+  components:
+    payload: 9/10
+    wrong_argc: 1/50
+    missing_file: 1/50
+    full_support: 3/50
+  mass: '1'
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    budgets: asan
+    status: open
+  asan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  asan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    budgets: standard
+    status: open
+  ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    budgets: asan
+    status: open
+  asan_ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  plain_halts_may_fail:
+    kind: halts
+    builds:
+    - plain
+    reading: may-fail
+    exits: any
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts_may_fail:
+    kind: halts
+    builds:
+    - ubsan
+    reading: may-fail
+    exits: any
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

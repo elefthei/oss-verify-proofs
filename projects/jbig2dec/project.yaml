@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: jbig2dec
+homepage: https://www.jbig2dec.com
+language: c++
+oss_fuzz:
+  path: projects/jbig2dec
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: jbig2dec
+  repository: https://git.ghostscript.com/jbig2dec
+  commit: dc15c39bbbddc90f79c14563d2eb5a794106be8f
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: jbig2_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: jbig2dec-bin.tar.zst
+    bytes: 560129
+    sha256: ca4b107c929780abfd03e38b251e4b40277ac10f9f3ea125b844f2db7d2cbe94
+  src:
+    release: v2026.10.0-src
+    file: jbig2dec-src.tar.zst
+    bytes: 125535
+    sha256: 4c42533c0f430724fd71ad9d4eed5087b9214681c4dcad863d618cacfb8eaf60
+  src_manifest:
+    release: v2026.10.0-src
+    file: jbig2dec-src.MANIFEST.tsv
+    bytes: 1522
+    sha256: b66659928ecf8d279f16287bab7dd844e0207eb878a7d4ddf5c6fd3ad4a2594f

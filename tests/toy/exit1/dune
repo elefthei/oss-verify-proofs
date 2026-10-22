@@ -1,0 +1,9 @@
+; The toy binary is not stored: this rule writes it from ../make_elf.py and
+; refuses it unless its SHA-256 is the one recorded beside it.
+(rule
+ (targets exit1.plain)
+ (deps (:gen ../make_elf.py) exit1.plain.sha256)
+ (action
+  (progn
+   (run python3 %{gen} exit1 exit1.plain)
+   (run sha256sum --check --strict --quiet exit1.plain.sha256))))

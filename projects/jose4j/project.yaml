@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: jose4j
+homepage: https://bitbucket.org/b_c/jose4j/wiki/Home
+language: jvm
+oss_fuzz:
+  path: projects/jose4j
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

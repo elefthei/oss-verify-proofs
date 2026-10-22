@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: bzip2
+homepage: https://sourceware.org/bzip2
+language: c++
+oss_fuzz:
+  path: projects/bzip2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: bzip2
+  repository: https://sourceware.org/git/bzip2
+  commit: f5dfc96063fef2d9c5446d0733867d899ef9b942
+  licence: bzip2-1.0.6
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: bzip2_compress_target
+  status: included
+- name: bzip2_decompress_target
+  status: included
+- name: bzip2_fd
+  status: included
+- name: bzip2_filename
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: bzip2-bin.tar.zst
+    bytes: 699820
+    sha256: 9b0fb3cb02a8dd5920803ffd90e4f358b8fe002f7f0a909b97e3eada82d8892d
+  src:
+    release: v2026.10.0-src
+    file: bzip2-src.tar.zst
+    bytes: 320677
+    sha256: 0158ca5f92fd5ef924c6034f87a6d72d5a04a704e03b9944e819f65c9065d3de
+  src_manifest:
+    release: v2026.10.0-src
+    file: bzip2-src.MANIFEST.tsv
+    bytes: 2051
+    sha256: 9dc0c7d253891d479a37f3fbcfa0eaf69af5f22479de459584d6154d256ca400

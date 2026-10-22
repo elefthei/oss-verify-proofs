@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: dng_sdk
+homepage: https://android.googlesource.com/platform/external/dng_sdk
+language: c++
+oss_fuzz:
+  path: projects/dng_sdk
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dng_sdk
+  repository: https://android.googlesource.com/platform/external/dng_sdk
+  commit: f8f6cf848d0a2146ac284dae2ccd7a795538ea0f
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: dng_camera_profile_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: dng_fixed_validate_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: dng_parser_fuzzer
+  status: included
+  origin: upstream
+- name: dng_stage_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: dng_validate_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dng_sdk-bin.tar.zst
+    bytes: 1561986
+    sha256: 480f5681b2e60f0fa899185bd3b12b46f18f893b2cc8e2ef4cfd8e0e5e4b9695
+  src:
+    release: v2026.10.0-src
+    file: dng_sdk-src.tar.zst
+    bytes: 329298
+    sha256: 081c8ebe2f2e3f58b9e9532cd7fe12ddde984bd62fb3a898ada95576b67ff71d
+  src_manifest:
+    release: v2026.10.0-src
+    file: dng_sdk-src.MANIFEST.tsv
+    bytes: 1391
+    sha256: b8d9f05d486813418b8e5495a75756dd1923ade118f93a73383ad13d04bb87bb

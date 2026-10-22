@@ -1,0 +1,127 @@
+schema: oss-fuzz-theorems/project/1
+project: qpdf
+language: c++
+oss_fuzz:
+  path: projects/qpdf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: qpdf
+  repository: https://github.com/qpdf/qpdf
+  commit: dfd251125cadb59fe04836f9197c3ef94f99cf55
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: ascii85_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: dct_fuzzer
+  status: included
+  origin: upstream
+- name: flate_fuzzer
+  status: included
+  origin: upstream
+- name: future_ascii85_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_dct_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_flate_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_hex_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_json_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_lzw_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_pngpredictor_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_qpdf_crypt_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_qpdf_crypt_insecure_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_qpdf_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_qpdf_lin_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_qpdf_outlines_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_qpdf_pages_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_runlength_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: future_tiffpredictor_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: hex_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: json_fuzzer
+  status: included
+  origin: upstream
+- name: lzw_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: pngpredictor_fuzzer
+  status: included
+  origin: upstream
+- name: qpdf_crypt_fuzzer
+  status: included
+  origin: upstream
+- name: qpdf_crypt_insecure_fuzzer
+  status: included
+  origin: upstream
+- name: qpdf_fuzzer
+  status: included
+  origin: upstream
+- name: qpdf_lin_fuzzer
+  status: included
+  origin: upstream
+- name: qpdf_outlines_fuzzer
+  status: included
+  origin: upstream
+- name: qpdf_pages_fuzzer
+  status: included
+  origin: upstream
+- name: runlength_fuzzer
+  status: included
+  origin: upstream
+- name: tiffpredictor_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: qpdf-bin.tar.zst
+    bytes: 26749198
+    sha256: 28fc09d56fd1792831e9cefb51e53254a82943ab105f1b46fd935932a2d5dc11
+  src:
+    release: v2026.10.0-src
+    file: qpdf-src.tar.zst
+    bytes: 13736301
+    sha256: efd247d553a16301317d699dcd644efcb12815ac9c71d4954c7e1b5d9a942e15
+  src_manifest:
+    release: v2026.10.0-src
+    file: qpdf-src.MANIFEST.tsv
+    bytes: 2521
+    sha256: 48a7f3cdeb41c1292ac51a631749727dff50f866084e2c490af15bc00f4d6155

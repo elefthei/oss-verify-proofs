@@ -1,0 +1,266 @@
+schema: oss-fuzz-theorems/harness/1
+project: janus-gateway
+harness: sdp_fuzzer
+rocq: OssFuzzTheorems.janus_gateway.sdp_fuzzer
+origin: upstream
+summary: Copies the input into a VLA, forces the last byte to NUL, janus_sdp_parse, then janus_sdp_write
+  regenerates the SDP text; the regenerated text is freed unread (not reparsed, not compared with the
+  input).
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/sdp_fuzzer.c
+  from:
+    repository: https://github.com/meetecho/janus-gateway
+    commit: 4602fcc5315b77dce2a5d8363a4286ac672183b1
+    path: fuzzers/sdp_fuzzer.c
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/meetecho/janus-gateway
+  commit: 4602fcc5315b77dce2a5d8363a4286ac672183b1
+  licence: NOASSERTION
+modifications:
+- Linked against janus-gateway at commit 4602fcc5.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: sdp_fuzzer.plain
+    bytes: 331528
+    sha256: fb55032a10062cfd1f33641c252d34cb7d100e74abf1cd22e67149db09b434f2
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+  ubsan:
+    file: sdp_fuzzer.ubsan
+    bytes: 332704
+    sha256: ce62522b02e5b608ffe7781054b8eb110165cb0a767c00df5342038ef63e8bed
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+  asan:
+    file: sdp_fuzzer.asan
+    bytes: 903768
+    sha256: 87dd1b417411a8c184c980e564a47c99818cb77d6aeee8253db9d648c788083c
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: sdp_fuzzer.asan-ubsan
+    bytes: 904728
+    sha256: 3f503011065e77e5952e326538f90e54529a5572518e2920225fdde4b807d016
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+distribution:
+  file: Distribution.v
+  argv0: sdp_fuzzer
+  input_file: input.bin
+  prefix_hex: 000000000000763d
+  payload:
+    length: geometric
+    p: 1/33
+    mean_bytes: 32
+    alphabet: custom
+    alphabet_size: 97
+  components:
+    payload: 9/10
+    wrong_argc: 1/50
+    missing_file: 1/50
+    full_support: 3/50
+  mass: '1'
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  asan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    status: open
+  asan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    status: open
+  ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    status: open
+  ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  asan_ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    status: open
+  asan_ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

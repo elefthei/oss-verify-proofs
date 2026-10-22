@@ -1,0 +1,49 @@
+schema: oss-fuzz-theorems/project/1
+project: gpsd
+homepage: https://gpsd.io
+language: c
+oss_fuzz:
+  path: projects/gpsd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gpsd
+  repository: https://gitlab.com/gpsd/gpsd
+  commit: 46977faa8f94eb036ca68c24a3fc0d233732e707
+  licence: BSD-2-Clause
+harnesses:
+- name: FuzzClient
+  status: included
+  origin: upstream
+- name: FuzzDrivers
+  status: included
+  origin: upstream
+- name: FuzzDriversStructured
+  status: included
+  origin: upstream
+- name: FuzzJson
+  status: included
+  origin: upstream
+- name: FuzzPacket
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gpsd-bin.tar.zst
+    bytes: 2603825
+    sha256: 0210b786c0732a9a9dcff157b814dbf8027f71d3312ed1539bc95b54f8744d12
+  src:
+    release: v2026.10.0-src
+    file: gpsd-src.tar.zst
+    bytes: 8098377
+    sha256: 628a676025e4e82c86b77afa3fc7663c7d44a9123ebe210cd4fa84f74feccbd2
+  src_manifest:
+    release: v2026.10.0-src
+    file: gpsd-src.MANIFEST.tsv
+    bytes: 3385
+    sha256: eb27fbb6bb1a09973cdb249312b22dd503fa1fcb959c20a35abdcadcd6a9d891

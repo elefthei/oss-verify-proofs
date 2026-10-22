@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: tomlkit
+homepage: https://github.com/sdispater/tomlkit
+language: python
+oss_fuzz:
+  path: projects/tomlkit
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

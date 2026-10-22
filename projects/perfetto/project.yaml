@@ -1,0 +1,70 @@
+schema: oss-fuzz-theorems/project/1
+project: perfetto
+homepage: https://perfetto.dev
+language: c++
+oss_fuzz:
+  path: projects/perfetto
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: perfetto
+  repository: https://android.googlesource.com/platform/external/perfetto
+  commit: 40b529923598b739b2892a536a7692eedbed5685
+  licence: NOASSERTION
+harnesses:
+- name: buffered_frame_deserializer_fuzzer
+  status: included
+  origin: upstream
+- name: cpu_reader_fuzzer
+  status: included
+  origin: upstream
+- name: end_to_end_shared_memory_fuzzer
+  status: included
+  origin: upstream
+- name: packet_stream_validator_fuzzer
+  status: included
+  origin: upstream
+- name: producer_socket_fuzzer
+  status: included
+  origin: upstream
+- name: protozero_bytecode_parser_fuzzer
+  status: included
+  origin: upstream
+- name: protozero_decoder_fuzzer
+  status: included
+  origin: upstream
+- name: protozero_message_filter_fuzzer
+  status: included
+  origin: upstream
+- name: shared_ring_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: shared_ring_buffer_write_fuzzer
+  status: included
+  origin: upstream
+- name: trace_processor_fuzzer
+  status: included
+  origin: upstream
+- name: unwinding_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: perfetto-bin.tar.zst
+    bytes: 14920683
+    sha256: 1b20e5428f34851c735d1ff7378ef018c516396f95ae6cfc5f3a20bc930656f1
+  src:
+    release: v2026.10.0-src
+    file: perfetto-src.tar.zst
+    bytes: 87891696
+    sha256: b6663cef985b2d664a263232338a359f4218a5f2f328c92a12e0c321cd440a28
+  src_manifest:
+    release: v2026.10.0-src
+    file: perfetto-src.MANIFEST.tsv
+    bytes: 12965
+    sha256: 5942b4368cd36303e7368f55c37228c58537507f794c80e2f8645ed85bdbe4c6

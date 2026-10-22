@@ -1,0 +1,113 @@
+schema: oss-fuzz-theorems/project/1
+project: cups-filters
+homepage: https://github.com/OpenPrinting/cups-filters
+language: c++
+oss_fuzz:
+  path: projects/cups-filters
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cups-filters
+  repository: https://github.com/OpenPrinting/cups-filters
+  commit: dce9940269ab3aa9e67030ed056a8c2d7232f04d
+  licence: MIT
+  patch_count: 1
+harnesses:
+- name: fuzz_cupsfilters_banner_to_pdf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_command_to_escpx
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_command_to_pclx
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_foomatic_jcl
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_image_jpeg_decoder
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_image_png_decoder
+  status: included
+  origin: upstream
+- name: fuzz_cupsfilters_image_tiff_decoder
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_image_to_pdf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_image_to_ps
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_image_to_raster
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_pclm_graph
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_pdf_to_pdf_graph
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_ppd_cache_ipp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_ppd_profile
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_ppd_semantic
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_ps_to_ps
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_pwg_to_pdf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_pwg_to_raster
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_raster_to_escpx_state
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_raster_to_hp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_raster_to_pclx_state
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_raster_to_ps
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_raster_to_pwg
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_text_to_pdf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_cupsfilters_text_to_text
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pdf
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cups-filters-bin.tar.zst
+    bytes: 420204
+    sha256: 9d34053b0054851636b984ffd0a70815409862f0a78a8b63fc7fe63c20e33baf
+  src:
+    release: v2026.10.0-src
+    file: cups-filters-src.tar.zst
+    bytes: 1299086
+    sha256: e320cabda94b92601e09d1c1e1a8a6c0012f46170695e691d5d3b1b40c73d169
+  src_manifest:
+    release: v2026.10.0-src
+    file: cups-filters-src.MANIFEST.tsv
+    bytes: 1359
+    sha256: b6741b28224389fb110d0aafb476e28a60e94c6ef5f2738a2b891febe40410fe

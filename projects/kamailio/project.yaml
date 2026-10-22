@@ -1,0 +1,70 @@
+schema: oss-fuzz-theorems/project/1
+project: kamailio
+language: c
+oss_fuzz:
+  path: projects/kamailio
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: kamailio
+  repository: https://github.com/kamailio/kamailio
+  commit: 0bc6630b06931603ab32674722b2827d94401509
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_basex
+  status: included
+  origin: upstream
+- name: fuzz_check_boundaries
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dns_rdata
+  status: not-included
+  reason: not-attempted
+- name: fuzz_msg_translator
+  status: not-included
+  reason: not-attempted
+- name: fuzz_parse_body
+  status: not-included
+  reason: not-attempted
+- name: fuzz_parse_digest
+  status: not-included
+  reason: not-attempted
+- name: fuzz_parse_msg
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pv_parse
+  status: not-included
+  reason: not-attempted
+- name: fuzz_srjson
+  status: not-included
+  reason: not-attempted
+- name: fuzz_strutils
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uri
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: kamailio-bin.tar.zst
+    bytes: 351994
+    sha256: f32aa067184c9e256f03ebf8d847ff25c8179ec55e5bda7be60c9851f6f6b085
+  src:
+    release: v2026.10.0-src
+    file: kamailio-src.tar.zst
+    bytes: 27755473
+    sha256: bfc17104948a8b4eb18d24a04faefd3ae0cba20a4be7f8c2e8c7ba6e87c19772
+  src_manifest:
+    release: v2026.10.0-src
+    file: kamailio-src.MANIFEST.tsv
+    bytes: 2509
+    sha256: d70f227b7dc0122469865bedd66d81e41ef248615a7cb72df851520a5031c849

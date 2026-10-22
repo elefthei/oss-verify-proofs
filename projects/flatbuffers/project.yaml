@@ -1,0 +1,63 @@
+schema: oss-fuzz-theorems/project/1
+project: flatbuffers
+homepage: https://github.com/google/flatbuffers
+language: c++
+oss_fuzz:
+  path: projects/flatbuffers
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: flatbuffers
+  repository: https://github.com/google/flatbuffers
+  commit: 5761d6e67af841d15ee21bc1ce9a78ffa9cf939e
+  licence: Apache-2.0
+  patch_count: 1
+harnesses:
+- name: 64bit_fuzzer
+  status: included
+  origin: upstream
+- name: annotator_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: codegen_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: flexverifier_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: monster_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: parser_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: scalar_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: verifier_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: flatbuffers-bin.tar.zst
+    bytes: 628275
+    sha256: c3c0db688281015c5ac1e59a2a7127d41877764617b4fd86acd9d7ecd3bbab69
+  src:
+    release: v2026.10.0-src
+    file: flatbuffers-src.tar.zst
+    bytes: 1542779
+    sha256: bb4c8d074a1184da4bd10a5b99d12758ae59ace36b8a88b9f955c539cce0df83
+  src_manifest:
+    release: v2026.10.0-src
+    file: flatbuffers-src.MANIFEST.tsv
+    bytes: 1442
+    sha256: f3cbaeb0d12773842881494795fced9ee6e0c76417a58eb01547b6035b3ef582

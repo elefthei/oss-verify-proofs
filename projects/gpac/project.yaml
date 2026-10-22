@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: gpac
+homepage: https://gpac.io
+language: c
+oss_fuzz:
+  path: projects/gpac
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gpac
+  repository: https://github.com/gpac/gpac
+  commit: 5dee8916fa29f7c4750c00207f2cf24a456bec74
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_m2ts_probe
+  status: included
+  origin: upstream
+- name: fuzz_parse
+  status: included
+  origin: upstream
+- name: fuzz_probe_analyze
+  status: included
+  origin: upstream
+- name: fuzz_route
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gpac-bin.tar.zst
+    bytes: 58671599
+    sha256: 7efd4e2938bfc0d7f419c345762e3bccfa319531b9207d7d7614ab9f19bdc342
+  src:
+    release: v2026.10.0-src
+    file: gpac-src.tar.zst
+    bytes: 11909539
+    sha256: e05c1d6325cf053808b8d8a1837cde11ecd0ca777691cdbc0fa134bcb019d99c
+  src_manifest:
+    release: v2026.10.0-src
+    file: gpac-src.MANIFEST.tsv
+    bytes: 3299
+    sha256: 361bda8125cf1e15ebd43934804e3aa7362cb27ff2df628075342de6b90dc473

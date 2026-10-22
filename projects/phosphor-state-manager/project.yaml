@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: phosphor-state-manager
+homepage: https://github.com/openbmc/phosphor-state-manager
+language: c++
+oss_fuzz:
+  path: projects/phosphor-state-manager
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: phosphor-state-manager
+  repository: https://github.com/openbmc/phosphor-state-manager
+  commit: a518bd393db4c04f2e1354e6540463a446dfde5b
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: target_parser_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: phosphor-state-manager-bin.tar.zst
+    bytes: 723674
+    sha256: 830017db7489fb91be795808c31b3c66bba910ea730543a4fc7bf232804777a7
+  src:
+    release: v2026.10.0-src
+    file: phosphor-state-manager-src.tar.zst
+    bytes: 75708
+    sha256: 4fb9abe01afe63d5c17869a1c2b419a7b0cf6c4223ef11ef10373c0ac42e9f9e
+  src_manifest:
+    release: v2026.10.0-src
+    file: phosphor-state-manager-src.MANIFEST.tsv
+    bytes: 2019
+    sha256: 5cf01faa490d07426506c526ef9052fc9139cf26bd7763c9eeb1e8ba7ee37121

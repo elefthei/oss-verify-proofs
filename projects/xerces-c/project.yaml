@@ -1,0 +1,39 @@
+schema: oss-fuzz-theorems/project/1
+project: xerces-c
+homepage: https://xerces.apache.org
+language: c++
+oss_fuzz:
+  path: projects/xerces-c
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: xerces-c
+  repository: https://github.com/apache/xerces-c
+  commit: d6e21a1462290ba40d354b77b362a27aacc80ad3
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: parse_target
+  status: included
+- name: parse_target_proto
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: xerces-c-bin.tar.zst
+    bytes: 11398809
+    sha256: 083dd5d714eb92bd3b057fb431fda91d404c3c793a1947548fcca12ebe0687ac
+  src:
+    release: v2026.10.0-src
+    file: xerces-c-src.tar.zst
+    bytes: 2467493
+    sha256: 8ff8858458006474f03d74493dbb115e362c8f96857ebabab5e713b2a938ba7b
+  src_manifest:
+    release: v2026.10.0-src
+    file: xerces-c-src.MANIFEST.tsv
+    bytes: 3125
+    sha256: f344adfe1cfe4ded4511e34afdebffae3c17938502f7851c604e5be39b6913cd

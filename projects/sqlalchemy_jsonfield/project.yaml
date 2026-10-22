@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: sqlalchemy_jsonfield
+homepage: https://github.com/penguinolog/sqlalchemy_jsonfield
+language: python
+oss_fuzz:
+  path: projects/sqlalchemy_jsonfield
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

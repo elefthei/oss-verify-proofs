@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: double-conversion
+homepage: https://github.com/google/double-conversion
+language: c++
+oss_fuzz:
+  path: projects/double-conversion
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: double-conversion
+  repository: https://github.com/google/double-conversion
+  commit: 2c1eb4ff051896503ec14203e9168a8bb5fe0426
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: string_to_double_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: double-conversion-bin.tar.zst
+    bytes: 571623
+    sha256: a0d406b0b72291f10ae538e32cb9b8cf24baddfe4ff05cd72aeab14aca9c9edf
+  src:
+    release: v2026.10.0-src
+    file: double-conversion-src.tar.zst
+    bytes: 5889480
+    sha256: 46fc53fdd9a4c415aed386ad5a561ec8d7d80844f8765ad9c1353bcac8941b2c
+  src_manifest:
+    release: v2026.10.0-src
+    file: double-conversion-src.MANIFEST.tsv
+    bytes: 1759
+    sha256: 71554bd34571938d9fa4d463bc1c8a0b930ffd8a79dd3fe5c5922714bacddd68

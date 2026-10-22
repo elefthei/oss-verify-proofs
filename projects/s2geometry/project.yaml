@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: s2geometry
+homepage: https://github.com/google/s2geometry
+language: c++
+oss_fuzz:
+  path: projects/s2geometry
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: s2geometry
+  repository: https://github.com/google/s2geometry
+  commit: 677c8cebcff11ba11accc0b02005bc214e06e9fd
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: s2_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: s2geometry-bin.tar.zst
+    bytes: 4578126
+    sha256: 76083a040dd448464e4b2128c4a29ea0b791549e5c4fb4ff72c418a22fd91533
+  src:
+    release: v2026.10.0-src
+    file: s2geometry-src.tar.zst
+    bytes: 5458296
+    sha256: a5b5d158f0a79d8064ee641cf8fad16b65f5134606699d4b074b300a74594e23
+  src_manifest:
+    release: v2026.10.0-src
+    file: s2geometry-src.MANIFEST.tsv
+    bytes: 2111
+    sha256: 1ac896e96bf07379b7b36e48a18442c49c6fd411020cc34c60121d5bdeab8e68

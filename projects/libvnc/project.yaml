@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: libvnc
+homepage: https://libvnc.github.io
+language: c++
+oss_fuzz:
+  path: projects/libvnc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libvncserver
+  repository: https://github.com/LibVNC/libvncserver
+  commit: 98aaee0560baa0332339b2ef464ea96ed9b9b28c
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_server
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libvnc-bin.tar.zst
+    bytes: 591675
+    sha256: cc1da1eb82ea6ae4c85fb00f7c5ade747b1462216bbce0fc244643613e547182
+  src:
+    release: v2026.10.0-src
+    file: libvnc-src.tar.zst
+    bytes: 6618081
+    sha256: 70a462acbeef650f3297051cbcd0021adbb394a4d6e32757e5e841fc94def7cf
+  src_manifest:
+    release: v2026.10.0-src
+    file: libvnc-src.MANIFEST.tsv
+    bytes: 2507
+    sha256: 030e316152c52be92499b96d0e4bf9c846056a3b9593fec99457c3ca227ea2e6

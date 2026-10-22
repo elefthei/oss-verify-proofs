@@ -1,0 +1,69 @@
+schema: oss-fuzz-theorems/project/1
+project: wget
+homepage: https://www.gnu.org/software/wget
+language: c++
+oss_fuzz:
+  path: projects/wget
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wget
+  repository: https://git.savannah.gnu.org/git/wget
+  commit: e9697d98e7249b0f68a6be040a4f3dcc5bc101fa
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: wget_cookie_fuzzer
+  status: included
+  origin: upstream
+- name: wget_css_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_ftpls_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_html_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_netrc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_options_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_progress_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_read_hunk_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_robots_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_url_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wget-bin.tar.zst
+    bytes: 405042
+    sha256: 0d5803961cb486ce49867d99e319f737ec58b9184dcf3608ee8ae36b14c604fa
+  src:
+    release: v2026.10.0-src
+    file: wget-src.tar.zst
+    bytes: 7618069
+    sha256: 726edf6428a4ef1f1d1a0dd5ee910fe2bb27b187784a84926c696916e4c1efad
+  src_manifest:
+    release: v2026.10.0-src
+    file: wget-src.MANIFEST.tsv
+    bytes: 1900
+    sha256: 7c7a0dc44f959533cf4304938adb1482a8caf3d1378fd086bbe8a250af53e1e6

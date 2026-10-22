@@ -1,0 +1,48 @@
+schema: oss-fuzz-theorems/project/1
+project: llamacpp
+homepage: https://github.com/ggerganov/llama.cpp
+language: c++
+oss_fuzz:
+  path: projects/llamacpp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: llama.cpp
+  repository: https://github.com/ggerganov/llama.cpp
+  commit: 3ffb62935b5c3a8c6239082bf637119906050112
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_apply_template
+  status: included
+- name: fuzz_grammar
+  status: included
+- name: fuzz_inference
+  status: included
+- name: fuzz_json_to_grammar
+  status: not-included
+  reason: not-attempted
+- name: fuzz_load_model
+  status: included
+- name: fuzz_structured
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: llamacpp-bin.tar.zst
+    bytes: 55227255
+    sha256: 6bc188c673bfcff1197ab6c18bce866c38ad877f5b8a149d3c416b22727d37b1
+  src:
+    release: v2026.10.0-src
+    file: llamacpp-src.tar.zst
+    bytes: 26984676
+    sha256: f4feaf35737482f6570cbdd89c61c07517508f5bbf7eda658d40a6311658ea90
+  src_manifest:
+    release: v2026.10.0-src
+    file: llamacpp-src.MANIFEST.tsv
+    bytes: 2688
+    sha256: f09d905f762d45204fac63c8c76f6a3000343b0ca869625b61593bfcae35e90f

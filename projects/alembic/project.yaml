@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: alembic
+homepage: https://github.com/alembic/alembic
+language: c++
+oss_fuzz:
+  path: projects/alembic
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: held

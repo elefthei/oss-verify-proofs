@@ -1,0 +1,55 @@
+schema: oss-fuzz-theorems/project/1
+project: libsoup
+homepage: https://libsoup.gnome.org
+language: c++
+oss_fuzz:
+  path: projects/libsoup
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libsoup
+  repository: https://gitlab.gnome.org/GNOME/libsoup
+  commit: 2633444510d3454cbe9717fa34f7979e54e89e22
+  licence: LGPL-2.0-or-later
+harnesses:
+- name: fuzz_content_sniffer
+  status: included
+  origin: upstream
+- name: fuzz_cookie_parse
+  status: included
+  origin: upstream
+- name: fuzz_date_time
+  status: included
+  origin: upstream
+- name: fuzz_decode_data_uri
+  status: included
+  origin: upstream
+- name: fuzz_header_parsing
+  status: included
+  origin: upstream
+- name: fuzz_headers_parse_request
+  status: included
+  origin: upstream
+- name: fuzz_headers_parse_response
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libsoup-bin.tar.zst
+    bytes: 3074100
+    sha256: 5fcde808f829f3a3613a0e946529668ca75e8a9e44b157335c2bb2a3d3b49bbe
+  src:
+    release: v2026.10.0-src
+    file: libsoup-src.tar.zst
+    bytes: 1700970
+    sha256: 74b88b2a8280d483e5bea7ad64f85b2508bb65e82cb59eda0fc06c6328d74dc0
+  src_manifest:
+    release: v2026.10.0-src
+    file: libsoup-src.MANIFEST.tsv
+    bytes: 2209
+    sha256: 824ee2d0db81d8f284119308d2b89022eb7c6903bd4d1623ea9222724124e5aa

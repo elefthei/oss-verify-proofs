@@ -1,0 +1,81 @@
+schema: oss-fuzz-theorems/project/1
+project: simdjson
+homepage: https://simdjson.org
+language: c++
+oss_fuzz:
+  path: projects/simdjson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: simdjson
+  repository: https://github.com/simdjson/simdjson
+  commit: f807de973580fb22cc0db6b3b896716684b0266c
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_atpath
+  status: not-included
+  reason: not-attempted
+- name: fuzz_atpointer
+  status: included
+  origin: upstream
+- name: fuzz_dump
+  status: included
+  origin: upstream
+- name: fuzz_dump_raw_tape
+  status: included
+  origin: upstream
+- name: fuzz_element
+  status: included
+  origin: upstream
+- name: fuzz_implementations
+  status: included
+  origin: upstream
+- name: fuzz_minify
+  status: included
+  origin: upstream
+- name: fuzz_minifyimpl
+  status: included
+  origin: upstream
+- name: fuzz_ndjson
+  status: included
+  origin: upstream
+- name: fuzz_ondemand
+  status: included
+  origin: upstream
+- name: fuzz_padded
+  status: included
+  origin: upstream
+- name: fuzz_parser
+  status: included
+  origin: upstream
+- name: fuzz_print_json
+  status: included
+  origin: upstream
+- name: fuzz_utf8
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: simdjson-bin.tar.zst
+    bytes: 3719239
+    sha256: 86853669b708f537b808f6fc3b9d1e09ad59942a6715c02c2901d673aea8e384
+  src:
+    release: v2026.10.0-src
+    file: simdjson-src.tar.zst
+    bytes: 2928022
+    sha256: f856efc581ad8f4f0d1de3bd2449c701d5d1c48e8b78851bceca7652bc51eaac
+  src_manifest:
+    release: v2026.10.0-src
+    file: simdjson-src.MANIFEST.tsv
+    bytes: 2700
+    sha256: e4c9e4b26ccc7e9f382f03632afe72e859c81536fa6d65a6e5052f84734e2663

@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: highwayhash
+homepage: https://github.com/google/highwayhash
+language: c++
+oss_fuzz:
+  path: projects/highwayhash
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: highwayhash
+  repository: https://github.com/google/highwayhash
+  commit: f8381f3331d9c56a9792f9b4a35f61c41108c39e
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: highwayhash_fuzzer
+  status: included
+  origin: upstream
+- name: sip_hash_fuzzer
+  status: not-included
+  reason: not-yet-included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: highwayhash-bin.tar.zst
+    bytes: 343497
+    sha256: 843d709c5f1a0a5bd589ba2409f2c0d440ec144b0db6aad2164a6f55c4eb3183
+  src:
+    release: v2026.10.0-src
+    file: highwayhash-src.tar.zst
+    bytes: 138465
+    sha256: 804422d77b7882eedca4ef2aaf9a7a464a8df7b5e0f32311c00b0a4cf2f2f0b9
+  src_manifest:
+    release: v2026.10.0-src
+    file: highwayhash-src.MANIFEST.tsv
+    bytes: 1409
+    sha256: 9a33d4d68f5c2aae090bf29d87bb59196df7a8d2272810dccb8badbb1d2add88

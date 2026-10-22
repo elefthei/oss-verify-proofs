@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: libigl
+homepage: https://libigl.github.io
+language: c++
+oss_fuzz:
+  path: projects/libigl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libigl
+  repository: https://github.com/libigl/libigl
+  commit: 4d5829f48dcf7c3d3766b52740a73cd42194946e
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: igl_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libigl-bin.tar.zst
+    bytes: 681097
+    sha256: 288db37588145b594959405e7fceab16d13e8e2e47a4ce2f18c75dde5cceb5e2
+  src:
+    release: v2026.10.0-src
+    file: libigl-src.tar.zst
+    bytes: 3910445
+    sha256: 331445986b738e0e7271fd79e26e211df20b9af111995de932d2a8325a742e1a
+  src_manifest:
+    release: v2026.10.0-src
+    file: libigl-src.MANIFEST.tsv
+    bytes: 2180
+    sha256: 0c3b3d3cf0f9c2b72cb12fdcf960fa3e298cf6dab9c18a918bbb8c85ce94f9e2

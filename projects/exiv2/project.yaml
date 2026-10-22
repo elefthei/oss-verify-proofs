@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: exiv2
+homepage: https://www.exiv2.org
+language: c++
+oss_fuzz:
+  path: projects/exiv2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: exiv2
+  repository: https://github.com/Exiv2/exiv2
+  commit: e84cb9db060527416a43f3d257656331c85aff28
+  licence: GPL-2.0-or-later
+harnesses:
+- name: fuzz-preview
+  status: included
+  origin: upstream
+- name: fuzz-read-print-write
+  status: included
+  origin: upstream
+- name: fuzz-read-write
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: exiv2-bin.tar.zst
+    bytes: 20603532
+    sha256: a95249a12998787b6ced419120f0e5b8d5c0297659a5bb9ea2c4e375c93a70c8
+  src:
+    release: v2026.10.0-src
+    file: exiv2-src.tar.zst
+    bytes: 35776780
+    sha256: 4664b5f39a7e8da8baf9fb3ce3850ab105d4c2bc9fbb129d08c14d0366351728
+  src_manifest:
+    release: v2026.10.0-src
+    file: exiv2-src.MANIFEST.tsv
+    bytes: 1567
+    sha256: e6edd856612adaed11f0157bf6c9e6609b43f47507f2f4908119f59c3d0fb5e5

@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: libwebp
+homepage: https://developers.google.com/speed/webp
+language: c++
+oss_fuzz:
+  path: projects/libwebp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: not-yet-built
+reason: not-attempted

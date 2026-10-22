@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: hothd
+homepage: https://gbmc.googlesource.com/hothd
+language: c++
+oss_fuzz:
+  path: projects/hothd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: hothd
+  repository: https://gbmc.googlesource.com/hothd
+  commit: 3df388909541ab189fd667c280c2429d74ef7e7a
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: hothd_payload_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: hothd-bin.tar.zst
+    bytes: 765634
+    sha256: e859c5d68e4eb8898d216a2716e7d8dbcec86772727229f23d99b4f46796e4b5
+  src:
+    release: v2026.10.0-src
+    file: hothd-src.tar.zst
+    bytes: 177475
+    sha256: 8990757d002ea62e8ddd34527f260e6db66bc7c637dddaa32389a8175311095e
+  src_manifest:
+    release: v2026.10.0-src
+    file: hothd-src.MANIFEST.tsv
+    bytes: 2064
+    sha256: a3517050bf6098e28cdfe03f57c10ddb4bab4677f7205268dbe46bf2c13e4764

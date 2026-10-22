@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: pybind11
+homepage: https://pybind11.readthedocs.io/en/stable
+language: c++
+oss_fuzz:
+  path: projects/pybind11
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: not-yet-built
+reason: not-attempted

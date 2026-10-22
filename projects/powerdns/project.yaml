@@ -1,0 +1,70 @@
+schema: oss-fuzz-theorems/project/1
+project: powerdns
+homepage: https://www.powerdns.com
+language: c++
+oss_fuzz:
+  path: projects/powerdns
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pdns
+  repository: https://github.com/PowerDNS/pdns
+  commit: 114b76ca91b4f9c5f953982aae890de4e8f5dc59
+  version: 2.2.0-alpha0
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-target-dnsdist-ecs
+  status: not-included
+  reason: not-attempted
+- name: fuzz-target-dnsdistcache
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_dnslabeltext_parseRFC1035CharString
+  status: included
+  origin: upstream
+- name: fuzz_target_dnspacketroundtrip
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_moadnsparser
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_packetcache
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_proxyprotocol
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_recordcontent
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_yahttp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_target_zoneparsertng
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: powerdns-bin.tar.zst
+    bytes: 431764
+    sha256: f1270ebb15d8b5d261611c6cdf42ca42767c4dcb29ed32498149e19fd4dafb6f
+  src:
+    release: v2026.10.0-src
+    file: powerdns-src.tar.zst
+    bytes: 6132036
+    sha256: a871451e495f151ea1bf08af40aeb1c6c06ccd7239444c6a3eba35cd600e9397
+  src_manifest:
+    release: v2026.10.0-src
+    file: powerdns-src.MANIFEST.tsv
+    bytes: 2123
+    sha256: 83a7a17bfba1975dbbd6e8cf38d15f28c1167c0ce1813f481ea7271aae391517

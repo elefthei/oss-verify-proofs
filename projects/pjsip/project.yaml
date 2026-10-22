@@ -1,0 +1,122 @@
+schema: oss-fuzz-theorems/project/1
+project: pjsip
+language: c
+oss_fuzz:
+  path: projects/pjsip
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pjproject
+  repository: https://github.com/pjsip/pjproject
+  commit: 708f894e9cb2fa47d3d119d46105b786495ba5a1
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-audio
+  status: included
+  origin: upstream
+- name: fuzz-auth
+  status: not-included
+  reason: not-attempted
+- name: fuzz-crypto
+  status: not-included
+  reason: not-attempted
+- name: fuzz-dns
+  status: not-included
+  reason: not-attempted
+- name: fuzz-dns-records
+  status: not-included
+  reason: not-attempted
+- name: fuzz-fmtp
+  status: not-included
+  reason: not-attempted
+- name: fuzz-h264
+  status: not-included
+  reason: not-attempted
+- name: fuzz-http
+  status: not-included
+  reason: not-attempted
+- name: fuzz-ice
+  status: not-included
+  reason: not-attempted
+- name: fuzz-json
+  status: not-included
+  reason: not-attempted
+- name: fuzz-multipart
+  status: not-included
+  reason: not-attempted
+- name: fuzz-presence
+  status: not-included
+  reason: not-attempted
+- name: fuzz-rtcp
+  status: not-included
+  reason: not-attempted
+- name: fuzz-rtp
+  status: not-included
+  reason: not-attempted
+- name: fuzz-sdes
+  status: not-included
+  reason: not-attempted
+- name: fuzz-sdp
+  status: not-included
+  reason: not-attempted
+- name: fuzz-sip
+  status: not-included
+  reason: not-attempted
+- name: fuzz-sip-dialog
+  status: not-included
+  reason: not-attempted
+- name: fuzz-sip-transaction
+  status: not-included
+  reason: not-attempted
+- name: fuzz-srtp
+  status: not-included
+  reason: not-attempted
+- name: fuzz-stream
+  status: not-included
+  reason: not-attempted
+- name: fuzz-stun
+  status: not-included
+  reason: not-attempted
+- name: fuzz-uri
+  status: not-included
+  reason: not-attempted
+- name: fuzz-url
+  status: not-included
+  reason: not-attempted
+- name: fuzz-video
+  status: not-included
+  reason: not-attempted
+- name: fuzz-vpx
+  status: not-included
+  reason: not-attempted
+- name: fuzz-wav
+  status: not-included
+  reason: not-attempted
+- name: fuzz-xml
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pjsip-bin.tar.zst
+    bytes: 1273931
+    sha256: fd924265b8d91a1aa10c543b34169bc169431d19f17c298911e361d9ea7dd0fc
+  src:
+    release: v2026.10.0-src
+    file: pjsip-src.tar.zst
+    bytes: 8346749
+    sha256: 0327f4d3cbf575adb39ac6bd3c527e05b9ca0106478ea8d940df9281cf9b8041
+  src_manifest:
+    release: v2026.10.0-src
+    file: pjsip-src.MANIFEST.tsv
+    bytes: 1327
+    sha256: 86ab33bf7f6b96e8d07362efe7038659f81c92f563ef89559e7efa554bfdbd6d

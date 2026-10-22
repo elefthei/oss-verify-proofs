@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: msgpack-c/unpack_pack_fuzzer/asan_ubsan_agrees
+fingerprint: 3fda5291037bf675a3d1f8169b8706b38fffcfe8fb2ea9013eafaa02bba65f3e

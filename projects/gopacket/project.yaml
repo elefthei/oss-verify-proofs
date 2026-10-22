@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: gopacket
+homepage: https://github.com/google/gopacket
+language: go
+oss_fuzz:
+  path: projects/gopacket
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: go

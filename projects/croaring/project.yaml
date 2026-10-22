@@ -1,0 +1,46 @@
+schema: oss-fuzz-theorems/project/1
+project: croaring
+homepage: https://roaringbitmap.org
+language: c
+oss_fuzz:
+  path: projects/croaring
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: CRoaring
+  repository: https://github.com/RoaringBitmap/CRoaring
+  commit: 0489dd47c1ffcd5a43f90f44f5f10e92b4fceaec
+  version: 5.1.0
+  licence: Apache-2.0
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: croaring_fuzzer
+  status: included
+  origin: upstream
+- name: croaring_fuzzer_cc
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: croaring-bin.tar.zst
+    bytes: 890414
+    sha256: bebb0433ca7634e85fc0b3060d527d973b52c8426fb6d899aeab3887d73a450e
+  src:
+    release: v2026.10.0-src
+    file: croaring-src.tar.zst
+    bytes: 28209593
+    sha256: 54f161b1b0b55ff928bb4b5e54362986798e25e83602f03440b08cd69c1a4c5e
+  src_manifest:
+    release: v2026.10.0-src
+    file: croaring-src.MANIFEST.tsv
+    bytes: 1513
+    sha256: 63083d4cc15d2a217b9a4d1747bf183137e9f50c338e0b51e2e73b80fa46eb21

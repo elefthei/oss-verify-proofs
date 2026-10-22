@@ -1,0 +1,241 @@
+schema: oss-fuzz-theorems/harness/1
+project: xmlsec
+harness: xmlsec_enc_fuzzer
+rocq: OssFuzzTheorems.xmlsec.xmlsec_enc_fuzzer
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/xmlsec_enc_target.c
+  from:
+    repository: https://github.com/lsh123/xmlsec
+    commit: e4b8614fb678ee545b70ab419d4c5418f2ce4885
+    path: apps/oss-fuzz/xmlsec_enc_target.c
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/lsh123/xmlsec
+  commit: e4b8614fb678ee545b70ab419d4c5418f2ce4885
+  licence: NOASSERTION
+modifications:
+- Linked against xmlsec at commit e4b8614f.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: xmlsec_enc_fuzzer.plain
+    bytes: 4487096
+    sha256: de986005fc8bd639d66b2b171aa21e6fc44d2b0af74196a0c299668cb55d1d60
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  ubsan:
+    file: xmlsec_enc_fuzzer.ubsan
+    bytes: 4544224
+    sha256: de2ff6eaf1ef8fd89281ab3844fb709b32f77c0fafddca9942c393f2e2f12c42
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan:
+    file: xmlsec_enc_fuzzer.asan
+    bytes: 6121224
+    sha256: d75737e2c093e40ef4997dc3b1fee677165b2acc9a2f8b24b6f9dc09b8c21a03
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan-ubsan:
+    file: xmlsec_enc_fuzzer.asan-ubsan
+    bytes: 6187144
+    sha256: 6cfdbf6f1663a230aae148fe63cfc9e22c665985c4649cdda347fd404fb2167f
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcrypto.a
+      kind: image-library
+      sha256: 4e156a0e178871863306e9fbfd43823bb16994035199a1402b552bd31c2b5f52
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

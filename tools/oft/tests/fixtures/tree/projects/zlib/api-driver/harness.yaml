@@ -1,0 +1,26 @@
+schema: oss-fuzz-theorems/harness/1
+project: zlib
+harness: api-driver
+rocq: OssFuzzTheorems.zlib.api_driver
+origin: this-repository
+summary: Runs a small program of zlib API calls read from its input, covering deflate, inflate and their stream options.
+entry: LLVMFuzzerTestOneInput
+source:
+  files: []
+  modified: false
+  licence: MIT
+  pending: true
+library: {repository: https://github.com/madler/zlib, commit: 51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf, version: 1.3.1, licence: Zlib}
+modifications:
+- Linked against zlib 1.3.1 with this project's patches (see the project page).
+builds:
+  plain: {file: api-driver.plain, bytes: 138296, sha256: 2e8386fbbc89f1135077cccfd8e2fe3c4ad23b2a3c2a974c9aa641143feb1762, segments: [1, 1, 1, 1]}
+  ubsan: {file: api-driver.ubsan, bytes: 140000, sha256: beef6fe22e2572c685765e7b0728122b498b483ff78bcbf4a51c5537fa7d73a9, segments: [1, 1, 1, 1]}
+  asan: {file: api-driver.asan, bytes: 700000, sha256: 0b2c66d3457965c40950efcd13bcce5dc56dfcff20fb46c5dec6e6c74ab2391b, segments: [1, 1, 1, 1]}
+  asan-ubsan: {file: api-driver.asan-ubsan, bytes: 700100, sha256: 23240e686b1e67ed3ea2034674736ce4d08ca200d04ed2ebccce3efc0e1cd85e, segments: [1, 1, 1, 1]}
+licence: Zlib AND MIT AND Apache-2.0 WITH LLVM-exception
+checks: []
+statements:
+  ubsan_agrees: {kind: agreement, builds: [plain, ubsan], reading: may-fail, budgets: standard, status: open}
+  asan_agrees: {kind: agreement, builds: [plain, asan], reading: may-fail, budgets: asan, status: open}
+  asan_ubsan_agrees: {kind: agreement, builds: [plain, asan-ubsan], reading: may-fail, budgets: asan, status: withheld, withheld: not-yet-published}

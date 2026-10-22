@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: ninja
+homepage: https://github.com/ninja-build/ninja
+language: c++
+oss_fuzz:
+  path: projects/ninja
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ninja
+  repository: https://github.com/ninja-build/ninja
+  commit: b51a1e37c2fb89bbefa600bd155e1ce13983f09d
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ninja-bin.tar.zst
+    bytes: 1029847
+    sha256: 449c1c2d1dc95e5f1974ebc4129fe9d905f9eac1457a00e6b5c5bd5970c1dc62
+  src:
+    release: v2026.10.0-src
+    file: ninja-src.tar.zst
+    bytes: 251786
+    sha256: 26589bd97525f4ae12ee3a5fe69314de3350eb0cf057eb2e9743a057d88995fb
+  src_manifest:
+    release: v2026.10.0-src
+    file: ninja-src.MANIFEST.tsv
+    bytes: 1340
+    sha256: 1cba52700ed0b10e603201ce948cbefeb7a3def4d63fb93f5b8a45bdb698721a

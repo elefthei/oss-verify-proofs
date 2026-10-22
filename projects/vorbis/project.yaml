@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: vorbis
+homepage: https://xiph.org/vorbis
+language: c++
+oss_fuzz:
+  path: projects/vorbis
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: vorbis
+  repository: https://gitlab.xiph.org/xiph/vorbis
+  commit: 1b75110b5a2754ba1931d82dd83cb822b266a21d
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: decode_fuzzer
+  status: included
+  origin: upstream
+- name: encode_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: vorbis-bin.tar.zst
+    bytes: 1166999
+    sha256: eb1c9b2e79310c112618b43b25dfc5859969b596032a691e5a0ea6e199953cc1
+  src:
+    release: v2026.10.0-src
+    file: vorbis-src.tar.zst
+    bytes: 1026599
+    sha256: 88f3191021e340598702eb84075e0bdb35d312a9aa3c20d6e6e99ca0db84eb61
+  src_manifest:
+    release: v2026.10.0-src
+    file: vorbis-src.MANIFEST.tsv
+    bytes: 1449
+    sha256: bfd4fdc5e30e905c269aba4bdc3c891366ee717c9c3ed834c0f5e427dba2ce4d

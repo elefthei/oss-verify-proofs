@@ -1,0 +1,25 @@
+# proofs/<project>/<harness>/<statement>/proof.yaml: which statement a proof is of, pinned to its published fingerprint.
+tag: oss-fuzz-theorems/proof/1
+root: {type: ref, name: proof}
+defs:
+  proof:
+    type: object
+    fields:
+      schema: {type: const, value: oss-fuzz-theorems/proof/1}
+      proves: {type: statement-id, optional: true}      # exactly one of proves / refutes
+      refutes: {type: statement-id, optional: true}
+      bound: {type: fraction, optional: true}            # a bound statement's b, required for kind bound
+      fingerprint: {type: sha256}                        # must equal the statement's in index/statements.tsv
+      classifier:                                        # a classifier proof's own program
+        type: object
+        optional: true
+        fields:
+          source: {type: str, pattern: '^classifier/[A-Za-z0-9._+/-]+$'}
+          elf: {type: str, pattern: '^classifier/[A-Za-z0-9._+/-]+$'}
+          sha256: {type: sha256}
+      check:                                             # written by CI or a maintainer, never by the author
+        type: object
+        optional: true
+        fields:
+          wall_s: {type: int, min: 0}
+          peak_rss_mb: {type: int, min: 0}

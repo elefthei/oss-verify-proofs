@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: libidn2
+homepage: https://gitlab.com/libidn/libidn2
+language: c++
+oss_fuzz:
+  path: projects/libidn2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libidn2
+  repository: https://gitlab.com/libidn/libidn2
+  commit: 8d9fc983a98492eb434a6ea72a342d840af7d518
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libidn2_register_fuzzer
+  status: included
+  origin: upstream
+- name: libidn2_to_ascii_8z_fuzzer
+  status: included
+  origin: upstream
+- name: libidn2_to_unicode_8z8z_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libidn2-bin.tar.zst
+    bytes: 828165
+    sha256: ba318a9f76754ba0e046fc718899c308038ce8f4e5354fdd35d054aa2485b3fc
+  src:
+    release: v2026.10.0-src
+    file: libidn2-src.tar.zst
+    bytes: 6558947
+    sha256: cd9f713b99ba99d7db004a0906c7bf654a81340c3225c69d7f66e0a033aa9a86
+  src_manifest:
+    release: v2026.10.0-src
+    file: libidn2-src.MANIFEST.tsv
+    bytes: 2245
+    sha256: 522d63e8bbdde2643940329067f43c9e4988255f8be3867a3c779b5a320b7253

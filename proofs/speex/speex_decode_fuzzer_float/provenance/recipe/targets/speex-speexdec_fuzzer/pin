@@ -1,0 +1,54 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://gitlab.xiph.org/xiph/speex.git
+COMMIT=a1b872e6704cc5825750098ce0e0c0b4aacaef4d
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_autotools
+  oft_build_harness "contrib/oss-fuzz/speexdec_fuzzer.cc"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+

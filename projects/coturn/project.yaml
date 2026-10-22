@@ -1,0 +1,34 @@
+schema: oss-fuzz-theorems/project/1
+project: coturn
+homepage: https://github.com/coturn/coturn
+language: c
+oss_fuzz:
+  path: projects/coturn
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: coturn
+  repository: https://github.com/coturn/coturn
+  commit: 70ca74e0bd8300e22a179e9a7beead862763ca5c
+  licence: BSD-3-Clause
+harnesses:
+- name: FuzzStun
+  status: included
+  origin: upstream
+- name: FuzzStunClient
+  status: included
+  origin: upstream
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: coturn-bin.tar.zst
+    bytes: 2039478
+    sha256: 35b053abc428e398e6dc25d27c7eb1ad8f3845dabef4a881ba57c09e4e4910ca

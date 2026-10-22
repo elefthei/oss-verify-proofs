@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: phmap
+homepage: https://github.com/greg7mdp/parallel-hashmap
+language: c++
+oss_fuzz:
+  path: projects/phmap
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: parallel-hashmap
+  repository: https://github.com/greg7mdp/parallel-hashmap
+  commit: 48f4c5fb0519e41233f000340039a1a9dd00a1f0
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: phashmap_fuzz
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: phmap-bin.tar.zst
+    bytes: 584306
+    sha256: 06dd5acc89b5426738d3280b1d18ecb2540631cf735c46602347ed8cafb4ee01
+  src:
+    release: v2026.10.0-src
+    file: phmap-src.tar.zst
+    bytes: 1903671
+    sha256: 1825d2cb788cd6cf1844ae37171734357131f99d308f29a919cd1597504b5b9b
+  src_manifest:
+    release: v2026.10.0-src
+    file: phmap-src.MANIFEST.tsv
+    bytes: 1511
+    sha256: eaed1d315a8db5558892482d2f77f65e295aa74ce6c91aa6f5c57c88384cd43e

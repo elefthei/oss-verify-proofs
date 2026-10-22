@@ -1,0 +1,65 @@
+schema: oss-fuzz-theorems/project/1
+project: libtasn1
+homepage: https://gitlab.com/gnutls/libtasn1
+language: c++
+oss_fuzz:
+  path: projects/libtasn1
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libtasn1
+  repository: https://gitlab.com/gnutls/libtasn1
+  commit: 2b2065b2383aebe138c7d0f7b5646369e5f56ec3
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: asn1_decode_simple_ber_fuzzer
+  status: included
+  origin: upstream
+- name: asn1_decode_simple_der_fuzzer
+  status: included
+  origin: upstream
+- name: asn1_get_length_ber_fuzzer
+  status: included
+  origin: upstream
+- name: asn1_get_length_der_fuzzer
+  status: included
+  origin: upstream
+- name: asn1_get_object_id_der_fuzzer
+  status: included
+  origin: upstream
+- name: libtasn1_array2tree_fuzzer
+  status: included
+  origin: upstream
+- name: libtasn1_gnutls_der_fuzzer
+  status: included
+  origin: upstream
+- name: libtasn1_parser2tree_fuzzer
+  status: included
+  origin: upstream
+- name: libtasn1_pkix_der_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libtasn1-bin.tar.zst
+    bytes: 1042298
+    sha256: 356a1b74be832e4d51d1858659ca72e8f8d0cf3052a27eaeedb8e9968f784d90
+  src:
+    release: v2026.10.0-src
+    file: libtasn1-src.tar.zst
+    bytes: 6594907
+    sha256: cee233e4150e7e39bd276eec9f77b459def66ec2fd6d8fd7f718b24b06d5484c
+  src_manifest:
+    release: v2026.10.0-src
+    file: libtasn1-src.MANIFEST.tsv
+    bytes: 3813
+    sha256: 80a5d960c901701acc6cd89553b8a53885e73fbf4482bfb55c94aed68cf6cb91

@@ -1,0 +1,74 @@
+schema: oss-fuzz-theorems/project/1
+project: wuffs
+homepage: https://github.com/google/wuffs
+language: c++
+oss_fuzz:
+  path: projects/wuffs
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wuffs
+  repository: https://github.com/google/wuffs
+  commit: c4df79d82ea6de3a3380fae7ba5bc9c9abf2324a
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: bmp_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: bzip2_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cbor_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gif_fuzzer
+  status: included
+  origin: upstream
+- name: jpeg_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: json_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: pixel_swizzler_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: png_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: targa_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: webp_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: xz_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: zlib_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wuffs-bin.tar.zst
+    bytes: 478482
+    sha256: 9839737058252c7461305b9a6db8e8cdee5daae8002329ec72d4c7182217ec23
+  src:
+    release: v2026.10.0-src
+    file: wuffs-src.tar.zst
+    bytes: 13829019
+    sha256: 807d882859824a6f9f50656d704ec003e8d65020471a87e5ec0678fbeffb9a2c
+  src_manifest:
+    release: v2026.10.0-src
+    file: wuffs-src.MANIFEST.tsv
+    bytes: 1322
+    sha256: ffd98a0ef53642fbddf8784fa8eba9a844888ceb72ad5a07aae9e80f80524d3e

@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: c-blosc2
+homepage: https://github.com/Blosc/c-blosc2
+language: c++
+oss_fuzz:
+  path: projects/c-blosc2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: c-blosc2
+  repository: https://github.com/Blosc/c-blosc2
+  commit: b17d0c3dae8d48800726a85455d9f1fdf0578b16
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: compress_chunk_fuzzer
+  status: included
+  origin: upstream
+- name: compress_frame_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_chunk_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_frame_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: c-blosc2-bin.tar.zst
+    bytes: 13134843
+    sha256: 0d8f47950b87f2c4da8862ff57ddccb9da60fcf9ccfea3818d315a47693b9cc9
+  src:
+    release: v2026.10.0-src
+    file: c-blosc2-src.tar.zst
+    bytes: 7385219
+    sha256: da91dafebc1c5aaa928d0dee75e120396f6b8b110294f1dd3d6a7ec2d8481fa9
+  src_manifest:
+    release: v2026.10.0-src
+    file: c-blosc2-src.MANIFEST.tsv
+    bytes: 8897
+    sha256: d28e84777113a75e3220838981f3d56ef9a55a74b219cf52e929a700c6f89285

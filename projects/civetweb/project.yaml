@@ -1,0 +1,12 @@
+schema: oss-fuzz-theorems/project/1
+project: civetweb
+homepage: https://github.com/civetweb/civetweb
+language: c
+oss_fuzz:
+  path: projects/civetweb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: needs-model
+reason: features
+reason_args:
+  features:
+  - threads

@@ -1,0 +1,51 @@
+schema: oss-fuzz-theorems/project/1
+project: wamr
+homepage: https://github.com/bytecodealliance/wasm-micro-runtime
+language: c
+oss_fuzz:
+  path: projects/wamr
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wasm-micro-runtime
+  repository: https://github.com/bytecodealliance/wasm-micro-runtime
+  commit: ea5dd88e9ca40a44b6a5d9ffeb87a20833b13b8a
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: wamr_fuzz_aot_compiler
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: llvm-18
+- name: wamr_fuzz_classic_interp
+  status: included
+  origin: upstream
+- name: wamr_fuzz_fast_interp
+  status: included
+  origin: upstream
+- name: wamr_fuzz_llvm_jit
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: llvm-18
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wamr-bin.tar.zst
+    bytes: 2151358
+    sha256: 20daf72bae867e025df9a089537cac825082b8acc2ee2f390da80be86d2e2c87
+  src:
+    release: v2026.10.0-src
+    file: wamr-src.tar.zst
+    bytes: 13107614
+    sha256: b2ee32f4319bc686636d975a6031eb17ef21d941223b01b8418d99f6d4b76670
+  src_manifest:
+    release: v2026.10.0-src
+    file: wamr-src.MANIFEST.tsv
+    bytes: 3010
+    sha256: edfd8160de347e79276adac9b45bb4c418b6e76c0c73c64453e5ad411d7b1d03

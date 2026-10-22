@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: jpegoptim
+homepage: https://www.kokkonen.net/tjko/projects.html
+language: c
+oss_fuzz:
+  path: projects/jpegoptim
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: jpegoptim
+  repository: https://github.com/tjko/jpegoptim
+  commit: 14a3155acccdcbbfa4ea0d1d2fa11ffb9a373191
+  licence: GPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libjpeg_compression_fuzzer
+  status: included
+  origin: upstream
+- name: libjpegturbo_compression_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: mozjpeg_compression_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: jpegoptim-bin.tar.zst
+    bytes: 460915
+    sha256: a0dc380a8b8990a4c2b7bfad0d272a45d36421010d689dc17a5177f635c5d881
+  src:
+    release: v2026.10.0-src
+    file: jpegoptim-src.tar.zst
+    bytes: 433119
+    sha256: f92ed259a426c0d643d8ab7e2914a58db28893efc9b20ace5169f671c15b954c
+  src_manifest:
+    release: v2026.10.0-src
+    file: jpegoptim-src.MANIFEST.tsv
+    bytes: 1381
+    sha256: 1e29816fb03f0d5afa0e7146db7e55374c1047d4aba278636c441fe0b295f2d6

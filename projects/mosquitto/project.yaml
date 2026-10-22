@@ -1,0 +1,101 @@
+schema: oss-fuzz-theorems/project/1
+project: mosquitto
+homepage: https://mosquitto.org
+language: c
+oss_fuzz:
+  path: projects/mosquitto
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: mosquitto
+  repository: https://github.com/eclipse-mosquitto/mosquitto
+  commit: d5b453a8b5940b01db1cfb30e27d15e80f7737ba
+  licence: EPL-2.0 OR BSD-3-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: broker_fuzz_acl_file
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_handle_auth
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_handle_connect
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_handle_publish
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_handle_subscribe
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_handle_unsubscribe
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_password_file
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_proxy_v1
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_proxy_v2
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_psk_file
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_queue_msg
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_read_handle
+  status: not-included
+  reason: not-attempted
+- name: broker_fuzz_test_config
+  status: not-included
+  reason: not-attempted
+- name: db_dump_fuzz_load
+  status: not-included
+  reason: not-attempted
+- name: db_dump_fuzz_load_client_stats
+  status: not-included
+  reason: not-attempted
+- name: db_dump_fuzz_load_stats
+  status: not-included
+  reason: not-attempted
+- name: dynsec_fuzz_load
+  status: not-included
+  reason: not-attempted
+- name: libcommon_fuzz_property
+  status: not-included
+  reason: not-attempted
+- name: libcommon_fuzz_pub_topic_check2
+  status: not-included
+  reason: not-attempted
+- name: libcommon_fuzz_sub_topic_check2
+  status: not-included
+  reason: not-attempted
+- name: libcommon_fuzz_topic_matching
+  status: not-included
+  reason: not-attempted
+- name: libcommon_fuzz_topic_tokenise
+  status: not-included
+  reason: not-attempted
+- name: libcommon_fuzz_utf8
+  status: included
+  origin: upstream
+- name: mosquitto_passwd_fuzz_load
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mosquitto-bin.tar.zst
+    bytes: 311724
+    sha256: 17c79c38cdd068fa635a127f298c8889f8f749bc6519fb9cacb32827f06640f9

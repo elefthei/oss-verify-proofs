@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: spirv-tools/spvtools_binary_parser_fuzzer/ubsan_agrees
+fingerprint: 54c8e2b1f85b7697ba76b0448ec7e614c7c268198d7ed21cf0446d4bdfd7b9cc

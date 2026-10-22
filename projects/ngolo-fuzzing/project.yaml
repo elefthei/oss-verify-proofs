@@ -1,0 +1,8 @@
+schema: oss-fuzz-theorems/project/1
+project: ngolo-fuzzing
+language: go
+oss_fuzz:
+  path: projects/ngolo-fuzzing
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: go

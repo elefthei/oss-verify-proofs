@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: cjson
+homepage: https://github.com/DaveGamble/cJSON
+language: c++
+oss_fuzz:
+  path: projects/cjson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cJSON
+  repository: https://github.com/DaveGamble/cJSON
+  commit: acc76239bee01d8e9c858ae2cab296704e52d916
+  version: 1.7.18
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cjson_read_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cjson-bin.tar.zst
+    bytes: 307605
+    sha256: 8c34b901f8abe4d216cc8700c4334bc49954d4cc34e760b12fb4c7082d5faa88
+  src:
+    release: v2026.10.0-src
+    file: cjson-src.tar.zst
+    bytes: 307691
+    sha256: 7a16360d184c91884cbada463de9a544dd9c5ca6114633f4951b437dcfb1fa6b
+  src_manifest:
+    release: v2026.10.0-src
+    file: cjson-src.MANIFEST.tsv
+    bytes: 1351
+    sha256: ef49683adc513dd54381113baa0dadf3f63feb45aad3924bb4139c21dffe0990

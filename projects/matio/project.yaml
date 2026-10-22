@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: matio
+homepage: https://github.com/tbeu/matio
+language: c++
+oss_fuzz:
+  path: projects/matio
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: matio
+  repository: https://github.com/tbeu/matio
+  commit: 65898b308e369ab5ff5b6bf5a5b8313d2f294655
+  licence: BSD-2-Clause
+harnesses:
+- name: matio_fuzzer
+  status: included
+  origin: upstream
+- name: matio_hyperslab_fuzzer
+  status: included
+  origin: upstream
+- name: matio_read_fuzzer
+  status: included
+  origin: upstream
+- name: matio_readdataall_fuzzer
+  status: included
+  origin: upstream
+- name: matio_readnext_fuzzer
+  status: included
+  origin: upstream
+- name: matio_struct_cell_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: matio-bin.tar.zst
+    bytes: 13671187
+    sha256: c6ccf72673b5f6ea30b1d797c50177e454f8701c7094620edc07b92e8c6d8a5c
+  src:
+    release: v2026.10.0-src
+    file: matio-src.tar.zst
+    bytes: 4595820
+    sha256: 7b400dff637b2a592c34fcabac7a23e0ca7a947d05a0567f3bb4d2402389d5ce
+  src_manifest:
+    release: v2026.10.0-src
+    file: matio-src.MANIFEST.tsv
+    bytes: 3000
+    sha256: 18317e2fb9357224677805a27182ec2265450bd7fd9d18dac21b514d1ebea350

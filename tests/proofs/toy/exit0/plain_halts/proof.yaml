@@ -1,0 +1,3 @@
+proves: toy/exit0/plain_halts
+approach: run the three instructions with lps's executable checker; a straight-line program has one execution
+uses: [lps-checks]

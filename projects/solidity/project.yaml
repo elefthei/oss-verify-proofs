@@ -1,0 +1,74 @@
+schema: oss-fuzz-theorems/project/1
+project: solidity
+homepage: https://solidity.readthedocs.io
+language: c++
+oss_fuzz:
+  path: projects/solidity
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: solidity
+  repository: https://github.com/ethereum/solidity
+  commit: 4c8a81af4596c14329e6a3f45468bba508bf7ea6
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: abiv2_isabelle_ossfuzz
+  status: not-included
+  reason: not-attempted
+- name: abiv2_proto_ossfuzz
+  status: included
+  origin: upstream
+- name: const_opt_ossfuzz
+  status: included
+  origin: upstream
+- name: sol_proto_ossfuzz
+  status: included
+  origin: upstream
+- name: solc_mutator_ossfuzz
+  status: included
+  origin: upstream
+- name: solc_ossfuzz
+  status: included
+  origin: upstream
+- name: stack_reuse_codegen_ossfuzz
+  status: included
+  origin: upstream
+- name: strictasm_assembly_ossfuzz
+  status: included
+  origin: upstream
+- name: strictasm_diff_ossfuzz
+  status: included
+  origin: upstream
+- name: strictasm_opt_ossfuzz
+  status: included
+  origin: upstream
+- name: yul_proto_diff_custom_mutate_ossfuzz
+  status: included
+  origin: upstream
+- name: yul_proto_diff_ossfuzz
+  status: included
+  origin: upstream
+- name: yul_proto_ossfuzz
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: solidity-bin.tar.zst
+    bytes: 192723230
+    sha256: d608be4c8f8ed5eae2112e953549aaf62c3a750067900d2760a4021567dfb67a
+  src:
+    release: v2026.10.0-src
+    file: solidity-src.tar.zst
+    bytes: 136877507
+    sha256: 7cc8793775b753181285ebe4829aa611d486200caade68d224168407d5471796
+  src_manifest:
+    release: v2026.10.0-src
+    file: solidity-src.MANIFEST.tsv
+    bytes: 18748
+    sha256: 23cca15f7bf2e7efb6069127c29e8850cf22aa453be6391b5c4388c272faf6b0

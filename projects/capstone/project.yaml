@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: capstone
+homepage: https://www.capstone-engine.org
+language: c++
+oss_fuzz:
+  path: projects/capstone
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: capstone
+  repository: https://github.com/capstone-engine/capstone
+  commit: d01f16f4f64fff65b450cb4d6be0bf0c6da809a0
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_disasmnext
+  status: included
+  origin: upstream
+- name: fuzz_disasmv5
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: capstone-bin.tar.zst
+    bytes: 12773885
+    sha256: c67a495e0dac6d8a287cb7d632f4e0c4cfad79daca18549f4a95bad57e4e0f89
+  src:
+    release: v2026.10.0-src
+    file: capstone-src.tar.zst
+    bytes: 6314090
+    sha256: 7c67980b04396b43ae31a000cc671e921706abc848f509a77b407a64a0941db9
+  src_manifest:
+    release: v2026.10.0-src
+    file: capstone-src.MANIFEST.tsv
+    bytes: 1498
+    sha256: 8219bad61b0332b260108cc819f5db2731658034583fd98b6e2c3eca29caf8d3

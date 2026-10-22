@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: fribidi
+homepage: https://github.com/fribidi/fribidi
+language: c
+oss_fuzz:
+  path: projects/fribidi
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: fribidi
+  repository: https://github.com/fribidi/fribidi
+  commit: 58895678b768ceaf8d8b3bc69f5c6f56c8e1513d
+  licence: LGPL-2.1-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fribidi-fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: fribidi-bin.tar.zst
+    bytes: 312028
+    sha256: d181393013576f64886fe4e36ce58724273a9624f9416485145b3961fde5fec4
+  src:
+    release: v2026.10.0-src
+    file: fribidi-src.tar.zst
+    bytes: 1028878
+    sha256: 2735d32c343c19786486bdae612ab74507addbb75df443a85165eeb3052482ba
+  src_manifest:
+    release: v2026.10.0-src
+    file: fribidi-src.MANIFEST.tsv
+    bytes: 1360
+    sha256: 43d2d9d4b6af3ad67a92247ae941b8a2663679f54e74867cbc265b5e0f89e484

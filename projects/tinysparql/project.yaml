@@ -1,0 +1,49 @@
+schema: oss-fuzz-theorems/project/1
+project: tinysparql
+language: c
+oss_fuzz:
+  path: projects/tinysparql
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tinysparql
+  repository: https://gitlab.gnome.org/GNOME/tinysparql
+  commit: c7474652b36b983cb9b5906b40907755f245948f
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: fuzz_ontology_turtle
+  status: included
+  origin: upstream
+- name: fuzz_query
+  status: included
+  origin: upstream
+- name: fuzz_rdf_jsonld
+  status: included
+  origin: upstream
+- name: fuzz_rdf_trig
+  status: included
+  origin: upstream
+- name: fuzz_rdf_turtle
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tinysparql-bin.tar.zst
+    bytes: 47589616
+    sha256: 88a0387f7232f670c1f2c271488098f375a9d36a04cdff95d2bd5d4dd57e442f
+  src:
+    release: v2026.10.0-src
+    file: tinysparql-src.tar.zst
+    bytes: 12600217
+    sha256: 1621958cb074570b4bed617e337abdcbd39cdf21db21aa612edf6090e9eea0d5
+  src_manifest:
+    release: v2026.10.0-src
+    file: tinysparql-src.MANIFEST.tsv
+    bytes: 8680
+    sha256: 676188a1f47ba019a50c0ff596c4d1e18023da5161d9d88a486db46059295502

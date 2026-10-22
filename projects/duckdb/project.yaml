@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: duckdb
+homepage: https://duckdb.org
+language: c++
+oss_fuzz:
+  path: projects/duckdb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: duckdb
+  repository: https://github.com/duckdb/duckdb
+  commit: 0b272c23b19eb7747313fffa0a1097f720905b29
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: csv_json_fuzz_test
+  status: not-included
+  reason: not-attempted
+- name: parquet_fuzz_test
+  status: included
+  origin: upstream
+- name: parse_fuzz_test
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: duckdb-bin.tar.zst
+    bytes: 154656850
+    sha256: 3c72433c7422d81e46e37ef38fa7c8ae8c4519fecd9a6b4c32fcdb06b6383da4
+  src:
+    release: v2026.10.0-src
+    file: duckdb-src.tar.zst
+    bytes: 90640889
+    sha256: db2dc9a7464b70e0484edcbd5d6510134637be643a8f865370f60a988764c8e7
+  src_manifest:
+    release: v2026.10.0-src
+    file: duckdb-src.MANIFEST.tsv
+    bytes: 1475
+    sha256: aefa3d0b0f256dda57f8c36855f6ee4402ff906f6a6d4633791537ca86599104

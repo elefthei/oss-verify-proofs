@@ -1,0 +1,12 @@
+schema: oss-fuzz-theorems/project/1
+project: onednn
+homepage: https://github.com/uxlfoundation/oneDNN
+language: c++
+oss_fuzz:
+  path: projects/onednn
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: not-yet-built
+reason: reads-stdin
+reason_args:
+  text: Its fuzz target reads its input from standard input, and these builds pass the input as a file.
+    It needs a driver that feeds standard input.

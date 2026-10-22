@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: cxxopts
+homepage: https://github.com/jarro2783/cxxopts
+language: c++
+oss_fuzz:
+  path: projects/cxxopts
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cxxopts
+  repository: https://github.com/jarro2783/cxxopts
+  commit: b6135315a54deb2b556219906eda8346f69bf703
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cxxopts_fuzz_test
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cxxopts-bin.tar.zst
+    bytes: 895976
+    sha256: cecf2cbf7c029cbb4ee732cf3380447ac312d922c100a0d59454fcbbbf334fff
+  src:
+    release: v2026.10.0-src
+    file: cxxopts-src.tar.zst
+    bytes: 139777
+    sha256: 05080d38d48b780358ece195f33444c05ffed179e11564d44221e2099f40b08c
+  src_manifest:
+    release: v2026.10.0-src
+    file: cxxopts-src.MANIFEST.tsv
+    bytes: 1316
+    sha256: c97577b233bec28456edce4d540ed2e6bfec9d2ed4dc3f8b6c0e1165f685e48e

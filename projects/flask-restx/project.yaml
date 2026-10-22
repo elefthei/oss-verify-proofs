@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: flask-restx
+homepage: https://github.com/python-restx/flask-restx
+language: python
+oss_fuzz:
+  path: projects/flask-restx
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

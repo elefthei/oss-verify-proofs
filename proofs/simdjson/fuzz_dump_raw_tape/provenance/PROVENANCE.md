@@ -1,0 +1,72 @@
+# How the binaries of `simdjson/fuzz_dump_raw_tape` were built
+
+Generated from `PROVENANCE.yaml` beside this file. The build files are in `recipe/` (`recipe/MANIFEST.tsv` lists them) and the licence texts in `LICENSES/`.
+
+| | |
+|---|---|
+| Upstream | https://github.com/simdjson/simdjson at `f807de973580fb22cc0db6b3b896716684b0266c` |
+| OSS-Fuzz project | https://github.com/google/oss-fuzz `projects/simdjson` at `bd2ce21991a9` |
+| Entry point | `LLVMFuzzerTestOneInput` |
+| Harness | `source/fuzz_dump_raw_tape.cpp` from https://github.com/simdjson/simdjson `fuzz/fuzz_dump_raw_tape.cpp` at `f807de973580`; unmodified; licence Apache-2.0 OR MIT |
+| Recipe | `recipe.tar.zst` of release `v2026.10.0-src` (sha256 `0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5`), target `simdjson-fuzz_dump_raw_tape` |
+| Build system | cmake |
+| Patches to the library | `0001-fuzz-ndjson-assertions-abort.patch` (harness reporting) |
+| Compiler | clang 20.1.8 |
+| Builder image | `ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b` |
+| Static AddressSanitizer | https://github.com/theorem-labs/static-asan at `b05061352064fa2be1813ac5429149f3de5f057d` (the published source of the compiler image's static AddressSanitizer: its toolchain/ and patches/ are those the image was built from, with comments and patch descriptions edited for publication (toolchain-src.tar.zst holds this commit). Building it gives the image's libclang_rt.builtins.a and musl libc.a byte for byte; its libclang_rt.asan.a and asan_cxx.a differ from the image's only in DWARF line tables, which --strip-all removes from the binaries) |
+| Source code | not required by the licences; the upstream source is `simdjson-src.tar.zst` of release `v2026.10.0-src` |
+
+## Binaries
+
+| build | file | bytes | sha256 |
+|---|---|---|---|
+| plain | `fuzz_dump_raw_tape.plain` | 769024 | `f87399862899098afbbb3a34fd9f4c48cec77c56d12219396acf7a2798b7bbb7` |
+| asan | `fuzz_dump_raw_tape.asan` | 1400360 | `a5544a90d8d9b6767cb4adfcac2d794b551b9a9e0c45494319f30f54b5b41231` |
+| ubsan | `fuzz_dump_raw_tape.ubsan` | 810576 | `391447a41ab0f6a8c2701b817f9b2a6f6606635e50bbb16e8b5828c7b635a735` |
+| asan-ubsan | `fuzz_dump_raw_tape.asan-ubsan` | 1448872 | `a8da849f655a3cfa347a741f21bb784c08d417f4ed905ccac213107dfb1270dc` |
+
+## Licences
+
+| component | licence | texts |
+|---|---|---|
+| simdjson | Apache-2.0 OR MIT | LICENSES/simdjson-LICENSE, LICENSES/simdjson-LICENSE-MIT |
+| fast_float v8.2.10 (vendored in simdjson include/simdjson/internal/fast_float.h) | Apache-2.0 OR BSL-1.0 OR MIT | LICENSES/simdjson-fast_float-notice.txt, LICENSES/fast_float-LICENSE-APACHE, LICENSES/fast_float-LICENSE-BOOST, LICENSES/fast_float-LICENSE-MIT |
+| UTF-8 validator based on code from Google Fuchsia, in simdjson src/fallback.cpp | Apache-2.0 | LICENSES/simdjson-fallback-utf8-Fuchsia-notice.txt |
+| NulStreambuf and NulOStream from Stack Overflow answer 8244052 (James Kanze), in simdjson fuzz/NullBuffer.h | CC-BY-SA-3.0 | LICENSES/simdjson-NullBuffer-StackOverflow-notice.txt |
+| musl libc (static) | MIT | LICENSES/musl-COPYRIGHT |
+| LLVM runtimes: compiler-rt builtins; in ASan builds the sanitizer runtime and libunwind; libc++/libc++abi in C++ programs | Apache-2.0 WITH LLVM-exception | LICENSES/llvm-compiler-rt-LICENSE.TXT, LICENSES/llvm-libunwind-LICENSE.TXT, LICENSES/llvm-libcxx-LICENSE.TXT, LICENSES/llvm-libcxxabi-LICENSE.TXT |
+| static-asan patches compiled into the ASan runtime and musl | MIT | LICENSES/static-asan-LICENSE |
+| Theorem Labs file-input driver and build recipe (recipe/src/, recipe/targets/*/plugin.c) | MIT | LICENSES/oss-fuzz-theorems-LICENSE |
+
+## Rebuild
+
+- rebuilt from this recipe and the source assets on a separate machine: plain identical, asan identical, ubsan identical, asan-ubsan identical
+
+## The proofs' licence
+
+The proof files of this entry point were made from final-anthropic-opensource-formal-verification-proofs-package-2026-10-21 (sha256 4c6c152f61ce538e439b9d2adef439f4dbe1a2d446767d84ac7c3946d7c6687a), libraries/simdjson/proofs/submission-8, libraries/jsoncons/proofs/submission-7, libraries/openssl-b/proofs/submission-1 and libraries/spirv-tools/proofs/submission-1 and are under Apache-2.0 OR MIT, at the recipient's option: the licence texts and the notice are `LICENSES/anthropic-proofs-LICENSE`, `LICENSES/anthropic-proofs-LICENSE-MIT` and `LICENSES/anthropic-proofs-NOTICE` in the repository's top directory; each changed file carries one line under its licence header saying so.
+
+## Compiler and linker flags
+
+As written in the recipe; a library's own build system adds its flags after these (e.g. CMake Release appends -O3 -DNDEBUG), see the pin and recipes.sh.
+
+```
+recipe/tools/build-body.sh:58: OFT_NO_BUILTIN_ALLOC="-fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-reallocarray -fno-builtin-free -fno-builtin-aligned_alloc -fno-builtin-posix_memalign -fno-builtin-memalign -fno-builtin-valloc -fno-builtin-strdup -fno-builtin-strndup"
+recipe/tools/build-body.sh:59: BASE_CFLAGS="-march=rv64g -mabi=lp64d -Os -g -ffunction-sections -fdata-sections -fno-stack-protector -fno-plt -Wdate-time $OFT_NO_BUILTIN_ALLOC"
+recipe/tools/build-body.sh:65: SAN=""
+recipe/tools/build-body.sh:560: SAN="-fsanitize=address"
+recipe/tools/build-body.sh:577: SAN="-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize-trap=all -fno-sanitize=function"
+recipe/tools/build-body.sh:586: SAN="-fsanitize=undefined -fno-sanitize-recover=all -fsanitize-trap=all -fno-sanitize=function"
+recipe/tools/build-body.sh:590: SAN=""
+recipe/tools/build-body.sh:618: CFLAGS="$BASE_CFLAGS $SAN -fmacro-prefix-map=$LIBROOT/=/work/build/lib/FLAVOUR/"
+recipe/tools/build-body.sh:431: 'clang --config=/opt/asan-static/musl.cfg'
+recipe/tools/build-body.sh:441: 'clang++ --config=/opt/asan-static/musl.cfg -stdlib=libc++'
+recipe/tools/build-body.sh:478: SEALED_CFG=/opt/asan-static/asan-musl-sealed.cfg
+recipe/tools/build-body.sh:1019: SILENT_LD=""
+recipe/tools/build-body.sh:1021: SILENT_LD="-Wl,--defsym=__sanitizer_silent_reports=1"
+recipe/tools/build-body.sh:1027: SILENT_LD=""
+recipe/tools/build-body.sh:1049: "$CC" $BASE_CFLAGS -static -no-pie -Wl,--gc-sections ${OFT_STRIP--Wl,--strip-all} \
+recipe/tools/build-body.sh:1054: "$CC" $BASE_CFLAGS -static -no-pie -Wl,--gc-sections ${OFT_STRIP--Wl,--strip-all} \
+recipe/targets/simdjson-fuzz_dump_raw_tape/pin:41: LIB_CFLAGS=""
+```
+

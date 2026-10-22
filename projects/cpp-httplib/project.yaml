@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: cpp-httplib
+homepage: https://github.com/yhirose/cpp-httplib
+language: c++
+oss_fuzz:
+  path: projects/cpp-httplib
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cpp-httplib
+  repository: https://github.com/yhirose/cpp-httplib
+  commit: 6494edd8c03c55165825ae3078e2f55c595d8cb6
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: client_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: header_parser_fuzzer
+  status: included
+  origin: upstream
+- name: multipart_parser_fuzzer
+  status: included
+  origin: upstream
+- name: server_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: url_parser_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cpp-httplib-bin.tar.zst
+    bytes: 996015
+    sha256: e318cb98e4be0d6e58da1cb2438a3a3634c2383d13a9881b44546b0b100ffd7b
+  src:
+    release: v2026.10.0-src
+    file: cpp-httplib-src.tar.zst
+    bytes: 1525039
+    sha256: 8bbf8a7b4124b296f716f6cad0b4ab477bd33e4a32d1772dcd4752dd3d9d1b5f
+  src_manifest:
+    release: v2026.10.0-src
+    file: cpp-httplib-src.MANIFEST.tsv
+    bytes: 1730
+    sha256: 710f2060fc1c3d87eba6ea8b22cd458b4fc48e4cf51ce919ebad203f5be90cc9

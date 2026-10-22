@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libprotobuf-mutator
+homepage: https://github.com/google/libprotobuf-mutator
+language: c++
+oss_fuzz:
+  path: projects/libprotobuf-mutator
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libprotobuf-mutator
+  repository: https://github.com/google/libprotobuf-mutator
+  commit: c1c950eae0440c3808f2b8bd7c57d0c6a42c1a90
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: expat_example
+  status: included
+  origin: upstream
+- name: libxml2_example
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libprotobuf-mutator-bin.tar.zst
+    bytes: 2749690
+    sha256: edb36e203ce922e399155e4266c2093d28f96bac85d3ac8d81d430f7d1f77ec7
+  src:
+    release: v2026.10.0-src
+    file: libprotobuf-mutator-src.tar.zst
+    bytes: 38951
+    sha256: 4082fa8cb98c1ff5201954cf146fc49848ad4ff48efa5990562d25fe5052c2b6
+  src_manifest:
+    release: v2026.10.0-src
+    file: libprotobuf-mutator-src.MANIFEST.tsv
+    bytes: 1643
+    sha256: 16cb16390361dba25066b2f5474af01bd4b06e1d2fcae12b3c491bc6df53eebd

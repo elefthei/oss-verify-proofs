@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: crow
+homepage: https://crowcpp.org/master
+language: c++
+oss_fuzz:
+  path: projects/crow
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: Crow
+  repository: https://github.com/CrowCpp/Crow
+  commit: 2366edbadb568f9cc3d0ba035a6c1d6e55382adf
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: b64_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: http_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: json_fuzzer
+  status: included
+  origin: upstream
+- name: request_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: template_fuzzer
+  status: not-included
+  reason: not-yet-included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: crow-bin.tar.zst
+    bytes: 436331
+    sha256: efe1a397f5846aaf6e9d4d0a148154d5502fb4e34d41ac69be6a32d53e5f6370
+  src:
+    release: v2026.10.0-src
+    file: crow-src.tar.zst
+    bytes: 850255
+    sha256: b7be7e65091efb0f5b1c1275a79cae7d00c86e5830e8a4313d612ce7a5fdcc42
+  src_manifest:
+    release: v2026.10.0-src
+    file: crow-src.MANIFEST.tsv
+    bytes: 1313
+    sha256: 36a56eddbc61c7d982e06d9cf0f5b18c628f3895edd2d195cb9e07df820e83fa

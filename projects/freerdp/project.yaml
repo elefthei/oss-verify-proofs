@@ -1,0 +1,89 @@
+schema: oss-fuzz-theorems/project/1
+project: freerdp
+homepage: https://www.freerdp.com
+language: c
+oss_fuzz:
+  path: projects/freerdp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: FreeRDP
+  repository: https://github.com/FreeRDP/FreeRDP
+  commit: dbea8ef5d3eb680bbafbdeaf0cc81a6614070196
+  licence: Apache-2.0
+harnesses:
+- name: TestFuzzChannelCliprdr
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzChannelRail
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzClientRdpFile
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCodecs
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCommonAssistanceBinToHexString
+  status: included
+  origin: upstream
+- name: TestFuzzCommonAssistanceHexStringToBin
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCommonAssistanceParseFileBuffer
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCoreClient
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCoreServer
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCredSSP_Asn1
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzCryptoCertificateDataSetPEM
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzDrdynvc
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzNSCodec
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzNTLMMessage
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzServer
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzSmartcardOperations
+  status: not-included
+  reason: not-attempted
+- name: TestFuzzWinPRClipboard
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: freerdp-bin.tar.zst
+    bytes: 416574
+    sha256: bd772f87baae6be045067e28e29eb030a612b54a7d2b43feaff6fbd19ba82612
+  src:
+    release: v2026.10.0-src
+    file: freerdp-src.tar.zst
+    bytes: 8122669
+    sha256: e0d6133d93588232def03e334074e1469d08868665511a890a52675ddca3fcc9
+  src_manifest:
+    release: v2026.10.0-src
+    file: freerdp-src.MANIFEST.tsv
+    bytes: 1459
+    sha256: 459740b5cffd96963819419baf7ce68a65ff30afc270c7a41f60bd01944671cb

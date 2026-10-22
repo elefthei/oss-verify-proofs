@@ -1,0 +1,90 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/DaveGamble/cJSON.git
+COMMIT=acc76239bee01d8e9c858ae2cab296704e52d916
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_build_cmake
+  oft_build_harness "fuzzing/cjson_read_fuzzer.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+build_lib() {
+  oft_build_cmake -DENABLE_CUSTOM_COMPILER_FLAGS=OFF -DENABLE_CJSON_TEST=OFF -DENABLE_CJSON_UTILS=ON
+  oft_build_harness "fuzzing/cjson_read_fuzzer.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+
+
+
+
+
+
+
+
+
+
+

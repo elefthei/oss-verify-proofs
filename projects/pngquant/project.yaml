@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: pngquant
+homepage: https://pngquant.org
+language: c
+oss_fuzz:
+  path: projects/pngquant
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pngquant
+  repository: https://github.com/kornelski/pngquant
+  commit: 22918da1f4ae56b4300dfb30137f0f29cc8a0866
+  licence: GPL-3.0-or-later
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pngquant-bin.tar.zst
+    bytes: 361547
+    sha256: b81ab7d53ba596817190cce712e225ecc58bfff96632bb75d1070d1a4cc974ee
+  src:
+    release: v2026.10.0-src
+    file: pngquant-src.tar.zst
+    bytes: 119525
+    sha256: 6a53b4d69236eb433e899278de228fa555aa72c042841f6978a3b57dc5eed3ce
+  src_manifest:
+    release: v2026.10.0-src
+    file: pngquant-src.MANIFEST.tsv
+    bytes: 1881
+    sha256: cb25dde7cf8f6fe1a1b9a17fe074f4aa993d5efb034dfaf2100e9cdf431084d3

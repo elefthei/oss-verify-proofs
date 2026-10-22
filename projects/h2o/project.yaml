@@ -1,0 +1,46 @@
+schema: oss-fuzz-theorems/project/1
+project: h2o
+homepage: https://github.com/h2o/h2o
+language: c++
+oss_fuzz:
+  path: projects/h2o
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: h2o
+  repository: https://github.com/h2o/h2o
+  commit: cac7e6568ad98a848f099ecd0a18b881f632479a
+  licence: MIT
+harnesses:
+- name: h2o-fuzzer-http1
+  status: not-included
+  reason: not-attempted
+- name: h2o-fuzzer-http2
+  status: not-included
+  reason: not-attempted
+- name: h2o-fuzzer-http3
+  status: not-included
+  reason: not-attempted
+- name: h2o-fuzzer-url
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: h2o-bin.tar.zst
+    bytes: 355492
+    sha256: d9e6806eefc5446175fb860254a51153f9199ec6665def24978e882a69beb336
+  src:
+    release: v2026.10.0-src
+    file: h2o-src.tar.zst
+    bytes: 8689843
+    sha256: 1f26ff8e10422a3432f4d7f9807fdb15b615f027338781b42a22b553e69e26d9
+  src_manifest:
+    release: v2026.10.0-src
+    file: h2o-src.MANIFEST.tsv
+    bytes: 4712
+    sha256: 1b06e5c0edeec732c6b8681b490d8af51142c3826fafd6642fae88f2f8698b03

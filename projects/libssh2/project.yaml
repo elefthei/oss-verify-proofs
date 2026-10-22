@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: libssh2
+homepage: https://github.com/libssh2/libssh2
+language: c++
+oss_fuzz:
+  path: projects/libssh2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libssh2
+  repository: https://github.com/libssh2/libssh2
+  commit: 3209951db4e47ef902db047d12f9f464f835c27e
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: ssh2_client_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libssh2-bin.tar.zst
+    bytes: 2236654
+    sha256: e56c73c1303b575be684be18dbe2efe936126cadb81db53799ccea40afe85c50
+  src:
+    release: v2026.10.0-src
+    file: libssh2-src.tar.zst
+    bytes: 492609
+    sha256: 9ad62e5d197402e31a36e2d5c5b10e0ad179cfb44167c1ca47f689f1c366d64d
+  src_manifest:
+    release: v2026.10.0-src
+    file: libssh2-src.MANIFEST.tsv
+    bytes: 1374
+    sha256: 806ce13336a89cf801732279d33fcedec0896fc2cf760758983ff6a950a9c076

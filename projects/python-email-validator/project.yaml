@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: python-email-validator
+homepage: https://github.com/JoshData/python-email-validator
+language: python
+oss_fuzz:
+  path: projects/python-email-validator
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

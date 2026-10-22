@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: g-apis-py-api-core
+homepage: https://github.com/googleapis/python-api-core
+language: python
+oss_fuzz:
+  path: projects/g-apis-py-api-core
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

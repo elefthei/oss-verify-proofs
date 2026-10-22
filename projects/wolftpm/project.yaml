@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: wolftpm
+homepage: https://github.com/wolfSSL/wolfTPM
+language: c
+oss_fuzz:
+  path: projects/wolftpm
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wolfTPM
+  repository: https://github.com/wolfSSL/wolfTPM
+  commit: 29074915dc330bfd200a621bb15aa782fde4ea2f
+  licence: NOASSERTION
+harnesses:
+- name: fuzz_asn_cert
+  status: not-included
+  reason: not-attempted
+- name: fwtpm_fuzz
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wolftpm-bin.tar.zst
+    bytes: 877064
+    sha256: c9a719a0e638ae35377986034286e26c2a51013450e77520c11793b1337de128
+  src:
+    release: v2026.10.0-src
+    file: wolftpm-src.tar.zst
+    bytes: 1162394
+    sha256: 6dced54c722d65dd88004e8e024ae03279a241a3223fba9ec4eb97c3403e2fad
+  src_manifest:
+    release: v2026.10.0-src
+    file: wolftpm-src.MANIFEST.tsv
+    bytes: 1339
+    sha256: 43df1e1dde79a1ae99edaf7ec27435d8d50817ed560f5c53184dbb392d4fe45c

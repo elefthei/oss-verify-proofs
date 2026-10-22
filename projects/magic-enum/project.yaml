@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: magic-enum
+homepage: https://github.com/Neargye/magic_enum
+language: c++
+oss_fuzz:
+  path: projects/magic-enum
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: magic_enum
+  repository: https://github.com/Neargye/magic_enum
+  commit: 591b64351ea8442f8b8fa044ff335d6943e8e6e0
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: magic_enum_fuzzer
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: magic-enum-bin.tar.zst
+    bytes: 398791
+    sha256: 72e094a439b9e50520713145c762ccea59f79f61242fea579f9aed063da9e5da
+  src:
+    release: v2026.10.0-src
+    file: magic-enum-src.tar.zst
+    bytes: 126157
+    sha256: 855d3a4c9239fbfc8f7a77fce2fb1bcbed517688bfbec3db5b6fef8ac29d31f6
+  src_manifest:
+    release: v2026.10.0-src
+    file: magic-enum-src.MANIFEST.tsv
+    bytes: 1594
+    sha256: b67165d49d3579ed070d43823bd0f612bcc19860d7eaa2e9267daffed50127c2

@@ -1,0 +1,95 @@
+schema: oss-fuzz-theorems/project/1
+project: nss
+homepage: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
+language: c++
+oss_fuzz:
+  path: projects/nss
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: nss
+  repository: https://github.com/nss-dev/nss
+  commit: 6e89bf4bcec2b4b8cf3b6ef6117384f5d5486a18
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: asn1
+  status: included
+  origin: upstream
+- name: certDN
+  status: included
+  origin: upstream
+- name: cryptofuzz
+  status: included
+  origin: upstream
+- name: dsau
+  status: included
+  origin: upstream
+- name: dtls-client
+  status: included
+  origin: upstream
+- name: dtls-client-no_fuzzer_mode
+  status: included
+  origin: upstream
+- name: dtls-server
+  status: included
+  origin: upstream
+- name: dtls-server-no_fuzzer_mode
+  status: included
+  origin: upstream
+- name: ec-derive
+  status: included
+  origin: upstream
+- name: ech
+  status: included
+  origin: upstream
+- name: pkcs12
+  status: included
+  origin: upstream
+- name: pkcs12-no_fuzzer_mode
+  status: included
+  origin: upstream
+- name: pkcs7
+  status: included
+  origin: upstream
+- name: pkcs8
+  status: included
+  origin: upstream
+- name: quickder
+  status: included
+  origin: upstream
+- name: smime
+  status: included
+  origin: upstream
+- name: tls-client
+  status: included
+  origin: upstream
+- name: tls-client-no_fuzzer_mode
+  status: included
+  origin: upstream
+- name: tls-server
+  status: included
+  origin: upstream
+- name: tls-server-no_fuzzer_mode
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: nss-bin.tar.zst
+    bytes: 138329328
+    sha256: b037736133ca028b8647487f064548d3f2c3399f681e40830b2cb6fdc21eeb08
+  src:
+    release: v2026.10.0-src
+    file: nss-src.tar.zst
+    bytes: 73039904
+    sha256: 5a26cb2b1492fc68c0c59d68ac05d006b4932ae074863880f9f44c7d998aca2f
+  src_manifest:
+    release: v2026.10.0-src
+    file: nss-src.MANIFEST.tsv
+    bytes: 6149
+    sha256: f789e55a8364745bf4368044d2fb59bea77f4a17470337f09e3dc625a3a52d11

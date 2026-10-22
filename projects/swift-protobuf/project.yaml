@@ -1,0 +1,11 @@
+schema: oss-fuzz-theorems/project/1
+project: swift-protobuf
+homepage: https://github.com/apple/swift-protobuf
+language: swift
+oss_fuzz:
+  path: projects/swift-protobuf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: no-compiler
+reason: language
+reason_args:
+  language: Swift

@@ -1,0 +1,80 @@
+schema: oss-fuzz-theorems/project/1
+project: quantlib
+homepage: https://www.quantlib.org
+language: c++
+oss_fuzz:
+  path: projects/quantlib
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: QuantLib
+  repository: https://github.com/lballabio/QuantLib
+  commit: 2a13d455048c748b9fb5c2ff3bb4f4cf56dfb9a9
+  licence: BSD-3-Clause
+harnesses:
+- name: AmericanOptionFuzzer
+  status: not-included
+  reason: not-attempted
+- name: AmortizedBondsFuzzer
+  status: not-included
+  reason: not-attempted
+- name: BlackFormulaFuzzer
+  status: not-included
+  reason: not-attempted
+- name: DateParserFuzzer
+  status: included
+  origin: upstream
+- name: EuropeanOptionFuzzer
+  status: not-included
+  reason: not-attempted
+- name: Fuzz_AsianOption
+  status: included
+  origin: upstream
+- name: Fuzz_BarrierOption
+  status: not-included
+  reason: not-attempted
+- name: Fuzz_BasketOption
+  status: not-included
+  reason: not-attempted
+- name: Fuzz_CashFlows
+  status: not-included
+  reason: not-attempted
+- name: Fuzz_ExchangeRateManager
+  status: not-included
+  reason: not-attempted
+- name: Fuzz_IndexManager
+  status: not-included
+  reason: not-attempted
+- name: InterpolationsFuzzer
+  status: not-included
+  reason: not-attempted
+- name: TimeFunctionsFuzzer
+  status: not-included
+  reason: not-attempted
+- name: VanillaOptionFuzzer
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: quantlib-bin.tar.zst
+    bytes: 1833796
+    sha256: 6e12283b6c01ba719f4a79c9f012f024379cd4df8abb03a36f82a616fc09cbcd
+  src:
+    release: v2026.10.0-src
+    file: quantlib-src.tar.zst
+    bytes: 6761405
+    sha256: 36f93a28b9020573d02abbbaa7f09f6729fddf410dd96db376caeb18f88f16b5
+  src_manifest:
+    release: v2026.10.0-src
+    file: quantlib-src.MANIFEST.tsv
+    bytes: 1507
+    sha256: f974770ee9c5c506110e1d44183eaa04ae014d37a877beebfe5bdb73db524122

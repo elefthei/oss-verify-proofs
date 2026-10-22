@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: libecc
+homepage: https://github.com/ANSSI-FR/libecc
+language: c++
+oss_fuzz:
+  path: projects/libecc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libecc
+  repository: https://github.com/ANSSI-FR/libecc
+  commit: 059972c47c0c37b3a2557961210073b18d324ce6
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cryptofuzz-libecc
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libecc-bin.tar.zst
+    bytes: 5782068
+    sha256: 8ba9acd2b4a1279e74cf34d6b6eddba808c622f4daff486cc661f6bd71ea8d70
+  src:
+    release: v2026.10.0-src
+    file: libecc-src.tar.zst
+    bytes: 6354925
+    sha256: 49b72508ad1b0fa0e0f053894c7255d18128ebeb60d7cb6178e4e278ae4f5ebd
+  src_manifest:
+    release: v2026.10.0-src
+    file: libecc-src.MANIFEST.tsv
+    bytes: 1958
+    sha256: 583c62aafa3cd06e5df16a9199c9ba6abd3f4cffc8de8593843509d7d37e9940

@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: zip
+homepage: https://github.com/kuba--/zip
+language: c
+oss_fuzz:
+  path: projects/zip
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: zip
+  repository: https://github.com/kuba--/zip
+  commit: f57d98fbaa774c73de650fde16a9b5f8a92743ea
+  version: 0.3.15
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_entry
+  status: included
+  origin: upstream
+- name: fuzz_stream
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: zip-bin.tar.zst
+    bytes: 580528
+    sha256: 51380a2f0f85ed5be3f67ed562917d466c6b72162e8514fe7eca8baf894792bf
+  src:
+    release: v2026.10.0-src
+    file: zip-src.tar.zst
+    bytes: 460946
+    sha256: b0263eaae043d0c3df4f4f6772c8671e354684559ad16c740bf7b4b04f6cfd6f
+  src_manifest:
+    release: v2026.10.0-src
+    file: zip-src.MANIFEST.tsv
+    bytes: 1377
+    sha256: 0ac70f3b1b4e7b64165e51da6b9d504bb4ba40d7d70c7ee30e846152ce09c47d

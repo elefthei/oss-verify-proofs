@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: sql-parser
+homepage: https://github.com/hyrise/sql-parser
+language: c++
+oss_fuzz:
+  path: projects/sql-parser
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: sql-parser
+  repository: https://github.com/hyrise/sql-parser
+  commit: ccd3f68b50bb2b96ce69afa7b956b3bd826643cc
+  licence: MIT
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_sql_parse
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: sql-parser-bin.tar.zst
+    bytes: 869260
+    sha256: 06c5d47401d237a24f2c0e414571f0107d22f5d4516f8661beb82834687c0092
+  src:
+    release: v2026.10.0-src
+    file: sql-parser-src.tar.zst
+    bytes: 383436
+    sha256: 35af927a85202d732a22225d67044c0b203adfa5f9a0f2eb7445ad5a07badd6a
+  src_manifest:
+    release: v2026.10.0-src
+    file: sql-parser-src.MANIFEST.tsv
+    bytes: 1571
+    sha256: 085fd4f8231934eea5456c21040e8739cbce619eb6395eac2c0107e310956859

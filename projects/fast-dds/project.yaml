@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: fast-dds
+homepage: https://www.eprosima.com
+language: c++
+oss_fuzz:
+  path: projects/fast-dds
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: Fast-DDS
+  repository: https://github.com/eProsima/Fast-DDS
+  commit: 1d2b0646f113f61989f997dde5862f6b6102b8a6
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_XMLProfiles
+  status: included
+  origin: upstream
+- name: fuzz_processCDRMsg
+  status: included
+  origin: upstream
+- name: fuzz_proxy_cdr
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: fast-dds-bin.tar.zst
+    bytes: 56552923
+    sha256: 95cc31ba6b4403ddbbe3dcc30780d1c1cb4a58c222b10c929b4f5f83266ebf78
+  src:
+    release: v2026.10.0-src
+    file: fast-dds-src.tar.zst
+    bytes: 10822636
+    sha256: e83806b7ac6051f4bd207671357be1fb12b6fd1919fc6e49167770d08c78c62a
+  src_manifest:
+    release: v2026.10.0-src
+    file: fast-dds-src.MANIFEST.tsv
+    bytes: 7236
+    sha256: 9195be1fc4fba5c44aa0bef6d2c921e109135ca983deee270682f00d255530a4

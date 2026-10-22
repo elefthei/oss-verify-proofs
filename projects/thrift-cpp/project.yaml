@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: thrift-cpp
+homepage: https://thrift.apache.org
+language: c++
+oss_fuzz:
+  path: projects/thrift-cpp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: thrift
+  repository: https://github.com/apache/thrift
+  commit: 588053de15907d2b769aeb4662e1e3c142000fe9
+  licence: NOASSERTION
+harnesses:
+- name: FuzzParseBinary
+  status: not-included
+  reason: not-attempted
+- name: FuzzParseCompact
+  status: not-included
+  reason: not-attempted
+- name: FuzzParseJson
+  status: not-included
+  reason: not-attempted
+- name: FuzzRoundtripBinary
+  status: included
+  origin: upstream
+- name: FuzzRoundtripCompact
+  status: not-included
+  reason: not-attempted
+- name: FuzzRoundtripJson
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: thrift-cpp-bin.tar.zst
+    bytes: 868870
+    sha256: 9cba87b2b995feca0f69fb1527dcca6d195fda3ebb880d9691ef5c3122476d30
+  src:
+    release: v2026.10.0-src
+    file: thrift-cpp-src.tar.zst
+    bytes: 2583529
+    sha256: f66d79541837f8bdc970f9091b70f02f922719298112400aa191f1658391e50d
+  src_manifest:
+    release: v2026.10.0-src
+    file: thrift-cpp-src.MANIFEST.tsv
+    bytes: 1407
+    sha256: cca70f73c5db0ddefb8cfde72eadea00a5f010831ee3e675d6b5326380eb6fbb

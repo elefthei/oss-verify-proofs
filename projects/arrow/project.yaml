@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: arrow
+homepage: https://arrow.apache.org
+language: c++
+oss_fuzz:
+  path: projects/arrow
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: arrow
+  repository: https://github.com/apache/arrow
+  commit: 70f5c269ae8d154f57f7a7ec6babe6e0685ed6ec
+  licence: NOASSERTION
+harnesses:
+- name: arrow-csv-fuzz
+  status: included
+  origin: upstream
+- name: arrow-ipc-file-fuzz
+  status: included
+  origin: upstream
+- name: arrow-ipc-stream-fuzz
+  status: included
+  origin: upstream
+- name: arrow-ipc-tensor-stream-fuzz
+  status: not-included
+  reason: not-attempted
+- name: parquet-arrow-fuzz
+  status: included
+  origin: upstream
+- name: parquet-encoding-fuzz
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: arrow-bin.tar.zst
+    bytes: 89522337
+    sha256: 703bfd2082c35504649d925b272eed74598080f3e1af3c064b0291dbcb3a2cbf
+  src:
+    release: v2026.10.0-src
+    file: arrow-src.tar.zst
+    bytes: 35131081
+    sha256: 7a4cf5eda6895d8dc33bacf14db686dfbc5e11429db2ab79ff61036f4ec477f2
+  src_manifest:
+    release: v2026.10.0-src
+    file: arrow-src.MANIFEST.tsv
+    bytes: 8888
+    sha256: 18c75dc9da54461b8e92f6efce8b67325ce1c8f6c217a17b3cdca472f8b342d6

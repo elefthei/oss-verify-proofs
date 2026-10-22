@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: serde_json
+homepage: https://github.com/serde-rs/json
+language: rust
+oss_fuzz:
+  path: projects/serde_json
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: rust

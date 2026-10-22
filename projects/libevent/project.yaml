@@ -1,0 +1,64 @@
+schema: oss-fuzz-theorems/project/1
+project: libevent
+homepage: https://github.com/libevent/libevent
+language: c++
+oss_fuzz:
+  path: projects/libevent
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libevent
+  repository: https://github.com/libevent/libevent
+  commit: d82464a277d0f42703702c4dfd9af6af38595a83
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: buffer_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: bufferevent_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: dns_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: evtag_fuzzer
+  status: included
+- name: fuzz_request
+  status: not-included
+  reason: not-attempted
+- name: http_message_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: listener_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: utils_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: ws_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libevent-bin.tar.zst
+    bytes: 391599
+    sha256: 540c3e0b1a8c810bca2218fe2ce827167c5f2cee3ad5d96624db1b6ecd712d2b
+  src:
+    release: v2026.10.0-src
+    file: libevent-src.tar.zst
+    bytes: 653156
+    sha256: bdebc3350d76ef7f15c68c2063fbb3d45697370eb204c16ffe61591ef9f92230
+  src_manifest:
+    release: v2026.10.0-src
+    file: libevent-src.MANIFEST.tsv
+    bytes: 1529
+    sha256: 27fa3700cbe11485b91a2d5138d6902ea17b54ff3844848e61e6e2fe30367e92

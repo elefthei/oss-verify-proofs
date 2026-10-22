@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: g-py-bigquery
+homepage: https://github.com/googleapis/python-bigquery
+language: python
+oss_fuzz:
+  path: projects/g-py-bigquery
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: ostree
+homepage: https://github.com/ostreedev/ostree
+language: c
+oss_fuzz:
+  path: projects/ostree
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ostree
+  repository: https://github.com/ostreedev/ostree
+  commit: 1d5a312a3189b0fbd70fe6769aadb19a366fedb2
+  licence: NOASSERTION
+harnesses:
+- name: fuzz-bootconfig
+  status: included
+- name: fuzz-bsdiff
+  status: included
+- name: fuzz-content-stream
+  status: included
+- name: fuzz-repo
+  status: included
+- name: fuzz-rfc2616-date
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ostree-bin.tar.zst
+    bytes: 2950793
+    sha256: 7419c583a259b3ef57725b9bf0ea791354cb32cafa3e0485a487be9bce9d3aac
+  src:
+    release: v2026.10.0-src
+    file: ostree-src.tar.zst
+    bytes: 1992750
+    sha256: 0ec84019eb3c1419924a6aefc2becf252ef4d091cd617f608467385ae0f7fa41
+  src_manifest:
+    release: v2026.10.0-src
+    file: ostree-src.MANIFEST.tsv
+    bytes: 4215
+    sha256: 9c0ecf016de570e691f00c9cd0060d806d2147a4be944f88a35525380f34f1f1

@@ -1,0 +1,134 @@
+schema: oss-fuzz-theorems/project/1
+project: glib
+homepage: https://gitlab.gnome.org/GNOME/glib
+language: c++
+oss_fuzz:
+  path: projects/glib
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: glib
+  repository: https://gitlab.gnome.org/GNOME/glib
+  commit: d7d2dbaba4396915ec7a60ee9d0993495be2f979
+  licence: LGPL-2.1-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_bookmark
+  status: included
+  origin: upstream
+- name: fuzz_canonicalize_filename
+  status: not-included
+  reason: not-attempted
+- name: fuzz_data_input_stream_read_line
+  status: not-included
+  reason: not-attempted
+- name: fuzz_data_input_stream_read_line_utf8
+  status: not-included
+  reason: not-attempted
+- name: fuzz_data_input_stream_read_upto
+  status: not-included
+  reason: not-attempted
+- name: fuzz_date_parse
+  status: not-included
+  reason: not-attempted
+- name: fuzz_date_time_new_from_iso8601
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dbus_message
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dbus_node_info_new_for_xml
+  status: not-included
+  reason: not-attempted
+- name: fuzz_filename_from_uri
+  status: not-included
+  reason: not-attempted
+- name: fuzz_filename_to_uri
+  status: not-included
+  reason: not-attempted
+- name: fuzz_get_locale_variants
+  status: not-included
+  reason: not-attempted
+- name: fuzz_inet_address_mask_new_from_string
+  status: not-included
+  reason: not-attempted
+- name: fuzz_inet_address_new_from_string
+  status: not-included
+  reason: not-attempted
+- name: fuzz_inet_socket_address_new_from_string
+  status: not-included
+  reason: not-attempted
+- name: fuzz_key
+  status: not-included
+  reason: not-attempted
+- name: fuzz_markup_escape_text
+  status: not-included
+  reason: not-attempted
+- name: fuzz_network_address_parse
+  status: not-included
+  reason: not-attempted
+- name: fuzz_network_address_parse_uri
+  status: not-included
+  reason: not-attempted
+- name: fuzz_paths
+  status: not-included
+  reason: not-attempted
+- name: fuzz_resolver
+  status: not-included
+  reason: not-attempted
+- name: fuzz_special_dirs
+  status: not-included
+  reason: not-attempted
+- name: fuzz_string
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uri_escape
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uri_parse
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uri_parse_params
+  status: not-included
+  reason: not-attempted
+- name: fuzz_utf8_normalize
+  status: not-included
+  reason: not-attempted
+- name: fuzz_utf8_validate
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uuid_string_is_valid
+  status: not-included
+  reason: not-attempted
+- name: fuzz_variant_binary
+  status: not-included
+  reason: not-attempted
+- name: fuzz_variant_binary_byteswap
+  status: not-included
+  reason: not-attempted
+- name: fuzz_variant_text
+  status: not-included
+  reason: not-attempted
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: glib-bin.tar.zst
+    bytes: 841887
+    sha256: b196c0557bdab1c84c7fbf208743102e6060947bb1cb28562d41e8f7496fb75c
+  src:
+    release: v2026.10.0-src
+    file: glib-src.tar.zst
+    bytes: 6007917
+    sha256: e64efa3d8057e08b784e3ae251e7e314adf4358172d2d85282eb987506dfadb9
+  src_manifest:
+    release: v2026.10.0-src
+    file: glib-src.MANIFEST.tsv
+    bytes: 1861
+    sha256: 83f6a9eff0e4be8104179a847f6448fceb1a21208a62930277944de0461ab47a

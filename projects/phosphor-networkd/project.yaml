@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: phosphor-networkd
+homepage: https://github.com/openbmc/phosphor-networkd
+language: c++
+oss_fuzz:
+  path: projects/phosphor-networkd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: phosphor-networkd
+  repository: https://github.com/openbmc/phosphor-networkd
+  commit: 1c55a458134d6da4d530f820fbbcda217bde8b04
+  licence: Apache-2.0
+harnesses:
+- name: config_parser_fuzzer
+  status: included
+- name: rtnetlink_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: util_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: phosphor-networkd-bin.tar.zst
+    bytes: 1974344
+    sha256: 884552664fdf5e30e7ec82123d343b1d28e6bfcc9abb4349d98c289d8012adf4
+  src:
+    release: v2026.10.0-src
+    file: phosphor-networkd-src.tar.zst
+    bytes: 652131
+    sha256: 866403a3bbb0efd18ebdfe1fe7336e1d4588cdd202e868789ced7d740e287715
+  src_manifest:
+    release: v2026.10.0-src
+    file: phosphor-networkd-src.MANIFEST.tsv
+    bytes: 3947
+    sha256: c02624f67c350af210d36e234b089e5726bbc792557c65b32f906f8abd6d9401

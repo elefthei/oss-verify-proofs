@@ -1,0 +1,84 @@
+schema: oss-fuzz-theorems/project/1
+project: dropbear
+homepage: https://matt.ucc.asn.au/dropbear/dropbear.html
+language: c++
+oss_fuzz:
+  path: projects/dropbear
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dropbear
+  repository: https://github.com/mkj/dropbear
+  commit: 1442f00d3f0d755d9f8ba83c5edcd893aa4d71db
+  licence: MIT
+  patch_count: 4
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer-cliconf
+  status: included
+  origin: upstream
+- name: fuzzer-client
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-client_nomaths
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexcurve25519
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexdh
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexecdh
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexmlkem-cli
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexmlkem-srv
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexsntrup-cli
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-kexsntrup-srv
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-postauth_nomaths
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-preauth
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-preauth_nomaths
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-pubkey
+  status: not-included
+  reason: not-attempted
+- name: fuzzer-verify
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dropbear-bin.tar.zst
+    bytes: 646286
+    sha256: da683ff1a707b251faf3d0f4ee9edb2473a53766572ea70ca2c9951efbad97f7
+  src:
+    release: v2026.10.0-src
+    file: dropbear-src.tar.zst
+    bytes: 2374202
+    sha256: b7c1583c8a7bfe2999fd80dd7bf5d0d7517c0fec2712430456a93aea25efa23f
+  src_manifest:
+    release: v2026.10.0-src
+    file: dropbear-src.MANIFEST.tsv
+    bytes: 1363
+    sha256: ab7648d7fc8aaf2639c071f888df6a7e0a6f2af7ccfc878ef256abfa566c2b12

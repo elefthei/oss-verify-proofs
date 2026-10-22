@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: protobuf-c
+homepage: https://github.com/protobuf-c/protobuf-c
+language: c
+oss_fuzz:
+  path: projects/protobuf-c
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: protobuf-c
+  repository: https://github.com/protobuf-c/protobuf-c
+  commit: 6decaa6e5ff37e2c7f1afea06dc75b067d14b1b0
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: unpack_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: protobuf-c-bin.tar.zst
+    bytes: 308676
+    sha256: ba425b1616dd808eb5af1b7f945231ff6caf84be0a0bc4fc962bea2336878a4b
+  src:
+    release: v2026.10.0-src
+    file: protobuf-c-src.tar.zst
+    bytes: 115866
+    sha256: 3ce630837e5f117664aa09ecbf879df5e3fc49ae9eff13971f307e9c46d9805a
+  src_manifest:
+    release: v2026.10.0-src
+    file: protobuf-c-src.MANIFEST.tsv
+    bytes: 1563
+    sha256: e0ee2e0fd8da6b1380ac9f6a2f8d7a7608b52e5a5785ba3699d8a9bc32a42978

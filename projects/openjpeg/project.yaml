@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: openjpeg
+language: c++
+oss_fuzz:
+  path: projects/openjpeg
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openjpeg
+  repository: https://github.com/uclouvain/openjpeg
+  commit: 402ef5862195b177ea0a7788f2a6ef2804e62285
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: opj_decompress_fuzzer_J2K
+  status: included
+  origin: upstream
+- name: opj_decompress_fuzzer_JP2
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openjpeg-bin.tar.zst
+    bytes: 1076099
+    sha256: 7a60b7e077619bf7b26ae0fd63058c4a4b9751f2073f6888a0b91b1cf6cb4a11
+  src:
+    release: v2026.10.0-src
+    file: openjpeg-src.tar.zst
+    bytes: 1541113
+    sha256: e15f6fe4195ac7fe42e5bf9332dfc7d636f7227e799fd9710725772cff4f6126
+  src_manifest:
+    release: v2026.10.0-src
+    file: openjpeg-src.MANIFEST.tsv
+    bytes: 1572
+    sha256: b2c941dce930be06afdb5c234c13c14eb59aedde5724391391b6c344a6e71d11

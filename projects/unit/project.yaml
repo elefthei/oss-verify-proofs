@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: unit
+homepage: https://unit.nginx.org
+language: c
+oss_fuzz:
+  path: projects/unit
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: unit
+  repository: https://github.com/nginx/unit
+  commit: 76b39e928bd29f09278b60c3878b9f3d032b45b6
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_basic
+  status: included
+  origin: upstream
+- name: fuzz_http_controller
+  status: not-included
+  reason: not-attempted
+- name: fuzz_http_h1p
+  status: not-included
+  reason: not-attempted
+- name: fuzz_http_h1p_peer
+  status: not-included
+  reason: not-attempted
+- name: fuzz_json
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: unit-bin.tar.zst
+    bytes: 341622
+    sha256: 12091dbccf888f849db10eb9012f2d96e920fe85f41cb9d20a71fd86a6bbaf45
+  src:
+    release: v2026.10.0-src
+    file: unit-src.tar.zst
+    bytes: 845547
+    sha256: 65f79d4763f8793dd85c4ef5448616464edfd687cdab6b41d5f84263fbd59f86
+  src_manifest:
+    release: v2026.10.0-src
+    file: unit-src.MANIFEST.tsv
+    bytes: 1326
+    sha256: f7bb854ee649486e1dbfb99bd108cf05359e5fb6e5a9df61ed81ea37fffaf215

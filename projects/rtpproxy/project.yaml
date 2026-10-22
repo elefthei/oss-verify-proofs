@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: rtpproxy
+homepage: https://rtpproxy.org
+language: c
+oss_fuzz:
+  path: projects/rtpproxy
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rtpproxy
+  repository: https://github.com/sippy/rtpproxy
+  commit: 630f75e22ab30c9856e6200f4bab29e938b990c2
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_command_parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz_rtcp_parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz_rtp_parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz_rtp_session
+  status: not-included
+  reason: not-attempted
+- name: fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rtpproxy-bin.tar.zst
+    bytes: 272152
+    sha256: 7bd38db5dc461f757a2daac5409d79e8e1f8f8d2b24ac0df708a6f64a825b1c7
+  src:
+    release: v2026.10.0-src
+    file: rtpproxy-src.tar.zst
+    bytes: 22230680
+    sha256: 852399e92bcb56152fc59bf07bd9451c813e3e1992555d5f72c2f022e8f84452
+  src_manifest:
+    release: v2026.10.0-src
+    file: rtpproxy-src.MANIFEST.tsv
+    bytes: 1337
+    sha256: 4f24d0a9414be0c78a4f12f5877a1fdbcffa69267866e414f20d41825e6c006f

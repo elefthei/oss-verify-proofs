@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: libyaml
+homepage: https://github.com/yaml/libyaml
+language: c++
+oss_fuzz:
+  path: projects/libyaml
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libyaml
+  repository: https://github.com/yaml/libyaml
+  commit: 90a56d4500aa1a1798514c5cb55c3ad4cb095f94
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libyaml_deconstructor_alt_fuzzer
+  status: included
+- name: libyaml_deconstructor_fuzzer
+  status: included
+- name: libyaml_dumper_fuzzer
+  status: included
+- name: libyaml_emitter_fuzzer
+  status: included
+- name: libyaml_loader_fuzzer
+  status: included
+- name: libyaml_parser_fuzzer
+  status: included
+- name: libyaml_reformatter_alt_fuzzer
+  status: included
+- name: libyaml_reformatter_fuzzer
+  status: included
+- name: libyaml_scanner_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libyaml-bin.tar.zst
+    bytes: 1539144
+    sha256: 24c25891cb2830d7296f4188bf916b7d74989f55548600cd83371e3b1d6cbe90
+  src:
+    release: v2026.10.0-src
+    file: libyaml-src.tar.zst
+    bytes: 76455
+    sha256: dd44e9e8b8a1c362d19b0c0d45cdced011d3a9924ca3d306a426d2b0d1c7fd56
+  src_manifest:
+    release: v2026.10.0-src
+    file: libyaml-src.MANIFEST.tsv
+    bytes: 5242
+    sha256: 747a03cb11faad7f5555e6215c4f43d400f3933be93233b7eb28fc94ff62e287

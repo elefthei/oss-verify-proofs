@@ -1,0 +1,55 @@
+schema: oss-fuzz-theorems/project/1
+project: openvswitch
+language: c++
+oss_fuzz:
+  path: projects/openvswitch
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ovs
+  repository: https://github.com/openvswitch/ovs
+  commit: 1d4157643ca16ef8d84c8a27fe524aedb7b538d0
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: flow_extract_target
+  status: not-included
+  reason: not-yet-included
+- name: json_parser_target
+  status: included
+  origin: upstream
+- name: miniflow_target
+  status: not-included
+  reason: not-yet-included
+- name: odp_target
+  status: included
+  origin: upstream
+- name: ofctl_parse_target
+  status: included
+  origin: upstream
+- name: ofp_print_target
+  status: not-included
+  reason: not-yet-included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openvswitch-bin.tar.zst
+    bytes: 5327576
+    sha256: def375772b0a7f6800d1f836f450972b1af473726ca8411f4ac8860b64208f25
+  src:
+    release: v2026.10.0-src
+    file: openvswitch-src.tar.zst
+    bytes: 3678435
+    sha256: 09a949ac147f829733ddc162f4fcc9eb73df8842c9116166835c42f66170b1b3
+  src_manifest:
+    release: v2026.10.0-src
+    file: openvswitch-src.MANIFEST.tsv
+    bytes: 1665
+    sha256: 1cded6a263e7da557e9795a52e64e328d9bc5ef7d0610092d617297b030dff16

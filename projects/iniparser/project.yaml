@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: iniparser
+homepage: https://gitlab.com/iniparser/iniparser
+language: c
+oss_fuzz:
+  path: projects/iniparser
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: no-harness
+reason: none-at-commit

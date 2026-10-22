@@ -1,0 +1,3 @@
+refutes: toy/exit1/plain_halts
+approach: one valid entry and input on which the one execution exits with status 1
+uses: [lps-checks]

@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: libucl
+homepage: https://github.com/vstakhov/libucl
+language: c
+oss_fuzz:
+  path: projects/libucl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libucl
+  repository: https://github.com/vstakhov/libucl
+  commit: 04e5e70b700d219701abda220f06beca7bff1e25
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: ucl_add_string_fuzzer
+  status: included
+  origin: upstream
+- name: ucl_msgpack_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libucl-bin.tar.zst
+    bytes: 635004
+    sha256: 04cc9103fd9c6f56bb1c83b62843be02bfacc7ef72e5af02230967277b31d8c2
+  src:
+    release: v2026.10.0-src
+    file: libucl-src.tar.zst
+    bytes: 2015250
+    sha256: f50145a7dd2e1548a4b0690a1d431d6cc99f771711ff7c50e230cbdc2e88e9b0
+  src_manifest:
+    release: v2026.10.0-src
+    file: libucl-src.MANIFEST.tsv
+    bytes: 1496
+    sha256: b606d4c131211f4462dc31811b822d2aa2df6e5237fc3e6d106a1c6901cae4fe

@@ -1,0 +1,36 @@
+schema: oss-fuzz-theorems/project/1
+project: phosphor-certificate-manager
+homepage: https://github.com/openbmc/phosphor-certificate-manager
+language: c++
+oss_fuzz:
+  path: projects/phosphor-certificate-manager
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: phosphor-certificate-manager
+  repository: https://github.com/openbmc/phosphor-certificate-manager
+  commit: 9d6ea17f3926d1143765129384a8afc2c7fe42c3
+  licence: Apache-2.0
+harnesses:
+- name: parse_cert_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: phosphor-certificate-manager-bin.tar.zst
+    bytes: 3169198
+    sha256: a987f1e20fc390cb319aaeb25e6dc19dbbde44a30c540765016026fef89d076e
+  src:
+    release: v2026.10.0-src
+    file: phosphor-certificate-manager-src.tar.zst
+    bytes: 2504975
+    sha256: 9d2316419fe8c1f29450e235cebf76406b7c968d0d443dd6e488e0156e7bd684
+  src_manifest:
+    release: v2026.10.0-src
+    file: phosphor-certificate-manager-src.MANIFEST.tsv
+    bytes: 4679
+    sha256: d817ece1f7a5c3bcfa0839b27a0ffba3b79dbe8dbed20f39969e2636a3a287db

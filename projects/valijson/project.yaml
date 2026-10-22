@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: valijson
+homepage: https://github.com/tristanpenman/valijson
+language: c++
+oss_fuzz:
+  path: projects/valijson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: valijson
+  repository: https://github.com/tristanpenman/valijson
+  commit: d358f9674adc47358733abafdc0fb2a45df8d963
+  licence: BSD-2-Clause
+harnesses:
+- name: fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: valijson-bin.tar.zst
+    bytes: 1359886
+    sha256: 0ad2da902e7d382892e64ac6248d50163e5acb0d50b41a031bbf811ad58f67fe
+  src:
+    release: v2026.10.0-src
+    file: valijson-src.tar.zst
+    bytes: 98665017
+    sha256: cad0526d57bd0b97d1635a93adc4af261571bd6eaac35a83c0804846fda73351
+  src_manifest:
+    release: v2026.10.0-src
+    file: valijson-src.MANIFEST.tsv
+    bytes: 6913
+    sha256: 88a11d4d0ce9d7f5421a7f1db2236087b0234dc23a0ad63b74965563d68849c1

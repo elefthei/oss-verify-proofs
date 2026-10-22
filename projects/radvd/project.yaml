@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: radvd
+language: c
+oss_fuzz:
+  path: projects/radvd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: radvd
+  repository: https://github.com/radvd-project/radvd
+  commit: fbbacdcbd12f829453deb33ed50a5a49a3c42b05
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_config
+  status: included
+- name: fuzz_process
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: radvd-bin.tar.zst
+    bytes: 534885
+    sha256: 2db442c02019f6afb2981d1be957dc5e075ed05fcaa96ac66e609e755724fd4a
+  src:
+    release: v2026.10.0-src
+    file: radvd-src.tar.zst
+    bytes: 104207
+    sha256: c003d12b3d2d9b4561af0bc72860a46438c2414ea9b82040d6ef47844c7de265
+  src_manifest:
+    release: v2026.10.0-src
+    file: radvd-src.MANIFEST.tsv
+    bytes: 1685
+    sha256: 6bd95146218f4b74a5c79de0771aafc336b01cc14ed3a91d14a8710cd5c0e5a5

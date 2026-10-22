@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: eigen
+language: c++
+oss_fuzz:
+  path: projects/eigen
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: eigen
+  repository: https://gitlab.com/libeigen/eigen
+  commit: 31374a3072566fbc9632bfa9f9daad5e391e5545
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: basicstuff_fuzzer
+  status: included
+- name: dense_solver_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: geometry_fuzzer
+  status: included
+- name: solver_fuzzer
+  status: included
+- name: sparse_fuzzer
+  status: included
+- name: tensor_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: eigen-bin.tar.zst
+    bytes: 1793925
+    sha256: 2547c782ad02cf4b4d38dd5a13e95091201c2121932338be6b972390233843e5
+  src:
+    release: v2026.10.0-src
+    file: eigen-src.tar.zst
+    bytes: 2590479
+    sha256: e5e79a600632e36c7cb60c05e536cb76b24db293e73961587df10961d3aceb66
+  src_manifest:
+    release: v2026.10.0-src
+    file: eigen-src.MANIFEST.tsv
+    bytes: 2539
+    sha256: 3e43a1a6c1bbb5bfbaeef3fed0fa702e11004b16c5a0f44951237fdf232cfda1

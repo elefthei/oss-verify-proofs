@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: aniso8601
+homepage: https://bitbucket.org/nielsenb/aniso8601
+language: python
+oss_fuzz:
+  path: projects/aniso8601
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

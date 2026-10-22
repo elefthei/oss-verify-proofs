@@ -1,0 +1,79 @@
+schema: oss-fuzz-theorems/project/1
+project: expat
+homepage: https://github.com/libexpat/libexpat
+language: c++
+oss_fuzz:
+  path: projects/expat
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libexpat
+  repository: https://github.com/libexpat/libexpat
+  commit: f31adfd584b7f6c50bbf4d22eb928538ffc9145a
+  version: 2.7.5
+  licence: MIT
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: xml_lpm_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer_ISO-8859-1
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer_US-ASCII
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer_UTF-16
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer_UTF-16BE
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer_UTF-16LE
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer_UTF-8
+  status: included
+  origin: upstream
+- name: xml_parsebuffer_fuzzer_ISO-8859-1
+  status: not-included
+  reason: not-attempted
+- name: xml_parsebuffer_fuzzer_US-ASCII
+  status: not-included
+  reason: not-attempted
+- name: xml_parsebuffer_fuzzer_UTF-16
+  status: not-included
+  reason: not-attempted
+- name: xml_parsebuffer_fuzzer_UTF-16BE
+  status: not-included
+  reason: not-attempted
+- name: xml_parsebuffer_fuzzer_UTF-16LE
+  status: not-included
+  reason: not-attempted
+- name: xml_parsebuffer_fuzzer_UTF-8
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: expat-bin.tar.zst
+    bytes: 834549
+    sha256: 2aa506e6175afbba3bb9c06ad448917449c01d4e0361f9bc93800ad155f8bd7e
+  src:
+    release: v2026.10.0-src
+    file: expat-src.tar.zst
+    bytes: 5089272
+    sha256: 34e0d41b2bee53d078b2ccd47324b90fc3c6679dc63863aeb6d29fdadd7d372b
+  src_manifest:
+    release: v2026.10.0-src
+    file: expat-src.MANIFEST.tsv
+    bytes: 1537
+    sha256: 1ccc644cb2adab5fc438a7e7b6197dc02cdba156d57855cc10a91b12cda446cc

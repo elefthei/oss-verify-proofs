@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: bearssl
+homepage: https://bearssl.org
+language: c++
+oss_fuzz:
+  path: projects/bearssl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: BearSSL
+  repository: https://www.bearssl.org/git/BearSSL
+  commit: 7bea48e5e850ab4cafbe68d3765cdaba13a86d6f
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cryptofuzz-bearssl
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: bearssl-bin.tar.zst
+    bytes: 5546264
+    sha256: 5f95419f29356ee1b801cb9eb7f506378984669451a00d9ad080abcc61610bc3
+  src:
+    release: v2026.10.0-src
+    file: bearssl-src.tar.zst
+    bytes: 2966802
+    sha256: 4d17323428cb304bee7b89ebe050455b4c8a171861d9ee1ac5136444381f20f4
+  src_manifest:
+    release: v2026.10.0-src
+    file: bearssl-src.MANIFEST.tsv
+    bytes: 1844
+    sha256: 8c0c8ebc66e0d489f78d11cf92c32228b8e3738550956c7f7f7331eb8c3a9965

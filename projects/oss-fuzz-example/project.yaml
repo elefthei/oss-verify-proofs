@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: oss-fuzz-example
+homepage: https://github.com/AdaLogics/oss-fuzz-example
+language: c
+oss_fuzz:
+  path: projects/oss-fuzz-example
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: oss-fuzz-example
+  repository: https://github.com/AdaLogics/oss-fuzz-example
+  commit: 61e234fde0dbc8fc03b3586ffe085654723acd33
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_char_lib
+  status: included
+  origin: upstream
+- name: fuzz_complex_parser
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: oss-fuzz-example-bin.tar.zst
+    bytes: 315033
+    sha256: 031a04a1feee6008572687ddd13f352b813722d1ab4ba270873f3b3b5c56b373
+  src:
+    release: v2026.10.0-src
+    file: oss-fuzz-example-src.tar.zst
+    bytes: 5936
+    sha256: 9d620216a0b3bf0da95ce29c59667ab211b3ca9e584eb56a515d79ba70d79f25
+  src_manifest:
+    release: v2026.10.0-src
+    file: oss-fuzz-example-src.MANIFEST.tsv
+    bytes: 1611
+    sha256: 6d70c2c643e983df9037f37fa95f0797077b99209a4279d86fc5011dbe6b3156

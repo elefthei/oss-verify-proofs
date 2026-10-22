@@ -1,0 +1,68 @@
+schema: oss-fuzz-theorems/project/1
+project: httrack
+homepage: https://www.httrack.com
+language: c
+oss_fuzz:
+  path: projects/httrack
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: httrack
+  repository: https://github.com/xroche/httrack
+  commit: 6e29ab3bf216a503823fef14689b11c61c5303d9
+  licence: GPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-cachendx
+  status: included
+  origin: upstream
+- name: fuzz-charset
+  status: not-included
+  reason: not-yet-included
+- name: fuzz-entities
+  status: included
+  origin: upstream
+- name: fuzz-filters
+  status: included
+  origin: upstream
+- name: fuzz-header
+  status: included
+  origin: upstream
+- name: fuzz-idna
+  status: not-included
+  reason: not-yet-included
+- name: fuzz-meta
+  status: included
+  origin: upstream
+- name: fuzz-sitemap
+  status: included
+  origin: upstream
+- name: fuzz-unescape
+  status: included
+  origin: upstream
+- name: fuzz-url
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: httrack-bin.tar.zst
+    bytes: 1430612
+    sha256: 0b093ead1de1eef4a23f6c552885b39ef7f7cba47bb0ab97c584b69e33ca4acf
+  src:
+    release: v2026.10.0-src
+    file: httrack-src.tar.zst
+    bytes: 3941446
+    sha256: ba9601dfb2ccfb38cbaa8be16b59d951083b771dc83c7347bac922c724b62e42
+  src_manifest:
+    release: v2026.10.0-src
+    file: httrack-src.MANIFEST.tsv
+    bytes: 3166
+    sha256: a41f53b28c7f9532db5954a414a8550f2d69ad877975efd3e9115a39c54ac1d7

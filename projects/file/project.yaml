@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: file
+language: c++
+oss_fuzz:
+  path: projects/file
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: file
+  repository: https://github.com/file/file
+  commit: 4ee5ca8fb938c3168bcededd0ce7c2e03daea485
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: magic_fuzzer
+  status: not-included
+  reason: setup-fails
+- name: magic_fuzzer_fd
+  status: not-included
+  reason: setup-fails
+- name: magic_fuzzer_loaddb
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: file-bin.tar.zst
+    bytes: 512475
+    sha256: fe3dad3ddd8be3270b6073ae27ba6bf9b988726a707869b1ef01a17d6e8c2c48
+  src:
+    release: v2026.10.0-src
+    file: file-src.tar.zst
+    bytes: 2216106
+    sha256: abbf4e1d2e61ae93fda224874f9c0f532d953941802337310a9c526ac37d79f1
+  src_manifest:
+    release: v2026.10.0-src
+    file: file-src.MANIFEST.tsv
+    bytes: 1642
+    sha256: 585df6f97a4daaa745a1105b940c42f7a9ea857006a6334badf82b167caaf746

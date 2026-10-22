@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: libpcap
+homepage: https://www.tcpdump.org
+language: c++
+oss_fuzz:
+  path: projects/libpcap
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libpcap
+  repository: https://github.com/the-tcpdump-group/libpcap
+  commit: 7fc0bcd48aee89f0b09fdc1c10346fe55b386a80
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_both
+  status: included
+  origin: upstream
+- name: fuzz_filter
+  status: included
+  origin: upstream
+- name: fuzz_pcap
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libpcap-bin.tar.zst
+    bytes: 1112700
+    sha256: 3255af7992f2753543cd8f26bcc8a0b89181dfa26a5345c492d4fb4b7ef34a0e
+  src:
+    release: v2026.10.0-src
+    file: libpcap-src.tar.zst
+    bytes: 712404
+    sha256: b965c031236f1cbaa7a1c3e2d8cdaa2cb66552281b9b462f3c007f80fa3cbe8a
+  src_manifest:
+    release: v2026.10.0-src
+    file: libpcap-src.MANIFEST.tsv
+    bytes: 1538
+    sha256: dcd623e1b7482660b9362db95ec77e33062cfa6b0f3e1f4059de878b3fb69210

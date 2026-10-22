@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: tinyobjloader
+homepage: https://github.com/tinyobjloader/tinyobjloader
+language: c++
+oss_fuzz:
+  path: projects/tinyobjloader
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tinyobjloader
+  repository: https://github.com/tinyobjloader/tinyobjloader
+  commit: 45636bdcef1a4fec140346b90c0b50bf0bc3e23b
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_ParseFromString
+  status: not-included
+  reason: not-attempted
+- name: fuzz_tobj_c
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tinyobjloader-bin.tar.zst
+    bytes: 496120
+    sha256: b6f0a08682dc6e763f530084c6767edd7a67f0f6b8bf473a08338103f6adec2a
+  src:
+    release: v2026.10.0-src
+    file: tinyobjloader-src.tar.zst
+    bytes: 1030962
+    sha256: 54ea60ad6d3c4fa0c696f9227adcf7efe90ec47b151575a9cd235b6adac5f65a
+  src_manifest:
+    release: v2026.10.0-src
+    file: tinyobjloader-src.MANIFEST.tsv
+    bytes: 1415
+    sha256: 11bc72e33ded85befacc2b79399652734c849d0f39a2d6d505d867d4a7b7b657

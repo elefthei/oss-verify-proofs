@@ -1,0 +1,55 @@
+schema: oss-fuzz-theorems/project/1
+project: poco
+homepage: https://github.com/pocoproject/poco
+language: c++
+oss_fuzz:
+  path: projects/poco
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: poco
+  repository: https://github.com/pocoproject/poco
+  commit: 3f0c291d56751b12ba95ca545706061bd4d35aeb
+  licence: BSL-1.0
+harnesses:
+- name: date_time_fuzzer
+  status: included
+  origin: upstream
+- name: foundation_misc_fuzzer
+  status: included
+  origin: upstream
+- name: http_message_fuzzer
+  status: included
+  origin: upstream
+- name: json_parser_fuzzer
+  status: included
+  origin: upstream
+- name: jwt_decode_fuzzer
+  status: included
+  origin: upstream
+- name: mail_message_fuzzer
+  status: included
+  origin: upstream
+- name: xml_parser_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: poco-bin.tar.zst
+    bytes: 14541142
+    sha256: 4bc70d52a5c0cd47d6d10b4e93ce5726060b3fb8b7c36d73d3085685ac340608
+  src:
+    release: v2026.10.0-src
+    file: poco-src.tar.zst
+    bytes: 8137363
+    sha256: f6f98b7793eb080fd72a2d335fb59ba4e47955917c690463068a9d2cfaa759a2
+  src_manifest:
+    release: v2026.10.0-src
+    file: poco-src.MANIFEST.tsv
+    bytes: 1952
+    sha256: 6b5406c47197fa9a2e3da041c1122afd1f16cefd0e4d2b22777cf06ab96f002c

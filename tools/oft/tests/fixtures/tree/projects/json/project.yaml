@@ -1,0 +1,20 @@
+schema: oss-fuzz-theorems/project/1
+project: json
+description: JSON for Modern C++
+homepage: https://github.com/nlohmann/json
+language: c++
+oss_fuzz: {path: projects/json, commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842}
+status: available
+library:
+  name: nlohmann/json
+  repository: https://github.com/nlohmann/json
+  commit: 9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f
+  licence: MIT
+harnesses:
+- {name: fuzzer-parse_bjdata, status: included, origin: upstream}
+assets:
+  bin: {release: v2026.11.0, file: json-bin.tar.zst, bytes: 3000000, sha256: aaaa444444444444444444444444444444444444444444444444444444444444}
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:3333333333333333333333333333333333333333333333333333333333333333

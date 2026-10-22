@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: libcacard
+homepage: https://gitlab.freedesktop.org/spice/libcacard
+language: c
+oss_fuzz:
+  path: projects/libcacard
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libcacard
+  repository: https://gitlab.freedesktop.org/spice/libcacard
+  commit: 633afa761d15bc12adedbff8a43ac9d3c617d1a3
+  licence: LGPL-2.1-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_options
+  status: not-included
+  reason: not-attempted
+- name: fuzz_simpletlv
+  status: included
+  origin: upstream
+- name: fuzz_xfer
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libcacard-bin.tar.zst
+    bytes: 499538
+    sha256: 60fb1179c712c278b519839ea0b3e0cad1e8e4de361e81fe087b32ca7c3df458
+  src:
+    release: v2026.10.0-src
+    file: libcacard-src.tar.zst
+    bytes: 127054
+    sha256: 99f16f640012f7245a79ba8d875d02738ab443c6b33a110f63e59c1245aaf143
+  src_manifest:
+    release: v2026.10.0-src
+    file: libcacard-src.MANIFEST.tsv
+    bytes: 1386
+    sha256: 1705f49654ee1c6dcdb2a46f6b4385e9c5b7c0418d4dd1545886faff9838e3b4

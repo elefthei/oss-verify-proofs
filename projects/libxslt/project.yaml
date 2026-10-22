@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: libxslt
+language: c++
+oss_fuzz:
+  path: projects/libxslt
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libxslt
+  repository: https://gitlab.gnome.org/GNOME/libxslt
+  commit: ec95343e75c503523b91495f021d109173e169c4
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: xpath
+  status: included
+  origin: upstream
+- name: xslt
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libxslt-bin.tar.zst
+    bytes: 1787324
+    sha256: 43e629935e42e58b7bf6e52a5b547db1f23b36daed1bfe56afa2d1c7d8d65d9f
+  src:
+    release: v2026.10.0-src
+    file: libxslt-src.tar.zst
+    bytes: 1357207
+    sha256: 45d1c379c220fd4c60786123a117ea0a845bf3233aed3ec4d7273c2b0d78b717
+  src_manifest:
+    release: v2026.10.0-src
+    file: libxslt-src.MANIFEST.tsv
+    bytes: 1402
+    sha256: c9fb5dca1a45d07a192e0393948f86b8b4eff8e9bc473b0b62f97a7a8cc4b2ad

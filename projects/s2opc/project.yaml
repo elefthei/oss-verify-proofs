@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: s2opc
+homepage: https://s2opc.com
+language: c++
+oss_fuzz:
+  path: projects/s2opc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: S2OPC
+  repository: https://gitlab.com/systerel/S2OPC
+  commit: bad930a6f63cb23cde9666b3e46384c5b9f4352f
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: decode_fuzzer
+  status: included
+  origin: upstream
+- name: parse_tcp_uri_fuzzer
+  status: included
+  origin: upstream
+- name: server_request_fuzzer
+  status: included
+  origin: upstream
+- name: sub_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: s2opc-bin.tar.zst
+    bytes: 1002994
+    sha256: 28291f642cfb2b022874761a3abd023f1571da039524ce81858d6466e759e73a
+  src:
+    release: v2026.10.0-src
+    file: s2opc-src.tar.zst
+    bytes: 4148114
+    sha256: 66cafb3aa54592d889d0b98cf39f1f650757712788c695bab22c18b15fd2da33
+  src_manifest:
+    release: v2026.10.0-src
+    file: s2opc-src.MANIFEST.tsv
+    bytes: 1651
+    sha256: 03f2b938074bafcadd8b5197f20deef5dc41fdcdd6044ede955f7e2552aa9b39

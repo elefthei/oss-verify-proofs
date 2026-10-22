@@ -1,0 +1,74 @@
+schema: oss-fuzz-theorems/project/1
+project: libgd
+homepage: https://libgd.org
+language: c++
+oss_fuzz:
+  path: projects/libgd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libgd
+  repository: https://github.com/libgd/libgd
+  commit: 87a329c0b184817aee950f366044e35fd1f379c8
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: bmp_target
+  status: not-included
+  reason: not-attempted
+- name: fuzz_bmp_decode
+  status: included
+  origin: upstream
+- name: gd2_target
+  status: not-included
+  reason: not-attempted
+- name: gd_image_string_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gd_target
+  status: not-included
+  reason: not-attempted
+- name: gif_target
+  status: not-included
+  reason: not-attempted
+- name: jpeg_target
+  status: not-included
+  reason: not-attempted
+- name: png_target
+  status: not-included
+  reason: not-attempted
+- name: tga_target
+  status: not-included
+  reason: not-attempted
+- name: tiff_target
+  status: not-included
+  reason: not-attempted
+- name: wbmp_target
+  status: not-included
+  reason: not-attempted
+- name: webp_target
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libgd-bin.tar.zst
+    bytes: 332928
+    sha256: db53a1002ebfde358c1ecc9d995d522d8ed53c1e6fa5768d9dbf71396d8b1736
+  src:
+    release: v2026.10.0-src
+    file: libgd-src.tar.zst
+    bytes: 161416211
+    sha256: 14760c45bdd417fb14f1e248f81a5f41c871fef8f8f150e692aba3d90d8f0f24
+  src_manifest:
+    release: v2026.10.0-src
+    file: libgd-src.MANIFEST.tsv
+    bytes: 1933
+    sha256: b712050322cdd2283049e03ae89072f505bff1d73449fe3c66d264917d73e63d

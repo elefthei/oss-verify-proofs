@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: libraw
+homepage: https://www.libraw.org
+language: c++
+oss_fuzz:
+  path: projects/libraw
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libraw
+  repository: https://github.com/libraw/libraw
+  commit: 8b376613626c41f83b260e520d43c02f8aff762b
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: libraw_cr2_fuzzer
+  status: included
+- name: libraw_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libraw_nef_fuzzer
+  status: included
+- name: libraw_raf_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libraw-bin.tar.zst
+    bytes: 6821319
+    sha256: 9e4263b0694f5b31593c3e29cddbc3017bbd7251848520a7d7ac9d27ce7aef82
+  src:
+    release: v2026.10.0-src
+    file: libraw-src.tar.zst
+    bytes: 490414
+    sha256: a91aaa4d4e78fe5a850cb6292a8178d549f8991d6b9afb71acc002d1e00adfd2
+  src_manifest:
+    release: v2026.10.0-src
+    file: libraw-src.MANIFEST.tsv
+    bytes: 2055
+    sha256: 55d5cccf72e7018c5f9a539fcb439181aa0f38e8f868ccb2a04735a6557d3f7c

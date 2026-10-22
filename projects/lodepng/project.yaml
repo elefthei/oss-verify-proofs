@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: lodepng
+homepage: https://github.com/lvandeve/lodepng
+language: c++
+oss_fuzz:
+  path: projects/lodepng
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lodepng
+  repository: https://github.com/lvandeve/lodepng
+  commit: ed6fe5825c6a4fbb7f58ab35a4231c7543cd452a
+  licence: Zlib
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: lodepng_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lodepng-bin.tar.zst
+    bytes: 621504
+    sha256: 961edabd40a682075ebc5442272f9d19e43d216fc00ff0ec2624d643dc84c911
+  src:
+    release: v2026.10.0-src
+    file: lodepng-src.tar.zst
+    bytes: 224169
+    sha256: 6ff37b849296bcba29deb6e10a0079109a0562828ca60743e8c2a1a3a7ade385
+  src_manifest:
+    release: v2026.10.0-src
+    file: lodepng-src.MANIFEST.tsv
+    bytes: 1355
+    sha256: 27da980ef06d73aa4c6cf30e401305c034f446df1022c2cd97de8722c87c1b37

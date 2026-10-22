@@ -1,0 +1,4 @@
+claims: toy/exit0/plain_halts
+theorem: plain_halts_holds
+refused_at: wrapper
+because: while it is expected to have type

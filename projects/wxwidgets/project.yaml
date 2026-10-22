@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: wxwidgets
+homepage: https://www.wxwidgets.org
+language: c++
+oss_fuzz:
+  path: projects/wxwidgets
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wxWidgets
+  repository: https://github.com/wxWidgets/wxWidgets
+  commit: b6da51f06a3217d3c91af6de2869eb0cca03b7b5
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: fileconf
+  status: not-included
+  reason: not-attempted
+- name: tar
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer
+  status: included
+  origin: upstream
+- name: zip
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wxwidgets-bin.tar.zst
+    bytes: 796225
+    sha256: b1aba3fdc47c0815cc2e392a0cc7268cf2232f6f03c3ea0eadeea9f1482231ff
+  src:
+    release: v2026.10.0-src
+    file: wxwidgets-src.tar.zst
+    bytes: 31087948
+    sha256: d1ebf1ce3577213813666c98ae2f39789e5e779ddb17b568b5cd6556c800fd8d
+  src_manifest:
+    release: v2026.10.0-src
+    file: wxwidgets-src.MANIFEST.tsv
+    bytes: 27320
+    sha256: 2af66da280859815535d37180758ac3a77ec4eb793db098970aa8e644a5073e4

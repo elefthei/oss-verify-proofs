@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: nghttp2
+homepage: https://nghttp2.org
+language: c++
+oss_fuzz:
+  path: projects/nghttp2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: nghttp2
+  repository: https://github.com/nghttp2/nghttp2
+  commit: b6729c46cf134a59940a20de534b7f44fdb0e877
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: nghttp2_fuzzer
+  status: included
+  origin: upstream
+- name: nghttp2_fuzzer_fdp
+  status: included
+  origin: upstream
+- name: nghttp2_fuzzer_frames
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: nghttp2-bin.tar.zst
+    bytes: 812473
+    sha256: aaf2918ccab157e17293959b476312de61af07a4e407f9ef9205d510f176ed16
+  src:
+    release: v2026.10.0-src
+    file: nghttp2-src.tar.zst
+    bytes: 1809672
+    sha256: b15026ef23efaecc8e7353caa9a801d4f3fb8d19ce8032eea6bf017e9e887ad8
+  src_manifest:
+    release: v2026.10.0-src
+    file: nghttp2-src.MANIFEST.tsv
+    bytes: 5466
+    sha256: ac4534cf9c8ec0db9258e8c48aab6a16e529dcceec4bdcf42c42a7b216fc6bc4

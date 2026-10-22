@@ -1,0 +1,3 @@
+proves: toy/exit0/padded_agrees
+approach: both programs have one execution; lps's executable checker computes it, and its trace set is the prefixes of exit_group(0)
+uses: [lps-checks]

@@ -1,0 +1,47 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://skia.googlesource.com/skcms.git
+COMMIT=9c10699e8884c14c3161b7afc5996d29b6cb7845
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_build_blind
+  oft_build_harness "fuzz/fuzz_iccprofile_info.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+

@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: ots
+homepage: https://github.com/khaledhosny/ots
+language: c++
+oss_fuzz:
+  path: projects/ots
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ots
+  repository: https://github.com/khaledhosny/ots
+  commit: 884861e0103b41d7e9845fdaf9fd1e3c12819103
+  version: 9.3.0
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: ots-fuzzer
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ots-bin.tar.zst
+    bytes: 1573786
+    sha256: 28946dc48ad87db4a5db086a01c6372e06806549964ea1528eb498f3d295985f
+  src:
+    release: v2026.10.0-src
+    file: ots-src.tar.zst
+    bytes: 35141964
+    sha256: d593082f19ff865fdc472952414b168ee1a9f538f977dbcf4bb73b5689c62e81
+  src_manifest:
+    release: v2026.10.0-src
+    file: ots-src.MANIFEST.tsv
+    bytes: 3439
+    sha256: 6d96333b4fe119583a66d4c2a78135978d86d1ba218e7e1ecd89107e9fc48512

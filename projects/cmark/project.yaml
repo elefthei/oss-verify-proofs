@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: cmark
+language: c++
+oss_fuzz:
+  path: projects/cmark
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cmark
+  repository: https://github.com/commonmark/cmark
+  commit: 7042d9978b20fea86ca9cc98bda55f10be392e69
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cmark_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cmark-bin.tar.zst
+    bytes: 552892
+    sha256: 5ef8e5cb1ac257a52ca1a5358fc24bc15bbcce8c4174dc0d5d41294c51879c5f
+  src:
+    release: v2026.10.0-src
+    file: cmark-src.tar.zst
+    bytes: 213613
+    sha256: f0a4e1c74ad4cb4f25cf10e37abf37926fd20b5fdb199e3778665ace3744c8a0
+  src_manifest:
+    release: v2026.10.0-src
+    file: cmark-src.MANIFEST.tsv
+    bytes: 1358
+    sha256: 6dc64f25e8becd1986edeb8648670db07fa5774df13cf9f28d7af2628ae3057a

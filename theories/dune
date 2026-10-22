@@ -1,0 +1,7 @@
+; OssFuzzTheorems.Core: the statement shapes (Shapes.v), well-formed images
+; (Images.v) and the driver's input format (Driver.v).  Hand-written; changes
+; only in a release.
+(rocq.theory
+ (name OssFuzzTheorems.Core)
+ (package rocq-oss-fuzz-theorems-core)
+ (theories Stdlib stdpp Flocq ReadFile LinuxProcessSemantics))

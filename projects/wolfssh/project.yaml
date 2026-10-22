@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: wolfssh
+homepage: https://www.wolfssl.com/wolfssh
+language: c
+oss_fuzz:
+  path: projects/wolfssh
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wolfssh
+  repository: https://github.com/wolfssl/wolfssh
+  commit: bfe6fe0f2d63f2048e7080ed6afb0f4c9da34efd
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_server
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wolfssh-bin.tar.zst
+    bytes: 593411
+    sha256: 29b2a07cc67484c55fd932ace5b86da6836e88c70e39fec130d93b4e50a89cba
+  src:
+    release: v2026.10.0-src
+    file: wolfssh-src.tar.zst
+    bytes: 994975
+    sha256: 90e559f39fe7f960bfe1896c988f7f571b78ca367cba7874a8ff9f3dc2974cec
+  src_manifest:
+    release: v2026.10.0-src
+    file: wolfssh-src.MANIFEST.tsv
+    bytes: 1842
+    sha256: 56475de1fe7a639a2d56ef34aceba7a1804229c1e650e4b2202de081bd3b1e9e

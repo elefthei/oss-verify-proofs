@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: hoextdown
+homepage: https://github.com/kjdev/hoextdown
+language: c++
+oss_fuzz:
+  path: projects/hoextdown
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: hoextdown
+  repository: https://github.com/kjdev/hoextdown
+  commit: 1ef9a71957570c2a65b7daa1b2f693ad87daf385
+  version: 3.0.7.22
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: hoedown_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: hoextdown-bin.tar.zst
+    bytes: 423527
+    sha256: 030c52fca9c445cb8ca309bcc0c24b959a6f8ec504f1bf5c4ef8725d97471729
+  src:
+    release: v2026.10.0-src
+    file: hoextdown-src.tar.zst
+    bytes: 89310
+    sha256: 532358aa40ff335e180e73050e20779415160e0aa76c6229aef5961684a59101
+  src_manifest:
+    release: v2026.10.0-src
+    file: hoextdown-src.MANIFEST.tsv
+    bytes: 1376
+    sha256: 583b8f3e82c82088455f1816516dd29a93d6c4fd027bba124cd891e94f508c9e

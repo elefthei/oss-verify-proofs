@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: iperf
+homepage: https://github.com/esnet/iperf
+language: c++
+oss_fuzz:
+  path: projects/iperf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: iperf
+  repository: https://github.com/esnet/iperf
+  commit: c9b74229d0d9bfec6d2307b66b43c29a7665ad0b
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: auth_fuzzer
+  status: included
+- name: cjson_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: iperf-bin.tar.zst
+    bytes: 1785166
+    sha256: bca64fdf1f5bc2d33cdadd735d6083ed9bd6e3784484417929b9a4b5b83c9b6b
+  src:
+    release: v2026.10.0-src
+    file: iperf-src.tar.zst
+    bytes: 630952
+    sha256: 333c48f0a6dcfc06de7badce64be9d8e85fe5f2dc9803e21b9bb74b084b9561e
+  src_manifest:
+    release: v2026.10.0-src
+    file: iperf-src.MANIFEST.tsv
+    bytes: 1681
+    sha256: 768f3d6c22df3b1e5c8a5094771889541f976210d92666daaedfc2b56b209886

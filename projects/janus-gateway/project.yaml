@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: janus-gateway
+homepage: https://github.com/meetecho/janus-gateway
+language: c++
+oss_fuzz:
+  path: projects/janus-gateway
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: janus-gateway
+  repository: https://github.com/meetecho/janus-gateway
+  commit: 4602fcc5315b77dce2a5d8363a4286ac672183b1
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: rtcp_fuzzer
+  status: included
+  origin: upstream
+- name: rtp_fuzzer
+  status: included
+  origin: upstream
+- name: sdp_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: janus-gateway-bin.tar.zst
+    bytes: 883461
+    sha256: 6251ff7b51b270653959ecbe629e43268feb8b348ab44ef8ae334ea0bf9ba48d
+  src:
+    release: v2026.10.0-src
+    file: janus-gateway-src.tar.zst
+    bytes: 5685268
+    sha256: 6b3c24fdd04de6ae649fa57bbc72ed23aac126031bc92f9d620fef324b19e0af
+  src_manifest:
+    release: v2026.10.0-src
+    file: janus-gateway-src.MANIFEST.tsv
+    bytes: 1653
+    sha256: 38eff1f064fe47b7af08e0340de8b6c0aecdaade1468a9fa72de4320956ce2e5

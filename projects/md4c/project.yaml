@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: md4c
+homepage: https://github.com/mity/md4c
+language: c
+oss_fuzz:
+  path: projects/md4c
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: md4c
+  repository: https://github.com/mity/md4c
+  commit: 3e7ace20d262028baf702db9850520f017c25591
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-mdhtml
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: md4c-bin.tar.zst
+    bytes: 599482
+    sha256: 015bb21a304b4c4c58abd3db202d9484269f9e8b2b779bda7389e89850a2e585
+  src:
+    release: v2026.10.0-src
+    file: md4c-src.tar.zst
+    bytes: 216195
+    sha256: 6491659a895efa83c1b5b0e75393be5c73adfcfba31f7c2ccfc68b8870478b86
+  src_manifest:
+    release: v2026.10.0-src
+    file: md4c-src.MANIFEST.tsv
+    bytes: 1303
+    sha256: d38d5f838a48cc0d76eb85c1b1271d77ffecf638f3521275d5e66566123f772e

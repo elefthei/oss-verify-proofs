@@ -1,0 +1,90 @@
+schema: oss-fuzz-theorems/project/1
+project: brpc
+homepage: https://brpc.apache.org
+language: c++
+oss_fuzz:
+  path: projects/brpc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: brpc
+  repository: https://github.com/apache/brpc
+  commit: e7f08670688617d51263e391b20d213e8d0af7f2
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_amf
+  status: not-included
+  reason: not-yet-included
+- name: fuzz_baidu_rpc
+  status: not-included
+  reason: not-attempted
+- name: fuzz_butil
+  status: not-included
+  reason: not-attempted
+- name: fuzz_couchbase
+  status: not-included
+  reason: not-attempted
+- name: fuzz_esp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_hpack
+  status: not-included
+  reason: not-attempted
+- name: fuzz_http
+  status: not-included
+  reason: not-attempted
+- name: fuzz_http_parser
+  status: included
+  origin: upstream
+- name: fuzz_hulu
+  status: not-included
+  reason: not-attempted
+- name: fuzz_json
+  status: not-included
+  reason: not-attempted
+- name: fuzz_memcache
+  status: not-included
+  reason: not-attempted
+- name: fuzz_mongo
+  status: not-included
+  reason: not-attempted
+- name: fuzz_redis
+  status: not-included
+  reason: not-attempted
+- name: fuzz_shead
+  status: not-included
+  reason: not-attempted
+- name: fuzz_sofa
+  status: not-included
+  reason: not-attempted
+- name: fuzz_streaming
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uri
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: brpc-bin.tar.zst
+    bytes: 357322
+    sha256: a5d8b8c0b72c12e22a4f01c803dcceabd760e530103b46278f258e810823bdc5
+  src:
+    release: v2026.10.0-src
+    file: brpc-src.tar.zst
+    bytes: 23399647
+    sha256: ecf95cc5e2913b3778c99dc891d0d9aa2f3029ec7adf80b5fd8bc7839819fa31
+  src_manifest:
+    release: v2026.10.0-src
+    file: brpc-src.MANIFEST.tsv
+    bytes: 1338
+    sha256: 36ed3c8716dc340ee80759619b65ddde5093c32ded2149d3c69c5c271c47b8bf

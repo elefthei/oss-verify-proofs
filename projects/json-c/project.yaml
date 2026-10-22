@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: json-c
+homepage: https://json-c.github.io/json-c
+language: c++
+oss_fuzz:
+  path: projects/json-c
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: json-c
+  repository: https://github.com/json-c/json-c
+  commit: d17ad9d1863ebbf39993706140bf67847b7add0f
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: json_array_fuzzer
+  status: included
+  origin: upstream
+- name: json_object_fuzzer
+  status: included
+  origin: upstream
+- name: json_pointer_fuzzer
+  status: included
+  origin: upstream
+- name: tokener_parse_ex_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: json-c-bin.tar.zst
+    bytes: 975268
+    sha256: bd517b63243292b4eb3699fa4ee8300b0f872fe59b553b8d80d39fc0dccb90a2
+  src:
+    release: v2026.10.0-src
+    file: json-c-src.tar.zst
+    bytes: 183761
+    sha256: 9b95b80b69db49a52b93158d15438c7e3e2232961a3dc4bd347eb0c20f526ba6
+  src_manifest:
+    release: v2026.10.0-src
+    file: json-c-src.MANIFEST.tsv
+    bytes: 1753
+    sha256: eb9d348c5b44a466d48b33f09305271d277a7d4874e0935ad7817298a90ab83b

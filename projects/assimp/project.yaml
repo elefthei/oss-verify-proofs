@@ -1,0 +1,77 @@
+schema: oss-fuzz-theorems/project/1
+project: assimp
+homepage: https://github.com/assimp/assimp
+language: c++
+oss_fuzz:
+  path: projects/assimp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: assimp
+  repository: https://github.com/assimp/assimp
+  commit: ae786a689e3ce879816e3dba3a2d1edf432dbbb3
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: assimp_fuzzer_3ds
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_3mf
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_amf
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_ase
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_blend
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_collada
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_fbx
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_glb
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_gltf
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_ifc
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_obj
+  status: included
+  origin: upstream
+- name: assimp_fuzzer_stl
+  status: included
+  origin: upstream
+- name: assimp_postprocess_fuzzer
+  status: included
+  origin: upstream
+- name: assimp_roundtrip_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: assimp-bin.tar.zst
+    bytes: 209293023
+    sha256: 601d643b094535db2a3915ecda4ed0855c3bdf13a9fd498817a3f2cefabd28c0
+  src:
+    release: v2026.10.0-src
+    file: assimp-src.tar.zst
+    bytes: 143135400
+    sha256: fd64577f90980ccc25f0f2337dc71f7f626c45ad78e4b20d04776337a339c57f
+  src_manifest:
+    release: v2026.10.0-src
+    file: assimp-src.MANIFEST.tsv
+    bytes: 2997
+    sha256: 83ae21e3370fdf4c5b32b6a6cb1555ac95fd302bb0b8d07593659d7597e9377d

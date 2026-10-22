@@ -1,0 +1,63 @@
+schema: oss-fuzz-theorems/project/1
+project: libgit2
+homepage: https://libgit2.github.com
+language: c++
+oss_fuzz:
+  path: projects/libgit2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libgit2
+  repository: https://github.com/libgit2/libgit2
+  commit: 0551dfd4ad989b6a3d5683c0d4cf326c6efef929
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: commit_graph_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: config_file_fuzzer
+  status: included
+  origin: upstream
+- name: download_refs_fuzzer
+  status: included
+  origin: upstream
+- name: midx_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: objects_fuzzer
+  status: included
+  origin: upstream
+- name: packfile_fuzzer
+  status: included
+  origin: upstream
+- name: patch_parse_fuzzer
+  status: included
+  origin: upstream
+- name: revparse_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libgit2-bin.tar.zst
+    bytes: 8317000
+    sha256: 93fe16805f69426d57f04e36058f94b158a9990d94caf58f2e165002749f2970
+  src:
+    release: v2026.10.0-src
+    file: libgit2-src.tar.zst
+    bytes: 5176706
+    sha256: 33a9837f628236a4f76a5ffff2b53a64eaa9baaf336636bca580427786294a65
+  src_manifest:
+    release: v2026.10.0-src
+    file: libgit2-src.MANIFEST.tsv
+    bytes: 1981
+    sha256: f79ed06ae3e4e39ba1c7c45eef266495ece969706585071fcf4c4b9d4a8327ad

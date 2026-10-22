@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: opencv
+homepage: https://opencv.org
+language: c++
+oss_fuzz:
+  path: projects/opencv
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: opencv
+  repository: https://github.com/opencv/opencv
+  commit: f90e8e205b3d9284b808ae93d7279caafb598b13
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: core_fuzzer
+  status: included
+- name: filestorage_read_file_fuzzer
+  status: included
+- name: filestorage_read_filename_fuzzer
+  status: included
+- name: filestorage_read_string_fuzzer
+  status: included
+- name: generateusergallerycollage_fuzzer
+  status: included
+- name: imdecode_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: imencode_fuzzer
+  status: included
+- name: imread_fuzzer
+  status: included
+- name: readnetfromtensorflow_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opencv-bin.tar.zst
+    bytes: 83368130
+    sha256: 5e204d39aea411872caddcc22d46a60b92770310653e56aba9b94d0835590edf
+  src:
+    release: v2026.10.0-src
+    file: opencv-src.tar.zst
+    bytes: 75337413
+    sha256: a8b08873ac6337489a4705cbf96d2f07e1bbd1e742a4ad7c587087906987b7b0
+  src_manifest:
+    release: v2026.10.0-src
+    file: opencv-src.MANIFEST.tsv
+    bytes: 8758
+    sha256: ab712494007a253e0988ad2ec496f5c0ac092ed162f2b00cff78ad8eaf4ca716

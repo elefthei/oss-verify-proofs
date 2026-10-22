@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: woff2
+homepage: https://github.com/google/woff2
+language: c++
+oss_fuzz:
+  path: projects/woff2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: woff2
+  repository: https://github.com/google/woff2
+  commit: fb9c3379f2605b10f3e8f1d9636664ab5576775c
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: convert_woff2ttf_fuzzer
+  status: included
+  origin: upstream
+- name: convert_woff2ttf_fuzzer_new_entry
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: woff2-bin.tar.zst
+    bytes: 730411
+    sha256: 56af16963d48fd655c4a4db51b12091ee0897c52593785f97495c6ae5ab2e347
+  src:
+    release: v2026.10.0-src
+    file: woff2-src.tar.zst
+    bytes: 23849630
+    sha256: a6d597a59d461c2a5d3599ebecbc481ce642d6b8942ab4b60278068c3c81948f
+  src_manifest:
+    release: v2026.10.0-src
+    file: woff2-src.MANIFEST.tsv
+    bytes: 3728
+    sha256: 7f20bf25ebbe5331c612dcebd0fd2acd1b9a3d8bf457ff81c95a6cf2ff5602df

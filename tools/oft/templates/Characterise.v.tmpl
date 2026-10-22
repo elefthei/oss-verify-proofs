@@ -1,0 +1,33 @@
+Template for projects/<project>/<harness>/Characterise.v: the classifier
+templates.  These are not claims; each is a property of a program C that a
+prover supplies.
+
+@@ file
+(** * $project / $harness: characterisation problems
+
+$header *)
+
+From Stdlib Require Import QArith.
+From LinuxProcessSemantics.LinuxProcessSem Require Import MemImageType.
+From OssFuzzTheorems.Core Require Import Shapes.
+From $rocq Require Images$distribution_require.
+$definitions
+@@ header
+These are not claims.  Each is a property of a classifier program [C], which is any static riscv64 Linux executable you supply$and_bound.  A result is a [C] with a proof of [<build>_classifies C]$and_rejects.  Together with [image_wf C] such a result proves [Statements.<build>_agreement_decidable]$and_claim.
+
+@@ and_bound
+, and of a bound [b]
+@@ and_rejects
+ and of [<build>_classifier_rejects_at_most C b] for as small a [b] as you can
+@@ and_claim
+, and (through [Shapes.disagrees_at_most_of_classifier]) [Statements.<build>_disagrees_at_most b]
+
+@@ definition
+(** $doc *)
+Definition $name$params : Prop :=
+  $body.
+
+@@ doc_classifies
+[C] exits 0 exactly on the finite inputs where the plain and $san builds agree, and 1 on the others.
+@@ doc_rejects
+Under [Distribution.w], the inputs [C] rejects weigh at most [b].

@@ -1,0 +1,109 @@
+schema: oss-fuzz-theorems/project/1
+project: binutils
+homepage: https://www.gnu.org/software/binutils
+language: c++
+oss_fuzz:
+  path: projects/binutils
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: binutils-gdb
+  repository: https://sourceware.org/git/binutils-gdb
+  commit: d36318737a3882fcae672a6f2da5cfdb792721a7
+  licence: NOASSERTION
+harnesses:
+- name: fuzz_addr2line
+  status: not-included
+  reason: not-attempted
+- name: fuzz_as
+  status: not-included
+  reason: not-attempted
+- name: fuzz_bfd
+  status: included
+- name: fuzz_bfd_ext
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disas_ext-bfd_arch_arc
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disas_ext-bfd_arch_arm
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disas_ext-bfd_arch_csky
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disas_ext-bfd_arch_i386
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disas_ext-bfd_arch_mep
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disas_ext-bfd_arch_mips
+  status: not-included
+  reason: not-attempted
+- name: fuzz_disassemble
+  status: included
+- name: fuzz_dlltool
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dwarf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_nm
+  status: not-included
+  reason: not-attempted
+- name: fuzz_objcopy
+  status: not-included
+  reason: not-attempted
+- name: fuzz_objdump
+  status: included
+- name: fuzz_objdump_safe
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ranlib_simulation
+  status: not-included
+  reason: not-attempted
+- name: fuzz_readelf
+  status: not-included
+  reason: system-calls
+- name: fuzz_readelf_elf32_bigarm
+  status: not-included
+  reason: not-attempted
+- name: fuzz_readelf_elf32_csky
+  status: not-included
+  reason: not-attempted
+- name: fuzz_readelf_elf32_littlearm
+  status: not-included
+  reason: not-attempted
+- name: fuzz_readelf_elf64_mmix
+  status: not-included
+  reason: not-attempted
+- name: fuzz_readelf_pef
+  status: not-included
+  reason: not-attempted
+- name: fuzz_strings
+  status: not-included
+  reason: not-attempted
+- name: fuzz_windres
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: binutils-bin.tar.zst
+    bytes: 37290913
+    sha256: ef8234bc64f63a312229716ed2d6c992215e2615bfe2f0fef75ca9884af0815f
+  src:
+    release: v2026.10.0-src
+    file: binutils-src.tar.zst
+    bytes: 41559244
+    sha256: 3a50f98ca6d905b08968ff1a1a73f125a101510c222d934b212e5356f30ec25b
+  src_manifest:
+    release: v2026.10.0-src
+    file: binutils-src.MANIFEST.tsv
+    bytes: 2020
+    sha256: d3626b9ab39f4eb863854c5c29df3a7233923d5fb82cb6e47d1d4dd2d1b8da11

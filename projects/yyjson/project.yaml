@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: yyjson
+homepage: https://github.com/ibireme/yyjson
+language: c
+oss_fuzz:
+  path: projects/yyjson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: yyjson
+  repository: https://github.com/ibireme/yyjson
+  commit: db37a64d63d38a8ddea35aa811b1163831028490
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: yyjson_fuzzer
+  status: included
+  origin: upstream
+- name: yyjson_merge_patch_fuzzer
+  status: included
+  origin: upstream
+- name: yyjson_patch_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: yyjson-bin.tar.zst
+    bytes: 1146723
+    sha256: 6738a70c92df64efbdc15ea1af180a332f60da7c552e4c8f8d01dbc4360a3d95
+  src:
+    release: v2026.10.0-src
+    file: yyjson-src.tar.zst
+    bytes: 1244396
+    sha256: 5f76a3c599da105483bd90e26b008ac50f460761b7b4b643464e5c25616c77b5
+  src_manifest:
+    release: v2026.10.0-src
+    file: yyjson-src.MANIFEST.tsv
+    bytes: 1538
+    sha256: 9a0250843d99026b85791585218245010db1f4ee23e83d8224c0276e95ae3e66

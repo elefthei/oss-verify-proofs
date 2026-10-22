@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: xmlsec
+homepage: https://www.aleksey.com/xmlsec
+language: c++
+oss_fuzz:
+  path: projects/xmlsec
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: xmlsec
+  repository: https://github.com/lsh123/xmlsec
+  commit: e4b8614fb678ee545b70ab419d4c5418f2ce4885
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: xmlsec_dsig_verify_fuzzer
+  status: included
+  origin: upstream
+- name: xmlsec_enc_fuzzer
+  status: included
+  origin: upstream
+- name: xmlsec_fuzzer
+  status: included
+  origin: upstream
+- name: xmlsec_keyinfo_fuzzer
+  status: included
+  origin: upstream
+- name: xmlsec_keyload_fuzzer
+  status: included
+  origin: upstream
+- name: xmlsec_relationship_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: xmlsec-bin.tar.zst
+    bytes: 14770420
+    sha256: a03ac90487f1df4d27b3e77c9f2e519fbaf19ec70dc8a34a919faa279bbeb43b
+  src:
+    release: v2026.10.0-src
+    file: xmlsec-src.tar.zst
+    bytes: 3804574
+    sha256: fdc45eb8cf1aa8b5135562505c2059a460788b764a7ec1cae2a87de2b292d009
+  src_manifest:
+    release: v2026.10.0-src
+    file: xmlsec-src.MANIFEST.tsv
+    bytes: 2725
+    sha256: 3d19c9f4d7e08de2f7c15807db9f02a61cc4975654fe7cf1f747b0be23235b23

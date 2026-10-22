@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: jstl-api
+homepage: https://github.com/eclipse-ee4j/jstl-api
+language: jvm
+oss_fuzz:
+  path: projects/jstl-api
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

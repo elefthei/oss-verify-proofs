@@ -1,0 +1,55 @@
+schema: oss-fuzz-theorems/project/1
+project: wabt
+homepage: https://github.com/WebAssembly/wabt
+language: c++
+oss_fuzz:
+  path: projects/wabt
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wabt
+  repository: https://github.com/WebAssembly/wabt
+  commit: dce62429770ea7b2795461d34b99d140e048e1f5
+  licence: Apache-2.0
+harnesses:
+- name: read_binary_interp_fuzzer
+  status: included
+  origin: upstream
+- name: read_binary_ir_fuzzer
+  status: included
+  origin: upstream
+- name: wasm2wat-fuzz
+  status: included
+  origin: upstream
+- name: wasm2wat_fuzzer
+  status: included
+  origin: upstream
+- name: wasm_interp_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wasm_objdump_fuzzer
+  status: included
+  origin: upstream
+- name: wat2wasm_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wabt-bin.tar.zst
+    bytes: 3503387
+    sha256: 8ad029d73db0946531e5c0b6ff7e279ae275ced216b95d570d66423a86852f98
+  src:
+    release: v2026.10.0-src
+    file: wabt-src.tar.zst
+    bytes: 9212462
+    sha256: 8326a97f7f2da1b590bb5e8e4febed6bdbea51c7d4ba5d5fb15ea4757d81083e
+  src_manifest:
+    release: v2026.10.0-src
+    file: wabt-src.MANIFEST.tsv
+    bytes: 11494
+    sha256: bd40e384844a55c9e02fca10d19b32f3342f9a700a1158722cf0c9e81c7006ed

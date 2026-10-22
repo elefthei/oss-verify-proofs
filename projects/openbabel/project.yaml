@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: openbabel
+homepage: https://openbabel.org
+language: c++
+oss_fuzz:
+  path: projects/openbabel
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openbabel
+  repository: https://github.com/openbabel/openbabel
+  commit: 1afe81019b781c857eecb86251e106e2f31da928
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_convert
+  status: not-included
+  reason: not-attempted
+- name: fuzz_empty_write
+  status: included
+  origin: upstream
+- name: fuzz_molecule
+  status: included
+  origin: upstream
+- name: fuzz_obconversion_sdf
+  status: included
+  origin: upstream
+- name: fuzz_obconversion_smiles
+  status: included
+  origin: upstream
+- name: fuzz_smart
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openbabel-bin.tar.zst
+    bytes: 52314237
+    sha256: 5b73355bb259e3eac6ed950c3f0ef1e6886b2feff5d3e9c02ac2e4962f212fe5
+  src:
+    release: v2026.10.0-src
+    file: openbabel-src.tar.zst
+    bytes: 24947195
+    sha256: ed91b3f7425d640c0ab6391f7a9e4791a24a686996f01910b6b7423b9fb4f5b7
+  src_manifest:
+    release: v2026.10.0-src
+    file: openbabel-src.MANIFEST.tsv
+    bytes: 5009
+    sha256: 64165873482f68a02b83ef9537761f8844815c7c9bf8e61fac47803a757e9558

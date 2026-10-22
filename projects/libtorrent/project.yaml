@@ -1,0 +1,118 @@
+schema: oss-fuzz-theorems/project/1
+project: libtorrent
+homepage: https://github.com/arvidn/libtorrent.git
+language: c++
+oss_fuzz:
+  path: projects/libtorrent
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libtorrent
+  repository: https://github.com/arvidn/libtorrent
+  commit: 8775a6edc826e9d889d1c1d99c5c186afd8c1db2
+  licence: NOASSERTION
+harnesses:
+- name: add_torrent
+  status: not-included
+  reason: not-attempted
+- name: bdecode_node
+  status: included
+  origin: upstream
+- name: dht_node
+  status: not-included
+  reason: not-attempted
+- name: file_storage_add_file
+  status: not-included
+  reason: not-attempted
+- name: http_parser
+  status: not-included
+  reason: not-attempted
+- name: http_tracker
+  status: not-included
+  reason: not-attempted
+- name: lsd
+  status: not-included
+  reason: not-attempted
+- name: natpmp
+  status: not-included
+  reason: not-attempted
+- name: pe_conn
+  status: not-included
+  reason: not-attempted
+- name: pe_crypto_state
+  status: not-included
+  reason: not-attempted
+- name: peer_conn
+  status: not-included
+  reason: not-attempted
+- name: resume_data
+  status: not-included
+  reason: not-attempted
+- name: rtc_peer_conn
+  status: not-included
+  reason: not-attempted
+- name: rtc_tracker_offer
+  status: not-included
+  reason: not-attempted
+- name: sanitize_path
+  status: not-included
+  reason: not-attempted
+- name: sdp_offer
+  status: not-included
+  reason: not-attempted
+- name: session_params
+  status: not-included
+  reason: not-attempted
+- name: socks5_stream_handshake
+  status: not-included
+  reason: not-attempted
+- name: socks5_udp
+  status: not-included
+  reason: not-attempted
+- name: torrent_info
+  status: not-included
+  reason: not-attempted
+- name: udp_tracker
+  status: not-included
+  reason: not-attempted
+- name: upnp
+  status: not-included
+  reason: not-attempted
+- name: ut_metadata
+  status: not-included
+  reason: not-attempted
+- name: ut_pex
+  status: not-included
+  reason: not-attempted
+- name: utp
+  status: not-included
+  reason: not-attempted
+- name: utp_stream
+  status: not-included
+  reason: not-attempted
+- name: web_seed
+  status: not-included
+  reason: not-attempted
+- name: websocket_tracker
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libtorrent-bin.tar.zst
+    bytes: 481262
+    sha256: 69e414d50ed9c045e5aa76afa72c018d6b6b76f16a83c2bbdb946e26962a2fb9
+  src:
+    release: v2026.10.0-src
+    file: libtorrent-src.tar.zst
+    bytes: 64907916
+    sha256: 5b9fd15e176eaaececaac231c3e0381f34794d43ffe6d6aad2b069fd695747e9
+  src_manifest:
+    release: v2026.10.0-src
+    file: libtorrent-src.MANIFEST.tsv
+    bytes: 6444
+    sha256: 85967d24557d9d3583bfceacc07fbc3550a850d3d1c79763bf929b344aed04a5

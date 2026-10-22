@@ -1,0 +1,95 @@
+schema: oss-fuzz-theorems/project/1
+project: libvips
+homepage: https://github.com/libvips/libvips
+language: c++
+oss_fuzz:
+  path: projects/libvips
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libvips
+  repository: https://github.com/libvips/libvips
+  commit: 321e45b42997f1e6e303012ed4ab7ceb3a3d0084
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: csvsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: generic_buffer_with_args_fuzzer
+  status: included
+  origin: upstream
+- name: gifsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: heifsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: jpegsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: jpegsave_file_fuzzer
+  status: included
+  origin: upstream
+- name: jxlsave_buffer_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: matrixsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: mosaic_fuzzer
+  status: included
+  origin: upstream
+- name: pngsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: ppmsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: qoisave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: radsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: rawsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: sharpen_fuzzer
+  status: included
+  origin: upstream
+- name: smartcrop_fuzzer
+  status: included
+  origin: upstream
+- name: thumbnail_fuzzer
+  status: included
+  origin: upstream
+- name: tiffsave_buffer_fuzzer
+  status: included
+  origin: upstream
+- name: vips_fuzzer
+  status: included
+  origin: upstream
+- name: webpsave_buffer_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libvips-bin.tar.zst
+    bytes: 153492003
+    sha256: 1624c345d08e9c1f84d992b78a32b4704591eb8282ef883bc2c143044ad60d3e
+  src:
+    release: v2026.10.0-src
+    file: libvips-src.tar.zst
+    bytes: 41304489
+    sha256: 9debcab84f7496196d9edd0ffa710841a78b0b60e3ccfb68a0804fabd1086e23
+  src_manifest:
+    release: v2026.10.0-src
+    file: libvips-src.MANIFEST.tsv
+    bytes: 9114
+    sha256: d5444d62643e501c1bbd3f6f716b2e926a5ba5d71ba7eb0dd183c8307edd0a43

@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: hwloc
+homepage: https://github.com/open-mpi/hwloc
+language: c
+oss_fuzz:
+  path: projects/hwloc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: hwloc
+  repository: https://github.com/open-mpi/hwloc
+  commit: 3b37b024aa3fe368dd82008eea7e1ad9dca97d2c
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: hwloc_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: hwloc-bin.tar.zst
+    bytes: 278348
+    sha256: fb9c175b39ef414357b6c5d06b3010e54c5e71268b4e5278f1036950a7c2a6d6
+  src:
+    release: v2026.10.0-src
+    file: hwloc-src.tar.zst
+    bytes: 2199024
+    sha256: 31299b43f160d34d2b751bd85c21e9696affba04960e656117b5ecefc0955685
+  src_manifest:
+    release: v2026.10.0-src
+    file: hwloc-src.MANIFEST.tsv
+    bytes: 1479
+    sha256: 93b000d2f9e609c0a623605448e15e6d3468a1d6df78cef236bd1c3f45d2340e

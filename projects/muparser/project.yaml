@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: muparser
+homepage: https://beltoforion.de/article.php?a=muparser
+language: c++
+oss_fuzz:
+  path: projects/muparser
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: muparser
+  repository: https://github.com/beltoforion/muparser
+  commit: 508cce97d983c4c61099ceacc11c984a60053967
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: c_api_fuzzer
+  status: included
+- name: set_eval_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: muparser-bin.tar.zst
+    bytes: 1487938
+    sha256: 13b4719cba9ae4a837b54ec49548b25ae7d4bb60f07c4f4b519fad8c044ffa97
+  src:
+    release: v2026.10.0-src
+    file: muparser-src.tar.zst
+    bytes: 97788
+    sha256: a93954244c4767e8880a05c536f3f7d5592b7448f26471fef4eafb668fff2653
+  src_manifest:
+    release: v2026.10.0-src
+    file: muparser-src.MANIFEST.tsv
+    bytes: 1795
+    sha256: 52cee88029e6b0d9ca9d985cc885ecd6371ba96011746e2a19fadf46ff891933

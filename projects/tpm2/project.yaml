@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: tpm2
+homepage: https://chromium.googlesource.com/chromiumos/third_party/tpm2
+language: c++
+oss_fuzz:
+  path: projects/tpm2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tpm2
+  repository: https://chromium.googlesource.com/chromiumos/third_party/tpm2
+  commit: 4356efbfd824e061f4d448386e8abcb7278c2184
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: tpm2_execute_command_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tpm2-bin.tar.zst
+    bytes: 2362246
+    sha256: 0c385c3b6e70ce70a0ac49e5c52ac139cefc67ec75bc0c5b56a69c2815563081
+  src:
+    release: v2026.10.0-src
+    file: tpm2-src.tar.zst
+    bytes: 361768
+    sha256: 670db7b9229f4b91c152349cbafde42a9241fd87b1179d42849b40a926cb075f
+  src_manifest:
+    release: v2026.10.0-src
+    file: tpm2-src.MANIFEST.tsv
+    bytes: 1406
+    sha256: ebcec57c36b203e1b92dc9c6e8b642efe4be1b131a4c0f76a877f620cef135e5

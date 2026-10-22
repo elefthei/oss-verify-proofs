@@ -1,0 +1,32 @@
+schema: oss-fuzz-theorems/release/1
+release: 2026.11.0
+date: 2026-11-02
+oss_fuzz:
+  repository: https://github.com/google/oss-fuzz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+  projects: 5
+semantics:
+  name: linux-process-semantics
+  version: 1.0.0
+  repository: https://github.com/theorem-labs/rocq-linux-process-semantics
+  commit: 1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a
+rocq:
+  package: rocq-core
+  version: 9.2.0
+images:
+  checker: ghcr.io/theorem-labs/oss-fuzz-theorems-checker@sha256:1111111111111111111111111111111111111111111111111111111111111111
+  runner: ghcr.io/theorem-labs/oss-fuzz-theorems-runner@sha256:2222222222222222222222222222222222222222222222222222222222222222
+  builder:
+  - ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:3333333333333333333333333333333333333333333333333333333333333333
+recipe:
+  release: v2026.11.0
+  file: recipe.tar.zst
+  bytes: 2000000
+  sha256: 5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d
+binaries:
+  store: github-release-assets
+counts:
+  projects: 5
+  available: 2
+  harnesses: 3
+  binaries: 12

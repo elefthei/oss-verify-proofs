@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: ipmi-fru-parser
+homepage: https://github.com/openbmc/ipmi-fru-parser
+language: c++
+oss_fuzz:
+  path: projects/ipmi-fru-parser
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ipmi-fru-parser
+  repository: https://github.com/openbmc/ipmi-fru-parser
+  commit: 11dd4dc37ac99e13b88764fbae250f2960b6c6b7
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_fru_parser
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ipmi-fru-parser-bin.tar.zst
+    bytes: 1415214
+    sha256: da94a406f4589f856594bba4bc9639f5ed59afcb0e42b239fd13f9fba68102f4
+  src:
+    release: v2026.10.0-src
+    file: ipmi-fru-parser-src.tar.zst
+    bytes: 662831
+    sha256: 3728b8d01c1db774da57ccc6dcfac827346dc2bb9036ae9718d53c1246a3dd38
+  src_manifest:
+    release: v2026.10.0-src
+    file: ipmi-fru-parser-src.MANIFEST.tsv
+    bytes: 2764
+    sha256: 20791c8f572b049320de9181c7c21be79ac4fb738f7508ed4eb1ccd4a6cae0a6

@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: estoraged
+homepage: https://github.com/openbmc/estoraged
+language: c++
+oss_fuzz:
+  path: projects/estoraged
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: estoraged
+  repository: https://github.com/openbmc/estoraged
+  commit: af712a4430ca3aaa418fbc0e7eaa03b20505aa9e
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: estoraged_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: estoraged-bin.tar.zst
+    bytes: 690109
+    sha256: a3fb962aa71a75f57c8f77377e1399fe59f4f7a9e895574d54e0ceee66db98ed
+  src:
+    release: v2026.10.0-src
+    file: estoraged-src.tar.zst
+    bytes: 276596
+    sha256: fdca085f67a21e3cdbf24fd28875fec61f5104520729de02c6fcd5d9c6fbd918
+  src_manifest:
+    release: v2026.10.0-src
+    file: estoraged-src.MANIFEST.tsv
+    bytes: 3186
+    sha256: 3bae63e8f91690c4667412c7adb17620baab4640f2312901442e8e427b4b2f9b

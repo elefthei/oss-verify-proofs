@@ -1,0 +1,11 @@
+schema: oss-fuzz-theorems/project/1
+project: kconfig
+homepage: https://invent.kde.org/frameworks/kconfig.git
+language: c++
+oss_fuzz:
+  path: projects/kconfig
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: not-yet-built
+reason: dependency
+reason_args:
+  dependency: Qt 6

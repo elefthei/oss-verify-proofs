@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: sentencepiece
+homepage: https://github.com/google/sentencepiece
+language: c++
+oss_fuzz:
+  path: projects/sentencepiece
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: sentencepiece
+  repository: https://github.com/google/sentencepiece
+  commit: 45a89036d21b6c2f4430da2f3b42ba12afc9229b
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: model_load_fuzzer
+  status: included
+- name: processor_text_fuzzer
+  status: included
+- name: sample_encode_fuzzer
+  status: included
+- name: trainer_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: sentencepiece-bin.tar.zst
+    bytes: 10783136
+    sha256: 642846bd62ac5d688232a33eb417dfec56511ae675cd913419ee6b530fd878fa
+  src:
+    release: v2026.10.0-src
+    file: sentencepiece-src.tar.zst
+    bytes: 15819330
+    sha256: 2eb2d6f7c81722ece7608d295a8a163b96d60b74f2fe6805c3c1950241c18bd5
+  src_manifest:
+    release: v2026.10.0-src
+    file: sentencepiece-src.MANIFEST.tsv
+    bytes: 6986
+    sha256: ec2f37fd8c2da2a1fb8fd396d26a99abc493c98991ba6c67565757393d1d2930

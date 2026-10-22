@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: wasmer
+homepage: https://github.com/wasmerio/wasmer
+language: rust
+oss_fuzz:
+  path: projects/wasmer
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: rust

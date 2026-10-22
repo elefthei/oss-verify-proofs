@@ -1,0 +1,66 @@
+schema: oss-fuzz-theorems/project/1
+project: flac
+homepage: https://xiph.org/flac
+language: c++
+oss_fuzz:
+  path: projects/flac
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: flac
+  repository: https://github.com/xiph/flac
+  commit: e94ff9f68b8e7dbd3e9f8b1ac18a8eca1914f181
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer_decoder
+  status: included
+  origin: upstream
+- name: fuzzer_encoder
+  status: included
+  origin: upstream
+- name: fuzzer_encoder_v2
+  status: included
+  origin: upstream
+- name: fuzzer_exo
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_metadata
+  status: included
+  origin: upstream
+- name: fuzzer_reencoder
+  status: included
+  origin: upstream
+- name: fuzzer_seek
+  status: included
+  origin: upstream
+- name: fuzzer_tool_flac
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_tool_metaflac
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: flac-bin.tar.zst
+    bytes: 2399552
+    sha256: fccc02c4a647700e6317a561d7c5374b787abf6c8ac15ccc5c34a5276c8588f5
+  src:
+    release: v2026.10.0-src
+    file: flac-src.tar.zst
+    bytes: 733586
+    sha256: 74757e30e5244ce600deb1e12a1e07da6b467b56fccf88d1434b1616850f8037
+  src_manifest:
+    release: v2026.10.0-src
+    file: flac-src.MANIFEST.tsv
+    bytes: 1661
+    sha256: 9799776e7def1eff5340e70296f5fd785e3da719c73bf18011900d5374f873db

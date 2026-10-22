@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: snappy
+homepage: https://github.com/google/snappy
+language: c++
+oss_fuzz:
+  path: projects/snappy
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: snappy
+  repository: https://github.com/google/snappy
+  commit: 9c28114a38866f6deeaa826db918293bc28ae410
+  version: 1.3.1
+  licence: BSD-3-Clause
+harnesses:
+- name: snappy_compress_fuzzer
+  status: included
+  origin: upstream
+- name: snappy_uncompress_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: snappy-bin.tar.zst
+    bytes: 1919226
+    sha256: 58192273a2664fc509ff4c6de50f12a18a5ecad4f55f815828a5f1b43a4ea567
+  src:
+    release: v2026.10.0-src
+    file: snappy-src.tar.zst
+    bytes: 1710425
+    sha256: 1802b5ae4302a50d0c2eadb877a52153b7bcc4efa3f48df519c28df3023e3c37
+  src_manifest:
+    release: v2026.10.0-src
+    file: snappy-src.MANIFEST.tsv
+    bytes: 2748
+    sha256: 27fa430b07ad43a6c5868945ffcb54747f015d9fb6f000e3a49fff3f5077ba09

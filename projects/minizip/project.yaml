@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: minizip
+homepage: https://github.com/zlib-ng/minizip-ng
+language: c++
+oss_fuzz:
+  path: projects/minizip
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: minizip-ng
+  repository: https://github.com/zlib-ng/minizip-ng
+  commit: dc8531deb704715fa57268d5e144f9eed7c8af66
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: unzip_fuzzer
+  status: included
+  origin: upstream
+- name: zip_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: minizip-bin.tar.zst
+    bytes: 3535163
+    sha256: 15bd85a62e298c286b65fc2ee7b94fab30cda687c6b1a1e2a0d0456f577a81b2
+  src:
+    release: v2026.10.0-src
+    file: minizip-src.tar.zst
+    bytes: 2793395
+    sha256: 4bbe36281b4b8640a108305ae11ee6b4a9f7289d62dccd6df95484e05cd92b42
+  src_manifest:
+    release: v2026.10.0-src
+    file: minizip-src.MANIFEST.tsv
+    bytes: 2449
+    sha256: c578f1398bbf0953c8483bb6eb672664b12d9791fa7540b70bd456f809d61ee9

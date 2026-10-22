@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: astc-encoder
+homepage: https://github.com/ARM-software/astc-encoder
+language: c++
+oss_fuzz:
+  path: projects/astc-encoder
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: astc-encoder
+  repository: https://github.com/ARM-software/astc-encoder
+  commit: 9fbec68053d507023bb30e2a449f900a915882b9
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_astc_compress
+  status: included
+  origin: upstream
+- name: fuzz_astc_decompress
+  status: included
+  origin: upstream
+- name: fuzz_astc_physical_to_symbolic
+  status: not-included
+  reason: not-yet-included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: astc-encoder-bin.tar.zst
+    bytes: 1450988
+    sha256: 3a60804d93d7ecb58b1ce171ce7189c8647fd672459e819263cc6f57f9559b75
+  src:
+    release: v2026.10.0-src
+    file: astc-encoder-src.tar.zst
+    bytes: 34601698
+    sha256: ac1b20d8182ce4f9bd681a6a0ad099b465aed321f390b6d2fb8135e240205b04
+  src_manifest:
+    release: v2026.10.0-src
+    file: astc-encoder-src.MANIFEST.tsv
+    bytes: 2341
+    sha256: 9ddec3e45be69c432bd8f54641ad115d6f955ff19c4c1bb0f5d40fa55f990477

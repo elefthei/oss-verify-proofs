@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: muduo
+homepage: https://github.com/chenshuo/muduo
+language: c++
+oss_fuzz:
+  path: projects/muduo
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: muduo
+  repository: https://github.com/chenshuo/muduo
+  commit: f1fc77e0c13b80e5086ff457362c8a86d1b609d4
+  licence: BSD-3-Clause
+  patch_count: 3
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: muduo_http_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: muduo-bin.tar.zst
+    bytes: 449783
+    sha256: 10120e8c7357a153aaaa8169a9f6c85ec5d1d47e909595bd746897aba7700996
+  src:
+    release: v2026.10.0-src
+    file: muduo-src.tar.zst
+    bytes: 166461
+    sha256: b3e8f06b8988497d8ea5841f531282fb4a20014f659aaefea91f39ff5b43ff61
+  src_manifest:
+    release: v2026.10.0-src
+    file: muduo-src.MANIFEST.tsv
+    bytes: 1526
+    sha256: cbb9d5013d3d222f9249db2c875efee4069c218df85af4fd061c52641c7c7be6

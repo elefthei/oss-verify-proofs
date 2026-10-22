@@ -1,0 +1,39 @@
+schema: oss-fuzz-theorems/project/1
+project: libwebsockets
+homepage: https://libwebsockets.org
+language: c
+oss_fuzz:
+  path: projects/libwebsockets
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libwebsockets
+  repository: https://github.com/warmcat/libwebsockets
+  commit: 1b5cc65f94dafc610603a7a09d9b2f2c947c9094
+  licence: Zlib
+harnesses:
+- name: fuzz-gif
+  status: included
+  origin: upstream
+- name: lws_upng_inflate_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libwebsockets-bin.tar.zst
+    bytes: 1453187
+    sha256: 020b57e16684c2f3d825a9e9f8fc2947b9c2952f3a394e09d12f5614afbb6f38
+  src:
+    release: v2026.10.0-src
+    file: libwebsockets-src.tar.zst
+    bytes: 34496787
+    sha256: 8b1558d83af427e691d95248079feb3f262af5b310029e3310ce0d86b7cd4a19
+  src_manifest:
+    release: v2026.10.0-src
+    file: libwebsockets-src.MANIFEST.tsv
+    bytes: 2597
+    sha256: 5c0cc855fc742e921d890af4965901446fc8ea5c13818d11c830cc870f7453b4

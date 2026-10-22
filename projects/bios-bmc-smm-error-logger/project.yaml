@@ -1,0 +1,13 @@
+schema: oss-fuzz-theorems/project/1
+project: bios-bmc-smm-error-logger
+homepage: https://github.com/openbmc/docs/blob/master/designs/bios-bmc-smm-error-logging.md
+language: c++
+oss_fuzz:
+  path: projects/bios-bmc-smm-error-logger
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: needs-model
+reason: features
+reason_args:
+  features:
+  - event-descriptors
+  - file-mapping

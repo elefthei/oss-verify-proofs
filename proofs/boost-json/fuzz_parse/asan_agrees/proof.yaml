@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: boost-json/fuzz_parse/asan_agrees
+fingerprint: aea0fad73f39b82fb771c592a1dca5990faefe1d1c7377882a7e4a475279fdc6

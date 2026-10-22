@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: zip-rs
+homepage: https://github.com/zip-rs/zip
+language: rust
+oss_fuzz:
+  path: projects/zip-rs
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: rust

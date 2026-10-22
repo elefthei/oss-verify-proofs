@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: lzo
+language: c++
+oss_fuzz:
+  path: projects/lzo
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lzo
+  repository: https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
+  archive_sha256: c0f892943208266f9b6543b3ae308fab6284c5c90e627931446fb49b4221a072
+  licence: GPL-2.0-or-later
+harnesses:
+- name: all_lzo_compress
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: lzo_compress_target
+  status: included
+- name: lzo_decompress_target
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lzo-bin.tar.zst
+    bytes: 393311
+    sha256: f06e24faaf1c9a89c6487fc7327076475962c8345cdf10a5a25f499c76edcd9d
+  src:
+    release: v2026.10.0-src
+    file: lzo-src.tar.zst
+    bytes: 603313
+    sha256: a857f7f4b16420a49b73521cdb3749e05f5719c568f69fc248b37885998eabc3
+  src_manifest:
+    release: v2026.10.0-src
+    file: lzo-src.MANIFEST.tsv
+    bytes: 2068
+    sha256: c47fb04edbe65df2a24d394fc9a3bf7b2e6c60fc3cce0b5cf2bcec3a79cc4f96

@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: leveldb
+homepage: https://github.com/google/leveldb
+language: c++
+oss_fuzz:
+  path: projects/leveldb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: leveldb
+  repository: https://github.com/google/leveldb
+  commit: bb74ef739973a70ca9f0d90788a1da89b788c0ad
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_db
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: leveldb-bin.tar.zst
+    bytes: 1171624
+    sha256: 18529091e1bf66cea6ba20a31467de8d189ed66402287d2282fe0f41f7e8fc95
+  src:
+    release: v2026.10.0-src
+    file: leveldb-src.tar.zst
+    bytes: 1022462
+    sha256: 7c8465de5e68a4bba06697b400b49e9c00efd189fe60527aee7de582fb54bb3b
+  src_manifest:
+    release: v2026.10.0-src
+    file: leveldb-src.MANIFEST.tsv
+    bytes: 2583
+    sha256: 9365b1e9b7abbdc7344faf45fd15eea468294f5808bb09b2d97a7147f6138d99

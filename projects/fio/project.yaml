@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: fio
+language: c++
+oss_fuzz:
+  path: projects/fio
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: fio
+  repository: https://github.com/axboe/fio
+  commit: 4767beef328a257c4300358ffa2901f3e0f1dc68
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: fuzz_parseini
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: fio-bin.tar.zst
+    bytes: 1740433
+    sha256: c55c69d0112b86c7ded483c9921f38bfad13b203c9701008ca53da197473eb81
+  src:
+    release: v2026.10.0-src
+    file: fio-src.tar.zst
+    bytes: 7618547
+    sha256: a73f4716942d22b319cf654cd1788dcdd0bd872bbc25d23701b6e4afc4bc7a35
+  src_manifest:
+    release: v2026.10.0-src
+    file: fio-src.MANIFEST.tsv
+    bytes: 1310
+    sha256: 0866a02cafb0bd78c591a2fc2809ba19a01a3aa021e511330f6a1a8dbc3c3539

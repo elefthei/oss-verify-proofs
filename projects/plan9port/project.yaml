@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: plan9port
+homepage: https://github.com/9fans/plan9port
+language: c
+oss_fuzz:
+  path: projects/plan9port
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: plan9port
+  repository: https://github.com/9fans/plan9port
+  commit: b6564bd96ca189c69e28797738dad56f91eb5967
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_libsec
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: plan9port-bin.tar.zst
+    bytes: 348228
+    sha256: af32b4b2158fbc83f05834af2ea6729c2226e3350fe7b855d6e6a771fe215232
+  src:
+    release: v2026.10.0-src
+    file: plan9port-src.tar.zst
+    bytes: 17354598
+    sha256: ebc1f24aab2c77f146dfa0ec35be9e356b8f319c92c7a757fcf30b0e499c9280
+  src_manifest:
+    release: v2026.10.0-src
+    file: plan9port-src.MANIFEST.tsv
+    bytes: 1531
+    sha256: 660f62877bdb4a7c350d8cf5a2d65528750ef2b8ab960e20338875df762cf606

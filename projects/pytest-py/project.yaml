@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: pytest-py
+homepage: https://github.com/pytest-dev/py
+language: python
+oss_fuzz:
+  path: projects/pytest-py
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

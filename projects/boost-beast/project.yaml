@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: boost-beast
+homepage: https://www.boost.org
+language: c++
+oss_fuzz:
+  path: projects/boost-beast
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: boost
+  repository: https://github.com/boostorg/boost
+  commit: 4daa5786d7c5dad39df0429cb078165b3134a06f
+  licence: BSL-1.0
+harnesses:
+- name: http_request
+  status: included
+  origin: upstream
+- name: http_response
+  status: not-included
+  reason: not-attempted
+- name: websocket_server
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: boost-beast-bin.tar.zst
+    bytes: 659932
+    sha256: 6ff9545ef5faca3883400ae07d4c2029a9e103ebea9d04a73c3b4536f877b738
+  src:
+    release: v2026.10.0-src
+    file: boost-beast-src.tar.zst
+    bytes: 119752983
+    sha256: 8b6d104b88d658cc09ec9528f9997fcb71c1f69dede9d8e4f652279def5c45e2
+  src_manifest:
+    release: v2026.10.0-src
+    file: boost-beast-src.MANIFEST.tsv
+    bytes: 94673
+    sha256: 3a0a32dc99f723ab104d51896a2e57c9dfa50c007ffab5cf600c9a51cefabe46

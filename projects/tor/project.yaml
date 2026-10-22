@@ -1,0 +1,83 @@
+schema: oss-fuzz-theorems/project/1
+project: tor
+homepage: https://www.torproject.org
+language: c++
+oss_fuzz:
+  path: projects/tor
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tor
+  repository: https://git.torproject.org/tor
+  commit: 8dbbbe6e86a6ca0d058ec3c6a4e937859857d7bb
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: oss-fuzz-address
+  status: included
+  origin: upstream
+- name: oss-fuzz-addressPTR
+  status: included
+  origin: upstream
+- name: oss-fuzz-consensus
+  status: included
+  origin: upstream
+- name: oss-fuzz-descriptor
+  status: included
+  origin: upstream
+- name: oss-fuzz-diff
+  status: included
+  origin: upstream
+- name: oss-fuzz-diff-apply
+  status: included
+  origin: upstream
+- name: oss-fuzz-extrainfo
+  status: included
+  origin: upstream
+- name: oss-fuzz-hsdescv3
+  status: included
+  origin: upstream
+- name: oss-fuzz-hsdescv3-inner
+  status: included
+  origin: upstream
+- name: oss-fuzz-hsdescv3-middle
+  status: included
+  origin: upstream
+- name: oss-fuzz-http
+  status: included
+  origin: upstream
+- name: oss-fuzz-http-connect
+  status: included
+  origin: upstream
+- name: oss-fuzz-microdesc
+  status: included
+  origin: upstream
+- name: oss-fuzz-socks
+  status: included
+  origin: upstream
+- name: oss-fuzz-strops
+  status: included
+  origin: upstream
+- name: oss-fuzz-vrs
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tor-bin.tar.zst
+    bytes: 146663683
+    sha256: e08ef85ebfc7e9789fee67783e2bf5f9f6317d7fbbe926c13996a6088d7c9258
+  src:
+    release: v2026.10.0-src
+    file: tor-src.tar.zst
+    bytes: 7317022
+    sha256: 22700194f382c4a71e63491d7996f7e8555091dae62a6ca1c70d9d354077ea1c
+  src_manifest:
+    release: v2026.10.0-src
+    file: tor-src.MANIFEST.tsv
+    bytes: 2964
+    sha256: 8c3700cf57dccbd13bf7475aea869522aaa08213b563d9ce316853c83a4bc5bf

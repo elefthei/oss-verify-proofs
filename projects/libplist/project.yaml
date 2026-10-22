@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: libplist
+homepage: https://github.com/libimobiledevice/libplist
+language: c++
+oss_fuzz:
+  path: projects/libplist
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libplist
+  repository: https://github.com/libimobiledevice/libplist
+  commit: 32428abacb909988e8e960a8845a6430b17b6a60
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: bplist_fuzzer
+  status: included
+  origin: upstream
+- name: jplist_fuzzer
+  status: included
+  origin: upstream
+- name: oplist_fuzzer
+  status: included
+  origin: upstream
+- name: xplist_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libplist-bin.tar.zst
+    bytes: 799891
+    sha256: 3f74888b8602a548ec58d81feb66451141897f9de9538d0e83c0eec705e8a55d
+  src:
+    release: v2026.10.0-src
+    file: libplist-src.tar.zst
+    bytes: 167870
+    sha256: 6ce314a12f050a629801db02d44d5596c13244dfee0ab3577dcd510b3c749d65
+  src_manifest:
+    release: v2026.10.0-src
+    file: libplist-src.MANIFEST.tsv
+    bytes: 1703
+    sha256: 8e9ac1717c1fa7ea9aa4dfa9da2039a3d77ba1b0064cd41d058f6182bfdd7f35

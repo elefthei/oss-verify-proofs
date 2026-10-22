@@ -1,0 +1,76 @@
+schema: oss-fuzz-theorems/project/1
+project: libpsl
+homepage: https://github.com/rockdaboot/libpsl
+language: c++
+oss_fuzz:
+  path: projects/libpsl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libpsl
+  repository: https://github.com/rockdaboot/libpsl
+  commit: c486db8d221cbac55f87508d4da4db4497760997
+  version: 0.23.3
+  licence: MIT
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libpsl_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_icu_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_icu_load_dafsa_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_icu_load_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_idn2_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_idn2_load_dafsa_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_idn2_load_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_idn_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_idn_load_dafsa_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_idn_load_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_load_dafsa_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libpsl_load_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libpsl-bin.tar.zst
+    bytes: 353037
+    sha256: 3fe146e900b123d7e374d35016f11b311530f6ac8110306036778448f4de1d8c
+  src:
+    release: v2026.10.0-src
+    file: libpsl-src.tar.zst
+    bytes: 2366246
+    sha256: f1ef693ea31f7c852542a4f59355eb866d4df0701fb7f6c7ebea40e95667be0a
+  src_manifest:
+    release: v2026.10.0-src
+    file: libpsl-src.MANIFEST.tsv
+    bytes: 1905
+    sha256: dff2420c4552d643b66cffa27a5a59ef58cb1e2087780ba7f633f677aa3e7827

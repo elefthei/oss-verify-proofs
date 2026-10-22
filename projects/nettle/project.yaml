@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: nettle
+homepage: https://www.lysator.liu.se/~nisse/nettle
+language: c++
+oss_fuzz:
+  path: projects/nettle
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: nettle
+  repository: https://git.lysator.liu.se/nettle/nettle
+  commit: bb9bba13cc327d578e7dab2921b021bad9af8ee1
+  licence: LGPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_dsa_openssl_private_key_from_der
+  status: included
+- name: fuzz_dsa_sha1_keypair_from_sexp
+  status: included
+- name: fuzz_dsa_sha256_keypair_from_sexp
+  status: included
+- name: fuzz_dsa_signature_from_sexp
+  status: included
+- name: fuzz_rsa_keypair_from_der
+  status: included
+- name: fuzz_rsa_keypair_from_sexp
+  status: included
+- name: fuzz_rsa_public_key_from_der
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: nettle-bin.tar.zst
+    bytes: 764779
+    sha256: cf51ab78bf8fc2f1a86d9f3a7a13fe8614a04d67e001b794797f342afcec491c
+  src:
+    release: v2026.10.0-src
+    file: nettle-src.tar.zst
+    bytes: 1558619
+    sha256: edf9fceef37f83cae97dd6a832627aa81914fce541fc07acf330862ff83aa849
+  src_manifest:
+    release: v2026.10.0-src
+    file: nettle-src.MANIFEST.tsv
+    bytes: 3963
+    sha256: c29c488be86d12ceedf95011f8d119c57f1f39c10ec7cf0a31a9169d665f5765

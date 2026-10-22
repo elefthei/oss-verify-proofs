@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: lldpd
+homepage: https://lldpd.github.io
+language: c
+oss_fuzz:
+  path: projects/lldpd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lldpd
+  repository: https://github.com/lldpd/lldpd
+  commit: c91f4e2943aa2522dd2f490385217c538376baba
+  licence: ISC
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_cdp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_edp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_lldp
+  status: included
+  origin: upstream
+- name: fuzz_sonmp
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lldpd-bin.tar.zst
+    bytes: 306129
+    sha256: 919f5c937259e628a5153cb820e688630ecbc9945530878e1d2d200be4d6e900
+  src:
+    release: v2026.10.0-src
+    file: lldpd-src.tar.zst
+    bytes: 886808
+    sha256: 9a8f40f1f579dd2a43292bea20ad9f853d803fb14581dc3a74cda32d0a83e260
+  src_manifest:
+    release: v2026.10.0-src
+    file: lldpd-src.MANIFEST.tsv
+    bytes: 1839
+    sha256: cdb1cc31d69532820bab2256e347a5a211ee00bac3f68f5bbddb991532898256

@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: ibmswtpm2
+homepage: https://sourceforge.net/projects/ibmswtpm2
+language: c++
+oss_fuzz:
+  path: projects/ibmswtpm2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ibmtpm1332
+  repository: https://downloads.sourceforge.net/project/ibmswtpm2/ibmtpm1332.tar.gz
+  archive_sha256: 8e8193af3d11d9ff6a951dda8cd1f4693cb01934a8ad7876b84e92c6148ab0fd
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_tpm_server
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ibmswtpm2-bin.tar.zst
+    bytes: 2289907
+    sha256: 75ae22b66a9b99f626e0c0ca2a822c91cd35cfb25600c3e5bc055ca191d9f707
+  src:
+    release: v2026.10.0-src
+    file: ibmswtpm2-src.tar.zst
+    bytes: 589931
+    sha256: 76d40c0b519af547529e4d77c6e2c8113d5bb11f04c2755dcbfc6c359a7fb87c
+  src_manifest:
+    release: v2026.10.0-src
+    file: ibmswtpm2-src.MANIFEST.tsv
+    bytes: 1597
+    sha256: 1772f1c4491e3d21cd72fa1cddbe72601b7834914ea24a0d73dafec78f25f798

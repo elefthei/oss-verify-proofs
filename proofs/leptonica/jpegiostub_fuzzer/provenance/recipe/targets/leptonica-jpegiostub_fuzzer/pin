@@ -1,0 +1,48 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/DanBloomberg/leptonica.git
+COMMIT=10bdea2f19240ffe8c931701b0b7340f41c6b256
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_cmake
+  oft_build_harness "prog/fuzzing/jpegiostub_fuzzer.cc"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+

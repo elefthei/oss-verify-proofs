@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: quickjs
+homepage: https://bellard.org/quickjs
+language: c
+oss_fuzz:
+  path: projects/quickjs
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: quickjs
+  repository: https://github.com/bellard/quickjs
+  commit: 04be246001599f5995fa2f2d8c91a0f198d3f34c
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_compile
+  status: not-included
+  reason: not-attempted
+- name: fuzz_eval
+  status: not-included
+  reason: not-attempted
+- name: fuzz_regexp
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: quickjs-bin.tar.zst
+    bytes: 444501
+    sha256: a502c14fd4e63bfc0cac79102ae101506bc8a5c2a7336a0046d82d5ec8c8efb1
+  src:
+    release: v2026.10.0-src
+    file: quickjs-src.tar.zst
+    bytes: 477697
+    sha256: c9fceb79b4ad4b6d19fe3ef2c9edd68540c4d0180ecfdb71d530bca07e4f5854
+  src_manifest:
+    release: v2026.10.0-src
+    file: quickjs-src.MANIFEST.tsv
+    bytes: 1339
+    sha256: b10e22adcc2aa22ea7355e596f0fdd2d9b06f867338d26be61f4c72ab5dfcdce

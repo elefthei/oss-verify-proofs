@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: libultrahdr
+homepage: https://github.com/google/libultrahdr
+language: c++
+oss_fuzz:
+  path: projects/libultrahdr
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libultrahdr
+  repository: https://github.com/google/libultrahdr
+  commit: 418b6b361e252a91c435a56cf386afb37d7d1c9d
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: ultrahdr_dec_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libultrahdr-bin.tar.zst
+    bytes: 1570161
+    sha256: 3823fc98c6ad8d45a675df6b21daf18e99c61a2e003ab80c5b0e391819f8b501
+  src:
+    release: v2026.10.0-src
+    file: libultrahdr-src.tar.zst
+    bytes: 1190521
+    sha256: f492a58ec04b53db5c664b03dbd75ea2e3c0cc1c584c5794bb54fbebb70b0fbe
+  src_manifest:
+    release: v2026.10.0-src
+    file: libultrahdr-src.MANIFEST.tsv
+    bytes: 1422
+    sha256: 6bb42d06daaf2ee006bb8e9475735865171ca02fdc7d823250382a80f3999d2e

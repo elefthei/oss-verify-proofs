@@ -1,0 +1,134 @@
+schema: oss-fuzz-theorems/project/1
+project: icu
+homepage: https://icu.unicode.org
+language: c++
+oss_fuzz:
+  path: projects/icu
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: icu
+  repository: https://github.com/unicode-org/icu
+  commit: ad484f3d6c036ba06193ac7c3bc2233a53ab68b8
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: break_iterator_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: calendar_fuzzer
+  status: included
+  origin: upstream
+- name: collator_compare_fuzzer
+  status: included
+  origin: upstream
+- name: collator_rulebased_fuzzer
+  status: included
+  origin: upstream
+- name: converter_fuzzer
+  status: included
+  origin: upstream
+- name: date_format_fuzzer
+  status: included
+  origin: upstream
+- name: date_time_pattern_generator_fuzzer
+  status: included
+  origin: upstream
+- name: decimal_format_symbols_fuzzer
+  status: included
+  origin: upstream
+- name: dtfmtsym_fuzzer
+  status: included
+  origin: upstream
+- name: list_format_fuzzer
+  status: included
+  origin: upstream
+- name: locale_fuzzer
+  status: included
+  origin: upstream
+- name: locale_morph_fuzzer
+  status: included
+  origin: upstream
+- name: message_formatter_fuzzer
+  status: included
+  origin: upstream
+- name: normalizer2_fuzzer
+  status: included
+  origin: upstream
+- name: number_format_fuzzer
+  status: included
+  origin: upstream
+- name: number_formatter_fuzzer
+  status: included
+  origin: upstream
+- name: plurrule_fuzzer
+  status: included
+  origin: upstream
+- name: relative_date_time_formatter_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: rule_based_break_iterator_fuzzer
+  status: included
+  origin: upstream
+- name: time_zone_names_fuzzer
+  status: included
+  origin: upstream
+- name: timezone_create_fuzzer
+  status: included
+  origin: upstream
+- name: ubidi_fuzzer
+  status: included
+  origin: upstream
+- name: ucasemap_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uloc_canonicalize_fuzzer
+  status: included
+  origin: upstream
+- name: uloc_for_language_tag_fuzzer
+  status: included
+  origin: upstream
+- name: uloc_get_name_fuzzer
+  status: included
+  origin: upstream
+- name: uloc_is_right_to_left_fuzzer
+  status: included
+  origin: upstream
+- name: uloc_open_keywords_fuzzer
+  status: included
+  origin: upstream
+- name: unicode_string_codepage_create_fuzzer
+  status: included
+  origin: upstream
+- name: unicodeset_fuzzer
+  status: included
+  origin: upstream
+- name: uprop_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uregex_match_fuzzer
+  status: included
+  origin: upstream
+- name: uregex_open_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: icu-bin.tar.zst
+    bytes: 1173190200
+    sha256: b1ae04aa85ea859deddd8351129b07defef04dcd48579fb87a1c93f36e1e9747
+  src:
+    release: v2026.10.0-src
+    file: icu-src.tar.zst
+    bytes: 46226156
+    sha256: cd6e06995b2e30d5b7a423286f54f53071730f1726eb060d41c7183702c237ef
+  src_manifest:
+    release: v2026.10.0-src
+    file: icu-src.MANIFEST.tsv
+    bytes: 4954
+    sha256: eadb1f5ec77d4637e73b0d139354561d1747f5f908aec35cb83083700cd56808

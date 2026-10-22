@@ -1,0 +1,286 @@
+schema: oss-fuzz-theorems/harness/1
+project: poppler
+harness: page_label_fuzzer
+rocq: OssFuzzTheorems.poppler.page_label_fuzzer
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/page_label_fuzzer.cc
+  from:
+    repository: https://gitlab.freedesktop.org/poppler/poppler
+    commit: 80de22a1779cd5c26f4e678b73d4b66bc1b73836
+    path: cpp/tests/fuzzing/page_label_fuzzer.cc
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://gitlab.freedesktop.org/poppler/poppler
+  commit: 80de22a1779cd5c26f4e678b73d4b66bc1b73836
+  licence: NOASSERTION
+modifications:
+- Linked against poppler at commit 80de22a1.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: page_label_fuzzer.plain
+    bytes: 4954504
+    sha256: 9ef800bd052c3b8a35f172ae624041ba39d324433f17626d0208750552bb1d67
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  ubsan:
+    file: page_label_fuzzer.ubsan
+    bytes: 5601344
+    sha256: 9349b839d27cce1de2e4febf1e0709daa300d07dee16ddd0be86fe9a9e78f2d0
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan:
+    file: page_label_fuzzer.asan
+    bytes: 11277640
+    sha256: a287b854ff24ea6d4e243cece511d329a1067f42a2a7eba58a0c45b4d1d94d0a
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan-ubsan:
+    file: page_label_fuzzer.asan-ubsan
+    bytes: 11837480
+    sha256: 17d92cd660f715f08681f93f8b478171122136ebd84dca2c20fb714bcc1eccf1
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

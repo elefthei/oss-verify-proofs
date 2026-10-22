@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: swagger-core
+homepage: https://github.com/swagger-api/swagger-core
+language: jvm
+oss_fuzz:
+  path: projects/swagger-core
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

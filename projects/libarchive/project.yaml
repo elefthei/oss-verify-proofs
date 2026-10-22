@@ -1,0 +1,100 @@
+schema: oss-fuzz-theorems/project/1
+project: libarchive
+homepage: https://github.com/libarchive/libarchive
+language: c++
+oss_fuzz:
+  path: projects/libarchive
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libarchive
+  repository: https://github.com/libarchive/libarchive
+  commit: 3670ecf7c59a6b12fe93e6255bbe4a1f3420edf8
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libarchive_7zip_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_ar_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_cab_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_cpio_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_entry_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_filter_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_fuzzer
+  status: included
+- name: libarchive_iso9660_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_lha_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_linkify_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_mtree_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_rar5_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_rar_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_roundtrip_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_seek_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_string_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_tar_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_warc_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_write_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_xar_fuzzer
+  status: included
+  origin: upstream
+- name: libarchive_zip_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libarchive-bin.tar.zst
+    bytes: 20340299
+    sha256: b8a6f14663ec10530fbd407c70d5f98040e14b4aaf7d7c062c6be26085ad0d7e
+  src:
+    release: v2026.10.0-src
+    file: libarchive-src.tar.zst
+    bytes: 5009069
+    sha256: 3c8a88a3838b78e005854638b04549b5670a5ae4a1af3e33980073feab492956
+  src_manifest:
+    release: v2026.10.0-src
+    file: libarchive-src.MANIFEST.tsv
+    bytes: 4750
+    sha256: ff8c2cc7418952924b03079279666df64ac3d94917bef8613f375cfa3d374008

@@ -1,0 +1,64 @@
+schema: oss-fuzz-theorems/project/1
+project: trafficserver
+homepage: https://trafficserver.apache.org
+language: c++
+oss_fuzz:
+  path: projects/trafficserver
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: trafficserver
+  repository: https://github.com/apache/trafficserver
+  commit: 97d2831fbd38c8f43b39e3ed996d9bd6e3173384
+  licence: NOASSERTION
+  patch_count: 3
+harnesses:
+- name: fuzz_base64
+  status: included
+  origin: upstream
+- name: fuzz_chunked
+  status: included
+  origin: upstream
+- name: fuzz_hpack
+  status: included
+  origin: upstream
+- name: fuzz_http
+  status: included
+  origin: upstream
+- name: fuzz_http3frame
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: fuzz_json
+  status: included
+  origin: upstream
+- name: fuzz_proxy_protocol
+  status: included
+  origin: upstream
+- name: fuzz_rec_http
+  status: included
+  origin: upstream
+- name: fuzz_yamlcpp
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: trafficserver-bin.tar.zst
+    bytes: 27235621
+    sha256: 9b946e12e458908dd58e671d4e8ef68bde2cddfe5b198d972f28599937e220db
+  src:
+    release: v2026.10.0-src
+    file: trafficserver-src.tar.zst
+    bytes: 19543290
+    sha256: ed028aaa902af2de5fe7b082b13b08b0fe4390a6538f3d2fb1a8cbdf232f383e
+  src_manifest:
+    release: v2026.10.0-src
+    file: trafficserver-src.MANIFEST.tsv
+    bytes: 2306
+    sha256: e644d3ded412be8352a9ccb3288d123e133b29910477ac06574dbddc8a18284e

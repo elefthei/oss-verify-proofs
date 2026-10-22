@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: tinyxml2
+language: c++
+oss_fuzz:
+  path: projects/tinyxml2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tinyxml2
+  repository: https://github.com/leethomason/tinyxml2
+  commit: 8224e427b655b83dae5e2298f1e6919523a78737
+  licence: Zlib
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: xmltest
+  status: included
+- name: xmltest2
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tinyxml2-bin.tar.zst
+    bytes: 600671
+    sha256: 1915415d7039386dcb858a22748acb9386cdfaa96af8c8dd49d60fc1aaaa2629
+  src:
+    release: v2026.10.0-src
+    file: tinyxml2-src.tar.zst
+    bytes: 502750
+    sha256: 7537b00cd055af19b9445289b1a4916b1b980b6e744f6c093578944ac498892d
+  src_manifest:
+    release: v2026.10.0-src
+    file: tinyxml2-src.MANIFEST.tsv
+    bytes: 1692
+    sha256: dce0f3f0997ebe8d077ea9fcabca7ae9d5dc366e5befbe22672cf313173471e8

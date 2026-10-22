@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: rdf4j
+homepage: https://github.com/eclipse/rdf4j
+language: jvm
+oss_fuzz:
+  path: projects/rdf4j
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

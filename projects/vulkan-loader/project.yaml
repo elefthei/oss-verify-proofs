@@ -1,0 +1,55 @@
+schema: oss-fuzz-theorems/project/1
+project: vulkan-loader
+homepage: https://github.com/khronosgroup/Vulkan-Loader
+language: c
+oss_fuzz:
+  path: projects/vulkan-loader
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: Vulkan-Loader
+  repository: https://github.com/khronosgroup/Vulkan-Loader
+  commit: b1d75f38257ffa71d7aa93552d2e2793296309aa
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: instance_create_advanced_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: instance_create_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: instance_enumerate_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: instance_enumerate_fuzzer_split_input
+  status: not-included
+  reason: not-attempted
+- name: json_load_fuzzer
+  status: included
+- name: settings_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: vulkan-loader-bin.tar.zst
+    bytes: 334294
+    sha256: 0baa4bb65c7f6dc5e756d22fb2c04ed1c432e031ecd450615cee091b550889e4
+  src:
+    release: v2026.10.0-src
+    file: vulkan-loader-src.tar.zst
+    bytes: 4864150
+    sha256: d4f957603075bc4560c15e3dc940f482d90a4e1711ce324b5ddd349aadada41f
+  src_manifest:
+    release: v2026.10.0-src
+    file: vulkan-loader-src.MANIFEST.tsv
+    bytes: 2492
+    sha256: 7c04c7d2c5a858a52f91b599975ba7f5fc960694ecfb1bda5752cebdb1cfcce8

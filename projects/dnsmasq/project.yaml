@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: dnsmasq
+homepage: https://thekelleys.org.uk/dnsmasq/doc.html
+language: c
+oss_fuzz:
+  path: projects/dnsmasq
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dnsmasq
+  repository: https://thekelleys.org.uk/dnsmasq
+  commit: cf9c9c74e047b9203222d46e9df81d72f103cc7f
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_util
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dnsmasq-bin.tar.zst
+    bytes: 451310
+    sha256: 0461d99b51b9d7121aa11c1091d24682b33a09d050fe8e9b321a4f9f4e4a86f2
+  src:
+    release: v2026.10.0-src
+    file: dnsmasq-src.tar.zst
+    bytes: 691586
+    sha256: ea1cd37fff1c9abf920fdb7a7e03a9518d192cc1fe1fec765796b62890f87cec
+  src_manifest:
+    release: v2026.10.0-src
+    file: dnsmasq-src.MANIFEST.tsv
+    bytes: 2075
+    sha256: f4d2cbf14ce3970790720d5dbdb8b5135760f4933f4c02b85b7bf12b76b3ad28

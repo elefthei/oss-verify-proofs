@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: brunsli
+homepage: https://github.com/google/brunsli
+language: c++
+oss_fuzz:
+  path: projects/brunsli
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: brunsli
+  repository: https://github.com/google/brunsli
+  commit: 40249cd3963616f21e4102bf03110d20ff0ecf70
+  licence: MIT
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_decode
+  status: included
+  origin: upstream
+- name: fuzz_decode_streaming
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: brunsli-bin.tar.zst
+    bytes: 1629130
+    sha256: 7d51d0727181d158c980968c3c7a664b8ddbcfece5fdcac8e280707834826873
+  src:
+    release: v2026.10.0-src
+    file: brunsli-src.tar.zst
+    bytes: 1658789
+    sha256: 4d5a8e08842c6dee86925cda30335b31d573f778f11087b1fb0eb5507aae24fd
+  src_manifest:
+    release: v2026.10.0-src
+    file: brunsli-src.MANIFEST.tsv
+    bytes: 3627
+    sha256: 3c0d38d1397fca54e005c3221de0c9d8dec55eb7218531c318934849087654af

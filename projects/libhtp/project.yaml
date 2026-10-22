@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: libhtp
+homepage: https://github.com/OISF/libhtp
+language: c
+oss_fuzz:
+  path: projects/libhtp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libhtp
+  repository: https://github.com/OISF/libhtp
+  commit: 90c42f0c2ecd641cc059dacca09aa98e3c810177
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_htp_c
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libhtp-bin.tar.zst
+    bytes: 536447
+    sha256: 3e43c4aacbd424b02d45ea8044b8e3be6e75d9df3826204d8bd8e78952f828ef
+  src:
+    release: v2026.10.0-src
+    file: libhtp-src.tar.zst
+    bytes: 381225
+    sha256: 52538e8b838c129f5ae116abcb5fd2861d9d68b5fcde972a8013b3c6bcfcc7fd
+  src_manifest:
+    release: v2026.10.0-src
+    file: libhtp-src.MANIFEST.tsv
+    bytes: 1320
+    sha256: e13dc112b0cadc41ecf6d0b4b57e4b7c822690acff1c0918e40c4ae21de78aee

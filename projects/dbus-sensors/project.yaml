@@ -1,0 +1,36 @@
+schema: oss-fuzz-theorems/project/1
+project: dbus-sensors
+homepage: https://github.com/openbmc/dbus-sensors
+language: c++
+oss_fuzz:
+  path: projects/dbus-sensors
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dbus-sensors
+  repository: https://github.com/openbmc/dbus-sensors
+  commit: b979de6092651d9459bbff2666ba8f5cc9bedcf3
+  licence: Apache-2.0
+harnesses:
+- name: utils_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dbus-sensors-bin.tar.zst
+    bytes: 2120299
+    sha256: 7763b0c8ec7a8be1ae0f0cda29bed16d92f2840aca1dc1a0697f34b05032557a
+  src:
+    release: v2026.10.0-src
+    file: dbus-sensors-src.tar.zst
+    bytes: 567663
+    sha256: 4151a3a833b4e5fadfaa13a7059b0152d8cc7f4fa5a2bcf847a6408e9e2e1b9a
+  src_manifest:
+    release: v2026.10.0-src
+    file: dbus-sensors-src.MANIFEST.tsv
+    bytes: 2849
+    sha256: 80c01e3847e7da992c60eee7705836c816d4101729166c34837d592037021478

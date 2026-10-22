@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: spring-retry
+homepage: https://ci.spring.io/teams/spring-retry/pipelines/spring-retry-2.0.x
+language: jvm
+oss_fuzz:
+  path: projects/spring-retry
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

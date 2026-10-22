@@ -1,0 +1,96 @@
+schema: oss-fuzz-theorems/project/1
+project: poppler
+homepage: https://poppler.freedesktop.org
+language: c++
+oss_fuzz:
+  path: projects/poppler
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: poppler
+  repository: https://gitlab.freedesktop.org/poppler/poppler
+  commit: 80de22a1779cd5c26f4e678b73d4b66bc1b73836
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: annot_fuzzer
+  status: included
+  origin: upstream
+- name: doc_attr_fuzzer
+  status: included
+  origin: upstream
+- name: doc_fuzzer
+  status: included
+  origin: upstream
+- name: find_text_fuzzer
+  status: included
+  origin: upstream
+- name: label_fuzzer
+  status: included
+  origin: upstream
+- name: page_label_fuzzer
+  status: included
+  origin: upstream
+- name: page_search_fuzzer
+  status: included
+  origin: upstream
+- name: pdf_draw_fuzzer
+  status: included
+  origin: upstream
+- name: pdf_file_fuzzer
+  status: included
+  origin: upstream
+- name: pdf_fuzzer
+  status: included
+  origin: upstream
+- name: qt_label_fuzzer
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: Qt 6
+- name: qt_pdf_fuzzer
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: Qt 6
+- name: qt_search_fuzzer
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: Qt 6
+- name: qt_signature_fuzzer
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: Qt 6
+- name: qt_textbox_fuzzer
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: Qt 6
+- name: structured_text_fuzzer
+  status: included
+  origin: upstream
+- name: util_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: poppler-bin.tar.zst
+    bytes: 111858522
+    sha256: 6912324b1ea6e6f90f578f3c41570c66129860fceec26a88051d46abcd83da4e
+  src:
+    release: v2026.10.0-src
+    file: poppler-src.tar.zst
+    bytes: 65354094
+    sha256: e1069571125d7ceaef99531bb7be1142121dc2e4148f8f37dec8050f08410176
+  src_manifest:
+    release: v2026.10.0-src
+    file: poppler-src.MANIFEST.tsv
+    bytes: 10322
+    sha256: 60092a1150ba30e02ff169987c179111348ecb5d3807c4baca0deeee7750234e

@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: glslang
+homepage: https://github.com/khronosgroup/glslang
+language: c++
+oss_fuzz:
+  path: projects/glslang
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: glslang
+  repository: https://github.com/khronosgroup/glslang
+  commit: 73b25650df6dc4545966674531e6b7cc8f5d2407
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: compile_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: glslang-bin.tar.zst
+    bytes: 4394867
+    sha256: 3ca1833b670f707013b03afb51ce0e6ad1664ef8394132d336ba4fee88883329
+  src:
+    release: v2026.10.0-src
+    file: glslang-src.tar.zst
+    bytes: 2658684
+    sha256: ec6ee0b2856f1550bfbf14dd7fe40fe05fc2b38ec2edbc70790dc8bbff5fcb79
+  src_manifest:
+    release: v2026.10.0-src
+    file: glslang-src.MANIFEST.tsv
+    bytes: 1536
+    sha256: 2ba23198bc52dc2d95dc4ea2a775c77862a89662aa19a4b0f458e99a7c607be0

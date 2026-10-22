@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: giflib
+language: c++
+oss_fuzz:
+  path: projects/giflib
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: code
+  repository: https://git.code.sf.net/p/giflib/code
+  commit: a8e3114a81f0987a61d06a41c99fd7cc2d58232c
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: dgif_protobuf_target
+  status: not-included
+  reason: not-attempted
+- name: dgif_target
+  status: included
+- name: egif_target
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: giflib-bin.tar.zst
+    bytes: 382127
+    sha256: 6e61e14910525aae255c7db2dd1f9f36d71ab83aa043788edd78d39b1cea2735
+  src:
+    release: v2026.10.0-src
+    file: giflib-src.tar.zst
+    bytes: 360615
+    sha256: 5b93d3aa632ab255758c51989973ec5a4c24a0b07a9385bbb77760702451a581
+  src_manifest:
+    release: v2026.10.0-src
+    file: giflib-src.MANIFEST.tsv
+    bytes: 1697
+    sha256: 44c3e249c5aaec2798098699e4ce22349d877b393245f0c8b508f911cf2212e8

@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: imagemagick
+description: Image processing library and tools
+homepage: https://imagemagick.org
+language: c++
+oss_fuzz: {path: projects/imagemagick, commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842}
+status: not-yet-built
+reason: dependency
+reason_args: {dependency: Ghostscript}

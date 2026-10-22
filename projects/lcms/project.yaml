@@ -1,0 +1,85 @@
+schema: oss-fuzz-theorems/project/1
+project: lcms
+language: c++
+oss_fuzz:
+  path: projects/lcms
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: Little-CMS
+  repository: https://github.com/mm2/Little-CMS
+  commit: a1a25a00bc5e5f13186a9cf134ffcc0566a8215c
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cmsIT8_load_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_cgats_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_cie_cam02_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_devicelink_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_dict_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_gdb_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_md5_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_overwrite_transform_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_postscript_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_profile_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_transform_all_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_transform_extended_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_transform_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_universal_transform_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cms_virtual_profile_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: fuzzers
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lcms-bin.tar.zst
+    bytes: 926839
+    sha256: af300073d9ac7b8323e977fd14747e8a62f5ecec9229b8cba008a568afd219ff
+  src:
+    release: v2026.10.0-src
+    file: lcms-src.tar.zst
+    bytes: 4182367
+    sha256: 6447462ade3ef4056880191610d3f854a13e48ed2b2ad16874fc10e92a80ec23
+  src_manifest:
+    release: v2026.10.0-src
+    file: lcms-src.MANIFEST.tsv
+    bytes: 1308
+    sha256: f36c05b41b688e8256fa69db5c38f65d127b04de786db9fcb265e4d087b4d4cf

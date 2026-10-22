@@ -1,0 +1,140 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/stephenberry/glaze
+COMMIT=dce5e0f7ec572725ec369a0bc59a00eeb2270a9a
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_cmake
+  oft_build_harness "fuzzing/binary_reflection.cpp"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_header_only
+  oft_build_harness "fuzzing/binary_reflection.cpp"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

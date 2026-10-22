@@ -1,0 +1,74 @@
+schema: oss-fuzz-theorems/project/1
+project: gstreamer
+homepage: https://gstreamer.freedesktop.org
+language: c++
+oss_fuzz:
+  path: projects/gstreamer
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gstreamer
+  repository: https://gitlab.freedesktop.org/gstreamer/gstreamer
+  commit: bcae292238603dc1938efd91c551fe6c63ffbc9c
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: gst-audio
+  status: included
+  origin: upstream
+- name: gst-audio-converter
+  status: included
+  origin: upstream
+- name: gst-audioparsers
+  status: included
+  origin: upstream
+- name: gst-codec-utils
+  status: included
+  origin: upstream
+- name: gst-discoverer
+  status: included
+  origin: upstream
+- name: gst-subparse
+  status: included
+  origin: upstream
+- name: gst-tag
+  status: included
+  origin: upstream
+- name: gst-uri
+  status: included
+  origin: upstream
+- name: gst-value
+  status: included
+  origin: upstream
+- name: gst-video
+  status: included
+  origin: upstream
+- name: gst-video-converter
+  status: included
+  origin: upstream
+- name: gst-videoparsers
+  status: included
+  origin: upstream
+- name: typefind
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gstreamer-bin.tar.zst
+    bytes: 198977532
+    sha256: fbd6deb5254887ca6824ef8291a3939a52aa9ab2de80cdacfb692beb6df54590
+  src:
+    release: v2026.10.0-src
+    file: gstreamer-src.tar.zst
+    bytes: 30552155
+    sha256: 2e9976a62f87b863c87b83f4c794e307438854b565feb3671097938e319effb1
+  src_manifest:
+    release: v2026.10.0-src
+    file: gstreamer-src.MANIFEST.tsv
+    bytes: 4977
+    sha256: ab1095a9be5e8607509051e17338749b5f82ddc2c9392eeb5118b7352bba50b0

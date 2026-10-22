@@ -1,0 +1,49 @@
+schema: oss-fuzz-theorems/project/1
+project: gdk-pixbuf
+homepage: https://gitlab.gnome.org/GNOME/gdk-pixbuf
+language: c
+oss_fuzz:
+  path: projects/gdk-pixbuf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gdk-pixbuf
+  repository: https://gitlab.gnome.org/GNOME/gdk-pixbuf
+  commit: 8c2942509b02fccabaefcef48d2e0328b497fc5d
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: animation_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: pixbuf_cons_fuzzer
+  status: included
+- name: pixbuf_file_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: pixbuf_scale_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: stream_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gdk-pixbuf-bin.tar.zst
+    bytes: 1198973
+    sha256: 0971a7fbab73495a722fd5ed6cd8f99f3f375132b190cbda70c82e5ef3b83648
+  src:
+    release: v2026.10.0-src
+    file: gdk-pixbuf-src.tar.zst
+    bytes: 6109948
+    sha256: ef54e23afcb4d3031b6cb24c9e62200aa17467c9a9688cbdf0d0fda11b79b572
+  src_manifest:
+    release: v2026.10.0-src
+    file: gdk-pixbuf-src.MANIFEST.tsv
+    bytes: 1626
+    sha256: 261c42e332fffa65432e1cf245cd485f905635e59c2b0adec8efbd4a425f9795

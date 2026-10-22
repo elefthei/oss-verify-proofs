@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: phosphor-host-ipmid
+homepage: https://github.com/openbmc/phosphor-host-ipmid
+language: c++
+oss_fuzz:
+  path: projects/phosphor-host-ipmid
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: phosphor-host-ipmid
+  repository: https://github.com/openbmc/phosphor-host-ipmid
+  commit: 3bcd5f2cc4d81f804798f04ab400a177c949e5ce
+  licence: Apache-2.0
+  patch_count: 3
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_fru_area
+  status: included
+- name: fuzz_payload_unpack
+  status: included
+- name: fuzz_sensor_utils
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: phosphor-host-ipmid-bin.tar.zst
+    bytes: 1005524
+    sha256: 207fb9f2c2459efadb16cde79e36318afd24ae1eef4ef6383bb0cb06759d37dd
+  src:
+    release: v2026.10.0-src
+    file: phosphor-host-ipmid-src.tar.zst
+    bytes: 610912
+    sha256: c6d1d7b5a5035bfb7138e69e526192e44495352855cc67aef3d5182833ab8f95
+  src_manifest:
+    release: v2026.10.0-src
+    file: phosphor-host-ipmid-src.MANIFEST.tsv
+    bytes: 3898
+    sha256: 705ec7926199698cb56a2d816fde7d5894e799dec7ffb69815cba1089c528160

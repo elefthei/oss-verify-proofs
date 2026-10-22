@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: cppitertools
+homepage: https://github.com/ryanhaining/cppitertools
+language: c++
+oss_fuzz:
+  path: projects/cppitertools
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cppitertools
+  repository: https://github.com/ryanhaining/cppitertools
+  commit: 531b3d753d2bbfe3b0ababe61c2e95e965c54a66
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_cppitertools
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cppitertools-bin.tar.zst
+    bytes: 446624
+    sha256: 70eb0fa29f8d8c3292db3faec70c3e3fc8382cd269b833b319f28ab8319f2bd9
+  src:
+    release: v2026.10.0-src
+    file: cppitertools-src.tar.zst
+    bytes: 66441
+    sha256: 1504f78c8329a221c8acf7cd5a9018e305afdf4ec2eba2b8fc1db06b51652515
+  src_manifest:
+    release: v2026.10.0-src
+    file: cppitertools-src.MANIFEST.tsv
+    bytes: 1632
+    sha256: 436b0e7d08b587a5be939cf5423316d3a9dd9e507251d98f8951c7cda4e3a852

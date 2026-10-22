@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: cgif
+homepage: https://github.com/dloebl/cgif
+language: c
+oss_fuzz:
+  path: projects/cgif
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cgif
+  repository: https://github.com/dloebl/cgif
+  commit: b1facf77a226e971fdd9c0f2fd616ab9b03562d9
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cgif_file_fuzzer
+  status: included
+  origin: upstream
+- name: cgif_fuzzer
+  status: included
+  origin: upstream
+- name: cgif_rgb_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cgif-bin.tar.zst
+    bytes: 491959
+    sha256: cea9d4272510b2ad68765de3399c35920d2a56b7172fba9fd912751eaa3dc602
+  src:
+    release: v2026.10.0-src
+    file: cgif-src.tar.zst
+    bytes: 46721
+    sha256: 7728cb493f8d14ef32fd2f7be494ba596d2e1c953aac28fc2355318eb654043f
+  src_manifest:
+    release: v2026.10.0-src
+    file: cgif-src.MANIFEST.tsv
+    bytes: 1517
+    sha256: 48f34870e3667f8e14928ade3c4a39540b2ce68122fe9f40473db04e1f9a2bf9

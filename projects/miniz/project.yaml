@@ -1,0 +1,69 @@
+schema: oss-fuzz-theorems/project/1
+project: miniz
+homepage: https://github.com/richgel999/miniz
+language: c
+oss_fuzz:
+  path: projects/miniz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: miniz
+  repository: https://github.com/richgel999/miniz
+  commit: 77d0dce8627735138c51770d1799a1ef48f2117d
+  version: 3.1.2
+  licence: MIT
+harnesses:
+- name: add_in_place_fuzzer
+  status: included
+  origin: upstream
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: checksum_fuzzer
+  status: included
+  origin: upstream
+- name: compress_fuzzer
+  status: included
+  origin: upstream
+- name: flush_fuzzer
+  status: included
+  origin: upstream
+- name: large_fuzzer
+  status: included
+  origin: upstream
+- name: miniz_zip_validate_fuzzer
+  status: included
+  origin: upstream
+- name: small_fuzzer
+  status: included
+  origin: upstream
+- name: uncompress2_fuzzer
+  status: included
+  origin: upstream
+- name: uncompress_fuzzer
+  status: included
+  origin: upstream
+- name: zip_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: miniz-bin.tar.zst
+    bytes: 1505098
+    sha256: 0fa0cbfa93f126341ef42489d77759790c8c868107bd75b593117d1bc99efb36
+  src:
+    release: v2026.10.0-src
+    file: miniz-src.tar.zst
+    bytes: 228955
+    sha256: 557adff77d5be7400ef2e346657c6e2fe2e6082842c3b1a3741929c8285567b7
+  src_manifest:
+    release: v2026.10.0-src
+    file: miniz-src.MANIFEST.tsv
+    bytes: 2323
+    sha256: aba97c1e84eb753dea8c3ddd2cbdb8cfd9749c04e9868826b9005480980c7729

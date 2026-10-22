@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: libzip
+homepage: https://libzip.org
+language: c++
+oss_fuzz:
+  path: projects/libzip
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libzip
+  repository: https://github.com/nih-at/libzip
+  commit: 1d4b30ac5b1a1c8288b8dcb2add27214e9829453
+  licence: BSD-3-Clause
+harnesses:
+- name: zip_read_file_fuzzer
+  status: included
+  origin: upstream
+- name: zip_read_fuzzer
+  status: included
+  origin: upstream
+- name: zip_read_metadata_fuzzer
+  status: included
+  origin: upstream
+- name: zip_write_encrypt_aes256_file_fuzzer
+  status: included
+  origin: upstream
+- name: zip_write_encrypt_pkware_file_fuzzer
+  status: included
+  origin: upstream
+- name: zip_write_roundtrip_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libzip-bin.tar.zst
+    bytes: 9474627
+    sha256: d2ec8271837fc7ffe07189e76bd566400886806adcda6594374aeea6e92ac268
+  src:
+    release: v2026.10.0-src
+    file: libzip-src.tar.zst
+    bytes: 832144
+    sha256: e2fb01309215cb27f6fc0362cfccb70088699e24d97ccca355ed884740c13e99
+  src_manifest:
+    release: v2026.10.0-src
+    file: libzip-src.MANIFEST.tsv
+    bytes: 2073
+    sha256: 08fd38f5fcd76dc05e95b20ce199ba9366c0beb0c4372c1d88b2ec11a60907d0

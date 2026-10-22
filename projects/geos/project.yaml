@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: geos
+homepage: https://geos.osgeo.org
+language: c++
+oss_fuzz:
+  path: projects/geos
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: geos
+  repository: https://gitea.osgeo.org/geos/geos
+  commit: fe7e16ab175d24cde782e23356e4c5f80a88499c
+  licence: NOASSERTION
+harnesses:
+- name: fuzz_geo2
+  status: included
+  origin: upstream
+- name: fuzz_geo_ops
+  status: included
+  origin: upstream
+- name: fuzz_geojson
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: geos-bin.tar.zst
+    bytes: 18548105
+    sha256: fc93c8148f9de0816de14e918dea23fdbc967380051cb41f84eb44699d9e96df
+  src:
+    release: v2026.10.0-src
+    file: geos-src.tar.zst
+    bytes: 10930695
+    sha256: 5a948641998b64a3c59c9d60c41fcb5b5cfb31414f8eaa83037b3a56b71598b5
+  src_manifest:
+    release: v2026.10.0-src
+    file: geos-src.MANIFEST.tsv
+    bytes: 1497
+    sha256: 749eae57b3b002b138776aa7945ad8334e3d9c8799f9738f4ed4a49e68180bab

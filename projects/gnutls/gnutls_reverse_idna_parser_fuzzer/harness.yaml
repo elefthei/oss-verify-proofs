@@ -1,0 +1,241 @@
+schema: oss-fuzz-theorems/harness/1
+project: gnutls
+harness: gnutls_reverse_idna_parser_fuzzer
+rocq: OssFuzzTheorems.gnutls.gnutls_reverse_idna_parser_fuzzer
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/gnutls_reverse_idna_parser_fuzzer.c
+  from:
+    repository: https://gitlab.com/gnutls/gnutls
+    commit: 4e84948a5e89689edbab2c5920db7fc32f31a985
+    path: fuzz/gnutls_reverse_idna_parser_fuzzer.c
+  modified: false
+  licence: Apache-2.0
+library:
+  repository: https://gitlab.com/gnutls/gnutls
+  commit: 4e84948a5e89689edbab2c5920db7fc32f31a985
+  licence: NOASSERTION
+modifications:
+- Linked against gnutls at commit 4e84948a.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: gnutls_reverse_idna_parser_fuzzer.plain
+    bytes: 1696672
+    sha256: 007ee442dfd929abc008ee2d6630c981df1c514cc1104487d1b187a30faf9863
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+  ubsan:
+    file: gnutls_reverse_idna_parser_fuzzer.ubsan
+    bytes: 1739368
+    sha256: 9a65d8904f5ffa8c1ef558d848ce5888238febec8ffa2137754674dcddf60031
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+  asan:
+    file: gnutls_reverse_idna_parser_fuzzer.asan
+    bytes: 3275160
+    sha256: 9a4ac9fc795dc635fecf7d7eef83593e1c22953cd783c1e128168279e8d99e07
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: gnutls_reverse_idna_parser_fuzzer.asan-ubsan
+    bytes: 3308792
+    sha256: 5e70f8bf46be21557e1ce84c5c88828528f045be8cece72aaf95b0647ced3f1a
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libgmp.a
+      kind: image-library
+      sha256: efe333ea8538661281f143a72010f09d92e623f5b9cb6e395d1b76dbe6b410ac
+    - name: libhogweed.a
+      kind: image-library
+      sha256: 0768fb1e8c37de616e9969f7858bbef28b8e27f40cc7e75bd1d0750cade5297b
+    - name: libnettle.a
+      kind: image-library
+      sha256: e2d2ce0e6187604e8a49fc2a6e830433806dab80646aa9249b79fc1da650d839
+    - name: libtasn1.a
+      kind: image-library
+      sha256: d33f204d706867670bdaf2090c335e9302d2a1fd93454e9275354394ae889459
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

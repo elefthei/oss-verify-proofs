@@ -1,0 +1,10 @@
+jsoncons: include/jsoncons/utility/unicode_traits.hpp (Boost Software License 1.0, lines 1-3) includes code derived from Unicode, Inc.'s ConvertUTF.h and ConvertUTF.c and carries this notice (lines 7-14 at af497a1c1ea9043f4ad8d799617b7d00d6676153):
+
+/*
+ * Includes code derived from Unicode, Inc decomposition code in ConvertUTF.h and ConvertUTF.c 
+ * http://www.unicode.org/  
+ *  
+ * "Unicode, Inc. hereby grants the right to freely use the information
+ * supplied in this file in the creation of products supporting the
+ * Unicode Standard."
+*/

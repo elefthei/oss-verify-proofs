@@ -1,0 +1,241 @@
+schema: oss-fuzz-theorems/harness/1
+project: dbus-sensors
+harness: utils_fuzzer
+rocq: OssFuzzTheorems.dbus_sensors.utils_fuzzer
+origin: oss-fuzz
+summary: 'FuzzedDataProvider-driven calls into dbus-sensors helpers: getDeviceBusAddr, escapePathForDbus,
+  getPathForUnits, getPowerState/getPollRate/getPermitSet on a fuzzed config map, escapeName, splitFileName,
+  findLimits, loadVariant<T> (exceptions swallowed with catch(...)), parseThresholdsFromConfig, sensorNameFind.
+  Every result is (void)-discarded.'
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/utils_fuzzer.cpp
+  from:
+    repository: https://github.com/google/oss-fuzz
+    commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+    path: projects/dbus-sensors/utils_fuzzer.cpp
+  modified: false
+  licence: Apache-2.0
+library:
+  repository: https://github.com/openbmc/dbus-sensors
+  commit: b979de6092651d9459bbff2666ba8f5cc9bedcf3
+  licence: Apache-2.0
+modifications:
+- Linked against dbus-sensors at commit b979de60.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: utils_fuzzer.plain
+    bytes: 1875048
+    sha256: a0e7e3d9d3276c4464d6072cce44c4b2fa822468082c5bb2808e814ac74afc85
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcap.a
+      kind: image-library
+      sha256: fcc0e0d11d064431ecc9109a497f24109e0762782ca0e496947277c19ba6f04d
+    - name: libsystemd.a
+      kind: image-library
+      sha256: 8c42a70db664c27f72414af1fe691ab4c776d3f42d907b374b21c9e50a1b4e8a
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  ubsan:
+    file: utils_fuzzer.ubsan
+    bytes: 2004888
+    sha256: e18dbdc0bf5e6ebdf7d662eef3335a32ea6a5124602813af144f6a53286c3bf9
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcap.a
+      kind: image-library
+      sha256: fcc0e0d11d064431ecc9109a497f24109e0762782ca0e496947277c19ba6f04d
+    - name: libsystemd.a
+      kind: image-library
+      sha256: 8c42a70db664c27f72414af1fe691ab4c776d3f42d907b374b21c9e50a1b4e8a
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan:
+    file: utils_fuzzer.asan
+    bytes: 3374584
+    sha256: e2e9dce908ccd8caf4eb42a2b06445986e5eca73f97a980a68ff61bbe92b28db
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcap.a
+      kind: image-library
+      sha256: fcc0e0d11d064431ecc9109a497f24109e0762782ca0e496947277c19ba6f04d
+    - name: libsystemd.a
+      kind: image-library
+      sha256: 8c42a70db664c27f72414af1fe691ab4c776d3f42d907b374b21c9e50a1b4e8a
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: utils_fuzzer.asan-ubsan
+    bytes: 3545944
+    sha256: 641d3e823312e23c639872d7ab7b76a0cf6daea723d690fc76c7b9d2264a8b5a
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libcap.a
+      kind: image-library
+      sha256: fcc0e0d11d064431ecc9109a497f24109e0762782ca0e496947277c19ba6f04d
+    - name: libsystemd.a
+      kind: image-library
+      sha256: 8c42a70db664c27f72414af1fe691ab4c776d3f42d907b374b21c9e50a1b4e8a
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

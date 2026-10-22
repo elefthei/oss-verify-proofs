@@ -1,0 +1,12 @@
+schema: oss-fuzz-theorems/project/1
+project: memcached
+homepage: https://www.memcached.org
+language: c
+oss_fuzz:
+  path: projects/memcached
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: no-licence-grant
+reason_args:
+  commit: fc32e928f0f42343634cfa153924b83a16a296f8
+  text: routelib in memcached-vendor

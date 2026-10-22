@@ -1,0 +1,68 @@
+schema: oss-fuzz-theorems/project/1
+project: jq
+homepage: https://jqlang.github.io/jq
+language: c
+oss_fuzz:
+  path: projects/jq
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: jq
+  repository: https://github.com/jqlang/jq
+  commit: 41b8edfe5437fcd25a072081c05f9f770f9e9b85
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: base
+  status: included
+  origin: upstream
+- name: deluxe
+  status: included
+  origin: upstream
+- name: jq_fuzz_compile
+  status: not-included
+  reason: not-yet-included
+- name: jq_fuzz_execute
+  status: included
+  origin: upstream
+- name: jq_fuzz_fixed
+  status: included
+  origin: upstream
+- name: jq_fuzz_load_file
+  status: not-included
+  reason: not-yet-included
+- name: jq_fuzz_parse
+  status: not-included
+  reason: not-yet-included
+- name: jq_fuzz_parse_extended
+  status: included
+  origin: upstream
+- name: jq_fuzz_parse_stream
+  status: included
+  origin: upstream
+- name: libfuzzer-onig
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: jq-bin.tar.zst
+    bytes: 3108108
+    sha256: 628a2d884a5bba3140a81ef31eec749f5e9a4ca0f9e9250ba040fec72d578071
+  src:
+    release: v2026.10.0-src
+    file: jq-src.tar.zst
+    bytes: 1501682
+    sha256: 7ddbc6354629873a8969a4453cbce21612b8a38ac3b8e972d83052000f9ba97a
+  src_manifest:
+    release: v2026.10.0-src
+    file: jq-src.MANIFEST.tsv
+    bytes: 2834
+    sha256: 6d7ad57137e90a57df7627df93f71ab3f1998fb3ee0de42735b6a2ba0cc6b5a9

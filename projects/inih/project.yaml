@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: inih
+homepage: https://github.com/benhoyt/inih
+language: c
+oss_fuzz:
+  path: projects/inih
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: inih
+  repository: https://github.com/benhoyt/inih
+  commit: 577ae2dee1f0d9c2d11c7f10375c1715f3d6940c
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: inihfuzz
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: inih-bin.tar.zst
+    bytes: 331621
+    sha256: 186bcda0b27fb94efb09f2cfd43d253085a8462a8e5b4db3eb004fd09ad20137
+  src:
+    release: v2026.10.0-src
+    file: inih-src.tar.zst
+    bytes: 20196
+    sha256: 8b1373f743625102066acc94c2a09b5d263424a07b41a52e1589860cf202cf3d
+  src_manifest:
+    release: v2026.10.0-src
+    file: inih-src.MANIFEST.tsv
+    bytes: 1424
+    sha256: f723b44f7402798fe4089b4dfb9b2c4c7493334d6f91a09ddffb9528199b0ded

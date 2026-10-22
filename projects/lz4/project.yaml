@@ -1,0 +1,68 @@
+schema: oss-fuzz-theorems/project/1
+project: lz4
+homepage: https://github.com/lz4/lz4
+language: c++
+oss_fuzz:
+  path: projects/lz4
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lz4
+  repository: https://github.com/lz4/lz4
+  commit: 0774d05537f9762f838f7ab541b7765f1a729cb5
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: compress_frame_fuzzer
+  status: included
+  origin: upstream
+- name: compress_fuzzer
+  status: included
+  origin: upstream
+- name: compress_hc_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_frame_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_fuzzer
+  status: included
+  origin: upstream
+- name: round_trip_frame_fuzzer
+  status: included
+  origin: upstream
+- name: round_trip_frame_uncompressed_fuzzer
+  status: included
+  origin: upstream
+- name: round_trip_fuzzer
+  status: included
+  origin: upstream
+- name: round_trip_hc_fuzzer
+  status: included
+  origin: upstream
+- name: round_trip_stream_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lz4-bin.tar.zst
+    bytes: 1533915
+    sha256: 30d2a4f96507832e12cafda2b00e1275b9f4da7bd5064e53d069c3ac14376be6
+  src:
+    release: v2026.10.0-src
+    file: lz4-src.tar.zst
+    bytes: 284057
+    sha256: a367a108a7356a908d486564c258756c55379061727d4449f8c541b30e219f67
+  src_manifest:
+    release: v2026.10.0-src
+    file: lz4-src.MANIFEST.tsv
+    bytes: 3408
+    sha256: e5aaa77d7c832e41ce908ea80ff5f7260863defddcf376135be614c1c4d4e2c8

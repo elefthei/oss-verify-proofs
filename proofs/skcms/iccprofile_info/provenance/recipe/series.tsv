@@ -1,0 +1,2 @@
+series	order	patch	class	sha256	targets
+skia.googlesource.com/skcms/9c10699e8884c14c3161b7afc5996d29b6cb7845	1	0001-fuzz-transform-assertion-abort.patch	Harness reporting.	919af1076ec06c64fa7bf07fcda8e2044122d68b8db62dea7826c257217fb492	skcms-fuzz_iccprofile_atf,skcms-fuzz_iccprofile_info,skcms-fuzz_iccprofile_transform

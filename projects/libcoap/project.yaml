@@ -1,0 +1,91 @@
+schema: oss-fuzz-theorems/project/1
+project: libcoap
+homepage: https://libcoap.net
+language: c
+oss_fuzz:
+  path: projects/libcoap
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libcoap
+  repository: https://github.com/obgm/libcoap
+  commit: 19bc71e62086e382aa9a8496254011e2bf8d4fcd
+  licence: NOASSERTION
+harnesses:
+- name: async_fuzzer
+  status: included
+  origin: upstream
+- name: block_check_fuzzer
+  status: included
+  origin: upstream
+- name: block_fuzzer
+  status: included
+  origin: upstream
+- name: cache_key_fuzzer
+  status: included
+  origin: upstream
+- name: dtls_define_fuzzer
+  status: included
+  origin: upstream
+- name: get_asn1_tag_fuzzer
+  status: included
+  origin: upstream
+- name: network_message_fuzzer
+  status: included
+  origin: upstream
+- name: observe_fuzzer
+  status: included
+  origin: upstream
+- name: oscore_cbor_fuzzer
+  status: included
+  origin: upstream
+- name: oscore_conf_parse_fuzzer
+  status: included
+  origin: upstream
+- name: oscore_decrypt_fuzzer
+  status: included
+  origin: upstream
+- name: pdu_parse_tcp_fuzzer
+  status: included
+  origin: upstream
+- name: pdu_parse_udp_fuzzer
+  status: included
+  origin: upstream
+- name: pdu_parse_ws_fuzzer
+  status: included
+  origin: upstream
+- name: persist_fuzzer
+  status: included
+  origin: upstream
+- name: proxy_fuzzer
+  status: included
+  origin: upstream
+- name: split_uri_fuzzer
+  status: included
+  origin: upstream
+- name: uri_extended_fuzzer
+  status: included
+  origin: upstream
+- name: ws_frame_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libcoap-bin.tar.zst
+    bytes: 28588749
+    sha256: 2b17c78ad30b54c2a5fe5a59e929b64678163164d9bb269bf3b4ab3a00535f09
+  src:
+    release: v2026.10.0-src
+    file: libcoap-src.tar.zst
+    bytes: 806395
+    sha256: b134df5d348191fe8156534f6ba7e32b12e502698f0e332cfdaeb5c924079911
+  src_manifest:
+    release: v2026.10.0-src
+    file: libcoap-src.MANIFEST.tsv
+    bytes: 5919
+    sha256: 45054e55cc156fe697aef7aeb2eba297d5d0afa19ebd7e48ba68cd59f62e6731

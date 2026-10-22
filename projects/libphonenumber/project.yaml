@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: libphonenumber
+homepage: https://github.com/google/libphonenumber
+language: c++
+oss_fuzz:
+  path: projects/libphonenumber
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libphonenumber
+  repository: https://github.com/google/libphonenumber
+  commit: 17c9061a3af14f2e10907d73df92601b27785713
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_asyoutypeformatter
+  status: included
+  origin: upstream
+- name: fuzz_matcher
+  status: included
+  origin: upstream
+- name: fuzz_phone
+  status: included
+  origin: upstream
+- name: fuzz_shortnumberinfo
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libphonenumber-bin.tar.zst
+    bytes: 5698515
+    sha256: aa9bb7f7387515e6f7fcc0313511da7582a9e1025ecdddea9489023b56c967be
+  src:
+    release: v2026.10.0-src
+    file: libphonenumber-src.tar.zst
+    bytes: 12021911
+    sha256: e942b3d4274f95e12aacbbd24022a5664a15ed6ed4e6d55bc704bf74dc462cb3
+  src_manifest:
+    release: v2026.10.0-src
+    file: libphonenumber-src.MANIFEST.tsv
+    bytes: 3801
+    sha256: fdd55bda99ca9a149710c3eb339295060179a5a8d9d0342f5c6dff47d06bda9a

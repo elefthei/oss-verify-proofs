@@ -1,0 +1,49 @@
+schema: oss-fuzz-theorems/project/1
+project: augeas
+homepage: https://github.com/hercules-team/augeas
+language: c++
+oss_fuzz:
+  path: projects/augeas
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: augeas
+  repository: https://github.com/hercules-team/augeas
+  commit: 22d715e8d4ad133e2eb085b9b38d1e4a37f911d2
+  licence: LGPL-2.1-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: augeas_api_fuzzer
+  status: included
+- name: augeas_escape_name_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: augeas_fa_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: augeas_lens_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: augeas-bin.tar.zst
+    bytes: 1311258
+    sha256: 8e4660fa6442dc57fdced08a571bed99da4edea369442cebaf806a90e354e7de
+  src:
+    release: v2026.10.0-src
+    file: augeas-src.tar.zst
+    bytes: 5781337
+    sha256: 5ce00351109229bc1303ef593323bc3e4dc88504ba98e1a796495f478db438eb
+  src_manifest:
+    release: v2026.10.0-src
+    file: augeas-src.MANIFEST.tsv
+    bytes: 2085
+    sha256: e7eb5db41befa754983c85ebe32954d46f0d6eacba11c5898859d750d56d302d

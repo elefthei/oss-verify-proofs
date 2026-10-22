@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: filesystem_spec
+homepage: https://github.com/fsspec/filesystem_spec
+language: python
+oss_fuzz:
+  path: projects/filesystem_spec
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

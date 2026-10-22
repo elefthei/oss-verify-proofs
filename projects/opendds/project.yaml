@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: opendds
+homepage: https://opendds.org
+language: c
+oss_fuzz:
+  path: projects/opendds
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: no-harness
+reason: none-at-commit

@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: leptonica/bilateral_fuzzer/asan_ubsan_agrees
+fingerprint: bf94e20c25eaf21d77cd5689a56200fce775cf550699656a6ea6dc9ffa3dadac

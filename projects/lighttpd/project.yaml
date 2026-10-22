@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: lighttpd
+homepage: https://www.lighttpd.net
+language: c
+oss_fuzz:
+  path: projects/lighttpd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: lighttpd1.4
+  repository: https://github.com/lighttpd/lighttpd1.4
+  commit: 2ddc51389a139d2b08daf310596c951c1d53dc8d
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_burl
+  status: included
+- name: fuzz_request
+  status: not-included
+  reason: not-attempted
+- name: fuzz_utils
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: lighttpd-bin.tar.zst
+    bytes: 386300
+    sha256: 3b9e234af2e8751e4f045d9733051e1ac797964e6999084afb6d59ee39e329d9
+  src:
+    release: v2026.10.0-src
+    file: lighttpd-src.tar.zst
+    bytes: 917402
+    sha256: 87a1d6890816a194df969ef2bbf1adbd73b062bea5615974382b2edf4f89c089
+  src_manifest:
+    release: v2026.10.0-src
+    file: lighttpd-src.MANIFEST.tsv
+    bytes: 1723
+    sha256: 4e2bfc870fe826e7319864fa44b2db48b954d9f41b5a52c38e80ba49c76581b7

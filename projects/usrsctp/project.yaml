@@ -1,0 +1,48 @@
+schema: oss-fuzz-theorems/project/1
+project: usrsctp
+homepage: https://github.com/sctplab/usrsctp
+language: c++
+oss_fuzz:
+  path: projects/usrsctp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: usrsctp
+  repository: https://github.com/sctplab/usrsctp
+  commit: fd070e05a7474f38c7fecdf4d4b6005d2547ee00
+  licence: BSD-3-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer_connect
+  status: included
+  origin: upstream
+- name: fuzzer_fragment
+  status: included
+  origin: upstream
+- name: fuzzer_listen
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: usrsctp-bin.tar.zst
+    bytes: 2064626
+    sha256: 519aa5909a3129cd23410d12ec992408b4922e6d93c8fa1af2cbe3097f264393
+  src:
+    release: v2026.10.0-src
+    file: usrsctp-src.tar.zst
+    bytes: 502380
+    sha256: b28eff5a2d5cb5f3ada8a8c8a91231ea2a4ede5840d9d2d4a68ca9b4147e3ec5
+  src_manifest:
+    release: v2026.10.0-src
+    file: usrsctp-src.MANIFEST.tsv
+    bytes: 1576
+    sha256: e325814c3a22980a0b77f9af279354a28fc24e280dba84b42c2fb248bb1e14c5

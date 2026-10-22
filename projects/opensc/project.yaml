@@ -1,0 +1,77 @@
+schema: oss-fuzz-theorems/project/1
+project: opensc
+homepage: https://github.com/OpenSC/OpenSC
+language: c++
+oss_fuzz:
+  path: projects/opensc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: OpenSC
+  repository: https://github.com/OpenSC/OpenSC
+  commit: a6f4fdc0d4061a77f34826e939c44e286e592536
+  licence: LGPL-2.1-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_asn1_print
+  status: not-included
+  reason: not-attempted
+- name: fuzz_asn1_sig_value
+  status: not-included
+  reason: not-attempted
+- name: fuzz_card
+  status: not-included
+  reason: not-attempted
+- name: fuzz_piv_tool
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs11
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs11_uri
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs15_crypt
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs15_decode
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs15_encode
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs15_reader
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs15_tool
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pkcs15init
+  status: not-included
+  reason: not-attempted
+- name: fuzz_scconf_parse_string
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opensc-bin.tar.zst
+    bytes: 291066
+    sha256: e60df56a430ece03131a4a47ffbfae8a9f06c97538d0fd23353575b9c1897ab0
+  src:
+    release: v2026.10.0-src
+    file: opensc-src.tar.zst
+    bytes: 1431877
+    sha256: 1df0ee658c702d7dd2c6e3eef06944be438135e1d3675bf777e1f43bcf7ad52f
+  src_manifest:
+    release: v2026.10.0-src
+    file: opensc-src.MANIFEST.tsv
+    bytes: 1384
+    sha256: cebed1461607fab8787c065cc3f9e9dd17cd7887926a2aa50f57c06c7b1c864a

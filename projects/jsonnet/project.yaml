@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: jsonnet
+homepage: https://github.com/google/jsonnet
+language: c++
+oss_fuzz:
+  path: projects/jsonnet
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: jsonnet
+  repository: https://github.com/google/jsonnet
+  commit: 2ef32abf3d5b83c24863949e8413b810d54c7f2a
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: convert_jsonnet_fuzzer_multi
+  status: included
+- name: convert_jsonnet_fuzzer_regular
+  status: included
+- name: convert_jsonnet_fuzzer_stream
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: jsonnet-bin.tar.zst
+    bytes: 7254604
+    sha256: e21bf9bab0cf2af7803e360c941c5ebb5570d191925a0947c8541becf225286e
+  src:
+    release: v2026.10.0-src
+    file: jsonnet-src.tar.zst
+    bytes: 14940903
+    sha256: f0db35fcaa8324c1efb70441bcc40edda660963211300ab6621b8ada3c06add8
+  src_manifest:
+    release: v2026.10.0-src
+    file: jsonnet-src.MANIFEST.tsv
+    bytes: 2500
+    sha256: e9d0508096917c7f8d54dbc6d1d8bebee11b454e507c1e454e1bd7dc1b42eea5

@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: libusb
+language: c++
+oss_fuzz:
+  path: projects/libusb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libusb
+  repository: https://github.com/libusb/libusb
+  commit: a45bb163a603ac5ae3499806b151509848b0065c
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_bos_descriptor
+  status: included
+  origin: upstream
+- name: libusb_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libusb-bin.tar.zst
+    bytes: 279128
+    sha256: beee28c3a40e6b58ca5d445799b8b65620860c6b9820738e859d184c2a98cfea
+  src:
+    release: v2026.10.0-src
+    file: libusb-src.tar.zst
+    bytes: 375858
+    sha256: b9d1a5415e03388a13095cd1a8dab4f531da553a03b56dfc8a9ac717aae9bc19
+  src_manifest:
+    release: v2026.10.0-src
+    file: libusb-src.MANIFEST.tsv
+    bytes: 2029
+    sha256: 140dd3871479b891f51b9943da5ee29ab5234684dfb9c4094c8232facc0bc4e8

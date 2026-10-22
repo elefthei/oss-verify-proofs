@@ -1,0 +1,48 @@
+schema: oss-fuzz-theorems/project/1
+project: spdlog
+homepage: https://github.com/gabime/spdlog
+language: c++
+oss_fuzz:
+  path: projects/spdlog
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: spdlog
+  repository: https://github.com/gabime/spdlog
+  commit: f5f173a1a57d0e2e0115f2ed71ee7ea316516853
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: backtrace_fuzzer
+  status: included
+- name: format_fuzzer
+  status: included
+- name: levels_fuzzer
+  status: included
+- name: log_fuzzer
+  status: included
+- name: pattern_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: spdlog-bin.tar.zst
+    bytes: 2758970
+    sha256: 82e1a9692bb2cd1acfc88ca8fa46f91498025896d3a8d844bace3b747763c408
+  src:
+    release: v2026.10.0-src
+    file: spdlog-src.tar.zst
+    bytes: 235270
+    sha256: 9c1f2cb579aa0f4c7b4854939fbee2710cce235b298917a6e33d3618c1fa9a7b
+  src_manifest:
+    release: v2026.10.0-src
+    file: spdlog-src.MANIFEST.tsv
+    bytes: 2480
+    sha256: 2318ccf7721f3829c6beea7d196aee3436f9d241933a6ead1979435e2b2b8561

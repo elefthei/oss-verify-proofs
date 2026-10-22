@@ -1,0 +1,8 @@
+schema: oss-fuzz-theorems/counterexample/1
+statement: json/fuzzer-parse_bjdata/plain_halts
+input: input.bin
+observed: {build: plain, exit: 134, signal: SIGABRT}
+message: "Assertion `json::to_bjdata(j2, false, false) == vec2' failed"
+control: {input: control.bin, exit: 0}
+disclosure: public
+note: A 7-byte payload makes the serialised value differ from the input bytes; the harness asserts they are equal.

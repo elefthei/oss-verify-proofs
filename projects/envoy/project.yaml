@@ -1,0 +1,11 @@
+schema: oss-fuzz-theorems/project/1
+project: envoy
+homepage: https://www.envoyproxy.io
+language: c++
+oss_fuzz:
+  path: projects/envoy
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: not-yet-built
+reason: build-system
+reason_args:
+  system: Bazel

@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: p11-kit
+homepage: https://p11-glue.github.io/p11-glue/p11-kit.html
+language: c
+oss_fuzz:
+  path: projects/p11-kit
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: p11-kit
+  repository: https://github.com/p11-glue/p11-kit
+  commit: 120050e353e8f43d7c40bbcc047f667f903f4de5
+  version: 0.26.5
+  licence: BSD-3-Clause
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: conf_fuzzer
+  status: included
+  origin: upstream
+- name: persist_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: rpc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uri_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: p11-kit-bin.tar.zst
+    bytes: 271402
+    sha256: cc575d0f0a6e090bc92ba50aa79598d2167c3e5630d6708f46ee0ee11379aa5c
+  src:
+    release: v2026.10.0-src
+    file: p11-kit-src.tar.zst
+    bytes: 560366
+    sha256: 546d2ccf0a73003cc518d90e8cbd4a39116a4dc61b1fa42d44581eec926696b3
+  src_manifest:
+    release: v2026.10.0-src
+    file: p11-kit-src.MANIFEST.tsv
+    bytes: 1932
+    sha256: afdf09777d1b21dcfdc6782caf206fcfa326a26ae170c85957534008126fc35d

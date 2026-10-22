@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: tinygltf
+homepage: https://github.com/syoyo/tinygltf
+language: c++
+oss_fuzz:
+  path: projects/tinygltf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tinygltf
+  repository: https://github.com/syoyo/tinygltf
+  commit: 0d9ce1a9561688c6c6e7471430d15a50a0b15f1a
+  version: 3.0.1
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_gltf_v3
+  status: not-included
+  reason: not-attempted
+- name: fuzz_gltf_v3_c
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tinygltf-bin.tar.zst
+    bytes: 472931
+    sha256: a8d7d311cab5a132f04288a12d545899ab1677c7891009d62a51117699184d3a
+  src:
+    release: v2026.10.0-src
+    file: tinygltf-src.tar.zst
+    bytes: 4384250
+    sha256: c23a6ed22d97ebf46601fc8e8d55f4baac3b27375dd00a3116df496a6886b33c
+  src_manifest:
+    release: v2026.10.0-src
+    file: tinygltf-src.MANIFEST.tsv
+    bytes: 1372
+    sha256: 26081d5acac974b2c946a429c5475a2b24f4907466d37f38eb09b4cd8ac70f83

@@ -1,0 +1,36 @@
+schema: oss-fuzz-theorems/project/1
+project: simd
+language: c++
+oss_fuzz:
+  path: projects/simd
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: Simd
+  repository: https://github.com/ermig1979/Simd
+  commit: c9786ecc6c3df48bdd1e3179731a7e0f546e50db
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: simd_load_fuzzer
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: simd-bin.tar.zst
+    bytes: 3497293
+    sha256: f8a467679513afdd22d8b71cb26320b24169c22fd471b1acb4f31ccb80a4e646
+  src:
+    release: v2026.10.0-src
+    file: simd-src.tar.zst
+    bytes: 2725871
+    sha256: c18134090bc9cd1c4259a2e15888ebb19f5d33125300126b50083dd17f261a4e
+  src_manifest:
+    release: v2026.10.0-src
+    file: simd-src.MANIFEST.tsv
+    bytes: 1508
+    sha256: 9147efe3c54aaaff2c096949137d954fc71d2fb3a837131b02887cba30767ede

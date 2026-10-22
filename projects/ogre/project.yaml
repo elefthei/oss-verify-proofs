@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: ogre
+homepage: https://www.ogre3d.org
+language: c++
+oss_fuzz:
+  path: projects/ogre
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ogre
+  repository: https://github.com/OGRECave/ogre
+  commit: cfc922ad51fff584e2f64977ab410af4ad2138f6
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: dds_fuzz
+  status: included
+  origin: upstream
+- name: image_fuzz
+  status: not-included
+  reason: features
+  reason_args:
+    features:
+    - other-files
+- name: ogre_deep_fuzz
+  status: included
+  origin: upstream
+- name: script_fuzz
+  status: included
+  origin: upstream
+- name: stream_fuzz
+  status: included
+  origin: upstream
+- name: zip_fuzz
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ogre-bin.tar.zst
+    bytes: 33458594
+    sha256: 28f34a057e5bbe6f8b9661828eb348bb0f9e80ca57b4eeab26fe40737aed6eda
+  src:
+    release: v2026.10.0-src
+    file: ogre-src.tar.zst
+    bytes: 89561270
+    sha256: 1caa368597a4d856a3ae131d9209136e7bf0b3abee1f723aedcc9a0faad57aa5
+  src_manifest:
+    release: v2026.10.0-src
+    file: ogre-src.MANIFEST.tsv
+    bytes: 1653
+    sha256: 53eb9f9702c15e11d3cd19d17d0552832082835561758d7899359eea79897162

@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: tcpreplay
+homepage: https://tcpreplay.appneta.com
+language: c
+oss_fuzz:
+  path: projects/tcpreplay
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tcpreplay
+  repository: https://github.com/appneta/tcpreplay
+  commit: c3f6049a1de91e7d3b81543d0ecb01e465b05214
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_fragroute
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pcap
+  status: included
+  origin: upstream
+- name: fuzz_services
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tcpreplay-bin.tar.zst
+    bytes: 393732
+    sha256: a029566bcb0d59d22b46a826c9bf4a1970044dfc7ea525de8abd8da231f153bd
+  src:
+    release: v2026.10.0-src
+    file: tcpreplay-src.tar.zst
+    bytes: 826636
+    sha256: d7ecd3ca2c47629e26eee98f8900d27dfd666c9de5a3f64d01974b5efdc1051b
+  src_manifest:
+    release: v2026.10.0-src
+    file: tcpreplay-src.MANIFEST.tsv
+    bytes: 1475
+    sha256: 9ba8c7281ea98608d9e8571fb0efed90849a933863bdce1097fca4fd0cc98a1e

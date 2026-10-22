@@ -1,0 +1,154 @@
+# The public phrasebook: every sentence a status can produce, and the words
+# for each closed code.  A sentence is filled only from typed fields of the
+# project (its reason_args and its name), so a project page can say nothing
+# that is not in its project.yaml.
+# `oft lint` refuses a status or reason code that is not listed here, and a
+# sentence whose placeholders the project does not supply.
+
+projects:
+  available:
+    words: available
+    meaning: built, with its harnesses and statements listed in this release; its binaries are attached unless they are withheld
+    reasons: {}
+  language-pending:
+    words: language pending
+    meaning: its fuzz targets are in a language this release does not cover yet
+    reasons:
+      python: This project's fuzz targets are written in Python. This release covers C and C++; support for Python is being built.
+      jvm: This project's fuzz targets run on the JVM. This release covers C and C++; support for JVM languages is being built.
+      go: This project's fuzz targets are written in Go. This release covers C and C++; support for Go is being built.
+      rust: This project's fuzz targets are written in Rust. This release covers C and C++; support for Rust is being built.
+      javascript: This project's fuzz targets are written in JavaScript. This release covers C and C++; support for JavaScript is being built.
+      ruby: This project's fuzz targets are written in Ruby. This release covers C and C++; support for Ruby is being built.
+      lua: This project's fuzz targets are written in Lua. This release covers C and C++; support for Lua is being built.
+  not-yet-built:
+    words: not yet built
+    meaning: a C or C++ project that has not been built yet, and why
+    reasons:
+      not-attempted: Not built yet.
+      build-system: It builds with {system}, which the toolchain does not support yet.
+      harness-framework: Its fuzz targets use {framework}, not libFuzzer's entry point.
+      dependency: Needs {dependency} in the build image.
+      toolchain: Needs a {language} compiler in the build image.
+      reads-stdin: "{text}"
+      target-from-environment: Its fuzz binary chooses the fuzz target from an environment variable, which these builds do not read; it needs one binary per target.
+      setup-fails: The harness's setup fails in this build before it reads its input.
+  needs-model:
+    words: needs model support
+    meaning: uses operating-system features the process model does not cover yet
+    reasons:
+      features: The harness {features}, which the process model does not cover yet.
+  no-compiler:
+    words: no compiler
+    meaning: no compiler for the language targets riscv64 Linux
+    reasons:
+      language: There is no {language} compiler for riscv64 Linux.
+  no-harness:
+    words: no harness
+    meaning: nothing to build at the pinned commit
+    reasons:
+      none-at-commit: OSS-Fuzz lists no fuzz target for this project at {commit8}.
+      upstream-gone: The repository that holds its harness can no longer be cloned.
+  excluded:
+    words: excluded
+    meaning: left out on purpose
+    reasons:
+      duplicate: Its fuzz target is the same program as {same_as}'s; see there.
+      stub-harness: OSS-Fuzz's harness for this project is an empty stub.
+      allocator: "{project} replaces malloc itself, which conflicts with the sanitizer runtimes and with the model's memory accounting."
+      second-process: The harness debugs a second process, which a single-process model cannot express.
+      vendored-copies: Its fuzz targets are copies of other projects' fuzz targets, which are covered under those projects.
+  withdrawn:
+    words: withdrawn
+    meaning: had statements in an earlier release
+    reasons:
+      removed-from-oss-fuzz: Had statements until {release}; withdrawn because it was removed from OSS-Fuzz at {commit8}.
+      other: "Had statements until {release}; withdrawn because {text}"
+  held:
+    words: held
+    meaning: held from this release
+    reasons:
+      held: Held from this release.
+      no-licence-grant: "Held from this release: no licence grant for {text} at {commit8}."
+      licence-conflict: "Held from this release: its only binary combines {text}."
+
+# why an OSS-Fuzz fuzz target of an available project has no statements
+harnesses:
+  not-attempted: not built yet
+  build-system: "it builds with {system}, which the toolchain does not support yet"
+  harness-framework: "it uses {framework}, not libFuzzer's entry point"
+  dependency: "it needs {dependency} in the build image"
+  reads-stdin: "{text}"
+  target-from-environment: it chooses its fuzz target from an environment variable
+  setup-fails: its setup fails in this build before it reads its input
+  features: "needs model support: it {features}"
+  system-calls: "needs model support: it makes system calls the process model does not cover yet"
+  language: it is written in a language this release does not cover yet
+  not-yet-included: built, but not included in this release yet
+  asset-size: built, but its binaries do not fit in this release's one binary archive per project
+  held: held from this release
+  duplicate: "it is the same program as {same_as}"
+
+# what the process model does not cover yet; used by needs-model and model-gap
+features:
+  other-files: opens files other than its input
+  directories: uses directories
+  stat: calls stat on files
+  open-flags: opens files with flags the model does not cover
+  fd-flags: reads or sets descriptor flags
+  nonblocking-io: uses non-blocking descriptors
+  file-mapping: memory-maps a file
+  memory-calls: makes memory-management calls the model does not cover
+  event-descriptors: uses epoll or eventfd
+  threads: starts threads
+  signal-handlers: installs signal handlers
+  sockets: uses sockets
+  pipes: creates pipes
+  working-directory: asks for its working directory
+  access-checks: checks file access permissions
+  memory-files: creates named or sealed in-memory files
+  proc: reads /proc
+  proc-before-main: reads /proc before main
+  urandom-before-main: reads /dev/urandom before main
+  resource-limits: queries or sets resource limits
+  cpu-affinity: queries CPU affinity
+  process-control: calls prctl
+  vector-instructions: runs RISC-V vector instructions when the processor advertises the vector extension
+
+statements:
+  open: {words: open, meaning: nobody has proved or refuted it}
+  proved: {words: proved, meaning: a proof under proofs/ that CI checked against this revision}
+  refuted: {words: refuted, meaning: a Rocq proof of its negation, checked the same way}
+  counterexample: {words: counterexample, meaning: "a failing run of the real binary under the pinned runner, re-run by CI; a run in which a build dies by a signal also refutes the agreement statements that name that build"}
+  witnessed-false: {words: false (witnessed), meaning: "a recorded run of the published binary, in an environment the statement allows, that ends in a way the statement forbids; described here, not yet re-run by CI"}
+  suspected-false: {words: suspected false, meaning: an argument from reading the source, not yet a run or a proof}
+  model-gap: {words: blocked by the model, meaning: "the binary does something on ordinary inputs that this release's model treats as an error, so the statement is false in this model for that reason alone"}
+  withheld: {words: withheld, meaning: "not in this release: its binary waits for its complete corresponding source, or it is not published yet"}
+  withdrawn: {words: withdrawn, meaning: kept in the index; its id is never reused}
+
+# why a build or a statement is withheld
+withheld:
+  source-bundle: waits for its source bundle
+  not-yet-published: not in this release yet
+
+# a witness's outcome and what preceded it, in words
+witness:
+  outcome:
+    abort: "an abort (SIGABRT)"
+    segfault: "a crash (SIGSEGV)"
+    trap: "a trap (SIGILL: a failed UndefinedBehaviorSanitizer check)"
+    exit: "exit status {exit}"
+  after:
+    failed-assertion: after a failed assertion
+    uncaught-bad-alloc: on an uncaught std::bad_alloc
+    out-of-memory-message: after printing that it is out of memory
+
+# how each library is built, in words
+build_systems:
+  autotools: autotools
+  bazel: Bazel
+  cmake: CMake
+  make: make
+  meson: Meson
+  scons: SCons
+  custom: its own build scripts

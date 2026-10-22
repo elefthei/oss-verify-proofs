@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: cryptofuzz
+homepage: https://github.com/guidovranken/cryptofuzz
+language: c++
+oss_fuzz:
+  path: projects/cryptofuzz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cryptofuzz
+  repository: https://github.com/MozillaSecurity/cryptofuzz
+  commit: 6f1e4970288ecaf8d2fa34643fb4b19fa0adc626
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cryptofuzz-boringssl
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-boringssl-noasm
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-nss
+  status: not-included
+  reason: not-yet-included
+- name: cryptofuzz-openssl
+  status: not-included
+  reason: not-attempted
+- name: cryptofuzz-openssl-noasm
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cryptofuzz-bin.tar.zst
+    bytes: 10677090
+    sha256: 5c51c0eafb12e75278910e3146619141c0d34910864c74208d3b8fec567ef475
+  src:
+    release: v2026.10.0-src
+    file: cryptofuzz-src.tar.zst
+    bytes: 46467976
+    sha256: e5c7e81e0a4cee9e87b0e6957d57a3fb282f4e4b3f569df7537b57e141517797
+  src_manifest:
+    release: v2026.10.0-src
+    file: cryptofuzz-src.MANIFEST.tsv
+    bytes: 4950
+    sha256: e3ec495c8013bd7f584dde3545427fb430e3f471eb6f4e39c121027984f8b26f

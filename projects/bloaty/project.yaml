@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: bloaty
+homepage: https://github.com/google/bloaty
+language: c++
+oss_fuzz:
+  path: projects/bloaty
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: bloaty
+  repository: https://github.com/google/bloaty
+  commit: f1a83e63f36beb628dcf022e1201a2eb391a22a6
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_target
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: bloaty-bin.tar.zst
+    bytes: 10551438
+    sha256: ef52e405c60990cb95bf3b54aa2dd2c461d7de24c09824746c441452c4d24e4c
+  src:
+    release: v2026.10.0-src
+    file: bloaty-src.tar.zst
+    bytes: 18334975
+    sha256: b0d34b8421fef5382f53ade578dd478038a64ea5be108f86c9a5e09fc1fcf18c
+  src_manifest:
+    release: v2026.10.0-src
+    file: bloaty-src.MANIFEST.tsv
+    bytes: 6992
+    sha256: 0c51dde1de6b1f5aeec92cdf32b472b7c05da96614302f78e68af7387b17143f

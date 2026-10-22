@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: pffft
+homepage: https://bitbucket.org/jpommier/pffft
+language: c++
+oss_fuzz:
+  path: projects/pffft
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pffft
+  repository: https://bitbucket.org/jpommier/pffft
+  commit: 0aec0327a6912e1a0ec5326eef737c2ce19bc836
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: pffft_complex_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: pffft_real_fuzzer
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pffft-bin.tar.zst
+    bytes: 416653
+    sha256: e10e5484a663950190d3b41df451904160d250779e7b45881a69e4ec6860eb30
+  src:
+    release: v2026.10.0-src
+    file: pffft-src.tar.zst
+    bytes: 41893
+    sha256: ee895ea829f3d8a2f60573e75329ba421cfe7c18a12727b58ab76a7e65feb8c9
+  src_manifest:
+    release: v2026.10.0-src
+    file: pffft-src.MANIFEST.tsv
+    bytes: 1476
+    sha256: 1673d3dbae034ab3a544edcb31c86af62a8675b411cdda8e4ac0a4b1c14515d9

@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: slf4j-api
+homepage: https://www.slf4j.org
+language: jvm
+oss_fuzz:
+  path: projects/slf4j-api
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

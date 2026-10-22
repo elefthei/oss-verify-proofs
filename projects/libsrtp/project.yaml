@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libsrtp
+homepage: https://github.com/cisco/libsrtp
+language: c++
+oss_fuzz:
+  path: projects/libsrtp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libsrtp
+  repository: https://github.com/cisco/libsrtp
+  commit: 2cb11879b40f9d5031958d2f9a10a8c2237ced7f
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: srtp-fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libsrtp-bin.tar.zst
+    bytes: 560767
+    sha256: 8f396ac8e60cbca56695dc8697580645d62b3796e43eb998d8d5a635b913d30d
+  src:
+    release: v2026.10.0-src
+    file: libsrtp-src.tar.zst
+    bytes: 438516
+    sha256: 03d09c77cfc1f4087680dfaa50ded23188b9961ded785cffb1e2fb43b5e97095
+  src_manifest:
+    release: v2026.10.0-src
+    file: libsrtp-src.MANIFEST.tsv
+    bytes: 1323
+    sha256: ffefe053dfc1dcecb9ae4e67d3859aa5bdee442f71882e9071ade775e9945749

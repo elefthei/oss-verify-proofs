@@ -1,0 +1,90 @@
+schema: oss-fuzz-theorems/project/1
+project: dovecot
+homepage: https://www.dovecot.org
+language: c
+oss_fuzz:
+  path: projects/dovecot
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: core
+  repository: https://github.com/dovecot/core
+  commit: 25eb82b31e0283c2b4b8f23f71e527dce57de292
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-http-request-parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz-http-response-parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz-imap-bodystructure
+  status: not-included
+  reason: not-attempted
+- name: fuzz-imap-parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz-imap-utf7
+  status: not-included
+  reason: not-attempted
+- name: fuzz-istream-json-string
+  status: not-included
+  reason: not-attempted
+- name: fuzz-json-istream
+  status: not-included
+  reason: not-attempted
+- name: fuzz-json-pointer
+  status: not-included
+  reason: not-attempted
+- name: fuzz-message-date
+  status: not-included
+  reason: not-attempted
+- name: fuzz-message-decoder
+  status: not-included
+  reason: not-attempted
+- name: fuzz-message-parser
+  status: included
+  origin: upstream
+- name: fuzz-qp-decoder
+  status: not-included
+  reason: not-attempted
+- name: fuzz-sasl-authentication
+  status: not-included
+  reason: not-attempted
+- name: fuzz-smtp-server
+  status: not-included
+  reason: not-attempted
+- name: fuzz-suite
+  status: not-included
+  reason: not-attempted
+- name: fuzz-var-expand
+  status: not-included
+  reason: not-attempted
+- name: fuzz-var-expand-import
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dovecot-bin.tar.zst
+    bytes: 656115
+    sha256: 3e7dd5d44960c9fb5cc942bd86ebb12820721113a7d6d5b0ffdd1c5b3e8d107f
+  src:
+    release: v2026.10.0-src
+    file: dovecot-src.tar.zst
+    bytes: 5566321
+    sha256: b581e3e27bff7964bf9a7f178e909eb4d967cea643f6389134c74b6801caa205
+  src_manifest:
+    release: v2026.10.0-src
+    file: dovecot-src.MANIFEST.tsv
+    bytes: 7089
+    sha256: 188199e76fca8384f1eb2756384e80c76a153bbff8642b54456e9fe143103ee6

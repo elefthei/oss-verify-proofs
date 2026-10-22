@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: libtsm
+homepage: https://www.freedesktop.org/wiki/Software/kmscon/libtsm
+language: c++
+oss_fuzz:
+  path: projects/libtsm
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libtsm
+  repository: https://people.freedesktop.org/~dvdhrm/libtsm
+  commit: b73acb4c71698a764763ae8dad94c1e8a2b8d7a3
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libtsm_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libtsm-bin.tar.zst
+    bytes: 71907
+    sha256: d683ab3789720280dda7da1a355379fbb2c4a9949078815a1bb562bc45e3d973
+  src:
+    release: v2026.10.0-src
+    file: libtsm-src.tar.zst
+    bytes: 105717
+    sha256: cbf28e7df7b690a290900263817fdc0d07b5eec43e5d39cbd5ea61942687cb10
+  src_manifest:
+    release: v2026.10.0-src
+    file: libtsm-src.MANIFEST.tsv
+    bytes: 1506
+    sha256: 69c8b669a8404c0080106c27c9241fc2a85aa74b2485734e15ae28a591f4ffd4

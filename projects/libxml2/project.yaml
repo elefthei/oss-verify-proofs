@@ -1,0 +1,71 @@
+schema: oss-fuzz-theorems/project/1
+project: libxml2
+homepage: https://gitlab.gnome.org/GNOME/libxml2
+language: c++
+oss_fuzz:
+  path: projects/libxml2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libxml2
+  repository: https://gitlab.gnome.org/GNOME/libxml2
+  commit: c63248941708bc1d2e3a4292954593312212f6ca
+  licence: MIT
+harnesses:
+- name: api
+  status: included
+  origin: upstream
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: html
+  status: included
+  origin: upstream
+- name: lint
+  status: not-included
+  reason: not-attempted
+- name: reader
+  status: included
+  origin: upstream
+- name: regexp
+  status: included
+  origin: upstream
+- name: schema
+  status: included
+  origin: upstream
+- name: uri
+  status: included
+  origin: upstream
+- name: valid
+  status: included
+  origin: upstream
+- name: xinclude
+  status: included
+  origin: upstream
+- name: xml
+  status: included
+  origin: upstream
+- name: xpath
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libxml2-bin.tar.zst
+    bytes: 6660145
+    sha256: a85cf74f438c73192d189f244664e1ba5205979d890d7d082a8c73f389272698
+  src:
+    release: v2026.10.0-src
+    file: libxml2-src.tar.zst
+    bytes: 1840061
+    sha256: 051e29ff8ed0fc7302b3546acf7cb46275785f6651dfcddca29b07a9db845dd0
+  src_manifest:
+    release: v2026.10.0-src
+    file: libxml2-src.MANIFEST.tsv
+    bytes: 2002
+    sha256: 0145977ea39e2a0d15d7eb10b9d32a377fd2135db8ec824d8f08e2a28e85b901

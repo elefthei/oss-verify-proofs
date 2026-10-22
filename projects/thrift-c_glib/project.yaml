@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: thrift-c_glib
+homepage: https://thrift.apache.org
+language: c
+oss_fuzz:
+  path: projects/thrift-c_glib
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: thrift
+  repository: https://github.com/apache/thrift
+  commit: 588053de15907d2b769aeb4662e1e3c142000fe9
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_parse_binary
+  status: included
+  origin: upstream
+- name: fuzz_parse_compact
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: thrift-c_glib-bin.tar.zst
+    bytes: 779039
+    sha256: 7d24b23f80d333e811964a89adfedcf71cecf04d240a3ec2028d2098798547bc
+  src:
+    release: v2026.10.0-src
+    file: thrift-c_glib-src.tar.zst
+    bytes: 2585100
+    sha256: 1a70e3406f4f0a765cdb5765d527b6b5061122d455325e98fa2c5566bc39d785
+  src_manifest:
+    release: v2026.10.0-src
+    file: thrift-c_glib-src.MANIFEST.tsv
+    bytes: 1426
+    sha256: c702ed785fd9e52cedf433273dd8c909463a851aafbcd88d85512ef2cc35dd3c

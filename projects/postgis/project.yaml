@@ -1,0 +1,64 @@
+schema: oss-fuzz-theorems/project/1
+project: postgis
+language: c++
+oss_fuzz:
+  path: projects/postgis
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: postgis
+  repository: https://gitea.osgeo.org/postgis/postgis
+  commit: 8b815ddad54eb3ab3e91c3f6f920596d1276f0ef
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: encoded_polyline_import_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: geohash_import_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: geojson_import_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gserialized_from_bytea_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gserialized_from_lwgeom_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: raster_deserialize_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: twkb_import_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wkb_import_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wkt_import_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: postgis-bin.tar.zst
+    bytes: 495849
+    sha256: 2808728821ad1af9c73212556ebd77802a63f8533bde995683a17e341b37bd79
+  src:
+    release: v2026.10.0-src
+    file: postgis-src.tar.zst
+    bytes: 10783564
+    sha256: a85a3f0f3e8924a1ce6af3c8b72196fdd2ba9b4b677bd84af1dbf91bbf8b3b97
+  src_manifest:
+    release: v2026.10.0-src
+    file: postgis-src.MANIFEST.tsv
+    bytes: 2507
+    sha256: efa08b9f6713764ba1264030bbb70d0cf9600dfa9c47cc5a9f9d9c11e61e902d

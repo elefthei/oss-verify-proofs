@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: casync
+homepage: https://github.com/casync/casync
+language: c++
+oss_fuzz:
+  path: projects/casync
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: casync
+  repository: https://github.com/systemd/casync
+  commit: b4b7e5606f785572b78a43626a27a45fe3df2fbd
+  licence: NOASSERTION
+  patch_count: 5
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-compress
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: casync-bin.tar.zst
+    bytes: 432682
+    sha256: f9b336d1a7c1cc9bc3ae22b20d099c801a911f8c13851140d8b7d968f874b8e1
+  src:
+    release: v2026.10.0-src
+    file: casync-src.tar.zst
+    bytes: 1256557
+    sha256: e1744950db02a45133ebf1620e52fddde44c96581f4fe33bed300692de891155
+  src_manifest:
+    release: v2026.10.0-src
+    file: casync-src.MANIFEST.tsv
+    bytes: 1340
+    sha256: 21f7e861e58c705a0b88d6369c585471e6de2113362485c6c8c5f83587aba73e

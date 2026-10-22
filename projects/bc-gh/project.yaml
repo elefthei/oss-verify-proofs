@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: bc-gh
+homepage: https://git.gavinhoward.com/gavin/bc
+language: c
+oss_fuzz:
+  path: projects/bc-gh
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: held

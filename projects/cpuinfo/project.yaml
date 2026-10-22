@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: cpuinfo
+homepage: https://github.com/pytorch/cpuinfo
+language: c
+oss_fuzz:
+  path: projects/cpuinfo
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cpuinfo
+  repository: https://github.com/pytorch/cpuinfo
+  commit: 66ee79c038d70dad9f08705b2c9b3e58f6d8f512
+  licence: BSD-2-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_cpuinfo
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cpuinfo-bin.tar.zst
+    bytes: 267545
+    sha256: 00619c0927eeee61fab4a8c91e1925dec3d08b9e2ca79268a72999bbf4bf045f
+  src:
+    release: v2026.10.0-src
+    file: cpuinfo-src.tar.zst
+    bytes: 1828391
+    sha256: 5af5db2624a8afc39068e05cf170206350b60d3fffba385c8e1eefd2167abf8f
+  src_manifest:
+    release: v2026.10.0-src
+    file: cpuinfo-src.MANIFEST.tsv
+    bytes: 1508
+    sha256: 0a20464ee0f85e8abb48fa876fced11a06aff1754e9a685e3675fedc706393d1

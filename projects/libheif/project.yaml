@@ -1,0 +1,55 @@
+schema: oss-fuzz-theorems/project/1
+project: libheif
+homepage: https://github.com/strukturag/libheif
+language: c++
+oss_fuzz:
+  path: projects/libheif
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libheif
+  repository: https://github.com/strukturag/libheif
+  commit: 1a3583bcce77de6d3f8701c0758e3954863681ba
+  licence: LGPL-3.0-or-later
+harnesses:
+- name: api_fuzzer
+  status: included
+  origin: upstream
+- name: box_fuzzer
+  status: included
+  origin: upstream
+- name: color_conversion_fuzzer
+  status: included
+  origin: upstream
+- name: encoder_fuzzer
+  status: included
+  origin: upstream
+- name: file_fuzzer
+  status: included
+  origin: upstream
+- name: sequence_fuzzer
+  status: included
+  origin: upstream
+- name: tile_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libheif-bin.tar.zst
+    bytes: 29818497
+    sha256: 015a085d91dcb42fc82a93edcf2846399a179928b6a9eb537a7facc28dcdac69
+  src:
+    release: v2026.10.0-src
+    file: libheif-src.tar.zst
+    bytes: 1700388
+    sha256: 0319e510ddfdb522d105681f23de48b0bcdc5e73f7f12ddc555786b8dd90eb31
+  src_manifest:
+    release: v2026.10.0-src
+    file: libheif-src.MANIFEST.tsv
+    bytes: 1968
+    sha256: 00e0558c5930e35c5a9fabf8a840fcb3020a2d5e493c144f9e55ec043e83e963

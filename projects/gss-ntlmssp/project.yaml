@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: gss-ntlmssp
+homepage: https://github.com/gssapi/gss-ntlmssp
+language: c
+oss_fuzz:
+  path: projects/gss-ntlmssp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gss-ntlmssp
+  repository: https://github.com/gssapi/gss-ntlmssp
+  commit: 310537b76127c7f3bf48d4f48ea656a47d749e98
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz-accept-sec-context
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gss-ntlmssp-bin.tar.zst
+    bytes: 2157499
+    sha256: 9a679bfa758a96a0f30d505a5773aabb2a9823a95deb9323fcace86a4bfc1bcc
+  src:
+    release: v2026.10.0-src
+    file: gss-ntlmssp-src.tar.zst
+    bytes: 8116640
+    sha256: b9ff346c0fb4db658307672e637396b9b3845abbe835040176850794ab9cc6c5
+  src_manifest:
+    release: v2026.10.0-src
+    file: gss-ntlmssp-src.MANIFEST.tsv
+    bytes: 2505
+    sha256: e700cbe96cb0e82dd55a48664042fc718f607fdde69757cec83be63d3764184a

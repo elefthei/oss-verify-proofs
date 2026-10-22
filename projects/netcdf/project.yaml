@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: netcdf
+homepage: https://www.unidata.ucar.edu/software/netcdf/docs/index.html
+language: c++
+oss_fuzz:
+  path: projects/netcdf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: netcdf-c
+  repository: https://github.com/Unidata/netcdf-c
+  commit: f0b888daa449363ab0a8aba0ae4da1b49446fb93
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_open
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: netcdf-bin.tar.zst
+    bytes: 893879
+    sha256: 98e7066b8b6a545b62fb835aa6f893a81d0b4a5b6285437e1baadfd7b290c985
+  src:
+    release: v2026.10.0-src
+    file: netcdf-src.tar.zst
+    bytes: 19234546
+    sha256: 621eb4b10557e11c5bf27effdb5bc334041dd67aede176ccf9d6b8bb0104bf09
+  src_manifest:
+    release: v2026.10.0-src
+    file: netcdf-src.MANIFEST.tsv
+    bytes: 1334
+    sha256: 715b75197303836d14b55a1d309e62a60a2707aa6ebd5c42e431bb04b13278a9

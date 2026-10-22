@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: utf8proc
+language: c
+oss_fuzz:
+  path: projects/utf8proc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: utf8proc
+  repository: https://github.com/JuliaStrings/utf8proc
+  commit: 0075ed7d0adba45682ee6bf7a83b10f8fd110163
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: utf8proc_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: utf8proc-bin.tar.zst
+    bytes: 345931
+    sha256: 6328c25e47cd42b7d46498fdd6e326958a49809125b434bd871f01821a563566
+  src:
+    release: v2026.10.0-src
+    file: utf8proc-src.tar.zst
+    bytes: 143128
+    sha256: fc29289b90a2ac250a8767deaae446481393d701151d2005b80a9d098c93c8fa
+  src_manifest:
+    release: v2026.10.0-src
+    file: utf8proc-src.MANIFEST.tsv
+    bytes: 1339
+    sha256: 47c5d8d7473d14f6ea6b5b0c56d2ecd9fbba9eb6fb4634b02037207834d999c1

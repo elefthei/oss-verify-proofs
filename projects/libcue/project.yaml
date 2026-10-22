@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libcue
+homepage: https://github.com/lipnitsk/libcue
+language: c
+oss_fuzz:
+  path: projects/libcue
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libcue
+  repository: https://github.com/lipnitsk/libcue
+  commit: f35fd675703d8984c2ea26cca7cb403493368fd5
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libcue-bin.tar.zst
+    bytes: 407925
+    sha256: 09a4b9a039f7af757010f49c2658a198f2077f9d94f6462412a22ca66aa4ee08
+  src:
+    release: v2026.10.0-src
+    file: libcue-src.tar.zst
+    bytes: 24927
+    sha256: 0030c4fb941840cac74449ea9b2f114d78256c6cada25310f558c945e291b379
+  src_manifest:
+    release: v2026.10.0-src
+    file: libcue-src.MANIFEST.tsv
+    bytes: 1303
+    sha256: 7c9a5cf5bfe04a7f9b88bf1ee2d04a30f5a42b65b80556d139f6a44d896b37ce

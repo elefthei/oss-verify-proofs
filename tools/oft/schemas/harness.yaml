@@ -1,0 +1,179 @@
+# projects/<project>/<harness>/harness.yaml: the facts about one harness and its builds.
+#
+# Statements.v, Characterise.v, Images.v, images/dune and the harness README
+# are rendered from this file by `oft generate`; nothing else feeds them.
+# Proved, refuted and counterexample statuses are never written here: they
+# are derived from proofs/ and counterexamples/.
+tag: oss-fuzz-theorems/harness/1
+root: {type: ref, name: harness}
+defs:
+  harness:
+    type: object
+    fields:
+      schema: {type: const, value: oss-fuzz-theorems/harness/1}
+      project: {type: project-name}
+      harness: {type: harness-name}
+      rocq: {type: str, pattern: '^OssFuzzTheorems(\.[A-Za-z_][A-Za-z0-9_]*)+$'}   # derived; lint checks it
+      origin: {type: enum, values: [oss-fuzz, upstream, this-repository]}
+      summary: {type: text, max: 600}
+      entry: {type: str, pattern: '^[A-Za-z_][A-Za-z0-9_]*$'}
+      source:
+        type: object
+        fields:
+          files: {type: list, items: {type: str, pattern: '^source/[A-Za-z0-9._+/-]+$'}}
+          from: {type: ref, name: origin_ref, optional: true}   # absent when not recorded
+          modified: {type: bool}
+          licence: {type: spdx}
+          pending: {type: bool, optional: true}                 # not in this release yet: files is empty
+      library: {type: ref, name: library}
+      modifications: {type: list, items: {type: text, max: 400}}
+      builds:
+        type: map
+        keys: build-name
+        values: {type: ref, name: build}
+      licence: {type: spdx}
+      checks: {type: list, items: {type: ref, name: check}}
+      distribution: {type: ref, name: distribution, optional: true}
+      model_gap: {type: list, items: {type: feature}, optional: true}
+      statements:
+        type: map
+        keys: statement-name
+        values: {type: ref, name: statement}
+
+  origin_ref:
+    type: object
+    fields:
+      repository: {type: url}
+      commit: {type: commit}
+      path: {type: str, pattern: '^[A-Za-z0-9._+/-]+$'}
+
+  library:
+    type: object
+    fields:
+      repository: {type: url}
+      commit: {type: commit, optional: true}               # a git commit, or else
+      archive_sha256: {type: sha256, optional: true}       # the release archive it was built from
+      version: {type: str, max: 40, optional: true}
+      licence: {type: spdx}
+
+  # static riscv64 (RV64G) Linux ELF, musl; run as <file> <input-file>.
+  # A published build has bytes, sha256 and segments; a withheld one has none of them.
+  build:
+    type: object
+    fields:
+      file: {type: str, pattern: '^[A-Za-z0-9._+-]+\.(plain|ubsan|asan|asan-ubsan)$'}
+      bytes: {type: int, min: 1, optional: true}
+      sha256: {type: sha256, optional: true}
+      # how the memory image of each loadable segment is split into files when
+      # it is generated (images/dune lists them); one number per LOAD segment
+      segments: {type: list, items: {type: int, min: 1, max: 4096}, min: 1, optional: true}
+      # not attached to this release, and why: source-bundle (a GPL or LGPL
+      # binary waits for its complete corresponding source) or not-yet-published
+      withheld: {type: enum, values: [source-bundle, not-yet-published], optional: true}
+      # the code linked into this build that no sanitizer instruments, as its link
+      # recorded it: the toolchain's runtimes, library archives from the build image,
+      # and listed assembly or Fortran members of the library.  Absent: not recorded
+      # in this release (the toolchain's runtimes are uninstrumented in every build)
+      uninstrumented: {type: list, items: {type: ref, name: uninstrumented}, min: 1, optional: true}
+
+  uninstrumented:
+    type: object
+    fields:
+      name: {type: str, pattern: '^[A-Za-z0-9._+-]+$', max: 120}       # the archive, object or member, by file name
+      kind: {type: enum, values: [libc, compiler-rt, sanitizer-runtime, cxx-runtime, fortran-runtime,
+                                  image-library, assembly, fortran, driver]}
+      sha256: {type: sha256, optional: true}                           # an archive or object the link took
+      source: {type: str, pattern: '^[A-Za-z0-9._+/-]+$', max: 200, optional: true}   # a member's source file in the library tree
+
+  check:
+    type: object
+    fields:
+      kind: {type: enum, values: [algebraic, api-contract, differential, idempotence, invariant,
+                                  reference-oracle, roundtrip, self-validation]}
+      strength: {type: enum, values: [full, partial, weak]}
+      stops_with: {type: enum, values: [abort, assert, trap, throw, panic, exit, print-only, return-only]}
+      exit_status: {type: int, min: 0, max: 255, optional: true}      # with stops_with: exit
+      live: {type: enum, values: [true, false, unknown]}              # true only from a binary-level observation
+      where: {type: str, pattern: '^source/[A-Za-z0-9._+/-]+:[0-9]+(-[0-9]+)?$'}
+      what: {type: text, max: 400}
+
+  distribution:
+    type: object
+    fields:
+      file: {type: const, value: Distribution.v}
+      argv0: {type: str, max: 200}
+      input_file: {type: str, pattern: '^[A-Za-z0-9._-]+$'}
+      prefix_hex: {type: str, pattern: '^([0-9a-f]{2})*$', max: 256, optional: true}   # the file's fixed first bytes: the driver header, then any payload prefix
+      prefix:                                                  # instead of prefix_hex, when there are more than 128 of them
+        type: object
+        optional: true
+        fields:
+          bytes: {type: int, min: 129}
+          sha256: {type: sha256}
+      payload:
+        type: object
+        fields:
+          length: {type: const, value: geometric}
+          p: {type: fraction}
+          mean_bytes: {type: int, min: 0}
+          alphabet: {type: enum, values: [bytes, printable, json, hex, digits, base64, alnum, custom]}
+          alphabet_size: {type: int, min: 1, max: 256, optional: true}
+      envp: {type: list, items: {type: str, max: 200}, optional: true}   # the environment the envp component draws
+      components:
+        type: object
+        fields:
+          payload: {type: fraction}
+          wrong_argc: {type: fraction}
+          missing_file: {type: fraction}
+          envp: {type: fraction, optional: true}
+          full_support: {type: fraction}
+      mass: {type: fraction}
+
+  # One statement.  Its Rocq text is fixed by these fields (tools/oft/shapes.py);
+  # its name must be the one the naming rule gives them.  docs/facts.md
+  # explains every field.
+  statement:
+    type: object
+    fields:
+      kind: {type: enum, values: [halts, agreement, bound, decidability]}
+      shape: {type: str, pattern: '^[a-z][a-z0-9_]*$', optional: true}   # redundant; if given, must be the one the fields give
+      env: {type: enum, values: [may_fail, alloc_forced_only, forced_only], optional: true}   # redundant, likewise
+      builds: {type: list, items: {type: build-name}, min: 1}
+      # what the environment may refuse: budget (halts: only what the memory
+      # budget forces), may-fail (any call, at any time), alloc-forced-only
+      # (any call, but memory only when the budget is spent)
+      reading: {type: enum, values: [budget, may-fail, alloc-forced-only]}
+      exits: {type: union, of: [{type: const, value: any}, {type: list, items: {type: int, min: 0, max: 255}, min: 1}], optional: true}
+      budgets: {type: enum, values: [standard, asan], optional: true}   # agreement only
+      abort: {type: enum, values: [error, signal], optional: true}      # agreement only; default error
+      machine: {type: enum, values: [rv64g, rv64gc], optional: true}    # pair statements; default rv64g
+      # halts only: whether a check of the harness that ends the process on
+      # failure is excluded by this statement; recomputed and compared
+      binds_checks: {type: bool, optional: true}
+      status: {type: enum, values: [open, suspected-false, witnessed-false, model-gap, withheld, withdrawn]}
+      basis: {type: const, value: reading, optional: true}              # suspected-false only
+      reason: {type: text, max: 600, optional: true}                    # suspected-false and withdrawn
+      witness: {type: ref, name: witness, optional: true}               # witnessed-false only
+      gap: {type: list, items: {type: feature}, min: 1, optional: true} # model-gap, when the harness has no model_gap
+      withheld: {type: enum, values: [source-bundle, not-yet-published], optional: true}   # withheld only
+      revision: {type: int, min: 1, optional: true}                     # default 1
+
+  # A run of a published build, in an environment the statement allows, that
+  # the statement forbids.  Typed, so the sentence a page shows is fixed by it.
+  witness:
+    type: object
+    fields:
+      build: {type: build-name}                       # the build that was run
+      input_hex: {type: str, pattern: '^([0-9a-f]{2})*$', max: 512, optional: true}   # the whole input file
+      input: {type: object, optional: true, fields: {bytes: {type: int, min: 1}, sha256: {type: sha256}}}  # or, when longer
+      refused:                                        # absent: nothing was refused
+        type: object
+        optional: true
+        fields:
+          call: {type: enum, values: [mmap, brk, mremap]}
+          position: {type: int, min: 1}               # the k-th memory request of the run
+          bytes: {type: int, min: 1}
+      outcome: {type: enum, values: [abort, segfault, trap, exit]}     # SIGABRT, SIGSEGV, SIGILL, or an exit
+      exit: {type: int, min: 1, max: 255, optional: true}             # outcome exit only: the status it exits with
+      after: {type: enum, values: [failed-assertion, uncaught-bad-alloc, out-of-memory-message], optional: true}
+      runner: {type: str, max: 80}                    # what ran it, e.g. "qemu-riscv64 10.0.11"

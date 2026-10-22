@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: rocksdb
+homepage: https://github.com/facebook/rocksdb
+language: c++
+oss_fuzz:
+  path: projects/rocksdb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rocksdb
+  repository: https://github.com/facebook/rocksdb
+  commit: 61831d47be5bcd1b506eb7928d8f5a9572789e55
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: db_fuzzer
+  status: not-included
+  reason: setup-fails
+- name: db_map_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rocksdb-bin.tar.zst
+    bytes: 20567460
+    sha256: e2d024368b09ef9851ae1bc298a33c9faab15c998e2940cc5acb66f03677211b
+  src:
+    release: v2026.10.0-src
+    file: rocksdb-src.tar.zst
+    bytes: 13055534
+    sha256: a82e7b38e18496393965dbf1a645fcc79d8792d2b105427aa8551beb724a4801
+  src_manifest:
+    release: v2026.10.0-src
+    file: rocksdb-src.MANIFEST.tsv
+    bytes: 1742
+    sha256: 719c878971c7bd260e21204d6bc9cc2290effe2728ab5742f732a09279c71c36

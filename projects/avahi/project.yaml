@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: avahi
+homepage: https://avahi.org
+language: c++
+oss_fuzz:
+  path: projects/avahi
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: avahi
+  repository: https://github.com/avahi/avahi
+  commit: b1a83592590445fc3b88d3b3fdda69b5103956a9
+  licence: LGPL-2.1-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-consume-key
+  status: included
+  origin: upstream
+- name: fuzz-consume-record
+  status: included
+  origin: upstream
+- name: fuzz-domain
+  status: included
+  origin: upstream
+- name: fuzz-ini-file-parser
+  status: included
+  origin: upstream
+- name: fuzz-packet
+  status: included
+  origin: upstream
+- name: fuzz-strlst
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: avahi-bin.tar.zst
+    bytes: 337814
+    sha256: 01af1acedb1395f5eac2597e0c373f0e291f07cd9040cc6e745fc026238fb6a3
+  src:
+    release: v2026.10.0-src
+    file: avahi-src.tar.zst
+    bytes: 724901
+    sha256: 454992447a0e792ab3f50d2025d76c82b2124a2aaf43253c1c22617ed3889a90
+  src_manifest:
+    release: v2026.10.0-src
+    file: avahi-src.MANIFEST.tsv
+    bytes: 1861
+    sha256: 30049573e8358fe74bf0b74d6fc62ad0da78dbf61ba19a8e51fedfc498cb4d70

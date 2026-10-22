@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: bleach
+homepage: https://github.com/mozilla/bleach
+language: python
+oss_fuzz:
+  path: projects/bleach
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

@@ -1,0 +1,59 @@
+schema: oss-fuzz-theorems/project/1
+project: rnp
+homepage: https://www.rnpgp.com
+language: c++
+oss_fuzz:
+  path: projects/rnp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rnp
+  repository: https://github.com/rnpgp/rnp
+  commit: 4211d52d6a25c152f4b0da8486cdec7a151b91b2
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_dump
+  status: not-included
+  reason: not-attempted
+- name: fuzz_keyimport
+  status: not-included
+  reason: not-attempted
+- name: fuzz_keyring
+  status: included
+  origin: upstream
+- name: fuzz_keyring_g10
+  status: included
+  origin: upstream
+- name: fuzz_keyring_kbx
+  status: included
+  origin: upstream
+- name: fuzz_sigimport
+  status: included
+  origin: upstream
+- name: fuzz_verify
+  status: included
+  origin: upstream
+- name: fuzz_verify_detached
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rnp-bin.tar.zst
+    bytes: 20243943
+    sha256: d9b5683b18b1eb1123e10213f1289e41dddea84a4aa69aa9c000e5cc7aeb6dfb
+  src:
+    release: v2026.10.0-src
+    file: rnp-src.tar.zst
+    bytes: 3726490
+    sha256: 7a13568c73ab58bf98bbb0ee95027e910f36396c3f473dccedfbd613c558e6a2
+  src_manifest:
+    release: v2026.10.0-src
+    file: rnp-src.MANIFEST.tsv
+    bytes: 2742
+    sha256: 3be3ee8d8b01bdd77181f97416ec54bcd2b9ff3dbf66ae02547a12bb7ed8c799

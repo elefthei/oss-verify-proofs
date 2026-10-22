@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: selinux
+homepage: https://github.com/SELinuxProject/selinux
+language: c
+oss_fuzz:
+  path: projects/selinux
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: selinux
+  repository: https://github.com/SELinuxProject/selinux
+  commit: efd1aa519e2f75baab5ea91f81d18e0bbeadd191
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: binpolicy-fuzzer
+  status: included
+  origin: upstream
+- name: checkpolicy-fuzzer
+  status: not-included
+  reason: not-attempted
+- name: module-package-fuzzer
+  status: included
+  origin: upstream
+- name: secilc-fuzzer
+  status: included
+  origin: upstream
+- name: selabel_file_compiled-fuzzer
+  status: not-included
+  reason: not-attempted
+- name: selabel_file_text-fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: selinux-bin.tar.zst
+    bytes: 1898020
+    sha256: fd5d1f9764047f80678929e01e355d96f4bee74398d34dd8564903a17c085eb1
+  src:
+    release: v2026.10.0-src
+    file: selinux-src.tar.zst
+    bytes: 3499344
+    sha256: e5b01c2e7f78b711c2acdaae5993aec761a59e76de2b108a346d39dfa99deeb5
+  src_manifest:
+    release: v2026.10.0-src
+    file: selinux-src.MANIFEST.tsv
+    bytes: 1620
+    sha256: 586ea244cca9b0cf814d2af7c5490623f10f04369a4de121a5792c920ea9b9d5

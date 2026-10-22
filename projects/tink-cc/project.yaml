@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: tink-cc
+homepage: https://developers.google.com/tink
+language: c++
+oss_fuzz:
+  path: projects/tink-cc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tink-cc
+  repository: https://github.com/tink-crypto/tink-cc
+  commit: 527baad6ccd9957da349a4dbd46428110db54974
+  licence: Apache-2.0
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: tink_encrypt_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tink-cc-bin.tar.zst
+    bytes: 1509017
+    sha256: 411cffdd920131c17d19e75b3fc477fe176873ef02ed9f14ad8cf6a644ac7925
+  src:
+    release: v2026.10.0-src
+    file: tink-cc-src.tar.zst
+    bytes: 88023394
+    sha256: f56293dbd559b8a86697fe0e3d41aacf2abce1d4599d17e6e1957a4d25cf56d9
+  src_manifest:
+    release: v2026.10.0-src
+    file: tink-cc-src.MANIFEST.tsv
+    bytes: 3814
+    sha256: c88d7da22c7f9626a77a5f07ff4d0483a2127503f0ecb5f328d03f93f466c599

@@ -1,0 +1,116 @@
+schema: oss-fuzz-theorems/project/1
+project: keystone
+homepage: https://www.keystone-engine.org
+language: c++
+oss_fuzz:
+  path: projects/keystone
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: keystone
+  repository: https://github.com/keystone-engine/keystone
+  commit: 0d9567f08c0c23e8f604b2cad3d49450c93cfb40
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_asm_arm64_arm
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_arm
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_armbe
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_armv8be
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_thumb
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_thumbbe
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_thumbv8
+  status: included
+  origin: upstream
+- name: fuzz_asm_arm_thumbv8be
+  status: included
+  origin: upstream
+- name: fuzz_asm_armv8_arm
+  status: included
+  origin: upstream
+- name: fuzz_asm_evm
+  status: not-included
+  reason: not-attempted
+- name: fuzz_asm_hex
+  status: not-included
+  reason: not-attempted
+- name: fuzz_asm_mips
+  status: included
+  origin: upstream
+- name: fuzz_asm_mips64
+  status: included
+  origin: upstream
+- name: fuzz_asm_mips64be
+  status: included
+  origin: upstream
+- name: fuzz_asm_mipsbe
+  status: included
+  origin: upstream
+- name: fuzz_asm_ppc32be
+  status: included
+  origin: upstream
+- name: fuzz_asm_ppc64
+  status: included
+  origin: upstream
+- name: fuzz_asm_ppc64be
+  status: included
+  origin: upstream
+- name: fuzz_asm_riscv32
+  status: included
+  origin: upstream
+- name: fuzz_asm_riscv64
+  status: included
+  origin: upstream
+- name: fuzz_asm_sparc
+  status: included
+  origin: upstream
+- name: fuzz_asm_sparc64be
+  status: included
+  origin: upstream
+- name: fuzz_asm_sparcbe
+  status: included
+  origin: upstream
+- name: fuzz_asm_systemz
+  status: included
+  origin: upstream
+- name: fuzz_asm_x86_16
+  status: included
+  origin: upstream
+- name: fuzz_asm_x86_32
+  status: included
+  origin: upstream
+- name: fuzz_asm_x86_64
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: keystone-bin.tar.zst
+    bytes: 158805138
+    sha256: 483c0bdcf36c6c36087ce1e55abbc25db49a7fc5e1ab9e5e299e895ab19b991d
+  src:
+    release: v2026.10.0-src
+    file: keystone-src.tar.zst
+    bytes: 3606829
+    sha256: 55f613c37e82d220facf4206f932bf84abbf7d89737e329a59507005756e5b70
+  src_manifest:
+    release: v2026.10.0-src
+    file: keystone-src.MANIFEST.tsv
+    bytes: 4334
+    sha256: e6ce2e152d88234763aa317b7468754f6724494aaa759a6284265a424964bcde

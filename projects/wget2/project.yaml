@@ -1,0 +1,98 @@
+schema: oss-fuzz-theorems/project/1
+project: wget2
+homepage: https://gitlab.com/gnuwget/wget2
+language: c++
+oss_fuzz:
+  path: projects/wget2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wget2
+  repository: https://gitlab.com/gnuwget/wget2
+  commit: ea0f0e1940fcadd08d146771efceaecc62d0425b
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libwget_atom_url_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: libwget_bar_fuzzer
+  status: included
+  origin: upstream
+- name: libwget_base64_fuzzer
+  status: included
+  origin: upstream
+- name: libwget_cookie_fuzzer
+  status: included
+  origin: upstream
+- name: libwget_css_url_fuzzer
+  status: included
+  origin: upstream
+- name: libwget_hpkp_fuzzer
+  status: included
+  origin: upstream
+- name: libwget_hsts_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_html_url_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_http_client_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_http_parse_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_iri_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_metalink_parse_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_netrc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_ocsp_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_robots_parse_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_sitemap_url_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_tlssess_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_utils_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: libwget_xml_parse_buffer_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: wget_options_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wget2-bin.tar.zst
+    bytes: 1051860
+    sha256: eac6f0e6b3423267080f9cb2f3d65e6d6e5ce5dabbc1de3f326773322215d8e3
+  src:
+    release: v2026.10.0-src
+    file: wget2-src.tar.zst
+    bytes: 7674330
+    sha256: 2757946e29a5282ba075361bf8c0eaea96c3a0213c8b4ba297d6753368ea889c
+  src_manifest:
+    release: v2026.10.0-src
+    file: wget2-src.MANIFEST.tsv
+    bytes: 3776
+    sha256: 49a3c7586eafbc630f04c65ff3ce1ea52b7caafffa19fe8b21ba2f8f7c588dfb

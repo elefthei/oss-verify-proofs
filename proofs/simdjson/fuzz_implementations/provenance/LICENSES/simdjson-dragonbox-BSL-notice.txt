@@ -1,0 +1,31 @@
+simdjson: src/to_chars.cpp ports Junekey Jeon's Dragonbox reference implementation and carries this notice (lines 13-35 at f807de973580fb22cc0db6b3b896716684b0266c):
+
+/*!
+Implements the Dragonbox algorithm for binary to decimal floating-point
+conversion (shortest round-trip representation of a double).
+
+The digit-generation core below is a self-contained port of Junekey Jeon's
+reference "simple_dragonbox" implementation, specialized to IEEE-754 binary64
+and de-templated to match simdjson's style. Only the shortest-representation
+path with the default (nearest, ties-to-even) rounding is kept.
+
+Dragonbox: https://github.com/jk-jeon/dragonbox
+Copyright 2020-2025 Junekey Jeon (and contributors).
+
+The original is dual-licensed; this port is used under the terms of the
+Boost Software License, Version 1.0 (https://www.boost.org/LICENSE_1_0.txt).
+
+For the algorithm itself see:
+[1] Junekey Jeon, "Dragonbox: A New Floating-Point Binary-to-Decimal Conversion Algorithm" (2022).
+
+The shortest decimal digits produced here are then laid out into the familiar
+printf("%g")-style text by format_buffer(), which is unchanged from the previous
+Grisu2-based implementation, so the emitted strings are identical except that
+Dragonbox always yields the (sometimes shorter) shortest representation.
+*/
+
+The repository's README.md (line 271 at the same commit) says:
+
+For efficient number serialization, we bundle Junekey Jeon's implementation of the Dragonbox algorithm for binary to decimal floating-point numbers (https://github.com/jk-jeon/dragonbox). The Dragonbox implementation is provided under the Apache License Version 2.0 with LLVM Exceptions (LICENSE-Apache2-LLVM or https://llvm.org/foundation/relicensing/LICENSE.txt) or the Boost Software License Version 1.0 (LICENSE-Boost or https://www.boost.org/LICENSE_1_0.txt).
+
+The Boost Software License 1.0 text is LICENSES/dragonbox-LICENSE-Boost (byte-identical to LICENSE-Boost of https://github.com/jk-jeon/dragonbox at beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44).

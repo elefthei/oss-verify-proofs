@@ -1,0 +1,61 @@
+schema: oss-fuzz-theorems/project/1
+project: openssh
+homepage: https://www.openssh.com
+language: c++
+oss_fuzz:
+  path: projects/openssh
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openssh-portable
+  repository: https://github.com/openssh/openssh-portable
+  commit: 0ef0f5a839831c213f24e3f2ae434765c607fb50
+  licence: BSD-3-Clause
+harnesses:
+- name: agent_fuzz
+  status: included
+  origin: upstream
+- name: authkeys_fuzz
+  status: included
+  origin: upstream
+- name: authopt_fuzz
+  status: included
+  origin: upstream
+- name: kex_fuzz
+  status: included
+  origin: upstream
+- name: privkey_fuzz
+  status: included
+  origin: upstream
+- name: pubkey_fuzz
+  status: included
+  origin: upstream
+- name: sig_fuzz
+  status: included
+  origin: upstream
+- name: sshsig_fuzz
+  status: included
+  origin: upstream
+- name: sshsigopt_fuzz
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openssh-bin.tar.zst
+    bytes: 13011786
+    sha256: 936198ec1d5a8e05e64c7deabbaffb217613fa0e7c439103ad8817d9f01501db
+  src:
+    release: v2026.10.0-src
+    file: openssh-src.tar.zst
+    bytes: 1472822
+    sha256: fa2046354b57e7602ff01be955348ec2415f4a8f7b4a921623fd2ca0af8f8cea
+  src_manifest:
+    release: v2026.10.0-src
+    file: openssh-src.MANIFEST.tsv
+    bytes: 2153
+    sha256: e80c1050c15d489f1af526297ac0a0c4da533880bfb03f198472c2c8438ee943

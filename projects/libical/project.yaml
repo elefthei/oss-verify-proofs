@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: libical
+homepage: https://github.com/libical/libical
+language: c++
+oss_fuzz:
+  path: projects/libical
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libical
+  repository: https://github.com/libical/libical
+  commit: ce074dd9c86850cf38a7a3193b0ff08d0579248e
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libical_extended_fuzzer
+  status: included
+- name: libical_fuzzer
+  status: included
+- name: libicalvcard_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libical-bin.tar.zst
+    bytes: 1110741
+    sha256: afa746e464329c797ef79427c9b1895513df2f5969b33ba8db9fd5a4d8e2be30
+  src:
+    release: v2026.10.0-src
+    file: libical-src.tar.zst
+    bytes: 1177821
+    sha256: cf02434a51b51fb77f8b90400755510d99af0ae9e9ab31e72394c61462197659
+  src_manifest:
+    release: v2026.10.0-src
+    file: libical-src.MANIFEST.tsv
+    bytes: 2254
+    sha256: 926322947d17940bb59858c4699d219c8658390df9cd39983eb37b3a3993c0d2

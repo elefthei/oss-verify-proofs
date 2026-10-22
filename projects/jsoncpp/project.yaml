@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: jsoncpp
+homepage: https://github.com/open-source-parsers/jsoncpp
+language: c++
+oss_fuzz:
+  path: projects/jsoncpp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: jsoncpp
+  repository: https://github.com/open-source-parsers/jsoncpp
+  commit: 3347a4b86bb914cb565f0cbda19c06e109513300
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: jsoncpp_fuzzer
+  status: included
+  origin: upstream
+- name: jsoncpp_proto_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: jsoncpp-bin.tar.zst
+    bytes: 899118
+    sha256: 6710d987a6b1b9d31af41fb575e8d969c7e2b9258a17ff35a02afbb5e9976b91
+  src:
+    release: v2026.10.0-src
+    file: jsoncpp-src.tar.zst
+    bytes: 132422
+    sha256: af6cef76ba1976d7ffe5677597721ea4c97ee686bbbe05c47a24998484a2ad52
+  src_manifest:
+    release: v2026.10.0-src
+    file: jsoncpp-src.MANIFEST.tsv
+    bytes: 1398
+    sha256: e41d3a420833a96c7ea203298258784b5d35f5c7d9637d7260b060f7f06369bc

@@ -1,0 +1,94 @@
+schema: oss-fuzz-theorems/project/1
+project: net-snmp
+language: c++
+oss_fuzz:
+  path: projects/net-snmp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: net-snmp
+  repository: https://github.com/net-snmp/net-snmp
+  commit: 15e258018a13a56410a48e4cc6bf31fe4fc07997
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: agentx_master_fuzzer
+  status: included
+  origin: upstream
+- name: agentx_parse_fuzzer
+  status: included
+  origin: upstream
+- name: parse_octet_hint_fuzzer
+  status: included
+  origin: upstream
+- name: read_objid_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_agent_e2e_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_api_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_config_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_config_mem_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_e2e_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_mib_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_parse_args_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_parse_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_parse_oid_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_parse_trap2_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_parse_trap_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_pdu_parse_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_print_var_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_scoped_pdu_parse_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_sec_models_fuzzer
+  status: included
+  origin: upstream
+- name: snmp_transport_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: net-snmp-bin.tar.zst
+    bytes: 26931556
+    sha256: f0bb2cfb33fbc30bf7438b8235e0b1e0d56918a25d6b13e30733141b48e9862c
+  src:
+    release: v2026.10.0-src
+    file: net-snmp-src.tar.zst
+    bytes: 4347964
+    sha256: 71cba28a7cb502e76886491d006c7e2c87c3c2da354f73d1f14a84dac3cd942c
+  src_manifest:
+    release: v2026.10.0-src
+    file: net-snmp-src.MANIFEST.tsv
+    bytes: 4383
+    sha256: d2f5edcf6620b737c9a37d47b4f561d5c77351ed187bcf19e0d73cd55d6b9eac

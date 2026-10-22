@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: reflections
+homepage: https://github.com/ronmamo/reflections
+language: jvm
+oss_fuzz:
+  path: projects/reflections
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

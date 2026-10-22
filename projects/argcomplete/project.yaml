@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: argcomplete
+homepage: https://github.com/kislyuk/argcomplete
+language: python
+oss_fuzz:
+  path: projects/argcomplete
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

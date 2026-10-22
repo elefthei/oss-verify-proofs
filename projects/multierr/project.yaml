@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: multierr
+homepage: https://github.com/uber-go/multierr
+language: go
+oss_fuzz:
+  path: projects/multierr
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: go

@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: irssi
+homepage: https://github.com/irssi/irssi
+language: c++
+oss_fuzz:
+  path: projects/irssi
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: irssi
+  repository: https://github.com/irssi/irssi
+  commit: 43f1727ef9fe1cb51d5031ee2dd0e1965217e4cb
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: event-get-params-fuzz
+  status: included
+  origin: upstream
+- name: irssi-fuzz
+  status: included
+  origin: upstream
+- name: server-fuzz
+  status: included
+  origin: upstream
+- name: theme-load-fuzz
+  status: included
+  origin: upstream
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: irssi-bin.tar.zst
+    bytes: 12293335
+    sha256: b430c2557c3f575f74c95938883e152f954cb5dfe249b27adbd23bcd8b098e53
+  src:
+    release: v2026.10.0-src
+    file: irssi-src.tar.zst
+    bytes: 608841
+    sha256: a46d2885a84fb9dffb8bd52fb9abcb97e4b1e368e243fba225ad58c0006a5cb8
+  src_manifest:
+    release: v2026.10.0-src
+    file: irssi-src.MANIFEST.tsv
+    bytes: 1563
+    sha256: b572c2e24aee7e5922301b69ec83e9584e786c3b7f5c23c1b7fc6bb2e2e381b9

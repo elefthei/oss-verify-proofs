@@ -1,0 +1,12 @@
+schema: oss-fuzz-theorems/project/1
+project: yaml-cpp
+homepage: https://codedocs.xyz/jbeder/yaml-cpp/index.html
+language: c++
+oss_fuzz:
+  path: projects/yaml-cpp
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: no-licence-grant
+reason_args:
+  commit: 67e08ba37941b43b06734a6d9014a29935b0daf5
+  text: yaml-cpp-fuzzer

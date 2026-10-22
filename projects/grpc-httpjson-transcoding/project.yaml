@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: grpc-httpjson-transcoding
+homepage: https://github.com/grpc-ecosystem/grpc-httpjson-transcoding
+language: c++
+oss_fuzz:
+  path: projects/grpc-httpjson-transcoding
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: grpc-httpjson-transcoding
+  repository: https://github.com/grpc-ecosystem/grpc-httpjson-transcoding
+  commit: a6e226f9a2e656a973df3ad48f0ee5efacce1a28
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: http_template_fuzz_test
+  status: included
+  origin: upstream
+- name: message_reader_fuzz_test
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: grpc-httpjson-transcoding-bin.tar.zst
+    bytes: 412461
+    sha256: 5861c6f24e0e0c8820090a10f9482ae1091e9489872c589a973f9e3888dd8cf4
+  src:
+    release: v2026.10.0-src
+    file: grpc-httpjson-transcoding-src.tar.zst
+    bytes: 576995
+    sha256: 8d75fd4603359d58cd0681cd204ef1cd676d7e48cf1727b3a1ea8d64746d2ce7
+  src_manifest:
+    release: v2026.10.0-src
+    file: grpc-httpjson-transcoding-src.MANIFEST.tsv
+    bytes: 1596
+    sha256: 261f3aa38dbb5952befc7f9f622e8373dde9d392f79e9e9dba3c8a261a462902

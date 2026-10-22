@@ -1,0 +1,59 @@
+schema: oss-fuzz-theorems/project/1
+project: wt
+homepage: https://www.webtoolkit.eu/wt
+language: c++
+oss_fuzz:
+  path: projects/wt
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wt
+  repository: https://github.com/emweb/wt
+  commit: 0ec92b6bfc41be037dcf3ddfc72664ca261821bd
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz-cgi
+  status: included
+  origin: upstream
+- name: fuzz-css
+  status: included
+  origin: upstream
+- name: fuzz-datetime
+  status: included
+  origin: upstream
+- name: fuzz-eval
+  status: included
+  origin: upstream
+- name: fuzz-http
+  status: included
+  origin: upstream
+- name: fuzz-json
+  status: not-included
+  reason: not-attempted
+- name: fuzz-uri
+  status: included
+  origin: upstream
+- name: fuzz-xml
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wt-bin.tar.zst
+    bytes: 84562314
+    sha256: e194828eaf2c76a460c21982bb93979dccfa11a2271738d1eb8d6bde0038c449
+  src:
+    release: v2026.10.0-src
+    file: wt-src.tar.zst
+    bytes: 156069433
+    sha256: 272b062704572ba2e7c040fe63b58da3b19ba51b75ea484f30a4d64717b62fc7
+  src_manifest:
+    release: v2026.10.0-src
+    file: wt-src.MANIFEST.tsv
+    bytes: 2261
+    sha256: e7678f8f391559e9182f7e1e2d60883f6fd0e48693e614ba290e99821ea0a560

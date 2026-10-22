@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "OSS Verify: proofs and theorem statements about OSS-Fuzz fuzz targets"
+type: dataset
+license:
+  - MIT
+  - Apache-2.0
+authors:
+  - name: "Theorem Labs, PBC"
+repository-code: "https://github.com/theorem-labs/oss-verify-proofs"
+message: "Cite the release, and each statement as project/harness/statement@r<revision>."

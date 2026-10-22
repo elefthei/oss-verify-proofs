@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: draco
+homepage: https://github.com/google/draco
+language: c++
+oss_fuzz:
+  path: projects/draco
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: draco
+  repository: https://github.com/google/draco
+  commit: d429de84b52a860705507da0884764c5d8321423
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: draco_mesh_decoder_fuzzer
+  status: included
+  origin: upstream
+- name: draco_mesh_decoder_without_dequantization_fuzzer
+  status: included
+  origin: upstream
+- name: draco_pc_decoder_fuzzer
+  status: included
+  origin: upstream
+- name: draco_pc_decoder_without_dequantization_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: draco-bin.tar.zst
+    bytes: 2188974
+    sha256: 6fb0896b191dd1178faff4cf651fe6992a19fe8b879123655a8b5bf1e02dcd00
+  src:
+    release: v2026.10.0-src
+    file: draco-src.tar.zst
+    bytes: 61436567
+    sha256: 68ab68a21b89e8cd34bf16a03d4f450c4b0001e497a92aa6f090f85e66aa0cbb
+  src_manifest:
+    release: v2026.10.0-src
+    file: draco-src.MANIFEST.tsv
+    bytes: 6395
+    sha256: ef36c6ca27c5311aee3be06d524ff2986b5f768317492077f7a527500bfa62c2

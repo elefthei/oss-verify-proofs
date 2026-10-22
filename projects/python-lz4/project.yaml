@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: python-lz4
+homepage: https://github.com/lz4/lz4
+language: python
+oss_fuzz:
+  path: projects/python-lz4
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

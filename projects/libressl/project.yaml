@@ -1,0 +1,69 @@
+schema: oss-fuzz-theorems/project/1
+project: libressl
+homepage: https://www.libressl.org
+language: c++
+oss_fuzz:
+  path: projects/libressl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: portable
+  repository: https://github.com/libressl/portable
+  commit: 08415b6730901ab159dc7b1bc5ab2563188713e2
+  licence: BSD-4-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: asn1
+  status: not-included
+  reason: not-attempted
+- name: asn1parse
+  status: included
+  origin: upstream
+- name: bignum
+  status: not-included
+  reason: not-attempted
+- name: bndiv
+  status: not-included
+  reason: not-attempted
+- name: client
+  status: not-included
+  reason: not-attempted
+- name: cms
+  status: not-included
+  reason: not-attempted
+- name: conf
+  status: not-included
+  reason: not-attempted
+- name: crl
+  status: not-included
+  reason: not-attempted
+- name: server
+  status: not-included
+  reason: not-attempted
+- name: x509
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libressl-bin.tar.zst
+    bytes: 519925
+    sha256: e70ddb98bfba0bb8dbc025affe444dfedcb4dd56650256301c2c479eaa4d6e57
+  src:
+    release: v2026.10.0-src
+    file: libressl-src.tar.zst
+    bytes: 17097232
+    sha256: 803ad62c5a320532777773e5f71f8c1fbf48bac025b842257657f34ac1395ff7
+  src_manifest:
+    release: v2026.10.0-src
+    file: libressl-src.MANIFEST.tsv
+    bytes: 2117
+    sha256: 3851a1863623503271ae647e0288c2bf3eec143431cb6be2fe8d3639504a9e71

@@ -1,0 +1,274 @@
+schema: oss-fuzz-theorems/harness/1
+project: libphonenumber
+harness: fuzz_asyoutypeformatter
+rocq: OssFuzzTheorems.libphonenumber.fuzz_asyoutypeformatter
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/fuzz_asyoutypeformatter.cc
+  from:
+    repository: https://github.com/google/libphonenumber
+    commit: 17c9061a3af14f2e10907d73df92601b27785713
+    path: cpp/test/phonenumbers/fuzz_asyoutypeformatter.cc
+  modified: false
+  licence: Apache-2.0
+library:
+  repository: https://github.com/google/libphonenumber
+  commit: 17c9061a3af14f2e10907d73df92601b27785713
+  licence: NOASSERTION
+modifications:
+- Linked against libphonenumber at commit 17c9061a.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: fuzz_asyoutypeformatter.plain
+    bytes: 2369664
+    sha256: d0f8b013a1c33b5a5d08254d9e60d9a55a62521741225d284d11d3a55ec5fd61
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libboost_thread.a
+      kind: image-library
+      sha256: 83fe1b400862bc6c509206614db510d0335a02836a4f6e54fe7fa78d7a84e590
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libicudata.a
+      kind: image-library
+      sha256: f65f4990658ccba3c003adfa56b1f7ddfac4d8ff98530ddffa685a679cdf7804
+    - name: libicui18n.a
+      kind: image-library
+      sha256: e69150278554293811f13500b8b220142d3c8fd67de4233a16982957f7e754e7
+    - name: libicuuc.a
+      kind: image-library
+      sha256: 856c7fe788653e4067fd2732488c250e8bb384bcb0778ce3088ac9afd431ad10
+    - name: libprotobuf.a
+      kind: image-library
+      sha256: d0af146842a9884cafe361d04ccfc01e11e3dfd2542097838514a53c596d2da0
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  ubsan:
+    file: fuzz_asyoutypeformatter.ubsan
+    bytes: 2399712
+    sha256: 05da9bf18728fe55d059daf9f8469e9a1ca3205aa30fbf545c67d1afaa09bd23
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libboost_thread.a
+      kind: image-library
+      sha256: 83fe1b400862bc6c509206614db510d0335a02836a4f6e54fe7fa78d7a84e590
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libicudata.a
+      kind: image-library
+      sha256: f65f4990658ccba3c003adfa56b1f7ddfac4d8ff98530ddffa685a679cdf7804
+    - name: libicui18n.a
+      kind: image-library
+      sha256: e69150278554293811f13500b8b220142d3c8fd67de4233a16982957f7e754e7
+    - name: libicuuc.a
+      kind: image-library
+      sha256: 856c7fe788653e4067fd2732488c250e8bb384bcb0778ce3088ac9afd431ad10
+    - name: libprotobuf.a
+      kind: image-library
+      sha256: d0af146842a9884cafe361d04ccfc01e11e3dfd2542097838514a53c596d2da0
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan:
+    file: fuzz_asyoutypeformatter.asan
+    bytes: 3439536
+    sha256: 5d4ee4f3985d39318d0668bc00cf8b9d94673e7df2c5ecc2dbfbaff0189a0575
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libboost_thread.a
+      kind: image-library
+      sha256: 83fe1b400862bc6c509206614db510d0335a02836a4f6e54fe7fa78d7a84e590
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libicudata.a
+      kind: image-library
+      sha256: f65f4990658ccba3c003adfa56b1f7ddfac4d8ff98530ddffa685a679cdf7804
+    - name: libicui18n.a
+      kind: image-library
+      sha256: e69150278554293811f13500b8b220142d3c8fd67de4233a16982957f7e754e7
+    - name: libicuuc.a
+      kind: image-library
+      sha256: 856c7fe788653e4067fd2732488c250e8bb384bcb0778ce3088ac9afd431ad10
+    - name: libprotobuf.a
+      kind: image-library
+      sha256: d0af146842a9884cafe361d04ccfc01e11e3dfd2542097838514a53c596d2da0
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+  asan-ubsan:
+    file: fuzz_asyoutypeformatter.asan-ubsan
+    bytes: 3422768
+    sha256: b29ee268cf834876c2c9713f2de62a8796172e58525f1466ea10f691441fcd01
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libboost_thread.a
+      kind: image-library
+      sha256: 83fe1b400862bc6c509206614db510d0335a02836a4f6e54fe7fa78d7a84e590
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libicudata.a
+      kind: image-library
+      sha256: f65f4990658ccba3c003adfa56b1f7ddfac4d8ff98530ddffa685a679cdf7804
+    - name: libicui18n.a
+      kind: image-library
+      sha256: e69150278554293811f13500b8b220142d3c8fd67de4233a16982957f7e754e7
+    - name: libicuuc.a
+      kind: image-library
+      sha256: 856c7fe788653e4067fd2732488c250e8bb384bcb0778ce3088ac9afd431ad10
+    - name: libprotobuf.a
+      kind: image-library
+      sha256: d0af146842a9884cafe361d04ccfc01e11e3dfd2542097838514a53c596d2da0
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

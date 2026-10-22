@@ -1,0 +1,74 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/KhronosGroup/SPIRV-Tools.git
+COMMIT=47c74f488bad1136559f382ce99e8e52d7a392cd
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_cmake
+  oft_build_harness "test/fuzzers/spvtools_binary_parser_fuzzer.cpp"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AUX_REPOS="
+src/external/abseil_cpp https://github.com/abseil/abseil-cpp.git ba427a3dd37a1948aaca5cda75191cc4b88b4fa8
+src/external/effcee https://github.com/google/effcee.git f8e8a164822d4f65e757bff66bc00e1567959aa0
+src/external/googletest https://github.com/google/googletest.git 49495eacfdbda3f4b6ba219923fedbb2e3f99376
+src/external/mimalloc https://github.com/microsoft/mimalloc.git fc1e2acbced0b3e893da1a1375e02ac159d0423f
+src/external/protobuf https://github.com/protocolbuffers/protobuf.git 35cd01f9fe9afbeea38cc7b979a3b6bfcde82c03
+src/external/re2 https://github.com/google/re2.git 972a15cedd008d846f1a39b2e88ce48d7f166cbd
+src/external/spirv-headers https://github.com/KhronosGroup/SPIRV-Headers.git f0bf307f7c49d26484db596185cece53c37701fc
+"
+

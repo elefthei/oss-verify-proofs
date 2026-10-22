@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: dbus-broker
+homepage: https://github.com/bus1/dbus-broker
+language: c
+oss_fuzz:
+  path: projects/dbus-broker
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dbus-broker
+  repository: https://github.com/bus1/dbus-broker
+  commit: e5b413f573b2c158bff88370944d571379977b7e
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-message
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dbus-broker-bin.tar.zst
+    bytes: 322127
+    sha256: a78228ce82c4e9b1fadfa68f2611f1eea70ebb078b2c2e9ca9fcecb92524270b
+  src:
+    release: v2026.10.0-src
+    file: dbus-broker-src.tar.zst
+    bytes: 315303
+    sha256: ccba40f950c2e13b1318f1dbfe74a3338aa1809da81ecdd1eefedb45c824c8e1
+  src_manifest:
+    release: v2026.10.0-src
+    file: dbus-broker-src.MANIFEST.tsv
+    bytes: 6194
+    sha256: 34251215deebb086e0e8409e70aa0c6c1110e4c572eaa52d0bce83dbc43e86ca

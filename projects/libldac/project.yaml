@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libldac
+homepage: https://android.googlesource.com/platform/external/libldac
+language: c++
+oss_fuzz:
+  path: projects/libldac
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libldac
+  repository: https://android.googlesource.com/platform/external/libldac
+  commit: eeee1a3f5f8df1282e3a6d297085885fd886737b
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libldac_encode_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libldac-bin.tar.zst
+    bytes: 487541
+    sha256: bcda0f4139a11442441f8df1780ce2adcfa46a70e2665455d99de0d5a287a043
+  src:
+    release: v2026.10.0-src
+    file: libldac-src.tar.zst
+    bytes: 60336
+    sha256: 8c0373b5851650e16519a3b47f08148396cced2143778aace23ec08ea7a36b68
+  src_manifest:
+    release: v2026.10.0-src
+    file: libldac-src.MANIFEST.tsv
+    bytes: 1401
+    sha256: 0c9661377d00df76a7e62a7d862bba23050e684ba3a875a23ff578cbbd6eb14a

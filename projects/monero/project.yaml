@@ -1,0 +1,106 @@
+schema: oss-fuzz-theorems/project/1
+project: monero
+homepage: https://getmonero.org
+language: c++
+oss_fuzz:
+  path: projects/monero
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: monero
+  repository: https://github.com/monero-project/monero
+  commit: 8340be5e920d881edc006e0896d6074cd06dfb2e
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: base58_fuzz_tests
+  status: included
+  origin: upstream
+- name: block_fuzz_tests
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: bulletproof_fuzz_tests
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: cold-outputs_fuzz_tests
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: cold-transaction_fuzz_tests
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: fuzz_rpc
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: fuzz_rpc_full
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: fuzz_rpc_full_no_exceptions
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: fuzz_zmq
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: http-client_fuzz_tests
+  status: included
+  origin: upstream
+- name: levin_fuzz_tests
+  status: included
+  origin: upstream
+- name: load-from-binary_fuzz_tests
+  status: included
+  origin: upstream
+- name: load-from-json_fuzz_tests
+  status: included
+  origin: upstream
+- name: parse-url_fuzz_tests
+  status: included
+  origin: upstream
+- name: signature_fuzz_tests
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: transaction_fuzz_tests
+  status: not-included
+  reason: dependency
+  reason_args:
+    dependency: a Rust compiler
+- name: tx-extra_fuzz_tests
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: monero-bin.tar.zst
+    bytes: 16736099
+    sha256: ad82e5a2850c06fe0ce53265fa57a4886432448c9d05d206ac1b76e00811fc4d
+  src:
+    release: v2026.10.0-src
+    file: monero-src.tar.zst
+    bytes: 22463315
+    sha256: 53a71e90177f553d3e92a6b5438344384d533d707d2fc8fd35b4af317ebc8b21
+  src_manifest:
+    release: v2026.10.0-src
+    file: monero-src.MANIFEST.tsv
+    bytes: 18337
+    sha256: 0ac86c3f372a397c45c5dd25d4861f934d83acdeecdf769f7895e49b62da896f

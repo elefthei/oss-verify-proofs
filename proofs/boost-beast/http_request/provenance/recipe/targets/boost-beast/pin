@@ -1,0 +1,64 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/boostorg/boost.git
+COMMIT=4daa5786d7c5dad39df0429cb078165b3134a06f
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_cmake
+  oft_build_harness "libs/beast/test/fuzz/http_request.cpp"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+build_lib() {
+  oft_require_target_cxx
+  oft_build_header_only
+
+  OFT_HARNESS_CFLAGS="$(for d in "$BUILDDIR"/src/libs/*/include "$BUILDDIR"/src/libs/*/*/include; do [ -d "$d" ] && printf "%s" "-isystem $d "; done) -H"
+  echo "oft: boost-beast: OFT_HARNESS_CFLAGS carries $(set -- $OFT_HARNESS_CFLAGS; echo $#) words"
+  oft_build_harness "libs/beast/test/fuzz/http_request.cpp"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+
+
+
+
+

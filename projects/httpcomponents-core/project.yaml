@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: httpcomponents-core
+homepage: https://github.com/apache/httpcomponents-core
+language: jvm
+oss_fuzz:
+  path: projects/httpcomponents-core
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

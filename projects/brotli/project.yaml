@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: brotli
+homepage: https://github.com/google/brotli
+language: c++
+oss_fuzz:
+  path: projects/brotli
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: brotli
+  repository: https://github.com/google/brotli
+  commit: 8e10eeb3378f6c459dbaf033ca6727e9816afccb
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: decode_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: brotli-bin.tar.zst
+    bytes: 476801
+    sha256: 56aedb1e966278e093510cd4d1e6a97287deef787293322c58326fd10261937c
+  src:
+    release: v2026.10.0-src
+    file: brotli-src.tar.zst
+    bytes: 32309051
+    sha256: cb1ed6f646cfbaddd3462a2bf441538c77048a3e7328de691dfc9f47376a3670
+  src_manifest:
+    release: v2026.10.0-src
+    file: brotli-src.MANIFEST.tsv
+    bytes: 1345
+    sha256: 452885970351de0f9496f93b065f31e43a4ec1537a61856ff2a727adb4bb618a

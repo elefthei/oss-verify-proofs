@@ -1,0 +1,59 @@
+schema: oss-fuzz-theorems/project/1
+project: spirv-tools
+homepage: https://github.com/KhronosGroup/SPIRV-Tools
+language: c++
+oss_fuzz:
+  path: projects/spirv-tools
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: SPIRV-Tools
+  repository: https://github.com/KhronosGroup/SPIRV-Tools
+  commit: 47c74f488bad1136559f382ce99e8e52d7a392cd
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: spvtools_as_fuzzer
+  status: included
+  origin: upstream
+- name: spvtools_binary_parser_fuzzer
+  status: included
+  origin: upstream
+- name: spvtools_dis_fuzzer
+  status: included
+  origin: upstream
+- name: spvtools_opt_legalization_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: spvtools_opt_performance_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: spvtools_opt_size_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: spvtools_val_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: spirv-tools-bin.tar.zst
+    bytes: 4912466
+    sha256: e1a3f8a908517539ea750c692c86ea9ffd0b5c54c04260d4a4913e8da5c688da
+  src:
+    release: v2026.10.0-src
+    file: spirv-tools-src.tar.zst
+    bytes: 12082865
+    sha256: a61dc63c02b7d02a8e0d84b360c04f5772836b5c136a12eed18655099e2ee50d
+  src_manifest:
+    release: v2026.10.0-src
+    file: spirv-tools-src.MANIFEST.tsv
+    bytes: 6338
+    sha256: 31ece799b54cfd9f5eb0acb35e22de86728f7028d0f9f6c80507f4b137821b02

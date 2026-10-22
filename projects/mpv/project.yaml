@@ -1,0 +1,98 @@
+schema: oss-fuzz-theorems/project/1
+project: mpv
+homepage: https://github.com/mpv-player/mpv
+language: c
+oss_fuzz:
+  path: projects/mpv
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: mpv
+  repository: https://github.com/mpv-player/mpv
+  commit: e8673660ab7ee5d4ea8f93e4bf3a6e170ab2a19a
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer_json
+  status: included
+  origin: upstream
+- name: fuzzer_load_config_file
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_load_input_conf
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_loadfile
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_loadfile_direct
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_loadfile_mkv
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_options_parser
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_protocol_dvb
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_protocol_edl
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_protocol_file
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_protocol_lavf
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_protocol_memory
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_DOUBLE_0
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_DOUBLE_1
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_FLAG_0
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_FLAG_1
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_INT64_0
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_INT64_1
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_STRING_0
+  status: not-included
+  reason: not-attempted
+- name: fuzzer_set_property_MPV_FORMAT_STRING_1
+  status: not-included
+  reason: not-attempted
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mpv-bin.tar.zst
+    bytes: 315835
+    sha256: 0fff62c8697c3d593014c48342c5379542a1ee075a3a390d10a99ba591acca6a
+  src:
+    release: v2026.10.0-src
+    file: mpv-src.tar.zst
+    bytes: 5475742
+    sha256: 0b5099d3186c8faeed3c298a0e4423492d6f71f73fe8e5ad867437403c583e5d
+  src_manifest:
+    release: v2026.10.0-src
+    file: mpv-src.MANIFEST.tsv
+    bytes: 1303
+    sha256: 8b2ae05e5141dba6e13f469fd8ca53051fda573d4b7534205efd307171e49cab

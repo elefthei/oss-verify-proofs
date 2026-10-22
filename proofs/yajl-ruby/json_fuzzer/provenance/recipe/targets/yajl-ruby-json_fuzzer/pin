@@ -1,0 +1,103 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/brianmario/yajl-ruby
+COMMIT=6501652d113557d976676134056aa983e7863020
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_build_blind
+  oft_build_harness "json_fuzzer.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+build_lib() {
+  OFT_BLIND_SKIP=1 oft_build_blind
+  oft_build_harness "json_fuzzer.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

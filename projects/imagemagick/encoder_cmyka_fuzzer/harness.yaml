@@ -1,0 +1,370 @@
+schema: oss-fuzz-theorems/harness/1
+project: imagemagick
+harness: encoder_cmyka_fuzzer
+rocq: OssFuzzTheorems.imagemagick.encoder_cmyka_fuzzer
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/encoder_fuzzer.cc
+  from:
+    repository: https://github.com/imagemagick/imagemagick
+    commit: ae72b12e114440f10bd1c70c29ae707296bcc109
+    path: oss-fuzz/encoder_fuzzer.cc
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/imagemagick/imagemagick
+  commit: ae72b12e114440f10bd1c70c29ae707296bcc109
+  licence: NOASSERTION
+modifications:
+- Linked against imagemagick at commit ae72b12e.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: encoder_cmyka_fuzzer.plain
+    bytes: 7749048
+    sha256: 62242549a6947e99db669bec3a892cb8f1b692464bf09606f2ee64fecdcf9aa1
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libfontconfig.a
+      kind: image-library
+      sha256: 465b4dfd08e40fbb004e587df53ebdc04f561d095d901800d348653bb1a8a9b3
+    - name: libfreetype.a
+      kind: image-library
+      sha256: 9ffc81b2d4674e39f21e90ab6dfb5188a5866e32519a55cf05fbfcedd1edfc9b
+    - name: liblcms2.a
+      kind: image-library
+      sha256: 3b6c3514fc1564b3c7203a60435ceae75ea698c776d05cd18f43980dfa9eb92f
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libtiff.a
+      kind: image-library
+      sha256: a895d8b0c1a0956d0b31616a8dbee2e8490cabb3a7fff64a8c72c53871525ed9
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  ubsan:
+    file: encoder_cmyka_fuzzer.ubsan
+    bytes: 8841976
+    sha256: 09a08b64e443d31f75bce294f7748bc5f871d7b2654b9f2e66e1104951fa47c9
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libfontconfig.a
+      kind: image-library
+      sha256: 465b4dfd08e40fbb004e587df53ebdc04f561d095d901800d348653bb1a8a9b3
+    - name: libfreetype.a
+      kind: image-library
+      sha256: 9ffc81b2d4674e39f21e90ab6dfb5188a5866e32519a55cf05fbfcedd1edfc9b
+    - name: liblcms2.a
+      kind: image-library
+      sha256: 3b6c3514fc1564b3c7203a60435ceae75ea698c776d05cd18f43980dfa9eb92f
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libtiff.a
+      kind: image-library
+      sha256: a895d8b0c1a0956d0b31616a8dbee2e8490cabb3a7fff64a8c72c53871525ed9
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan:
+    file: encoder_cmyka_fuzzer.asan
+    bytes: 14285272
+    sha256: 1a512392dc28877fcf72481109bbf2a103eb92f86bf05688ac1b07bee568a08d
+    segments:
+    - 1
+    - 2
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libfontconfig.a
+      kind: image-library
+      sha256: 465b4dfd08e40fbb004e587df53ebdc04f561d095d901800d348653bb1a8a9b3
+    - name: libfreetype.a
+      kind: image-library
+      sha256: 9ffc81b2d4674e39f21e90ab6dfb5188a5866e32519a55cf05fbfcedd1edfc9b
+    - name: liblcms2.a
+      kind: image-library
+      sha256: 3b6c3514fc1564b3c7203a60435ceae75ea698c776d05cd18f43980dfa9eb92f
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libtiff.a
+      kind: image-library
+      sha256: a895d8b0c1a0956d0b31616a8dbee2e8490cabb3a7fff64a8c72c53871525ed9
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan-ubsan:
+    file: encoder_cmyka_fuzzer.asan-ubsan
+    bytes: 15150328
+    sha256: d8100dec923371b20216e988c1587e2cf0190029c43dbea462f8b9c90e5c033e
+    segments:
+    - 1
+    - 2
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libbrotlicommon.a
+      kind: image-library
+      sha256: 002cba336acc0d6f7ece474f709d1f443d8a8672842b1d69a05f47783fefe748
+    - name: libbrotlidec.a
+      kind: image-library
+      sha256: 1a40cbf980a51d6d8acc7f8b687c1011e1e9bfe1873a9139130e2f173a2a3758
+    - name: libbz2.a
+      kind: image-library
+      sha256: f6cf8c3393a77d3344ac07bb5db1f45b8568706976f6cbb819ce99f1511e052c
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libfontconfig.a
+      kind: image-library
+      sha256: 465b4dfd08e40fbb004e587df53ebdc04f561d095d901800d348653bb1a8a9b3
+    - name: libfreetype.a
+      kind: image-library
+      sha256: 9ffc81b2d4674e39f21e90ab6dfb5188a5866e32519a55cf05fbfcedd1edfc9b
+    - name: liblcms2.a
+      kind: image-library
+      sha256: 3b6c3514fc1564b3c7203a60435ceae75ea698c776d05cd18f43980dfa9eb92f
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libtiff.a
+      kind: image-library
+      sha256: a895d8b0c1a0956d0b31616a8dbee2e8490cabb3a7fff64a8c72c53871525ed9
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libxml2.a
+      kind: image-library
+      sha256: 5e6567c152ffebaffb769e8158a74d0779895b332114aae8269779e622415e45
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

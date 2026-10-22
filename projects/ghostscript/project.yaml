@@ -1,0 +1,110 @@
+schema: oss-fuzz-theorems/project/1
+project: ghostscript
+homepage: https://ghostscript.com
+language: c++
+oss_fuzz:
+  path: projects/ghostscript
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ghostpdl
+  repository: https://git.ghostscript.com/ghostpdl
+  commit: 3bd9e56f8f299d8d9efe236866d7b04ed1570809
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: decode_fuzzer
+  status: included
+  origin: upstream
+- name: gs_device_bmpmono_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_eps2write_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_faxg3_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_ljet4_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_pdfwrite_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_pdfwrite_opts_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_pgmraw_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_png16m_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_ps2write_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_psdcmyk_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_pxlcolor_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_pxlmono_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_tiffsep1_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_device_xpswrite_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_icc_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_pcl_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_pxl_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gs_xps_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gstoraster_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gstoraster_fuzzer_all_colors
+  status: not-included
+  reason: not-attempted
+- name: gstoraster_pdf_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: gstoraster_ps_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: xml_parse_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ghostscript-bin.tar.zst
+    bytes: 1010137
+    sha256: 818cbbd01f9df06481735654825e52f7e2acd5b0d60c544029051c6402b66efe
+  src:
+    release: v2026.10.0-src
+    file: ghostscript-src.tar.zst
+    bytes: 66576702
+    sha256: 0d187d77c2691b6f533406cde5abb01cf75f5e0398728131810b3d0a47413d9b
+  src_manifest:
+    release: v2026.10.0-src
+    file: ghostscript-src.MANIFEST.tsv
+    bytes: 1605
+    sha256: 8ae3f6631e2b4abfb596da27711b99ed9c29c13e055fc85c6450d2da93df986b

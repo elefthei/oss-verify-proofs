@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: cppcheck
+homepage: https://cppcheck.sourceforge.net
+language: c++
+oss_fuzz:
+  path: projects/cppcheck
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cppcheck
+  repository: https://github.com/cppcheck-opensource/cppcheck
+  commit: 5e7baff38ff8fbb87c4a25de33345436386febb5
+  licence: GPL-3.0-or-later
+harnesses:
+- name: oss-fuzz-client
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cppcheck-bin.tar.zst
+    bytes: 12973704
+    sha256: 1740249c15814bb403411b7c7b1588e8fc8a81fc5ddedd7dec752028963f8ea3
+  src:
+    release: v2026.10.0-src
+    file: cppcheck-src.tar.zst
+    bytes: 3070087
+    sha256: e01da44a7a1ee396e0b619e48c5e371b8a388628a5571f3f1f5441e8813a88a2
+  src_manifest:
+    release: v2026.10.0-src
+    file: cppcheck-src.MANIFEST.tsv
+    bytes: 2033
+    sha256: a8f75a10a36fd0f56c9dbcf81ee7445c5097d1afd85302a5b2099182016ba04f

@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: h2database
+homepage: https://h2database.com
+language: jvm
+oss_fuzz:
+  path: projects/h2database
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

@@ -1,0 +1,289 @@
+schema: oss-fuzz-theorems/harness/1
+project: tinysparql
+harness: fuzz_rdf_trig
+rocq: OssFuzzTheorems.tinysparql.fuzz_rdf_trig
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/fuzz_rdf_trig.c
+  from:
+    repository: https://gitlab.gnome.org/GNOME/tinysparql
+    commit: c7474652b36b983cb9b5906b40907755f245948f
+    path: fuzzing/fuzz_rdf_trig.c
+  modified: false
+  licence: LGPL-2.1-or-later
+library:
+  repository: https://gitlab.gnome.org/GNOME/tinysparql
+  commit: c7474652b36b983cb9b5906b40907755f245948f
+  licence: NOASSERTION
+modifications:
+- Linked against tinysparql at commit c7474652 with 1 patch to the library (listed on the project page).
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: fuzz_rdf_trig.plain
+    bytes: 5572736
+    sha256: d95d9240cf656bdb46fe626a9af12dcd781c66fb07a234269a377efafea21f02
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgmodule-2.0.a
+      kind: image-library
+      sha256: 4b3cf637262d9fa57433162a7721b36be22aa72457cd7f8cdd2e6eb2597a2bd5
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpcre2-8.a
+      kind: image-library
+      sha256: 7d3c312bf3065f4b74560aa885a5ca78312e24f627f62f5a616041d4f868093d
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  ubsan:
+    file: fuzz_rdf_trig.ubsan
+    bytes: 6014720
+    sha256: 9248d8e8f7a241f3261e78e0a63ca7bf302969cd009cc60eeb743b7970e8b736
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgmodule-2.0.a
+      kind: image-library
+      sha256: 4b3cf637262d9fa57433162a7721b36be22aa72457cd7f8cdd2e6eb2597a2bd5
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpcre2-8.a
+      kind: image-library
+      sha256: 7d3c312bf3065f4b74560aa885a5ca78312e24f627f62f5a616041d4f868093d
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan:
+    file: fuzz_rdf_trig.asan
+    bytes: 11306128
+    sha256: 69bc5cf779c19bd8123fc39a716e5c44a365e8daf6e30b4c1069683f35c414ed
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgmodule-2.0.a
+      kind: image-library
+      sha256: 4b3cf637262d9fa57433162a7721b36be22aa72457cd7f8cdd2e6eb2597a2bd5
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpcre2-8.a
+      kind: image-library
+      sha256: 7d3c312bf3065f4b74560aa885a5ca78312e24f627f62f5a616041d4f868093d
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan-ubsan:
+    file: fuzz_rdf_trig.asan-ubsan
+    bytes: 11466000
+    sha256: 8a5c49278ef4cec6671bdd3e05a85c0f744f70075a8815e5d80d8d7aa801bc2d
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgmodule-2.0.a
+      kind: image-library
+      sha256: 4b3cf637262d9fa57433162a7721b36be22aa72457cd7f8cdd2e6eb2597a2bd5
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: liblzma.a
+      kind: image-library
+      sha256: 36b53b3f459b89651cfd55eb732a6d0d3c8f95f82638c2fec590f28d1d24ecee
+    - name: libpcre2-8.a
+      kind: image-library
+      sha256: 7d3c312bf3065f4b74560aa885a5ca78312e24f627f62f5a616041d4f868093d
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

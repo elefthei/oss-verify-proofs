@@ -1,0 +1,134 @@
+schema: oss-fuzz-theorems/project/1
+project: libjpeg-turbo
+homepage: https://libjpeg-turbo.org
+language: c
+oss_fuzz:
+  path: projects/libjpeg-turbo
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libjpeg-turbo
+  repository: https://github.com/libjpeg-turbo/libjpeg-turbo
+  commit: 2646fa33f8d67373c27b558b47e77b2d8d517e31
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cjpeg_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: cjpeg_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: cjpeg_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: compress12_fuzzer
+  status: included
+  origin: upstream
+- name: compress12_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: compress12_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: compress12_lossless_fuzzer
+  status: included
+  origin: upstream
+- name: compress12_lossless_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: compress12_lossless_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: compress16_lossless_fuzzer
+  status: included
+  origin: upstream
+- name: compress16_lossless_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: compress16_lossless_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: compress_fuzzer
+  status: included
+  origin: upstream
+- name: compress_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: compress_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: compress_lossless_fuzzer
+  status: included
+  origin: upstream
+- name: compress_lossless_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: compress_lossless_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: compress_yuv_fuzzer
+  status: included
+  origin: upstream
+- name: compress_yuv_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: compress_yuv_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: decompress_libjpeg_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_libjpeg_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: decompress_yuv_fuzzer
+  status: included
+  origin: upstream
+- name: decompress_yuv_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: decompress_yuv_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: libjpeg_turbo_fuzzer
+  status: included
+  origin: upstream
+- name: libjpeg_turbo_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: libjpeg_turbo_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+- name: transform_fuzzer
+  status: included
+  origin: upstream
+- name: transform_fuzzer_3_0_x
+  status: not-included
+  reason: not-attempted
+- name: transform_fuzzer_3_1_x
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libjpeg-turbo-bin.tar.zst
+    bytes: 4544562
+    sha256: afc39a5c308c73f731b63edd7a469ec8d655aeb70f0ee492ef7b21fd389275e3
+  src:
+    release: v2026.10.0-src
+    file: libjpeg-turbo-src.tar.zst
+    bytes: 1954181
+    sha256: 066d6d08f9c29d6c8ca84e1b25f39fc340bb7c58a27780243f202ca7c46362b8
+  src_manifest:
+    release: v2026.10.0-src
+    file: libjpeg-turbo-src.MANIFEST.tsv
+    bytes: 2626
+    sha256: 2f13a0fefb9d71d19b7acf46178fe9230f81cc3aab4758776803582e30ecef4d

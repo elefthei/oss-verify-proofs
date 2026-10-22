@@ -1,0 +1,4 @@
+* text=auto eol=lf
+counterexamples/**/*.bin binary
+# Harness copies are the bytes as built: never normalise their line ends.
+projects/*/*/source/** -text

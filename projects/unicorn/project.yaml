@@ -1,0 +1,74 @@
+schema: oss-fuzz-theorems/project/1
+project: unicorn
+homepage: https://www.unicorn-engine.org
+language: c++
+oss_fuzz:
+  path: projects/unicorn
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: unicorn
+  repository: https://github.com/unicorn-engine/unicorn
+  commit: 2a05c41831c678c22b2c6de471aae15b1cfc9ae3
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_emu_arm64_arm
+  status: included
+  origin: upstream
+- name: fuzz_emu_arm64_armbe
+  status: included
+  origin: upstream
+- name: fuzz_emu_arm_arm
+  status: included
+  origin: upstream
+- name: fuzz_emu_arm_armbe
+  status: included
+  origin: upstream
+- name: fuzz_emu_arm_thumb
+  status: included
+  origin: upstream
+- name: fuzz_emu_m68k_be
+  status: included
+  origin: upstream
+- name: fuzz_emu_mips_32be
+  status: included
+  origin: upstream
+- name: fuzz_emu_mips_32le
+  status: included
+  origin: upstream
+- name: fuzz_emu_s390x_be
+  status: included
+  origin: upstream
+- name: fuzz_emu_sparc_32be
+  status: included
+  origin: upstream
+- name: fuzz_emu_x86_16
+  status: included
+  origin: upstream
+- name: fuzz_emu_x86_32
+  status: included
+  origin: upstream
+- name: fuzz_emu_x86_64
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: unicorn-bin.tar.zst
+    bytes: 214649130
+    sha256: 73c75f456daa0a776aa811453cf2d39f9c04257d6cd64a5bd303791ed819fc1b
+  src:
+    release: v2026.10.0-src
+    file: unicorn-src.tar.zst
+    bytes: 3233874
+    sha256: f3a8c061d35c31216fe8b00ec3bda0f37d876030fbd537232ac2aa7cbde6ca3a
+  src_manifest:
+    release: v2026.10.0-src
+    file: unicorn-src.MANIFEST.tsv
+    bytes: 4620
+    sha256: 3ccadb19c8a0fcbd1b8eb45a1d41595e5b1958c9f6a3c7e604624f4fa253ff55

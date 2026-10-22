@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: evo-inflector
+homepage: https://github.com/atteo/evo-inflector
+language: jvm
+oss_fuzz:
+  path: projects/evo-inflector
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: jvm

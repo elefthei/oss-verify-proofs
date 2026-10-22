@@ -1,0 +1,8 @@
+varnish (vinyl-cache): include/miniobj.h, whose object-check macros (INIT_OBJ, CHECK_OBJ_NOTNULL, CAST_OBJ_NOTNULL, ALLOC_OBJ, FREE_OBJ, TAKE_OBJ_NOTNULL, VALID_OBJ) expand in the linked files, is in the public domain. From include/miniobj.h at bc9eaf713fe9bd86fa39eee1774650e9d2386f84 (lines 1-6):
+
+/*
+ * Written by Poul-Henning Kamp <phk@phk.freebsd.dk>
+ *
+ * This file is in the public domain.
+ *
+ */

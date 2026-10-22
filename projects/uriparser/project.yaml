@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: uriparser
+homepage: https://github.com/uriparser/uriparser
+language: c++
+oss_fuzz:
+  path: projects/uriparser
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: uriparser
+  repository: https://github.com/uriparser/uriparser
+  commit: 35a929905323fbc291acf9b6a26a680d0827f997
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: uri_dissect_query_malloc_fuzzer
+  status: included
+  origin: upstream
+- name: uri_dissect_query_mallocw_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uri_free_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uri_freew_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uri_parse_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: uri_parsew_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: uriparser-bin.tar.zst
+    bytes: 416563
+    sha256: f42a6b45ea020ed881e71ce3230bdce7dd47188996b5d42cea46c137b2f6a8c9
+  src:
+    release: v2026.10.0-src
+    file: uriparser-src.tar.zst
+    bytes: 209675
+    sha256: a039016825bc6daa88af538de0f27aea8a3ea6b998d22dd1a57d98436a561eb5
+  src_manifest:
+    release: v2026.10.0-src
+    file: uriparser-src.MANIFEST.tsv
+    bytes: 1418
+    sha256: 9b20364e29df6464ccf6ee4a4318018222bbe9da252ee6197650c7919052dea8

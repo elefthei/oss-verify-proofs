@@ -1,0 +1,97 @@
+# release.yaml: what this release pins.  Written once per release; a tag
+# `v<release>` must name exactly this value, and so must `v<release>-src`, its
+# source release, where the source assets are attached apart (release.yml
+# checks it).
+tag: oss-fuzz-theorems/release/1
+root: {type: ref, name: release}
+defs:
+  release:
+    type: object
+    fields:
+      schema: {type: const, value: oss-fuzz-theorems/release/1}
+      release: {type: release-version}
+      date: {type: date}
+      oss_fuzz:
+        type: object
+        fields:
+          repository: {type: const, value: https://github.com/google/oss-fuzz}
+          commit: {type: commit}
+          projects: {type: int, min: 1}
+      semantics:
+        type: object
+        fields:
+          # the model's opam package, which every generated opam file and dune-project depends on
+          name: {type: str, pattern: '^[a-z][a-z0-9-]*$'}
+          version: {type: str, pattern: '^[0-9A-Za-z][0-9A-Za-z.+-]*$'}
+          repository: {type: const, value: https://github.com/theorem-labs/rocq-linux-process-semantics}
+          commit: {type: commit}
+          # the model is public at that commit, even while its version is still "unreleased"; not part of any
+          # fingerprint (only version is), so publishing the model leaves every statement and proof as it is
+          published: {type: bool, optional: true}
+      rocq:
+        type: object
+        fields:
+          package: {type: enum, values: [rocq-core]}
+          version: {type: str, pattern: '^[0-9]+\.[0-9]+(\.[0-9]+)?$'}
+      images:
+        type: object
+        fields:
+          checker: {type: image}      # Rocq and the process model, nothing else (toolchain/checker.Dockerfile)
+          runner: {type: image}       # qemu-user 10 and tools/oft (toolchain/runner.Dockerfile)
+          builder: {type: list, items: {type: image}, min: 1}
+      # the build recipe: the build scripts, pins and patches every binary of this release was built with, one
+      # archive for the release; a project's source asset (assets.src) ships with it, in the same GitHub release
+      recipe:
+        type: object
+        optional: true
+        fields:
+          release: {type: release-tag}
+          file: {type: str, pattern: '^recipe(-[0-9]+)?\.tar\.zst$'}
+          bytes: {type: int, min: 1}
+          sha256: {type: sha256}
+      # the release-wide source archives: the toolchain every binary was built with, and the libraries a binary links
+      # from the build image; a copyleft binary's corresponding source includes both (pages name them, by file); each
+      # pinned by size and sha256 like every other asset
+      sources:
+        type: object
+        optional: true
+        fields:
+          release: {type: str, pattern: '^sources-v[0-9]+$'}
+          toolchain:
+            type: object
+            fields:
+              file: {type: const, value: toolchain-src.tar.zst}
+              bytes: {type: int, min: 1}
+              sha256: {type: sha256}
+          sysroot:
+            type: object
+            fields:
+              file: {type: const, value: sysroot-src.tar.zst}
+              bytes: {type: int, min: 1}
+              sha256: {type: sha256}
+      # every library a build links from the build image (harness.yaml uninstrumented, kind image-library), by file
+      # name: its licence as its own source files state it; copyleft, whether it binds the binaries that link it to a
+      # GPL-family licence (an `X OR GPL` choice does not); and in_sysroot_src, whether sources.sysroot holds its source
+      image_libraries:
+        type: map
+        optional: true
+        keys: archive-name
+        values: {type: ref, name: image_library}
+      binaries:
+        type: object
+        fields:
+          store: {type: const, value: github-release-assets}
+      counts:
+        type: object
+        fields:
+          projects: {type: int, min: 0}
+          available: {type: int, min: 0}
+          harnesses: {type: int, min: 0}
+          binaries: {type: int, min: 0}
+  image_library:
+    type: object
+    fields:
+      library: {type: str, max: 200}
+      licence: {type: spdx-expression}
+      copyleft: {type: bool}
+      in_sysroot_src: {type: bool}

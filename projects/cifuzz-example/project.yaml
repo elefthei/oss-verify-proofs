@@ -1,0 +1,8 @@
+schema: oss-fuzz-theorems/project/1
+project: cifuzz-example
+language: c++
+oss_fuzz:
+  path: projects/cifuzz-example
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: held

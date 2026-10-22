@@ -1,0 +1,62 @@
+schema: oss-fuzz-theorems/project/1
+project: pycryptodome
+homepage: https://www.pycryptodome.org
+language: c
+oss_fuzz:
+  path: projects/pycryptodome
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pycryptodome
+  repository: https://github.com/Legrandin/pycryptodome
+  commit: a1e52c70302a51077e9d6a20a6abc6a04da1b5e6
+  licence: BSD-2-Clause
+harnesses:
+- name: aes_fuzzer
+  status: included
+  origin: upstream
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: md2_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: md4_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: md5_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: ripemd160_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: sha224_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: sha256_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: sha384_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pycryptodome-bin.tar.zst
+    bytes: 418155
+    sha256: 9bc4b963191e75eb73d06554610541053cbf76d9e6146861d490f44eb4faaf1d
+  src:
+    release: v2026.10.0-src
+    file: pycryptodome-src.tar.zst
+    bytes: 15062399
+    sha256: 67fd42733220caf943d2fd8b37a5badaef6f5c222eadb731b27b0471b6b2d4d6
+  src_manifest:
+    release: v2026.10.0-src
+    file: pycryptodome-src.MANIFEST.tsv
+    bytes: 1421
+    sha256: 5a44c53fab963dfb8e5c17d662da56ab77cfd712efe0ff1527ffc52d512f00ad

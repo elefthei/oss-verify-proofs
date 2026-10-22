@@ -1,0 +1,64 @@
+schema: oss-fuzz-theorems/project/1
+project: pcre2
+language: c
+oss_fuzz:
+  path: projects/pcre2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pcre2
+  repository: https://github.com/PCRE2Project/pcre2
+  commit: 92baa6cb647d89385aa9d550bc6614df881d8c2b
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: pcre2_fuzzer
+  status: included
+  origin: upstream
+- name: pcre2_fuzzer_16
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_16_3l
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_16_4l
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_32
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_32_3l
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_32_4l
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_3l
+  status: not-included
+  reason: not-attempted
+- name: pcre2_fuzzer_4l
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pcre2-bin.tar.zst
+    bytes: 1049809
+    sha256: e43e0fef9b3245500e128c17a6c9e27b9b10f71423375571308dd242a4aa1315
+  src:
+    release: v2026.10.0-src
+    file: pcre2-src.tar.zst
+    bytes: 2975800
+    sha256: 54d5d20c29d1ea6a2b392cd92cdaaa90f59bf681a4794708097ef5f9d9f1be1a
+  src_manifest:
+    release: v2026.10.0-src
+    file: pcre2-src.MANIFEST.tsv
+    bytes: 1892
+    sha256: 2f2fc27a2c522da266a56e7fdc49c9ca81b4e589d2d52d893b584e20149f11fa

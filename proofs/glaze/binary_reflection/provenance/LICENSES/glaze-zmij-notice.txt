@@ -1,0 +1,24 @@
+glaze: include/glaze/util/zmij.hpp is a header-only port of Victor Zverovich's zmij (https://github.com/vitaut/zmij) and carries this notice (lines 1-22 at dce5e0f7ec572725ec369a0bc59a00eeb2270a9a):
+
+// Glaze Library
+// For the license information refer to glaze.hpp
+//
+// Header-only port of Victor Zverovich's zmij library for float serialization.
+//  https://github.com/vitaut/zmij
+// Distributed under the upstream MIT license
+// (see https://github.com/vitaut/zmij/blob/main/LICENSE) or alternatively
+// the Boost Software License, Version 1.0.
+// Copyright (c) 2025 - present, Victor Zverovich
+//
+// Adaptation notes:
+//  - Ported from zmij.h + zmij.cc into a single header wrapped in glz::zmij.
+//  - The upstream ZMIJ_OPTIMIZE_SIZE compile-time macro is replaced by a
+//    `bool OptSize` template parameter so the two variants (full tables vs
+//    recompute-on-the-fly) can coexist in one translation unit. Glaze's
+//    `is_size_optimized(Opts)` flag drives it at the call site.
+//  - Exposes glz::to_chars, a JSON-compliant wrapper that writes "null" for
+//    NaN/Inf, uppercase 'E' for the exponent, and omits the '+' on positive
+//    exponents (matching Glaze's established output format).
+//  - Internal helpers live in glz::zmij::detail_impl (formerly an anonymous
+//    namespace in zmij.cc); namespace-level constants that previously collided
+//    with struct members (neg100/neg10/neg10k/zeros) are suffixed `_v`.

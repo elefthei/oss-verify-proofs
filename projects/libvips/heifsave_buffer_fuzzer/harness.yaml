@@ -1,0 +1,310 @@
+schema: oss-fuzz-theorems/harness/1
+project: libvips
+harness: heifsave_buffer_fuzzer
+rocq: OssFuzzTheorems.libvips.heifsave_buffer_fuzzer
+origin: upstream
+summary: No summary of this harness is recorded yet; its checks, if any, are listed below.
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/generic_buffer_fuzzer.cc
+  from:
+    repository: https://github.com/libvips/libvips
+    commit: 321e45b42997f1e6e303012ed4ab7ceb3a3d0084
+    path: fuzz/generic_buffer_fuzzer.cc
+  modified: false
+  licence: NOASSERTION
+library:
+  repository: https://github.com/libvips/libvips
+  commit: 321e45b42997f1e6e303012ed4ab7ceb3a3d0084
+  licence: NOASSERTION
+modifications:
+- Linked against libvips at commit 321e45b4.
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: heifsave_buffer_fuzzer.plain
+    bytes: 9829224
+    sha256: ce76aee80b94bf1350f1a3e53e8b3781c8f79a51d4d1c8a239f78d63557bf746
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  ubsan:
+    file: heifsave_buffer_fuzzer.ubsan
+    bytes: 11607936
+    sha256: 7419d401b5667d9f74e139743f2a918cfef4cc0118a48b960dcdc876c5a6b81f
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan:
+    file: heifsave_buffer_fuzzer.asan
+    bytes: 22312312
+    sha256: 448e8da51ed210a8f05c84d1a49ad8921a482aff9f09e87cd99c379a7ca28342
+    segments:
+    - 1
+    - 2
+    - 1
+    - 2
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+  asan-ubsan:
+    file: heifsave_buffer_fuzzer.asan-ubsan
+    bytes: 23192216
+    sha256: 82b7c6094b23f07f8b0e60694d8028d9b68c015d344fe9072c2c7802d08040b7
+    segments:
+    - 1
+    - 3
+    - 1
+    - 2
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libexpat.a
+      kind: image-library
+      sha256: cdbeb3ba826e044717bc3c3615eb79528ad71dacc3229fc4c65e52d9c55114be
+    - name: libffi.a
+      kind: image-library
+      sha256: 62cb8085925045cf91bae9d66e4b711e70205d3076c415e293db43018b005c41
+    - name: libgio-2.0.a
+      kind: image-library
+      sha256: d7dc8e6f1cd032e41c6f90e48ede1c233230e00d886057b4bd5cd7eae9ae6460
+    - name: libglib-2.0.a
+      kind: image-library
+      sha256: 3be192ef2bc118e3af4ea9bbc30f548dcc70c80137f5dc3212b1269b04edcc85
+    - name: libgobject-2.0.a
+      kind: image-library
+      sha256: e289486af4f5f1020f530ab4da01dcccb8e77f2cca29dcd2d880e1552b5109dd
+    - name: libpng16.a
+      kind: image-library
+      sha256: 71d52b5f9a0b76eae0c53ecf425556f34ac0796c790779e865bea9356ede3816
+    - name: libturbojpeg.a
+      kind: image-library
+      sha256: aa7bd8a8f1ad4d7400ee13cf45a987039fc6f28d83db4dcfa37feccbf1a62a48
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libz.a
+      kind: image-library
+      sha256: 194b82138caf2ab967edec61765cbea0c7bbec6cb5b84af718409039e70ba99f
+licence: NOASSERTION
+checks: []
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: alloc-forced-only
+    budgets: standard
+    abort: signal
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: alloc-forced-only
+    budgets: asan
+    abort: signal
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: open

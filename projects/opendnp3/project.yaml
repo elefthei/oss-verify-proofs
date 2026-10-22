@@ -1,0 +1,46 @@
+schema: oss-fuzz-theorems/project/1
+project: opendnp3
+language: c++
+oss_fuzz:
+  path: projects/opendnp3
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: opendnp3
+  repository: https://github.com/dnp3/opendnp3
+  commit: c1dc7165a79cc08edbf4b55d2ff4162efb176f92
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzdecoder
+  status: included
+  origin: upstream
+- name: fuzzmaster
+  status: not-included
+  reason: not-attempted
+- name: fuzzoutstation
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opendnp3-bin.tar.zst
+    bytes: 850471
+    sha256: b1a8a8431b436aee3820f541176d935ade4878849bb28739e3dcdfc49c465cd4
+  src:
+    release: v2026.10.0-src
+    file: opendnp3-src.tar.zst
+    bytes: 2342199
+    sha256: 64ecaef2bdf3db401efa9b2b71e0c8ead351ecb1bbfa4e97b5304dc0ed958667
+  src_manifest:
+    release: v2026.10.0-src
+    file: opendnp3-src.MANIFEST.tsv
+    bytes: 3195
+    sha256: 1f7c19967c07b1de2c03b2a28a07c44384f7ce843a6185e9f8ddfe1324841a8e

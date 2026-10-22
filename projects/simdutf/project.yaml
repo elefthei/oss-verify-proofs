@@ -1,0 +1,63 @@
+schema: oss-fuzz-theorems/project/1
+project: simdutf
+homepage: https://simdutf.github.io/simdutf
+language: c++
+oss_fuzz:
+  path: projects/simdutf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: simdutf
+  repository: https://github.com/simdutf/simdutf
+  commit: b91b70d7d7bf8609eec2612971c01f3c92499a4b
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: base64
+  status: included
+  origin: upstream
+- name: base64_details
+  status: not-included
+  reason: not-attempted
+- name: conversion
+  status: not-included
+  reason: not-attempted
+- name: find
+  status: not-included
+  reason: not-attempted
+- name: misc
+  status: not-included
+  reason: not-attempted
+- name: roundtrip
+  status: not-included
+  reason: not-attempted
+- name: safe_conversion
+  status: not-included
+  reason: not-attempted
+- name: with_replacement
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: simdutf-bin.tar.zst
+    bytes: 748084
+    sha256: df7bbeba07ad9325775fa7efac7c4d57178cbb712faeb0625848dbc137311d0d
+  src:
+    release: v2026.10.0-src
+    file: simdutf-src.tar.zst
+    bytes: 2084935
+    sha256: cc513da05b04d2966580661b6b6d60e6073be70d03815ea1937e14950327bf7f
+  src_manifest:
+    release: v2026.10.0-src
+    file: simdutf-src.MANIFEST.tsv
+    bytes: 1324
+    sha256: 5bdfeb367106a70a3a00356b800c54551932e5f5e8cf586bd1b1aa43436f92a4

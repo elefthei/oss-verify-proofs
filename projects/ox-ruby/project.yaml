@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: ox-ruby
+homepage: https://github.com/ohler55/ox
+language: ruby
+oss_fuzz:
+  path: projects/ox-ruby
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: ruby

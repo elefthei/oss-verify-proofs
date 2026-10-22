@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: harfbuzz
+homepage: https://github.com/harfbuzz/harfbuzz
+language: c++
+oss_fuzz:
+  path: projects/harfbuzz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: harfbuzz
+  repository: https://github.com/harfbuzz/harfbuzz
+  commit: cf30f712e73937b3954c57d9521e2e021671527c
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: hb-gpu-fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: hb-raster-fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: hb-repacker-fuzzer
+  status: included
+  origin: upstream
+- name: hb-shape-fuzzer
+  status: included
+  origin: upstream
+- name: hb-subset-fuzzer
+  status: included
+  origin: upstream
+- name: hb-vector-fuzzer
+  status: not-included
+  reason: not-yet-included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: harfbuzz-bin.tar.zst
+    bytes: 8274210
+    sha256: 3570fe97d6d78cb3efc3d8fa138220389e5eff8d106500d98d1a4a9785cd3731
+  src:
+    release: v2026.10.0-src
+    file: harfbuzz-src.tar.zst
+    bytes: 44405086
+    sha256: 90fceb021fcc98bdae41dc785ba29fdcb1a44393a9685e36e53c81adc34394d6
+  src_manifest:
+    release: v2026.10.0-src
+    file: harfbuzz-src.MANIFEST.tsv
+    bytes: 1885
+    sha256: 316dbbdbbe18da24378bd3346fb1d01fe4fb3f34180045e66864c6bc36dc4c54

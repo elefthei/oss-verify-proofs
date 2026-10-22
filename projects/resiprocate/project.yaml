@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: resiprocate
+homepage: https://www.resiprocate.org
+language: c++
+oss_fuzz:
+  path: projects/resiprocate
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: resiprocate
+  repository: https://github.com/resiprocate/resiprocate
+  commit: 3a783e1aebdd7c725cbedba9a21bfc985d94a8bb
+  licence: BSL-1.0
+  patch_count: 3
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzStack
+  status: included
+  origin: upstream
+- name: fuzzUtil
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: resiprocate-bin.tar.zst
+    bytes: 3472617
+    sha256: 5bd0beaa374df0b5a31e4b7c6b141cb133daad2e54d9ff3ed602d570182f87f3
+  src:
+    release: v2026.10.0-src
+    file: resiprocate-src.tar.zst
+    bytes: 23335860
+    sha256: b03a215ef20e341819967eadf325561ab27c0aacf9754541b73855761d22fb85
+  src_manifest:
+    release: v2026.10.0-src
+    file: resiprocate-src.MANIFEST.tsv
+    bytes: 10945
+    sha256: 058d2706787345eb247be9c808523dee6ae1880bf8ebcf564bdd4bef61737219

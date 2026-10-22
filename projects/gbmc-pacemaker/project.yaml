@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: gbmc-pacemaker
+homepage: https://gbmc.googlesource.com/gbmcweb
+language: c++
+oss_fuzz:
+  path: projects/gbmc-pacemaker
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: gbmcweb
+  repository: https://gbmc.googlesource.com/gbmcweb
+  commit: 7c20d3878fd8e3418d281da85833a342593ae38a
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: pacemaker_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: gbmc-pacemaker-bin.tar.zst
+    bytes: 1508537
+    sha256: 6551d0de235ddd19818d8c04ed3a333ccbc144c27c3d585718dc0d4c2c17d8e5
+  src:
+    release: v2026.10.0-src
+    file: gbmc-pacemaker-src.tar.zst
+    bytes: 2961500
+    sha256: 8ed2fa7f432b64a3b4a9030a563a22c5f18a3d4ee772fe88e46002dcc0d0f7d4
+  src_manifest:
+    release: v2026.10.0-src
+    file: gbmc-pacemaker-src.MANIFEST.tsv
+    bytes: 2017
+    sha256: a623ab3d199bb2912bcb3f30e8de79fa6aa795d5d591cb3d8e1494a1a6380d90

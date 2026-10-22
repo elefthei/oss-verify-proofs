@@ -1,0 +1,117 @@
+schema: oss-fuzz-theorems/project/1
+project: mysql-server
+homepage: https://www.mysql.com
+language: c++
+oss_fuzz:
+  path: projects/mysql-server
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: mysql-server
+  repository: https://github.com/mysql/mysql-server
+  commit: 23e360a7fac718d80b9e6a79f7d5a7bf37aa3bbc
+  licence: BSL-1.0
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cbor_load_fuzzer
+  status: included
+  origin: upstream
+- name: routertest_fuzz_mysql_protocol_binary_datetime
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_binary_time
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_binlog_dump
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_binlog_dump_gtid
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_change_user
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_client_greeting
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_clone
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_init_schema
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_list_fields
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_ping
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_query
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_quit
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_register_replica
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_reload
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_reset_connection
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_set_option
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_statistics
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_stmt_close
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_stmt_execute
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_stmt_fetch
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_stmt_param_append_data
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_stmt_prepare
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_mysql_protocol_stmt_reset
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_routing_parser_show_warnings
+  status: not-included
+  reason: not-attempted
+- name: routertest_fuzz_routing_sql_lexer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mysql-server-bin.tar.zst
+    bytes: 486687
+    sha256: 9f6a1c6ffa805c1caaf09a64182e3fe691584d855753bba1bef6b18bc9076fb1
+  src:
+    release: v2026.10.0-src
+    file: mysql-server-src.tar.zst
+    bytes: 408382242
+    sha256: f3f547a93cabd4e24f4ba220ec1a7510e1918f3b9d21c017a1fe0d59273048ed
+  src_manifest:
+    release: v2026.10.0-src
+    file: mysql-server-src.MANIFEST.tsv
+    bytes: 1522
+    sha256: f482295ef51271e85180a1c5a3328339c64c8c107f81bb6f97754c078760b13b

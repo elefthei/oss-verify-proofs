@@ -1,0 +1,117 @@
+schema: oss-fuzz-theorems/project/1
+project: igraph
+homepage: https://github.com/igraph/igraph
+language: c
+oss_fuzz:
+  path: projects/igraph
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: igraph
+  repository: https://github.com/igraph/igraph
+  commit: e8e03b245424a13352ea304e4173385373ecdc9d
+  licence: GPL-2.0-or-later
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: basic_properties_directed
+  status: included
+  origin: upstream
+- name: basic_properties_undirected
+  status: not-included
+  reason: not-attempted
+- name: bliss
+  status: not-included
+  reason: not-attempted
+- name: centrality
+  status: not-included
+  reason: not-attempted
+- name: community
+  status: not-included
+  reason: not-attempted
+- name: edge_connectivity
+  status: not-included
+  reason: not-attempted
+- name: linear_algos_directed
+  status: not-included
+  reason: not-attempted
+- name: linear_algos_undirected
+  status: not-included
+  reason: not-attempted
+- name: misc_algos
+  status: not-included
+  reason: not-attempted
+- name: misc_algos_weighted
+  status: not-included
+  reason: not-attempted
+- name: read_dimacs_flow
+  status: not-included
+  reason: not-attempted
+- name: read_dl
+  status: not-included
+  reason: not-attempted
+- name: read_edgelist
+  status: not-included
+  reason: not-attempted
+- name: read_gml
+  status: not-included
+  reason: not-attempted
+- name: read_graphdb
+  status: not-included
+  reason: not-attempted
+- name: read_graphml
+  status: not-included
+  reason: not-attempted
+- name: read_lgl
+  status: not-included
+  reason: not-attempted
+- name: read_ncol
+  status: not-included
+  reason: not-attempted
+- name: read_pajek
+  status: not-included
+  reason: not-attempted
+- name: spatial
+  status: not-included
+  reason: not-attempted
+- name: vertex_connectivity
+  status: not-included
+  reason: not-attempted
+- name: vertex_separators
+  status: not-included
+  reason: not-attempted
+- name: weighted_centrality
+  status: not-included
+  reason: not-attempted
+- name: weighted_community
+  status: not-included
+  reason: not-attempted
+- name: write_all_gml
+  status: not-included
+  reason: not-attempted
+- name: write_all_graphml
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: igraph-bin.tar.zst
+    bytes: 459772
+    sha256: 52d0363a41aafc3e6bb753e4b85913f71765d1cbbf3e60dc472a2ac6e8cbaa3a
+  src:
+    release: v2026.10.0-src
+    file: igraph-src.tar.zst
+    bytes: 2834150
+    sha256: ad7201a4cd56263c9683c1759c1bb006ccf391e0fb975e66b3007e7ff5d81974
+  src_manifest:
+    release: v2026.10.0-src
+    file: igraph-src.MANIFEST.tsv
+    bytes: 1391
+    sha256: e70685105e6645f447420f2b877e2e889b9b5e0f3da435dcbdb0b31a2190d3b5

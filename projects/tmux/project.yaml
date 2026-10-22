@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: tmux
+homepage: https://tmux.github.io
+language: c
+oss_fuzz:
+  path: projects/tmux
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tmux
+  repository: https://github.com/tmux/tmux
+  commit: f763f94556fbd68685c02d6eea306c1a6982270e
+  licence: NOASSERTION
+harnesses:
+- name: cmd-parse-fuzzer
+  status: included
+  origin: upstream
+- name: format-fuzzer
+  status: included
+  origin: upstream
+- name: input-fuzzer
+  status: included
+  origin: upstream
+- name: json-fuzzer
+  status: not-included
+  reason: not-attempted
+- name: layout-fuzzer
+  status: not-included
+  reason: not-attempted
+- name: style-fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tmux-bin.tar.zst
+    bytes: 8964087
+    sha256: 5733ef45e85e38b1b8c34e5606561c9132f9e79781bfc9fe297a440e76968104
+  src:
+    release: v2026.10.0-src
+    file: tmux-src.tar.zst
+    bytes: 1102189
+    sha256: 8191b4b65bc11f3d4191693160d7ac15bec68f9a975e6e987b13c5a888af64e8
+  src_manifest:
+    release: v2026.10.0-src
+    file: tmux-src.MANIFEST.tsv
+    bytes: 1608
+    sha256: 3073cc69af7f1ae3dc1b64da0d0494cba48d5ee163146ba8b64b6f7d808a74ec

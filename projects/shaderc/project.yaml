@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: shaderc
+homepage: https://github.com/google/shaderc
+language: c++
+oss_fuzz:
+  path: projects/shaderc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: shaderc
+  repository: https://github.com/google/shaderc
+  commit: ba3e587dbc13d423c713e964ac08e094731a034d
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: glslc_fuzzer
+  status: included
+- name: shaderc_fdp_fuzzer
+  status: included
+- name: shaderc_fuzzer
+  status: included
+- name: shaderc_general_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: shaderc-bin.tar.zst
+    bytes: 51916695
+    sha256: 0874dcb035193f170effdb53e52db97ba3a175d12376b2895d4dbd4250bec612
+  src:
+    release: v2026.10.0-src
+    file: shaderc-src.tar.zst
+    bytes: 5438082
+    sha256: 4a65c046c8f2d3f25a6269e8c66888086c50ef1d38e9eeeb861f7e081055e764
+  src_manifest:
+    release: v2026.10.0-src
+    file: shaderc-src.MANIFEST.tsv
+    bytes: 4135
+    sha256: 66b3338ae649c3b339fbf21f7fee8c9f917521ed1d7b5ec436023d14af608583

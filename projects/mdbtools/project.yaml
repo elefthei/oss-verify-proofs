@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: mdbtools
+homepage: https://github.com/mdbtools/mdbtools
+language: c
+oss_fuzz:
+  path: projects/mdbtools
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: mdbtools
+  repository: https://github.com/mdbtools/mdbtools
+  commit: b81b1c92715727c58adda2647ec1f2d61a2566c7
+  version: 1.0.1
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_mdb
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mdbtools-bin.tar.zst
+    bytes: 626550
+    sha256: 8f17b3d14d112fbcee74ae92305fa94517982e7af005a3de086afd0cbeb407e5
+  src:
+    release: v2026.10.0-src
+    file: mdbtools-src.tar.zst
+    bytes: 178793
+    sha256: 17ce61491e5caf4865d7d00c51c6dd6931a8cae26d5077cb9ebf3b1c82aff26c
+  src_manifest:
+    release: v2026.10.0-src
+    file: mdbtools-src.MANIFEST.tsv
+    bytes: 1341
+    sha256: 8b7753ccd8fd91cd1869761c661f402f5b95ad002234ba5fd15298213e75deef

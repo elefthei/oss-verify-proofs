@@ -1,0 +1,71 @@
+schema: oss-fuzz-theorems/project/1
+project: ada-url
+homepage: https://ada-url.github.io/ada
+language: c++
+oss_fuzz:
+  path: projects/ada-url
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ada
+  repository: https://github.com/ada-url/ada
+  commit: e67544784e8df244a7d999f7423bc8680b9ccdca
+  licence: NOASSERTION
+harnesses:
+- name: ada_c
+  status: included
+  origin: upstream
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: can_parse
+  status: included
+  origin: upstream
+- name: idna
+  status: included
+  origin: upstream
+- name: max_length
+  status: included
+  origin: upstream
+- name: parse
+  status: included
+  origin: upstream
+- name: serializers
+  status: included
+  origin: upstream
+- name: simple_absolute
+  status: included
+  origin: upstream
+- name: unicode
+  status: included
+  origin: upstream
+- name: url_pattern
+  status: not-included
+  reason: not-attempted
+- name: url_pattern_list
+  status: not-included
+  reason: not-attempted
+- name: url_search_params
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ada-url-bin.tar.zst
+    bytes: 3623037
+    sha256: 0ecef6ef1536725ab2e09820a30372b37a938c48df779dc9dbf2616e6506c455
+  src:
+    release: v2026.10.0-src
+    file: ada-url-src.tar.zst
+    bytes: 438288
+    sha256: 88a540bbf824c26ec90e5aa0c0640e4737901b447c84e2a4417b755d71a774c8
+  src_manifest:
+    release: v2026.10.0-src
+    file: ada-url-src.MANIFEST.tsv
+    bytes: 2062
+    sha256: 8c065d6126c45bf79e92f402c755379db1cd7a3acb4e112a3367918146d7abad

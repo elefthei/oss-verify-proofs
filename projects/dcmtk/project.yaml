@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: dcmtk
+homepage: https://dicom.offis.de/dcmtk.php.en
+language: c++
+oss_fuzz:
+  path: projects/dcmtk
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dcmtk
+  repository: https://github.com/DCMTK/dcmtk
+  commit: 108acdae424d6999b2e398243938d8c563315ecf
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: dcmtk_dicom_fuzzer
+  status: included
+- name: dcmtk_image_fuzzer
+  status: included
+- name: dcmtk_meta_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dcmtk-bin.tar.zst
+    bytes: 15009928
+    sha256: 4a60bd72170cb1663cbb868aa24c302e07cb5219f51dd78946bc733fdd98649f
+  src:
+    release: v2026.10.0-src
+    file: dcmtk-src.tar.zst
+    bytes: 5352063
+    sha256: e87714a2a0e9b9bfdd19cc05bb5922576fe1da68028603d44ba2ec81b3b584e7
+  src_manifest:
+    release: v2026.10.0-src
+    file: dcmtk-src.MANIFEST.tsv
+    bytes: 2070
+    sha256: 669b6b3b4f72d733ad5b320be7139d2148542cb9069a3974d14903b6a6c8323a

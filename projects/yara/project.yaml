@@ -1,0 +1,64 @@
+schema: oss-fuzz-theorems/project/1
+project: yara
+language: c++
+oss_fuzz:
+  path: projects/yara
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: yara
+  repository: https://github.com/VirusTotal/yara
+  commit: dcc4b9166c02e353094ae1a7f7d240f5eac7b5dd
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: dex_fuzzer
+  status: included
+  origin: upstream
+- name: dotnet_fuzzer
+  status: included
+  origin: upstream
+- name: elf_fuzzer
+  status: included
+  origin: upstream
+- name: filemap_fuzzer
+  status: included
+  origin: upstream
+- name: macho_fuzzer
+  status: included
+  origin: upstream
+- name: math_fuzzer
+  status: included
+  origin: upstream
+- name: pe_fuzzer
+  status: included
+  origin: upstream
+- name: rules_fuzzer
+  status: included
+  origin: upstream
+- name: tlsh_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: yara-bin.tar.zst
+    bytes: 3507408
+    sha256: 393ff67dffdf8cbce9ffbc559913508690d3277ae94cc83ef24211a4a6d931bd
+  src:
+    release: v2026.10.0-src
+    file: yara-src.tar.zst
+    bytes: 1705443
+    sha256: 8718bc522c9e111c8fc9c979ba97895ecb89097e8233be7ffee29f9a3314d27f
+  src_manifest:
+    release: v2026.10.0-src
+    file: yara-src.MANIFEST.tsv
+    bytes: 2026
+    sha256: 6503105dd7da6f49efd8f703ff2488e67b24e157ba3c38b29a59d8b828370f51

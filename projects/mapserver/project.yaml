@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: mapserver
+homepage: https://mapserver.org
+language: c++
+oss_fuzz:
+  path: projects/mapserver
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: MapServer
+  repository: https://github.com/MapServer/MapServer
+  commit: fbcb5754b105707bd8cb639512e15f5b12ebd88c
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: configfuzzer
+  status: included
+  origin: upstream
+- name: mapfuzzer
+  status: included
+  origin: upstream
+- name: owsfuzzer
+  status: included
+  origin: upstream
+- name: shapefuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mapserver-bin.tar.zst
+    bytes: 172126245
+    sha256: d5df089d8829be1e9a7595dc0b9e5dccd5abdcb0a43e84e035c2880c85493923
+  src:
+    release: v2026.10.0-src
+    file: mapserver-src.tar.zst
+    bytes: 57755171
+    sha256: c36490fcccea775cd21620bc769525b835d98d8a820fe5017366166ab70efec1
+  src_manifest:
+    release: v2026.10.0-src
+    file: mapserver-src.MANIFEST.tsv
+    bytes: 2240
+    sha256: b5c576723330c0887e32d7697d84b44be89c35d4a05d29c7cd85e0276758d14b

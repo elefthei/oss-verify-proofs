@@ -1,0 +1,53 @@
+schema: oss-fuzz-theorems/project/1
+project: libavc
+homepage: https://github.com/ittiam-systems/libavc
+language: c++
+oss_fuzz:
+  path: projects/libavc
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libavc
+  repository: https://github.com/ittiam-systems/libavc
+  commit: 54eb5b09bfe483b2b0b504bca7f59476ad85d80f
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: avc_dec_fuzzer
+  status: included
+  origin: upstream
+- name: avc_enc_fuzzer
+  status: included
+  origin: upstream
+- name: mvc_dec_fuzzer
+  status: included
+  origin: upstream
+- name: svc_dec_fuzzer
+  status: included
+  origin: upstream
+- name: svc_enc_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libavc-bin.tar.zst
+    bytes: 6141019
+    sha256: 5d46f0bfaaa4dd0d049dc7902e007576dae2caf1b1d534bf5cd0de4862839cb9
+  src:
+    release: v2026.10.0-src
+    file: libavc-src.tar.zst
+    bytes: 1203754
+    sha256: 8ecfdcdf8beb28d56f960baf1269139be121f05966e5114a9272bc2b7519213f
+  src_manifest:
+    release: v2026.10.0-src
+    file: libavc-src.MANIFEST.tsv
+    bytes: 1784
+    sha256: 040f720cbe2101eaf23bede0d44634898b10680da797b270b199a493167e5cd3

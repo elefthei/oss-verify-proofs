@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: speex/speex_decode_fuzzer_float/asan_agrees
+fingerprint: a035723bbfac762d3fa7506b266b53b9ce7c8c9b445d84b60a96f20d4019c8f3

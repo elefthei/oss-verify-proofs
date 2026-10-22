@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: myanmar-tools
+homepage: https://github.com/googlei18n/myanmar-tools
+language: c++
+oss_fuzz:
+  path: projects/myanmar-tools
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: myanmar-tools
+  repository: https://github.com/google/myanmar-tools
+  commit: 13e4af6aaac63849fa122374f93bc77a42674027
+  licence: NOASSERTION
+  patch_count: 3
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: zawgyi_detector_fuzz_target
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: myanmar-tools-bin.tar.zst
+    bytes: 390747
+    sha256: 98cd028fe3c17e238f789562098bf31edaebb64b98edcb88faf732f2addedf31
+  src:
+    release: v2026.10.0-src
+    file: myanmar-tools-src.tar.zst
+    bytes: 198462
+    sha256: a8bcc3290ccf57137494642460aff42466c7af4c1cb7aeda08a5edb134480bb8
+  src_manifest:
+    release: v2026.10.0-src
+    file: myanmar-tools-src.MANIFEST.tsv
+    bytes: 1475
+    sha256: 38dab631619edd07c7acdd8b01f29639694fd24f330104d34a8514d4627f9e86

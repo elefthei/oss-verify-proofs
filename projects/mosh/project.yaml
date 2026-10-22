@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: mosh
+homepage: https://mosh.org
+language: c++
+oss_fuzz:
+  path: projects/mosh
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: mosh
+  repository: https://github.com/mobile-shell/mosh
+  commit: decd9b705eb81626f694335b8d5940538beb06da
+  licence: GPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: terminal_fuzzer
+  status: included
+  origin: upstream
+- name: terminal_parser_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: mosh-bin.tar.zst
+    bytes: 1174528
+    sha256: fe3d497d34e6a765caa86b72e30f442f42b7ffed9493ef5c509f6f3fb569873a
+  src:
+    release: v2026.10.0-src
+    file: mosh-src.tar.zst
+    bytes: 178152
+    sha256: cdba065ca1be73289b36b44df16fd4d77c8795b742e46839eb1aa174d977a88c
+  src_manifest:
+    release: v2026.10.0-src
+    file: mosh-src.MANIFEST.tsv
+    bytes: 1467
+    sha256: c9eeae11c6b740e84a2fb03b32395ce73bceabf33181b1614cfa85f9aca68cc2

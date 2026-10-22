@@ -1,0 +1,48 @@
+schema: oss-fuzz-theorems/project/1
+project: bluez
+homepage: https://github.com/bluez/bluez
+language: c
+oss_fuzz:
+  path: projects/bluez
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: bluez
+  repository: https://github.com/bluez/bluez
+  commit: ebbb4ee31ad7011cead3d6394c68d10076ab55fc
+  licence: NOASSERTION
+harnesses:
+- name: fuzz_gobex
+  status: not-included
+  reason: not-attempted
+- name: fuzz_hci
+  status: included
+- name: fuzz_sdp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_textfile
+  status: not-included
+  reason: not-attempted
+- name: fuzz_xml
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: bluez-bin.tar.zst
+    bytes: 347623
+    sha256: 32599c0c6a15e714c64f609548f1cfda0afa17972abda1fadae6240b650d232f
+  src:
+    release: v2026.10.0-src
+    file: bluez-src.tar.zst
+    bytes: 2077180
+    sha256: 10ab947a338ec45a6b442eedd9d09823257de8672511d7e95918e82151c5c5a0
+  src_manifest:
+    release: v2026.10.0-src
+    file: bluez-src.MANIFEST.tsv
+    bytes: 1380
+    sha256: 07de2399dbfd0d606e6257e54417ee213605ea84d8d1a427d6b086ed096234b5

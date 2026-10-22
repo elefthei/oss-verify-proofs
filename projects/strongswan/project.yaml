@@ -1,0 +1,80 @@
+schema: oss-fuzz-theorems/project/1
+project: strongswan
+homepage: https://www.strongswan.org
+language: c++
+oss_fuzz:
+  path: projects/strongswan
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: strongswan
+  repository: https://github.com/strongswan/strongswan
+  commit: f9cd483cd97182def563e17b86e4fbd3a90c03d2
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_certs_cus
+  status: not-included
+  reason: not-attempted
+- name: fuzz_certs_def
+  status: not-included
+  reason: not-attempted
+- name: fuzz_crls_cus
+  status: not-included
+  reason: not-attempted
+- name: fuzz_crls_def
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ids
+  status: included
+  origin: upstream
+- name: fuzz_ike
+  status: included
+  origin: upstream
+- name: fuzz_ocsp_req_cus
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ocsp_req_def
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ocsp_rsp_cus
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ocsp_rsp_def
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pa_tnc
+  status: included
+  origin: upstream
+- name: fuzz_pb_tnc
+  status: included
+  origin: upstream
+- name: fuzz_radius
+  status: included
+  origin: upstream
+- name: fuzz_tls
+  status: not-included
+  reason: not-attempted
+- name: fuzz_vici
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: strongswan-bin.tar.zst
+    bytes: 19072795
+    sha256: 95437d568fca2853a7cf4a22653c52d6a447481666cd2f98d73cf0a89dd23dca
+  src:
+    release: v2026.10.0-src
+    file: strongswan-src.tar.zst
+    bytes: 3876457
+    sha256: 06bee44524f562026743e3bf80527bd97bb82c75dd5eed3cf719cd131e512974
+  src_manifest:
+    release: v2026.10.0-src
+    file: strongswan-src.MANIFEST.tsv
+    bytes: 1910
+    sha256: 8cc5cedeed6d073dd89ff27263c10bc8f9ef37d8252f75154df070c13b3e340f

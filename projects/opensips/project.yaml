@@ -1,0 +1,51 @@
+schema: oss-fuzz-theorems/project/1
+project: opensips
+homepage: https://opensips.org
+language: c
+oss_fuzz:
+  path: projects/opensips
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: opensips
+  repository: https://github.com/OpenSIPS/opensips
+  commit: 61ae3165203824c59c4bd6724502d31018d6d46f
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_core_funcs
+  status: not-included
+  reason: not-attempted
+- name: fuzz_csv_parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz_msg_parser
+  status: not-included
+  reason: not-attempted
+- name: fuzz_uri_parser
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opensips-bin.tar.zst
+    bytes: 600845
+    sha256: b540b6530b9f30a4f08cd0f14ea69ea8d77448016ed6e64254b5322820eb5207
+  src:
+    release: v2026.10.0-src
+    file: opensips-src.tar.zst
+    bytes: 23541699
+    sha256: 73dff3576fac584a29078f3b4aef791cd72fdbbd7b1f9118267440a66df052a5
+  src_manifest:
+    release: v2026.10.0-src
+    file: opensips-src.MANIFEST.tsv
+    bytes: 5061
+    sha256: a186f8807e5b7bd6c94bcbbb6bd9da51fdc73ddbb03be3c0ab0eacf825f4316a

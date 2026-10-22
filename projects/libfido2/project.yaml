@@ -1,0 +1,65 @@
+schema: oss-fuzz-theorems/project/1
+project: libfido2
+homepage: https://github.com/Yubico/libfido2
+language: c++
+oss_fuzz:
+  path: projects/libfido2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libfido2
+  repository: https://github.com/Yubico/libfido2
+  commit: 626a4d815b32ae57fc36321a358501ad7b5e79c9
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: fuzz_assert
+  status: included
+  origin: upstream
+- name: fuzz_attobj
+  status: included
+  origin: upstream
+- name: fuzz_bio
+  status: included
+  origin: upstream
+- name: fuzz_cred
+  status: included
+  origin: upstream
+- name: fuzz_credman
+  status: included
+  origin: upstream
+- name: fuzz_hid
+  status: included
+  origin: upstream
+- name: fuzz_largeblob
+  status: included
+  origin: upstream
+- name: fuzz_mgmt
+  status: included
+  origin: upstream
+- name: fuzz_netlink
+  status: included
+  origin: upstream
+- name: fuzz_pcsc
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libfido2-bin.tar.zst
+    bytes: 13552278
+    sha256: bf8a1423864bcb9831e698b6fd36fef1b36a6af72306be6efaea0ffc20fe6bac
+  src:
+    release: v2026.10.0-src
+    file: libfido2-src.tar.zst
+    bytes: 847480
+    sha256: b22a4c1895c23d5e204aea0479c4f94bbef58cd24530c40f5a2fa147def19c44
+  src_manifest:
+    release: v2026.10.0-src
+    file: libfido2-src.MANIFEST.tsv
+    bytes: 3085
+    sha256: a40bdbe36ac3d6f6613a0e8a3fa86a7f5ce13703160163d40cfc99ba31992d23

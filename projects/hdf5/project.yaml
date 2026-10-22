@@ -1,0 +1,39 @@
+schema: oss-fuzz-theorems/project/1
+project: hdf5
+homepage: https://www.hdfgroup.org/solutions/hdf5
+language: c
+oss_fuzz:
+  path: projects/hdf5
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: hdf5
+  repository: https://github.com/HDFGroup/hdf5
+  commit: ab5df5526c96a03bf1d89cea59603b77a239eac0
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: h5_extended_fuzzer
+  status: included
+- name: h5_read_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: hdf5-bin.tar.zst
+    bytes: 16855734
+    sha256: 3071a684e12d27b82c5ca5072ec382a541fcafa6b765e52ac0fa26dfae18582d
+  src:
+    release: v2026.10.0-src
+    file: hdf5-src.tar.zst
+    bytes: 31250963
+    sha256: c5fd9c7d8a7e12fbec0f820f0539140896c1c323794c51f4e11fb2109aa63504
+  src_manifest:
+    release: v2026.10.0-src
+    file: hdf5-src.MANIFEST.tsv
+    bytes: 1749
+    sha256: 305ca49edde3545a8028336ed76b15589a2a22d454980404aee2294f8a222368

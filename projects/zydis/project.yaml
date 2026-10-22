@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: zydis
+homepage: https://github.com/zyantific/zydis
+language: c
+oss_fuzz:
+  path: projects/zydis
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: zydis
+  repository: https://github.com/zyantific/zydis
+  commit: a95bb71013436547f689fc0b380f48edf663066e
+  licence: MIT
+harnesses:
+- name: ZydisFuzzDecoder
+  status: included
+  origin: upstream
+- name: ZydisFuzzEncoder
+  status: not-included
+  reason: not-attempted
+- name: ZydisFuzzReEncoding
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: zydis-bin.tar.zst
+    bytes: 628211
+    sha256: e5db4e346bd38cef8c851b483bb7e2dc8320787eb53b9b0578ba352f67745230
+  src:
+    release: v2026.10.0-src
+    file: zydis-src.tar.zst
+    bytes: 763226
+    sha256: 9e9cee81e395512882ad2693023c94d5b70130e6ca44969701a79a2369525d7c
+  src_manifest:
+    release: v2026.10.0-src
+    file: zydis-src.MANIFEST.tsv
+    bytes: 1901
+    sha256: b6d7c8d4b93cc93ca996ce7253f91e6b525190fcd88fa57644f44fd53d31dacd

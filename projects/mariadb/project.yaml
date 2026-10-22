@@ -1,0 +1,11 @@
+schema: oss-fuzz-theorems/project/1
+project: mariadb
+homepage: https://mariadb.org
+language: c++
+oss_fuzz:
+  path: projects/mariadb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: licence-conflict
+reason_args:
+  text: its OSS-Fuzz harness, under the Apache License 2.0, with GPL-2.0-only code of MariaDB Server

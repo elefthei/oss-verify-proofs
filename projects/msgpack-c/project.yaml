@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: msgpack-c
+homepage: https://msgpack.org
+language: c++
+oss_fuzz:
+  path: projects/msgpack-c
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: msgpack-c
+  repository: https://github.com/msgpack/msgpack-c
+  commit: a5250ecbcae1d34346c7445345774b0abbd651bc
+  version: 8.0.0
+  licence: BSL-1.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: unpack_pack_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: msgpack-c-bin.tar.zst
+    bytes: 426003
+    sha256: f5f8f585a1ac3d7e62d5a274b9cac1eec397d03f8437fe5a987b4ad600d74d71
+  src:
+    release: v2026.10.0-src
+    file: msgpack-c-src.tar.zst
+    bytes: 282254
+    sha256: a50a68bc209eacbb9e01ae1b0cc93f76ab975f5dc85998427bc7607f81cc3b3b
+  src_manifest:
+    release: v2026.10.0-src
+    file: msgpack-c-src.MANIFEST.tsv
+    bytes: 1396
+    sha256: 4e3f2b11b4bf1a2de9892b3e781bdeffaf50858e526baf994024c1644b7d1424

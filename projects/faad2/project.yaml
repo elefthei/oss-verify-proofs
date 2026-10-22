@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: faad2
+homepage: https://sourceforge.net/projects/faac
+language: c
+oss_fuzz:
+  path: projects/faad2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: faad2
+  repository: https://github.com/knik0/faad2
+  commit: 6918ebb51b8f7e86278da15884bd7114e4b9661e
+  version: 2.11.3
+  licence: GPL-2.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_config
+  status: included
+  origin: upstream
+- name: fuzz_decode
+  status: included
+  origin: upstream
+- name: fuzz_decode_drm
+  status: not-included
+  reason: not-attempted
+- name: fuzz_decode_drm_fixed
+  status: not-included
+  reason: not-attempted
+- name: fuzz_decode_fixed
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: faad2-bin.tar.zst
+    bytes: 1099057
+    sha256: b2e059779fefca2db38ed8b9947e534d7ef995e54bbf24314024fd5fcdfe6aa3
+  src:
+    release: v2026.10.0-src
+    file: faad2-src.tar.zst
+    bytes: 459984
+    sha256: 36b40ec63e230241a7a7c94b7a2498d8d52f566b83c6bf35b180e96474ae77bf
+  src_manifest:
+    release: v2026.10.0-src
+    file: faad2-src.MANIFEST.tsv
+    bytes: 1409
+    sha256: e55d74125d520992e12e995cea2c4f1e7cd7e15a8735a2614a53526930701e93

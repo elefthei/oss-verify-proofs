@@ -1,0 +1,48 @@
+schema: oss-fuzz-theorems/project/1
+project: skcms
+homepage: https://skia.googlesource.com/skcms
+language: c++
+oss_fuzz:
+  path: projects/skcms
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: skcms
+  repository: https://skia.googlesource.com/skcms
+  commit: 9c10699e8884c14c3161b7afc5996d29b6cb7845
+  licence: BSD-3-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: iccprofile_atf
+  status: included
+  origin: upstream
+- name: iccprofile_info
+  status: included
+  origin: upstream
+- name: iccprofile_transform
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: skcms-bin.tar.zst
+    bytes: 673404
+    sha256: 34d7ed75847cdfe5129349a9c8bd04ecb0ad0311ba0314c5e393a905604cbe1a
+  src:
+    release: v2026.10.0-src
+    file: skcms-src.tar.zst
+    bytes: 8535630
+    sha256: 21244db8da22ae8eae537a178e73f9b53d70228affb73b4741023484981bbe7a
+  src_manifest:
+    release: v2026.10.0-src
+    file: skcms-src.MANIFEST.tsv
+    bytes: 1635
+    sha256: 4d0f4714f51d5f28e050c1cfda5172cf0c936820188bb471a2412c419ce2b948

@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: grok
+homepage: https://github.com/GrokImageCompression/grok
+language: c++
+oss_fuzz:
+  path: projects/grok
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: grok
+  repository: https://github.com/GrokImageCompression/grok
+  commit: f406e2529b8c0d1492dfa8578f9d1e9dc2bdd23e
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: grk_compress_fuzzer
+  status: included
+  origin: upstream
+- name: grk_decompress_fuzzer
+  status: included
+  origin: upstream
+- name: grk_decompress_mercury_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: grok-bin.tar.zst
+    bytes: 20755861
+    sha256: 7934f5b3ed90cad960725e85f0139d6025f785fe2036a4bf579f3d4d1f611ab2
+  src:
+    release: v2026.10.0-src
+    file: grok-src.tar.zst
+    bytes: 47481368
+    sha256: 25966ba797a86d4b0b3c176c356ea172e37af805360d77e7202b04c1c8f21e6d
+  src_manifest:
+    release: v2026.10.0-src
+    file: grok-src.MANIFEST.tsv
+    bytes: 6642
+    sha256: 6af0749fde57df9f9a1a46ab4dbc9c4a0457d5f6935aa429eeff815f2bf6132b

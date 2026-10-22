@@ -1,0 +1,67 @@
+schema: oss-fuzz-theorems/project/1
+project: openvpn
+language: c
+oss_fuzz:
+  path: projects/openvpn
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openvpn
+  repository: https://github.com/OpenVPN/openvpn
+  commit: af6a79c6a83739ca9542e52a02a3449a2f292758
+  licence: NOASSERTION
+  patch_count: 3
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_base64
+  status: included
+- name: fuzz_buffer
+  status: not-included
+  reason: not-attempted
+- name: fuzz_dhcp
+  status: not-included
+  reason: not-attempted
+- name: fuzz_list
+  status: not-included
+  reason: not-attempted
+- name: fuzz_misc
+  status: not-included
+  reason: not-attempted
+- name: fuzz_mroute
+  status: not-included
+  reason: not-attempted
+- name: fuzz_packet_id
+  status: not-included
+  reason: not-attempted
+- name: fuzz_proxy
+  status: not-included
+  reason: not-attempted
+- name: fuzz_route
+  status: not-included
+  reason: not-attempted
+- name: fuzz_verify_cert
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openvpn-bin.tar.zst
+    bytes: 268381
+    sha256: 13c3088ad395d37aa04d76b823057da2403f4e24cb398e7fd1d341a24fc2dcf6
+  src:
+    release: v2026.10.0-src
+    file: openvpn-src.tar.zst
+    bytes: 1027716
+    sha256: bb0edadabc00a3fea7e17b2259cb55196ea09fe217ad92ba5b839996edd96812
+  src_manifest:
+    release: v2026.10.0-src
+    file: openvpn-src.MANIFEST.tsv
+    bytes: 1499
+    sha256: 51a6d367b69af3510ed3c176520204e2f4f706dfa5129ebb66812e110726edcf

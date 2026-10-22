@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: postfix
+language: c
+oss_fuzz:
+  path: projects/postfix
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: postfix
+  repository: https://github.com/vdukhovni/postfix
+  commit: 17830e5c13c160d51c95cb971d137a46de84e48c
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_mime
+  status: included
+- name: fuzz_tok822
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: postfix-bin.tar.zst
+    bytes: 479359
+    sha256: 5b66a254798d6350acdf017c4196ac6469642a9ffa1334f05c6e5925195bd7ec
+  src:
+    release: v2026.10.0-src
+    file: postfix-src.tar.zst
+    bytes: 2927460
+    sha256: a5d44aa607fe7f3400166fefb914cc3a40a72eb12f5ca735649b198876bdf8c0
+  src_manifest:
+    release: v2026.10.0-src
+    file: postfix-src.MANIFEST.tsv
+    bytes: 1711
+    sha256: 884219c88583f1bd93f511d0f3f8653b5af23678e6438fc0305a46c1bfb953c5

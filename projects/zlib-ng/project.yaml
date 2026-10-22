@@ -1,0 +1,59 @@
+schema: oss-fuzz-theorems/project/1
+project: zlib-ng
+homepage: https://github.com/zlib-ng/zlib-ng
+language: c++
+oss_fuzz:
+  path: projects/zlib-ng
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: zlib-ng
+  repository: https://github.com/zlib-ng/zlib-ng
+  commit: 1579085c1d00f84c77973850667cc7a6d5bf5555
+  licence: Zlib
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer_checksum
+  status: included
+  origin: upstream
+- name: fuzzer_compress
+  status: included
+  origin: upstream
+- name: fuzzer_example_dict
+  status: included
+  origin: upstream
+- name: fuzzer_example_flush
+  status: included
+  origin: upstream
+- name: fuzzer_example_large
+  status: included
+  origin: upstream
+- name: fuzzer_example_small
+  status: included
+  origin: upstream
+- name: fuzzer_minigzip
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: zlib-ng-bin.tar.zst
+    bytes: 1043256
+    sha256: 48f1caa4c191bbb55455aefc9786a5366b5721eaa063bff47a089efa0d588acb
+  src:
+    release: v2026.10.0-src
+    file: zlib-ng-src.tar.zst
+    bytes: 2080448
+    sha256: 9744f1d9b676f5473801fc1215ad26d277a7583ebe4a2829111c6ad3cf8bfd78
+  src_manifest:
+    release: v2026.10.0-src
+    file: zlib-ng-src.MANIFEST.tsv
+    bytes: 2014
+    sha256: 7df99314beb017ff352740ab2f37f3fbd3c535deecf76acdeffe4516bbe8d7c4

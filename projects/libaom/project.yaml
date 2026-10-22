@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libaom
+homepage: https://aomedia.org/av1-features/get-started
+language: c++
+oss_fuzz:
+  path: projects/libaom
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: aom
+  repository: https://aomedia.googlesource.com/aom
+  commit: 9440aeedd097343b763dfe1c75af72c99f4a3175
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: av1_dec_fuzzer
+  status: included
+  origin: upstream
+- name: av1_enc_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libaom-bin.tar.zst
+    bytes: 12132517
+    sha256: 5a2911d94191d569323fa48c71acf4d1691c18620c37cf3b4b81fa6ee457336f
+  src:
+    release: v2026.10.0-src
+    file: libaom-src.tar.zst
+    bytes: 4755389
+    sha256: 3842e8b3a3920ca039aa5ca77d3a28654cb0f17f095c30a0a0936d95945d15ba
+  src_manifest:
+    release: v2026.10.0-src
+    file: libaom-src.MANIFEST.tsv
+    bytes: 1455
+    sha256: feb7640041c9309f2d8cd19c3126bfce852cc840ad54e5d5651157d95b15b8d0

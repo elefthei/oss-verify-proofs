@@ -1,0 +1,23 @@
+# Reviewed occurrences that are correct where they are: a `private-data`
+# finding inside an upstream source copy, such as its authors' own address.
+# Each entry: {path, rule, key, count, reason}; the key is the one the finding
+# names.  An entry that clears fewer occurrences than its count is itself a
+# finding.
+schema: oss-fuzz-theorems/lint-exceptions/1
+exceptions:
+  - path: projects/xmlsec/xmlsec_enc_fuzzer/source/xmlsec_enc_target.c
+    rule: private-data
+    key: 8bcac7908eb95041
+    count: 1
+    reason: >-
+      xmlsec's own fuzz harness (apps/oss-fuzz/xmlsec_enc_target.c at e4b8614f,
+      git blob 05ce8219) embeds the public RSA test key of xmlsec's test suite
+      (tests/merlin-xmlenc-five/rsapriv.pem), as its comment says.
+  - path: projects/perfetto/end_to_end_shared_memory_fuzzer/source/end_to_end_shared_memory_fuzzer.cc
+    rule: private-data
+    key: b459ea2c66e1747d
+    count: 1
+    reason: >-
+      perfetto's own fuzz harness (test/end_to_end_shared_memory_fuzzer.cc at
+      40b52992, git blob fa2b5e90) names the Android device directory where its
+      test daemons create their socket, under an Android-only #if.

@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: upx
+homepage: https://upx.github.io
+language: c++
+oss_fuzz:
+  path: projects/upx
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: upx
+  repository: https://github.com/upx/upx
+  commit: cf83ee32cdc024798cc2efade72686533696426b
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: decompress_packed_file_fuzzer
+  status: included
+- name: list_packed_file_fuzzer
+  status: included
+- name: test_packed_file_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: upx-bin.tar.zst
+    bytes: 11547105
+    sha256: d289cec41f766781a5e659b11d44babbe36c3b0fc61f63171def1a848880a869
+  src:
+    release: v2026.10.0-src
+    file: upx-src.tar.zst
+    bytes: 2054849
+    sha256: 5d39d3d478c7ea364e85b668b78b28b8957af29ade240920ac3d797611965c6d
+  src_manifest:
+    release: v2026.10.0-src
+    file: upx-src.MANIFEST.tsv
+    bytes: 7965
+    sha256: 633e71b960a376630710e41e17ff3d3149137f011e7052013b778555910f060a

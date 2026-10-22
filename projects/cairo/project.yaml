@@ -1,0 +1,52 @@
+schema: oss-fuzz-theorems/project/1
+project: cairo
+homepage: https://gitlab.freedesktop.org/cairo/cairo
+language: c
+oss_fuzz:
+  path: projects/cairo
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: cairo
+  repository: https://gitlab.freedesktop.org/cairo/cairo
+  commit: 74755964edef651691d5cd36ff140108298e4e6e
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: font_fuzzer
+  status: included
+- name: multi_surface_fuzzer
+  status: included
+- name: pdf_surface_fuzzer
+  status: included
+- name: raster_fuzzer
+  status: included
+- name: script_interpreter_fuzzer
+  status: included
+- name: surface_write_png_fuzzer
+  status: included
+- name: svg-render-fuzzer
+  status: included
+  origin: upstream
+- name: text_glyphs_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: cairo-bin.tar.zst
+    bytes: 22567706
+    sha256: b06129490c170e14a3c9d26018c17cdfffbc3c0d7ab184c5b1a97d826f033a5d
+  src:
+    release: v2026.10.0-src
+    file: cairo-src.tar.zst
+    bytes: 33566015
+    sha256: a7818d394284f6868d892bbb4a602d7fe410bb9b119c0a27907d218590707deb
+  src_manifest:
+    release: v2026.10.0-src
+    file: cairo-src.MANIFEST.tsv
+    bytes: 5036
+    sha256: 58964ebd320ed458b69756b2471aeb9a8f5ae47224cff5618de35e87a2cc3989

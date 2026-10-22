@@ -1,0 +1,46 @@
+leptonica: pixSeedfill4BB() and pixSeedfill8BB() in src/conncomp.c follow Paul Heckbert's seed fill from "Graphics Gems" (ed. Andrew Glassner, Academic Press, 1990), in the file's own words (lines 598-616 at 10bdea2f19240ffe8c931701b0b7340f41c6b256):
+
+ *      (1) This is Paul Heckbert's stack-based 4-cc seedfill algorithm.
+ *      (2) This operates on the input 1 bpp pix to remove the fg seed
+ *          pixel, at (x,y), and all pixels that are 4-connected to it.
+ *          The seed pixel at (x,y) must initially be ON.
+ *      (3) Returns the bounding box of the erased 4-cc component.
+ *      (4) Reference: see Paul Heckbert's stack-based seed fill algorithm
+ *          in "Graphic Gems", ed. Andrew Glassner, Academic
+ *          Press, 1990.  The algorithm description is given
+ *          on pp. 275-277; working C code is on pp. 721-722.)
+ *          The code here follows Heckbert's exactly, except
+ *          we use function calls instead of macros for
+ *          pushing data on and popping data off the stack.
+ *          This makes sense to do because Heckbert's fixed-size
+ *          stack with macros is dangerous: images exist that
+ *          will overrun the stack and crash.   The stack utility
+ *          here grows dynamically as needed, and the fillseg
+ *          structures that are not in use are stored in another
+ *          stack for reuse.  It should be noted that the
+ *          overhead in the function calls (vs. macros) is negligible.
+
+Heckbert's code is gems/SeedFill.c of https://github.com/erich666/GraphicsGems (at ca4898517a93b6b45444a9cda5fd50132694b864), which begins (lines 1-14):
+
+/*
+ * A Seed Fill Algorithm
+ * by Paul Heckbert
+ * from "Graphics Gems", Academic Press, 1990
+ *
+ * user provides pixelread() and pixelwrite() routines
+ */
+
+/*
+ * fill.c : simple seed fill program
+ * Calls pixelread() to read pixels, pixelwrite() to write pixels.
+ *
+ * Paul Heckbert	13 Sept 1982, 28 Jan 1987
+ */
+
+The Graphics Gems code is under this licence (LICENSE.md of that repository at ca4898517a93b6b45444a9cda5fd50132694b864; SPDX: Graphics-Gems):
+
+LICENSE
+
+This code repository predates the concept of Open Source, and predates most licenses along such lines. As such, the official license truly is:
+
+EULA: The Graphics Gems code is copyright-protected. In other words, you cannot claim the text of the code as your own and resell it. Using the code is permitted in any program, product, or library, non-commercial or commercial. Giving credit is not required, though is a nice gesture. The code comes as-is, and if there are any flaws or problems with any Gems code, nobody involved with Gems - authors, editors, publishers, or webmasters - are to be held responsible. Basically, don't be a jerk, and remember that anything free comes with no guarantee.

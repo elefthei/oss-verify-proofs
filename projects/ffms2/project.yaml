@@ -1,0 +1,36 @@
+schema: oss-fuzz-theorems/project/1
+project: ffms2
+homepage: https://github.com/FFMS/ffms2
+language: c++
+oss_fuzz:
+  path: projects/ffms2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ffms2
+  repository: https://github.com/FFMS/ffms2
+  commit: 3af2ef2ae47bc30b64597c9e419e5b19c4bda7d8
+  licence: MIT
+harnesses:
+- name: ffms2_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ffms2-bin.tar.zst
+    bytes: 30039995
+    sha256: 982e0d30c6e81ba31b9c5a8aa20885ea54e10df1a940a2e7d96198f44fbff519
+  src:
+    release: v2026.10.0-src
+    file: ffms2-src.tar.zst
+    bytes: 814827
+    sha256: 9db91df4764d2153f9c148cfb625e9e12dd1991e61db3dd7fa8ce23411b267b6
+  src_manifest:
+    release: v2026.10.0-src
+    file: ffms2-src.MANIFEST.tsv
+    bytes: 1864
+    sha256: 9779f4241c30e3110771b31b62791c5edf1ee607be55f2030902f793d02ce0ff

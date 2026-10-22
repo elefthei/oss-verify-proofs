@@ -1,0 +1,133 @@
+schema: oss-fuzz-theorems/project/1
+project: freetype2
+homepage: https://www.freetype.org
+language: c++
+oss_fuzz:
+  path: projects/freetype2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: freetype2-testing
+  repository: https://github.com/freetype/freetype2-testing
+  commit: db8ae87fead2ede5487e242dd9f5a129ca5e9fd2
+  licence: NOASSERTION
+harnesses:
+- name: bdf
+  status: not-included
+  reason: not-attempted
+- name: bdf-render
+  status: not-included
+  reason: not-attempted
+- name: bzip2
+  status: not-included
+  reason: not-attempted
+- name: cff
+  status: included
+  origin: upstream
+- name: cff-ftengine
+  status: not-included
+  reason: not-attempted
+- name: cff-render
+  status: not-included
+  reason: not-attempted
+- name: cff-render-ftengine
+  status: not-included
+  reason: not-attempted
+- name: cidtype1
+  status: not-included
+  reason: not-attempted
+- name: cidtype1-ftengine
+  status: not-included
+  reason: not-attempted
+- name: cidtype1-render
+  status: not-included
+  reason: not-attempted
+- name: cidtype1-render-ftengine
+  status: not-included
+  reason: not-attempted
+- name: colrv1
+  status: not-included
+  reason: not-attempted
+- name: ftfuzzer
+  status: included
+  origin: upstream
+- name: glyphs-bitmaps-pcf
+  status: not-included
+  reason: not-attempted
+- name: glyphs-outlines
+  status: not-included
+  reason: not-attempted
+- name: gzip
+  status: not-included
+  reason: not-attempted
+- name: lzw
+  status: not-included
+  reason: not-attempted
+- name: pcf
+  status: not-included
+  reason: not-attempted
+- name: pcf-render
+  status: not-included
+  reason: not-attempted
+- name: truetype
+  status: included
+  origin: upstream
+- name: truetype-render
+  status: not-included
+  reason: not-attempted
+- name: truetype-render-i35
+  status: not-included
+  reason: not-attempted
+- name: truetype-render-i38
+  status: not-included
+  reason: not-attempted
+- name: type1
+  status: included
+  origin: upstream
+- name: type1-ftengine
+  status: not-included
+  reason: not-attempted
+- name: type1-render
+  status: not-included
+  reason: not-attempted
+- name: type1-render-ftengine
+  status: not-included
+  reason: not-attempted
+- name: type1-render-tar
+  status: not-included
+  reason: not-attempted
+- name: type1-tar
+  status: not-included
+  reason: not-attempted
+- name: type42
+  status: not-included
+  reason: not-attempted
+- name: type42-render
+  status: not-included
+  reason: not-attempted
+- name: windowsfnt
+  status: not-included
+  reason: not-attempted
+- name: windowsfnt-render
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: freetype2-bin.tar.zst
+    bytes: 10244792
+    sha256: b814909f7d0a40c56f0671cf16cf576f374f65da329b53ae6775a16dcec79015
+  src:
+    release: v2026.10.0-src
+    file: freetype2-src.tar.zst
+    bytes: 32312914
+    sha256: d8955b39637246b59fe3435eb0547c2eb72397df9f3d2fe05c03908ef59765c3
+  src_manifest:
+    release: v2026.10.0-src
+    file: freetype2-src.MANIFEST.tsv
+    bytes: 9593
+    sha256: d78d00bb29aeea81f56ca9558e9f21f79dc081f432f5dd422ee31000815f32b7

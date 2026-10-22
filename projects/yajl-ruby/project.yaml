@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: yajl-ruby
+homepage: https://github.com/brianmario/yajl-ruby
+language: c++
+oss_fuzz:
+  path: projects/yajl-ruby
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: yajl-ruby
+  repository: https://github.com/brianmario/yajl-ruby
+  commit: 6501652d113557d976676134056aa983e7863020
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: json_fuzzer
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: yajl-ruby-bin.tar.zst
+    bytes: 323761
+    sha256: d59072fd9ffb18dd5b882056a06582806e07bf591fa18ac614dffbd8afd67d59
+  src:
+    release: v2026.10.0-src
+    file: yajl-ruby-src.tar.zst
+    bytes: 411349
+    sha256: 4153664c6cb777f05fbf8d37419906408815abcce9c1dbe47b8e071ca1a24654
+  src_manifest:
+    release: v2026.10.0-src
+    file: yajl-ruby-src.MANIFEST.tsv
+    bytes: 1530
+    sha256: ba22105dac73d32f1b60230c7bc76b2327849c983d2a8f798d00fe013a2fdc05

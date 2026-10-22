@@ -1,0 +1,101 @@
+schema: oss-fuzz-theorems/project/1
+project: krb5
+homepage: https://web.mit.edu/kerberos
+language: c
+oss_fuzz:
+  path: projects/krb5
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: krb5
+  repository: https://github.com/krb5/krb5
+  commit: 473b51b640bef2e97c490d6f2985658befa89c16
+  licence: ISC
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_aes
+  status: not-included
+  reason: not-attempted
+- name: fuzz_asn
+  status: not-included
+  reason: not-attempted
+- name: fuzz_attrset
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ccache
+  status: not-included
+  reason: not-attempted
+- name: fuzz_chpw
+  status: not-included
+  reason: not-attempted
+- name: fuzz_crypto
+  status: not-included
+  reason: not-attempted
+- name: fuzz_des
+  status: not-included
+  reason: not-attempted
+- name: fuzz_gss
+  status: not-included
+  reason: not-attempted
+- name: fuzz_json
+  status: included
+  origin: upstream
+- name: fuzz_kdc
+  status: not-included
+  reason: not-attempted
+- name: fuzz_keytab
+  status: not-included
+  reason: not-attempted
+- name: fuzz_krad
+  status: not-included
+  reason: not-attempted
+- name: fuzz_krb
+  status: not-included
+  reason: not-attempted
+- name: fuzz_krb5_ticket
+  status: not-included
+  reason: not-attempted
+- name: fuzz_marshal_cred
+  status: not-included
+  reason: not-attempted
+- name: fuzz_marshal_princ
+  status: not-included
+  reason: not-attempted
+- name: fuzz_ndr
+  status: not-included
+  reason: not-attempted
+- name: fuzz_oid
+  status: not-included
+  reason: not-attempted
+- name: fuzz_pac
+  status: not-included
+  reason: not-attempted
+- name: fuzz_profile
+  status: not-included
+  reason: not-attempted
+- name: fuzz_util
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: krb5-bin.tar.zst
+    bytes: 306446
+    sha256: d1af20832a4bfe3804f8168fed450e3fe7506a3b844b279f44d7a54ff7327a97
+  src:
+    release: v2026.10.0-src
+    file: krb5-src.tar.zst
+    bytes: 3317654
+    sha256: 0ee7a7b17823c9e48af32f5a64a37d29cc9734cdcb4f201156c26c4cf45240f6
+  src_manifest:
+    release: v2026.10.0-src
+    file: krb5-src.MANIFEST.tsv
+    bytes: 1307
+    sha256: 72f6e1bf4f1179a8377c28b858ab7f34098e09a433b7fe11453f87c62be2e1a9

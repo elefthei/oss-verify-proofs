@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: nokogiri
+language: c
+oss_fuzz:
+  path: projects/nokogiri
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: nokogiri
+  repository: https://github.com/sparklemotion/nokogiri
+  commit: 12f03fb29f323aa812c1bf59d5a819c1eaa3482b
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: parse_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: nokogiri-bin.tar.zst
+    bytes: 751643
+    sha256: 31eb46b4243c17cd4b138cbfd29115fc9ecf57018784a7358c7604203bae3dca
+  src:
+    release: v2026.10.0-src
+    file: nokogiri-src.tar.zst
+    bytes: 13298002
+    sha256: 7cb973c0479824dee37075655dc49013dc41986ac30213edcc11bb2b7277b6e3
+  src_manifest:
+    release: v2026.10.0-src
+    file: nokogiri-src.MANIFEST.tsv
+    bytes: 1971
+    sha256: c99d6d4fb099e6a0d1c39c2ea614108afea78f15320f9820be63bd72c8a5848f

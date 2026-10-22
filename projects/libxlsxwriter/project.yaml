@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: libxlsxwriter
+language: c
+oss_fuzz:
+  path: projects/libxlsxwriter
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libxlsxwriter
+  repository: https://github.com/jmcnamara/libxlsxwriter
+  commit: 3227eb0c1556ba41d94605a7abee0e097782d10a
+  licence: Zlib
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: xlsx_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libxlsxwriter-bin.tar.zst
+    bytes: 1024587
+    sha256: b9bb87f10b4cf6816884729ff6f4e3284878506c33010ca7b0d709c6c84bd65c
+  src:
+    release: v2026.10.0-src
+    file: libxlsxwriter-src.tar.zst
+    bytes: 18338225
+    sha256: 6ea8439ed66162ed2b44b3134db2e45e6f63f667aef8d786a6f078f15d6bc53e
+  src_manifest:
+    release: v2026.10.0-src
+    file: libxlsxwriter-src.MANIFEST.tsv
+    bytes: 1420
+    sha256: 7747b91b5cc6d11e7855b2b894e7d1e84b42c6e08ad97d3d2d5d3c3eae640dcf

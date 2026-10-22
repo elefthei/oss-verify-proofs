@@ -1,0 +1,2 @@
+series	order	patch	class	sha256	targets
+github.com/simdjson/simdjson/f807de973580fb22cc0db6b3b896716684b0266c	1	0001-fuzz-ndjson-assertions-abort.patch	Harness reporting.	4817e2ab240abda97af94bf1da28df7d8a214a21f11884d6426e91b34dfc7f3f	simdjson-fuzz_atpointer,simdjson-fuzz_dump,simdjson-fuzz_dump_raw_tape,simdjson-fuzz_element,simdjson-fuzz_implementations,simdjson-fuzz_minify,simdjson-fuzz_minifyimpl,simdjson-fuzz_ndjson,simdjson-fuzz_ondemand,simdjson-fuzz_padded,simdjson-fuzz_parser,simdjson-fuzz_print_json,simdjson-fuzz_utf8

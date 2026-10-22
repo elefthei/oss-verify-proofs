@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: args
+homepage: https://taywee.github.io/args
+language: c++
+oss_fuzz:
+  path: projects/args
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: args
+  repository: https://github.com/Taywee/args
+  commit: 903b07dfdf5120622c9998a48ce97d64c0066556
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: parse_args_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: args-bin.tar.zst
+    bytes: 752029
+    sha256: ca914a146e27af03bdab751294ce7b9a7872fc7960f844ba824d4ac9082024f3
+  src:
+    release: v2026.10.0-src
+    file: args-src.tar.zst
+    bytes: 88855
+    sha256: 18a515b8e9a46f43fb48ae922457d7bf742728001dfe07d7b6043a58be7bc19c
+  src_manifest:
+    release: v2026.10.0-src
+    file: args-src.MANIFEST.tsv
+    bytes: 1334
+    sha256: 08533ce31efe5c748c8f92ab7b72043e12fb62b4866b94f892a709525459629b

@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: jsoncons/fuzz_bigint/asan_ubsan_agrees
+fingerprint: 5713790d2171d387b568d2eb3e0f30510d80fc6195b5f5321108f86b523fadbe

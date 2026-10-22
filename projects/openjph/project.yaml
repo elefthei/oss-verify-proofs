@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: openjph
+homepage: https://github.com/aous72/OpenJPH
+language: c++
+oss_fuzz:
+  path: projects/openjph
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: OpenJPH
+  repository: https://github.com/aous72/OpenJPH
+  commit: 96f6d3937232a15d7f53fca450f3bf97cd58343a
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: ojph_compress_fuzz_target
+  status: included
+  origin: upstream
+- name: ojph_expand_fuzz_target
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openjph-bin.tar.zst
+    bytes: 1103253
+    sha256: 6006261136a453f3687730c15658795f52ce7ad200accced87b38c6ee8728a4e
+  src:
+    release: v2026.10.0-src
+    file: openjph-src.tar.zst
+    bytes: 328191
+    sha256: ba6aa4a42ce1e1bcecf4c48fcc4e40697bdb9f8fa7c49fcb2b471a9aa47c714e
+  src_manifest:
+    release: v2026.10.0-src
+    file: openjph-src.MANIFEST.tsv
+    bytes: 1548
+    sha256: da037c008355cbeaa1ef2702afb154355ca830379a52c6951753d9f27e1fe05b

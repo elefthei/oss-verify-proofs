@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: libtpms
+homepage: https://github.com/stefanberger/libtpms
+language: c++
+oss_fuzz:
+  path: projects/libtpms
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libtpms
+  repository: https://github.com/stefanberger/libtpms
+  commit: 529da95004916b4ce8cdff66d6df73bdc984b79e
+  licence: BSD-3-Clause
+harnesses:
+- name: fuzz
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libtpms-bin.tar.zst
+    bytes: 2666208
+    sha256: ccc499734320d9c5baf812625d6812ef579dc54f1c0a0b8e8bb4ebab41de32c3
+  src:
+    release: v2026.10.0-src
+    file: libtpms-src.tar.zst
+    bytes: 918385
+    sha256: 03c0dcc4e6391b765ab332207e6d12247315293dfa2d820e091ca4704475978a
+  src_manifest:
+    release: v2026.10.0-src
+    file: libtpms-src.MANIFEST.tsv
+    bytes: 1302
+    sha256: 2bc6e23bd2a6406e2e64915c2c777b8dea6f5d903b90dc4636038d0625833cd0

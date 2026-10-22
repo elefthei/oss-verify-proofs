@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: libsodium
+homepage: https://libsodium.org
+language: c++
+oss_fuzz:
+  path: projects/libsodium
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libsodium
+  repository: https://github.com/jedisct1/libsodium
+  commit: 2c61b499e7cea2d873a9afee220c946601f78beb
+  licence: ISC
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: crypto_aead_fuzzer
+  status: included
+- name: crypto_box_fuzzer
+  status: included
+- name: crypto_generichash_fuzzer
+  status: included
+- name: crypto_kdf_fuzzer
+  status: included
+- name: crypto_kx_fuzzer
+  status: included
+- name: crypto_sign_fuzzer
+  status: included
+- name: secret_key_auth_fuzzer
+  status: included
+- name: secretbox_easy_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libsodium-bin.tar.zst
+    bytes: 1405158
+    sha256: 153f5d619e116c06353339da741af4979bfa2977b34ec81ba286fd8f44175636
+  src:
+    release: v2026.10.0-src
+    file: libsodium-src.tar.zst
+    bytes: 1689118
+    sha256: f198c96126cca832ef45bf0266acc5f87324d153d3a28aef27cafbf6d2c3252b
+  src_manifest:
+    release: v2026.10.0-src
+    file: libsodium-src.MANIFEST.tsv
+    bytes: 4415
+    sha256: 5d77c459f94201857dc2e7ef31df172d1be9c2eb15ee2790d34da70ec027d1f7

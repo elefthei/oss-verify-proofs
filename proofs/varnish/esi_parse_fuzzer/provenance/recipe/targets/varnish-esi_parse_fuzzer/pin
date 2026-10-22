@@ -1,0 +1,151 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://code.vinyl-cache.org/vinyl-cache/vinyl-cache
+COMMIT=bc9eaf713fe9bd86fa39eee1774650e9d2386f84
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_build_autotools
+  oft_build_harness "bin/vinyld/fuzzers/esi_parse_fuzzer.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+build_lib() {
+  oft_build_autotools \
+    --with-rst2man=/bin/true --with-sphinx-build=/bin/true \
+    --with-rst2html=/bin/true \
+    --with-unwind LIBUNWIND_CFLAGS=-I/opt/musl-sysroot/usr/include \
+    LIBUNWIND_LIBS=-lunwind \
+    ac_cv_have_tcp_keep=yes ac_cv_have_tcp_fastopen=yes
+  local o
+  for o in esi_parse_fuzzer-cache_ws_emu.o esi_parse_fuzzer-cache_ws_common.o \
+           esi_parse_fuzzer-cache_esi_parse.o; do
+    if [ ! -f "$BUILDDIR/src/bin/vinyld/cache/$o" ]; then
+      echo "oft: varnish: expected program object bin/vinyld/cache/$o missing" >&2
+      return 1
+    fi
+    "$CHOST-ar" r "$BUILDDIR/lib/liboft.a" "$BUILDDIR/src/bin/vinyld/cache/$o"
+  done
+  export OFT_HARNESS_CFLAGS="-I$BUILDDIR/src/bin/vinyld -DNOT_IN_A_VMOD -DENABLE_WORKSPACE_EMULATOR"
+  oft_build_harness "bin/vinyld/fuzzers/esi_parse_fuzzer.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GIT_MIRRORS="https://github.com/varnishcache/varnish-cache"
+
+
+
+
+
+
+

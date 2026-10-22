@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: mp4parse-rust
+homepage: https://github.com/mozilla/mp4parse-rust
+language: rust
+oss_fuzz:
+  path: projects/mp4parse-rust
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: rust

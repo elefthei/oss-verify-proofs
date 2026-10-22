@@ -1,0 +1,57 @@
+schema: oss-fuzz-theorems/project/1
+project: openweave
+homepage: https://openweave.io
+language: c++
+oss_fuzz:
+  path: projects/openweave
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openweave-core
+  repository: https://github.com/openweave/openweave-core
+  commit: e3c8ca3d416a2e1687d6f5b7cec0b7d0bf1e590e
+  licence: Apache-2.0
+  patch_count: 1
+harnesses:
+- name: FuzzCertificateConversion
+  status: included
+  origin: upstream
+- name: FuzzPASEInitiatorStep1
+  status: not-included
+  reason: not-attempted
+- name: FuzzPASEInitiatorStep2
+  status: not-included
+  reason: not-attempted
+- name: FuzzPASEKeyConfirm
+  status: not-included
+  reason: not-attempted
+- name: FuzzPASEResponderStep1
+  status: not-included
+  reason: not-attempted
+- name: FuzzPASEResponderStep2
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openweave-bin.tar.zst
+    bytes: 1590321
+    sha256: 293b0382b8ba48c8323c2956d2b84d99c3d201ecbc4c953b9cd9a4cd0d322ebb
+  src:
+    release: v2026.10.0-src
+    file: openweave-src.tar.zst
+    bytes: 18010104
+    sha256: 4744e1ff043951b4e2f640522978df508e8561ada8c90f663d03926d6c9b1988
+  src_manifest:
+    release: v2026.10.0-src
+    file: openweave-src.MANIFEST.tsv
+    bytes: 4325
+    sha256: 039841dcff56a5dc3392c7e7c7e6f2485a1461dd8944dd7bf1413283e09a6a20

@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: libfuse
+homepage: https://github.com/libfuse/libfuse
+language: c
+oss_fuzz:
+  path: projects/libfuse
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libfuse
+  repository: https://github.com/libfuse/libfuse
+  commit: 7e69009a6c7b6d5d865fe42482d33bad9a6dde9d
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_optparse
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libfuse-bin.tar.zst
+    bytes: 306306
+    sha256: afe0d875096a20ee2adb9a4fd6b1985d77d508b33672fe3aba338ef61fcc4462
+  src:
+    release: v2026.10.0-src
+    file: libfuse-src.tar.zst
+    bytes: 976277
+    sha256: ff13635fadf11b95ae301bad1b7400f74aa73de1fdf2fe320956928a8e23bc30
+  src_manifest:
+    release: v2026.10.0-src
+    file: libfuse-src.MANIFEST.tsv
+    bytes: 1997
+    sha256: 8a7950ece7ba20727b13365ee2fe028922250e24b7bc25510f4dbf49e973aa9c

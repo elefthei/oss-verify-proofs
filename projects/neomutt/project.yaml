@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: neomutt
+homepage: https://neomutt.org
+language: c++
+oss_fuzz:
+  path: projects/neomutt
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: neomutt
+  repository: https://github.com/neomutt/neomutt
+  commit: 550ac6cc6e4916bf8c7bc493cc80ac2cde1e8a0b
+  licence: GPL-2.0-or-later
+harnesses:
+- name: address-fuzz
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: body-fuzz
+  status: not-included
+  reason: not-attempted
+- name: cli-fuzz
+  status: included
+  origin: upstream
+- name: date
+  status: not-included
+  reason: held
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: neomutt-bin.tar.zst
+    bytes: 307054
+    sha256: 86e81cd9317ee5b32a1ae39c92c85b55afbcf0295879cffa2cc8927a2ffae72e
+  src:
+    release: v2026.10.0-src
+    file: neomutt-src.tar.zst
+    bytes: 2326947
+    sha256: 7e43ce93e8ab7fc311378c56302a7daf622e8a7cda0f3556e54c09adea692939
+  src_manifest:
+    release: v2026.10.0-src
+    file: neomutt-src.MANIFEST.tsv
+    bytes: 1315
+    sha256: d1e405b57138243a7e1d09aa7d71ed570ce9b441d19036048df9d3ef8cbf290a

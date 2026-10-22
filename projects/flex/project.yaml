@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: flex
+homepage: https://github.com/westes/flex
+language: c
+oss_fuzz:
+  path: projects/flex
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: flex
+  repository: https://github.com/westes/flex
+  commit: 4fcc71489ae298c35b0b786114ad524945f2cf95
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz-main
+  status: not-included
+  reason: not-attempted
+- name: fuzz-scanopt
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: flex-bin.tar.zst
+    bytes: 265326
+    sha256: 081976384fd91c3055506f2ff11fd436f33a3c4e082adced9987e27b8367e0fc
+  src:
+    release: v2026.10.0-src
+    file: flex-src.tar.zst
+    bytes: 395845
+    sha256: 4587287e2656aa5defcacf48cb4bf30d4fc22515c7227de785276185e0a74da7
+  src_manifest:
+    release: v2026.10.0-src
+    file: flex-src.MANIFEST.tsv
+    bytes: 1460
+    sha256: 269f2a50f4c80125aae225f1491d64a5a2ce51ba53f8b8da6b56f464a6d62648

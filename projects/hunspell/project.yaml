@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: hunspell
+homepage: https://hunspell.github.io
+language: c++
+oss_fuzz:
+  path: projects/hunspell
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: hunspell
+  repository: https://github.com/hunspell/hunspell
+  commit: f143a42a0b95578c39f8657101624ed44dea6514
+  licence: NOASSERTION
+harnesses:
+- name: affdicfuzzer
+  status: not-included
+  reason: not-attempted
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: hzfuzzer
+  status: not-included
+  reason: not-attempted
+- name: morphfuzzer
+  status: not-included
+  reason: not-attempted
+- name: parserfuzzer
+  status: included
+  origin: upstream
+- name: persdicfuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: hunspell-bin.tar.zst
+    bytes: 1762224
+    sha256: 86c6d67cfa5c0b301e5b47d3fe7b5f9b89485b50bc1016eee5d2128cddab5ee1
+  src:
+    release: v2026.10.0-src
+    file: hunspell-src.tar.zst
+    bytes: 444209
+    sha256: b2166581a2679588230f9c7293c82ff836321744e1bf227c898abb0e334ff76d
+  src_manifest:
+    release: v2026.10.0-src
+    file: hunspell-src.MANIFEST.tsv
+    bytes: 1473
+    sha256: 02c4b62079820cfcf24068f74ec28a14f47803c851f083566b9a6740f0494c1e

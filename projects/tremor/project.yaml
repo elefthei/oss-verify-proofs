@@ -1,0 +1,46 @@
+schema: oss-fuzz-theorems/project/1
+project: tremor
+homepage: https://xiph.org/vorbis
+language: c++
+oss_fuzz:
+  path: projects/tremor
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tremor
+  repository: https://gitlab.xiph.org/xiph/tremor
+  commit: 820fb3237ea81af44c9cc468c8b4e20128e3e5ad
+  licence: BSD-3-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: decode_fuzzer
+  status: included
+- name: ogg_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: vorbis_synthesis_fuzzer
+  status: included
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tremor-bin.tar.zst
+    bytes: 724300
+    sha256: 41e731eca0cd2f6e4aaeee6dadc322e3ea295486cf41b4e36cb446c4bec4f124
+  src:
+    release: v2026.10.0-src
+    file: tremor-src.tar.zst
+    bytes: 117439
+    sha256: 28be88ce211697ac4eefd80b0098b85af37a0df44f8478e89c0964642026c2d8
+  src_manifest:
+    release: v2026.10.0-src
+    file: tremor-src.MANIFEST.tsv
+    bytes: 1831
+    sha256: e3fbabf8feaa8613bb2155cfc5d2c53f094fae40dd3c808365c6f2a6a59551d5

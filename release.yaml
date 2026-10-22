@@ -1,0 +1,376 @@
+schema: oss-fuzz-theorems/release/1
+release: 2026.10.0
+date: '2026-10-22'
+oss_fuzz:
+  repository: https://github.com/google/oss-fuzz
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+  projects: 1381
+semantics:
+  name: rocq-linux-process-semantics-core
+  version: unreleased
+  repository: https://github.com/theorem-labs/rocq-linux-process-semantics
+  commit: f1006fe8178338a499b5e5c41be83006c4edd058
+  published: true
+rocq:
+  package: rocq-core
+  version: 9.2.0
+images:
+  checker: ghcr.io/theorem-labs/oss-fuzz-theorems-checker@sha256:cc9ae43a9f4b0dd59d7c8d30727d36e039bfe72a2a9f9c4a99c68e413037e902
+  runner: ghcr.io/theorem-labs/oss-fuzz-theorems-runner@sha256:d197498c0e20de006e61fbe7c3d70ebdd81ad3928468ac45d643b72c716e7af2
+  builder:
+  - ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+  - ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:c7c5abdc2676e121ca7532b553a83148b384001a553b6ffea63b1911848fd711
+binaries:
+  store: github-release-assets
+counts:
+  projects: 1381
+  available: 427
+  harnesses: 2148
+  binaries: 8578
+recipe:
+  release: v2026.10.0-src
+  file: recipe.tar.zst
+  bytes: 938459
+  sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
+sources:
+  release: sources-v1
+  toolchain:
+    file: toolchain-src.tar.zst
+    bytes: 14108557
+    sha256: fc550b7b1a49c82e52d4fa8d042a275900e8871b283575571fc0331cfed028d5
+  sysroot:
+    file: sysroot-src.tar.zst
+    bytes: 169918030
+    sha256: af7b963f4290258031dca0185650c571667ad6c91f1f8daff248616a6e936cb4
+image_libraries:
+  libINIReader.a:
+    library: inih r62; archive = cpp/INIReader.cpp only
+    licence: BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: true
+  libapr-1.a:
+    library: Apache APR 1.7.5
+    licence: Apache-2.0 AND BSD-4-Clause-UC AND ISC AND Zlib AND Caldera-no-preamble
+    copyleft: false
+    in_sysroot_src: false
+  libaprutil-1.a:
+    library: Apache APR-util 1.6.3
+    licence: Apache-2.0 AND RSA-MD AND Beerware AND bcrypt-Solar-Designer AND CC0-1.0
+    copyleft: false
+    in_sysroot_src: false
+  libavcodec.a:
+    library: FFmpeg commit b08d7969c550a804a59511c7b83f2dd8cc0499b8 (n7.1 branch tip) (libavcodec 61.19.100)
+    licence: LGPL-2.1-or-later AND IJG AND BSD-3-Clause AND ISC AND MIT
+    copyleft: true
+    in_sysroot_src: true
+  libavformat.a:
+    library: FFmpeg commit b08d7969c550a804a59511c7b83f2dd8cc0499b8 (n7.1 branch tip) (libavformat 61.7.100)
+    licence: LGPL-2.1-or-later AND MIT AND BSD-1-Clause
+    copyleft: true
+    in_sysroot_src: true
+  libavutil.a:
+    library: FFmpeg commit b08d7969c550a804a59511c7b83f2dd8cc0499b8 (n7.1 branch tip) (libavutil 59.39.100)
+    licence: LGPL-2.1-or-later AND MIT
+    copyleft: true
+    in_sysroot_src: true
+  libb2.a:
+    library: libb2 0.98.1
+    licence: CC0-1.0
+    copyleft: false
+    in_sysroot_src: false
+  libblkid.a:
+    library: util-linux 2.41.1 (libblkid)
+    licence: LGPL-2.1-or-later AND LGPL-2.0-or-later AND BSD-3-Clause AND BSD-2-Clause AND MIT
+    copyleft: true
+    in_sysroot_src: true
+  libboost_chrono.a:
+    library: Boost 1.86.0 (Boost.Chrono)
+    licence: BSL-1.0
+    copyleft: false
+    in_sysroot_src: false
+  libboost_filesystem.a:
+    library: Boost 1.86.0 (Boost.Filesystem)
+    licence: BSL-1.0
+    copyleft: false
+    in_sysroot_src: false
+  libboost_serialization.a:
+    library: Boost 1.86.0 (Boost.Serialization)
+    licence: BSL-1.0
+    copyleft: false
+    in_sysroot_src: false
+  libboost_thread.a:
+    library: Boost 1.86.0 (Boost.Thread)
+    licence: BSL-1.0
+    copyleft: false
+    in_sysroot_src: false
+  libbotan-2.a:
+    library: Botan 2.19.5
+    licence: BSD-2-Clause
+    copyleft: false
+    in_sysroot_src: false
+  libbrotlicommon.a:
+    library: brotli 1.1.0
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: true
+  libbrotlidec.a:
+    library: brotli 1.1.0
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: true
+  libbrotlienc.a:
+    library: brotli 1.1.0
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: true
+  libbz2.a:
+    library: bzip2 1.0.8
+    licence: bzip2-1.0.6
+    copyleft: false
+    in_sysroot_src: true
+  libcap.a:
+    library: libcap 2.76
+    licence: BSD-3-Clause OR GPL-2.0-only
+    copyleft: false
+    in_sysroot_src: true
+  libcbor.a:
+    library: libcbor 0.11.0
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: false
+  libcrypto.a:
+    library: OpenSSL 3.5.7
+    licence: Apache-2.0
+    copyleft: false
+    in_sysroot_src: true
+  libcups.a:
+    library: CUPS 2.4.19 (libcups only)
+    licence: Apache-2.0 WITH LLVM-exception AND Zlib
+    copyleft: false
+    in_sysroot_src: false
+  libelf.a:
+    library: elfutils 0.191 (libelf only)
+    licence: LGPL-3.0-or-later OR GPL-2.0-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libevent.a:
+    library: libevent 2.1.12-stable
+    licence: BSD-3-Clause AND ISC
+    copyleft: false
+    in_sysroot_src: false
+  libexpat.a:
+    library: Expat 2.7.1
+    licence: MIT AND CC0-1.0
+    copyleft: false
+    in_sysroot_src: true
+  libffi.a:
+    library: libffi 3.4.6
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: true
+  libfontconfig.a:
+    library: fontconfig 2.15.0
+    licence: HPND-sell-variant AND MIT-Modern-Variant AND MIT AND Unicode-3.0
+    copyleft: false
+    in_sysroot_src: false
+  libfreetype.a:
+    library: FreeType 2.13.3
+    licence: (FTL OR GPL-2.0-or-later) AND MIT AND bcrypt-Solar-Designer
+    copyleft: false
+    in_sysroot_src: false
+  libgc.a:
+    library: Boehm-Demers-Weiser GC (bdwgc) 8.2.8
+    licence: Boehm-GC
+    copyleft: false
+    in_sysroot_src: false
+  libgio-2.0.a:
+    library: GLib 2.82.5
+    licence: LGPL-2.1-or-later AND (AFL-2.0 OR LGPL-2.1-or-later)
+    copyleft: true
+    in_sysroot_src: true
+  libglib-2.0.a:
+    library: GLib 2.82.5
+    licence: LGPL-2.1-or-later AND LGPL-2.0-or-later AND bzip2-1.0.6
+    copyleft: true
+    in_sysroot_src: true
+  libgmodule-2.0.a:
+    library: GLib 2.82.5
+    licence: LGPL-2.1-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libgmp.a:
+    library: GMP 6.3.0
+    licence: LGPL-3.0-or-later OR GPL-2.0-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libgnutls.a:
+    library: GnuTLS 3.8.9
+    licence: LGPL-2.1-or-later AND (LGPL-3.0-or-later OR GPL-2.0-or-later) AND BSD-3-Clause AND BSD-2-Clause
+      AND MIT AND CC0-1.0
+    copyleft: true
+    in_sysroot_src: true
+  libgobject-2.0.a:
+    library: GLib 2.82.5
+    licence: LGPL-2.1-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libhdf5.a:
+    library: HDF5 1.14.6
+    licence: HDF5 AND BSD-3-Clause-LBNL
+    copyleft: false
+    in_sysroot_src: false
+  libhogweed.a:
+    library: Nettle 3.10.1
+    licence: LGPL-3.0-or-later OR GPL-2.0-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libicudata.a:
+    library: ICU4C 76.1
+    licence: Unicode-3.0 AND ICU AND BSD-3-Clause AND BSD-2-Clause AND NAIST-2003
+    copyleft: false
+    in_sysroot_src: false
+  libicui18n.a:
+    library: ICU4C 76.1 (libicui18n)
+    licence: Unicode-3.0 AND ICU AND BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: false
+  libicuuc.a:
+    library: ICU4C 76.1
+    licence: Unicode-3.0 AND ICU
+    copyleft: false
+    in_sysroot_src: false
+  libinih.a:
+    library: inih r62; archive = ini.c only
+    licence: BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: true
+  libjson-c.a:
+    library: json-c 0.18
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: false
+  liblcms2.a:
+    library: Little CMS 2.19
+    licence: MIT
+    copyleft: false
+    in_sysroot_src: false
+  liblzma.a:
+    library: XZ Utils 5.8.1 (liblzma)
+    licence: 0BSD
+    copyleft: false
+    in_sysroot_src: true
+  libmount.a:
+    library: util-linux 2.41.1 (libmount/libblkid only)
+    licence: LGPL-2.1-or-later AND LGPL-2.0-or-later AND BSD-3-Clause AND BSD-2-Clause AND MIT
+    copyleft: true
+    in_sysroot_src: true
+  libncursesw.a:
+    library: ncurses 6.5
+    licence: X11-distribute-modifications-variant
+    copyleft: false
+    in_sysroot_src: true
+  libnettle.a:
+    library: Nettle 3.10.1
+    licence: (LGPL-3.0-or-later OR GPL-2.0-or-later) AND MIT
+    copyleft: true
+    in_sysroot_src: true
+  libogg.a:
+    library: libogg 1.3.5
+    licence: BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: false
+  libpcap.a:
+    library: libpcap 1.10.5
+    licence: BSD-3-Clause AND BSD-4-Clause AND GPL-3.0-or-later WITH Bison-exception-2.2
+    copyleft: false
+    in_sysroot_src: true
+  libpcre2-8.a:
+    library: PCRE2 10.44
+    licence: BSD-3-Clause WITH PCRE2-exception
+    copyleft: false
+    in_sysroot_src: true
+  libpcre2-posix.a:
+    library: PCRE2 10.44 (libpcre2-posix)
+    licence: BSD-3-Clause WITH PCRE2-exception
+    copyleft: false
+    in_sysroot_src: true
+  libpng16.a:
+    library: libpng 1.6.44
+    licence: libpng-2.0 AND libpng-1.6.35
+    copyleft: false
+    in_sysroot_src: true
+  libproj.a:
+    library: PROJ 9.6.0
+    licence: MIT AND Apache-2.0 AND ISC AND blessing AND GPL-3.0-or-later WITH Bison-exception-2.2
+    copyleft: false
+    in_sysroot_src: false
+  libprotobuf.a:
+    library: Protocol Buffers C++ 3.21.12 (release tag v21.12)
+    licence: BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: true
+  libsqlite3.a:
+    library: SQLite 3.49.2
+    licence: blessing
+    copyleft: false
+    in_sysroot_src: false
+  libssl.a:
+    library: OpenSSL 3.5.7
+    licence: Apache-2.0
+    copyleft: false
+    in_sysroot_src: true
+  libswresample.a:
+    library: FFmpeg commit b08d7969c550a804a59511c7b83f2dd8cc0499b8 (n7.1 branch tip) (libswresample 5.3.100)
+    licence: LGPL-2.1-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libswscale.a:
+    library: FFmpeg commit b08d7969c550a804a59511c7b83f2dd8cc0499b8 (n7.1 branch tip) (libswscale 8.3.100)
+    licence: LGPL-2.1-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libsystemd.a:
+    library: elogind 257.16 (libelogind.a installed as libsystemd.a)
+    licence: LGPL-2.1-or-later AND LGPL-2.0-or-later AND CC0-1.0 AND MIT
+    copyleft: true
+    in_sysroot_src: true
+  libtasn1.a:
+    library: libtasn1 4.20.0
+    licence: LGPL-2.1-or-later AND GPL-3.0-or-later WITH Bison-exception-2.2
+    copyleft: true
+    in_sysroot_src: true
+  libtiff.a:
+    library: LibTIFF 4.7.2
+    licence: libtiff AND BSD-4.3TAHOE AND MIT
+    copyleft: false
+    in_sysroot_src: false
+  libturbojpeg.a:
+    library: libjpeg-turbo 3.0.4
+    licence: IJG AND BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: true
+  libuuid.a:
+    library: util-linux 2.40.2 (libuuid only)
+    licence: BSD-3-Clause
+    copyleft: false
+    in_sysroot_src: true
+  libwolfssl.a:
+    library: wolfSSL 5.7.6-stable
+    licence: GPL-2.0-or-later
+    copyleft: true
+    in_sysroot_src: true
+  libxml2.a:
+    library: libxml2 2.13.8
+    licence: MIT AND ISC-Veillard
+    copyleft: false
+    in_sysroot_src: false
+  libz.a:
+    library: zlib 1.3.1
+    licence: Zlib
+    copyleft: false
+    in_sysroot_src: true
+  libzstd.a:
+    library: zstd 1.5.6
+    licence: (BSD-3-Clause OR GPL-2.0-only) AND MIT
+    copyleft: false
+    in_sysroot_src: true

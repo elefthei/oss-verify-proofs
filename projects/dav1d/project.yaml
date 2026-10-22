@@ -1,0 +1,45 @@
+schema: oss-fuzz-theorems/project/1
+project: dav1d
+homepage: https://code.videolan.org/videolan/dav1d
+language: c++
+oss_fuzz:
+  path: projects/dav1d
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: dav1d
+  repository: https://code.videolan.org/videolan/dav1d
+  commit: 52b9d3d3ec525f5a20849145fa0e879d585f4911
+  licence: BSD-2-Clause
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: dav1d_fuzzer
+  status: included
+  origin: upstream
+- name: dav1d_fuzzer_mt
+  status: not-included
+  reason: not-attempted
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: dav1d-bin.tar.zst
+    bytes: 1738230
+    sha256: 23f942f07f7a08c85b682eb79c0262d4e05744bf05e0c503b44d597b04950453
+  src:
+    release: v2026.10.0-src
+    file: dav1d-src.tar.zst
+    bytes: 1093747
+    sha256: 5973398d334611d63290076ad9c07a3a8725e3a8a47b1cba6267cab8e6eea2ae
+  src_manifest:
+    release: v2026.10.0-src
+    file: dav1d-src.MANIFEST.tsv
+    bytes: 1338
+    sha256: a26fe970bcf81db81b4c66bc0d7cd372ebbd0626e25a8f27befe0418f079cba6

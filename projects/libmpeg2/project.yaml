@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libmpeg2
+homepage: https://github.com/ittiam-systems/libmpeg2
+language: c++
+oss_fuzz:
+  path: projects/libmpeg2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libmpeg2
+  repository: https://github.com/ittiam-systems/libmpeg2
+  commit: e2dbb98d7819a8225687d3a0b7f3d818784e451c
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: mpeg2_dec_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libmpeg2-bin.tar.zst
+    bytes: 701529
+    sha256: f2b4fb840e81688071bb2e6db119a68a261ee7421ca162dd320eab07f661d15d
+  src:
+    release: v2026.10.0-src
+    file: libmpeg2-src.tar.zst
+    bytes: 140249
+    sha256: 40d1f6b1e8547663f995bdf5efb2ec4f83ba19bb2b64fc491769908b2dc8706f
+  src_manifest:
+    release: v2026.10.0-src
+    file: libmpeg2-src.MANIFEST.tsv
+    bytes: 1384
+    sha256: 382920e852280139a5d19986b645c380262a26197a298179ec0c13be19ea1848

@@ -1,0 +1,228 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+URL=https://github.com/openssl/openssl.git
+COMMIT=47aae188a6bdc65675ea9c2a9e770bef48a5d781
+
+
+
+
+BUILD_IMAGE=builder
+
+
+
+
+
+
+
+
+. /work/tools/ossfuzz/recipes.sh
+
+build_lib() {
+  oft_build_blind
+  oft_build_harness "fuzz/driver.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+LIB_ARCHIVE="lib/liboft.a"
+LIB_CFLAGS=""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+build_lib() {
+  oft_copy_src
+
+  ( cd "$BUILDDIR/src" \
+      && perl ./Configure linux64-riscv64 \
+           no-shared no-dso no-module no-asm no-apps \
+           enable-fuzz-libfuzzer \
+           $CFLAGS \
+      && make build_generated \
+      && make -j"$(oft_jobs)" libcrypto.a ) || return 1
+  local f
+  for f in bignum; do
+
+    "$CC" $CFLAGS -I"$BUILDDIR/src/include" -I"$BUILDDIR/src/fuzz" \
+        -c "$BUILDDIR/src/fuzz/$f.c" -o "$BUILDDIR/ossl-$f.o" || return 1
+  done
+  mkdir -p "$BUILDDIR/lib"
+
+
+  "$CHOST-ar" -M <<AR_EOF || return 1
+create $BUILDDIR/lib/liboft.a
+addlib $BUILDDIR/src/libcrypto.a
+save
+end
+AR_EOF
+  [ -f "$BUILDDIR/lib/liboft.a" ] || { echo "oft: openssl: no lib/liboft.a" >&2; return 1; }
+  for f in bignum; do
+    "$CHOST-ar" r "$BUILDDIR/lib/liboft.a" "$BUILDDIR/ossl-$f.o" || return 1
+  done
+  OFT_HARNESS_CFLAGS="-isystem $BUILDDIR/src/include"
+  oft_build_harness "driver.c"
+  oft_seal_getenv
+  oft_seal_mkstemp
+  oft_seal_getpid
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: exprtk
+homepage: https://www.partow.net/programming/exprtk/index.html
+language: c++
+oss_fuzz:
+  path: projects/exprtk
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: exprtk
+  repository: https://github.com/ArashPartow/exprtk
+  commit: 1e4a80b5ec9b4832ed59c6faa65f625a01b18ef0
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: exprtk_fuzzer
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: exprtk-bin.tar.zst
+    bytes: 7201389
+    sha256: 14dd8a9922a66b369c71c8eee0de05b6026df2c4e8edabbe2d88909c0fff8464
+  src:
+    release: v2026.10.0-src
+    file: exprtk-src.tar.zst
+    bytes: 1126945
+    sha256: 2cc454c669a326b6db8c20270e7706a863e60275054ee789f3fdaf17557b2e4b
+  src_manifest:
+    release: v2026.10.0-src
+    file: exprtk-src.MANIFEST.tsv
+    bytes: 1510
+    sha256: 5011f73a911a3ef117e053085da83381aeb1ee875ab0f652d979a097e3e084af

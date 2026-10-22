@@ -1,0 +1,51 @@
+schema: oss-fuzz-theorems/project/1
+project: tidy-html5
+language: c++
+oss_fuzz:
+  path: projects/tidy-html5
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: tidy-html5
+  repository: https://github.com/htacg/tidy-html5
+  commit: d08ddc2860aa95ba8e301343a30837f157977cba
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: tidy_config_fuzzer
+  status: included
+- name: tidy_fuzzer
+  status: included
+- name: tidy_general_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: tidy_parse_file_fuzzer
+  status: not-included
+  reason: not-yet-included
+- name: tidy_parse_string_fuzzer
+  status: included
+- name: tidy_xml_fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: tidy-html5-bin.tar.zst
+    bytes: 1902259
+    sha256: 103ae09aea9db6e3cc8aba4c6caf72a3496579356ec518b030f3dbdd684d12dd
+  src:
+    release: v2026.10.0-src
+    file: tidy-html5-src.tar.zst
+    bytes: 586514
+    sha256: 9a02267b1cf91999fff8f82d3daf0bc078d18812f2c50743743fe2b7d13c8a20
+  src_manifest:
+    release: v2026.10.0-src
+    file: tidy-html5-src.MANIFEST.tsv
+    bytes: 2635
+    sha256: 7485b14496554212149ea38710f24f683e12c4a3be327497748a54536a029361

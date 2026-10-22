@@ -1,0 +1,24 @@
+schema: oss-fuzz-theorems/harness/1
+project: json
+harness: fuzzer-parse_bjdata
+rocq: OssFuzzTheorems.json.fuzzer_parse_bjdata
+origin: upstream
+summary: Parses the input as BJData and, when it parses, serialises the value again and asserts that the bytes round-trip.
+entry: LLVMFuzzerTestOneInput
+source:
+  files: [source/fuzzer-parse_bjdata.cpp]
+  modified: false
+  licence: MIT
+library: {repository: https://github.com/nlohmann/json, commit: 9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f, licence: MIT}
+modifications: []
+builds:
+  plain: {file: fuzzer-parse_bjdata.plain, bytes: 400000, sha256: a719acce160deb5ee52e2c9ec76bce824042d6a9927d236a411cefda62e44591, segments: [1, 2, 1, 1]}
+  ubsan: {file: fuzzer-parse_bjdata.ubsan, bytes: 410000, sha256: d94ffcbc6748249532ffc8ba760f34cafe0d738eaa5893dc1b40b1748720ec5a, segments: [1, 2, 1, 1]}
+  asan: {file: fuzzer-parse_bjdata.asan, bytes: 900000, sha256: 24c8d600a2751372c0e05abdae202e6cd2e1e6af920adcdd06e550ba9a3e75ad, segments: [1, 2, 1, 1]}
+  asan-ubsan: {file: fuzzer-parse_bjdata.asan-ubsan, bytes: 910000, sha256: e1c889f4546a0bac0d366105f3fa307dd5f5b004c22d2f52f44c2fff1b6f6185, segments: [1, 2, 1, 1]}
+licence: MIT AND Apache-2.0 WITH LLVM-exception
+checks:
+- {kind: roundtrip, strength: full, stops_with: assert, live: true, where: "source/fuzzer-parse_bjdata.cpp:11", what: Serialising a parsed value gives back the input bytes.}
+statements:
+  plain_halts: {kind: halts, builds: [plain], reading: budget, exits: [0, 2], status: open}
+  asan_agrees: {kind: agreement, builds: [plain, asan], reading: alloc-forced-only, budgets: asan, abort: signal, status: suspected-false, basis: reading, reason: The round-trip assertion fails on some inputs in both builds; an abort is outside what the statement allows.}

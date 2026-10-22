@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: knot-dns
+homepage: https://www.knot-dns.cz
+language: c++
+oss_fuzz:
+  path: projects/knot-dns
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: knot-dns
+  repository: https://gitlab.labs.nic.cz/knot/knot-dns
+  commit: b343eba7297f50d186f47f0f5f3b13abe0dc5db1
+  licence: GPL-2.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_dname_from_str
+  status: included
+  origin: upstream
+- name: fuzz_dname_to_str
+  status: included
+  origin: upstream
+- name: fuzz_packet
+  status: included
+  origin: upstream
+- name: fuzz_zscanner
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: knot-dns-bin.tar.zst
+    bytes: 1609373
+    sha256: 06b8e4b68b09a7e53b7af7e50173dca43d0edc4c214046e86e66bc23f52d061c
+  src:
+    release: v2026.10.0-src
+    file: knot-dns-src.tar.zst
+    bytes: 2118828
+    sha256: e3cf340d8ac8ecbcc3ed706b607933aa2666bde70d70512b95b1027d4e021201
+  src_manifest:
+    release: v2026.10.0-src
+    file: knot-dns-src.MANIFEST.tsv
+    bytes: 3694
+    sha256: ae9858a68b6b545e213daf2a10706f75188aa0c556a74b60afddf4bc9cd9eb5f

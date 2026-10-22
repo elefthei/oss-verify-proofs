@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: usbguard
+homepage: https://usbguard.github.io
+language: c++
+oss_fuzz:
+  path: projects/usbguard
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: usbguard
+  repository: https://github.com/USBGuard/usbguard
+  commit: 90f0b502538eecea8420c6146a5266e081ada392
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzzer-rules
+  status: included
+  origin: upstream
+- name: fuzzer-uevent
+  status: included
+  origin: upstream
+- name: fuzzer-usb-descriptor
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: usbguard-bin.tar.zst
+    bytes: 2165812
+    sha256: aa2cf9676cac370107e960db8975c701a0e1812129619bd52f49f16d24e3da1c
+  src:
+    release: v2026.10.0-src
+    file: usbguard-src.tar.zst
+    bytes: 1136146
+    sha256: c46fdd52dd33e4bdd65a64468a3a2685fc0271f40cace6bc5eb073d96504d47f
+  src_manifest:
+    release: v2026.10.0-src
+    file: usbguard-src.MANIFEST.tsv
+    bytes: 3184
+    sha256: a541378986ec60803765bcc7d45854a0b5cd7170097a004cb03eb3d9aca116cb

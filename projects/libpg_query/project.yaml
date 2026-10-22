@@ -1,0 +1,43 @@
+schema: oss-fuzz-theorems/project/1
+project: libpg_query
+homepage: https://pganalyze.com
+language: c
+oss_fuzz:
+  path: projects/libpg_query
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libpg_query
+  repository: https://github.com/pganalyze/libpg_query
+  commit: 7632d033ba08bd1343228f1570f8b49bde46072b
+  licence: BSD-3-Clause
+harnesses:
+- name: fuzz_parser
+  status: included
+  origin: upstream
+- name: fuzz_plpgsql
+  status: included
+  origin: upstream
+- name: fuzz_protobuf
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libpg_query-bin.tar.zst
+    bytes: 4612766
+    sha256: f1cbd38bdac8b0eeb11c4d68f8d9fa29d306867b745d251e529edb18540fa413
+  src:
+    release: v2026.10.0-src
+    file: libpg_query-src.tar.zst
+    bytes: 3054111
+    sha256: d5f808ee378843fbd816c418a5395b5c3fcc009508d4f813c2199d13045dc224
+  src_manifest:
+    release: v2026.10.0-src
+    file: libpg_query-src.MANIFEST.tsv
+    bytes: 1587
+    sha256: f52a459dc8f39cde46647c0b15fe24e6121dc5e8696a132a3dfbad0873514c7e

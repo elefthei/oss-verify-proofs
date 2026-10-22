@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libcbor
+homepage: https://github.com/PJK/libcbor
+language: c++
+oss_fuzz:
+  path: projects/libcbor
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libcbor
+  repository: https://github.com/PJK/libcbor
+  commit: d436c4027d2f62539e4f20b191d3224c7601c8b1
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cbor_load_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libcbor-bin.tar.zst
+    bytes: 459379
+    sha256: c0ee8cde32aa6d68760fc66c482210daea689c024403aa3a2d362e2394b3af4a
+  src:
+    release: v2026.10.0-src
+    file: libcbor-src.tar.zst
+    bytes: 301857
+    sha256: 8fedb4b5832e7d032435cb40a66ac86cc4cf6983f83ece1987542c823d31892a
+  src_manifest:
+    release: v2026.10.0-src
+    file: libcbor-src.MANIFEST.tsv
+    bytes: 1938
+    sha256: c55bc2f933957c69141d96190e416173780d420b273883315b2337e548edd80d

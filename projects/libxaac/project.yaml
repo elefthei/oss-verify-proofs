@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libxaac
+homepage: https://github.com/ittiam-systems/libxaac
+language: c++
+oss_fuzz:
+  path: projects/libxaac
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libxaac
+  repository: https://github.com/ittiam-systems/libxaac
+  commit: 2fbadd57bca46693b7a077bcf1513131106d960c
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: xaac_dec_fuzzer
+  status: included
+  origin: upstream
+- name: xaac_enc_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libxaac-bin.tar.zst
+    bytes: 8432824
+    sha256: 384961329525aa81dd99a2c51d0007051fe5d03ed580fad544e5f9025c7eb756
+  src:
+    release: v2026.10.0-src
+    file: libxaac-src.tar.zst
+    bytes: 5471010
+    sha256: ee0b66d963a3a76f10f234640637524b21491168f48646c61163d18860c8a604
+  src_manifest:
+    release: v2026.10.0-src
+    file: libxaac-src.MANIFEST.tsv
+    bytes: 1486
+    sha256: 9c12faa1a9ccd1a0ef3839468d6924502b86b291e691fa70d1a5ea1189163311

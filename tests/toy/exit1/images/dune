@@ -1,0 +1,8 @@
+; One rule per build: elf-snapshot turns the ELF into a memory image.  The
+; outputs exist only under _build/ and are never stored.
+(rule
+ (targets Plain.v Plain_seg_000.hex)
+ (deps (:elf ../exit1.plain))
+ (action
+  (run elf-snapshot %{elf} Plain.v --prefix Plain --module-name M
+       --namespace OssFuzzTheorems.Tests.toy.exit1.images)))

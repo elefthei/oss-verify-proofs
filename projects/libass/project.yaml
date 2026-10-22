@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: libass
+homepage: https://github.com/libass/libass
+language: c++
+oss_fuzz:
+  path: projects/libass
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libass
+  repository: https://github.com/libass/libass
+  commit: f61db567e6593df3470e91594bcd4ad2d0473aff
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: libass_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libass-bin.tar.zst
+    bytes: 4935776
+    sha256: 1d6ee20027d34de39ea83711dab2397c33232c27f581d64b9c7ce8a5245d3837
+  src:
+    release: v2026.10.0-src
+    file: libass-src.tar.zst
+    bytes: 25566243
+    sha256: f25d827dd1b2857bd44b7ac8b57866421714fa286cba7a642c8877ff889fe54f
+  src_manifest:
+    release: v2026.10.0-src
+    file: libass-src.MANIFEST.tsv
+    bytes: 2640
+    sha256: 147052ae5180b5959f57b0a47288232cffa46556b02b7ace2068de416e408c19

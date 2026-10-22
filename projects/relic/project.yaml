@@ -1,0 +1,38 @@
+schema: oss-fuzz-theorems/project/1
+project: relic
+homepage: https://github.com/relic-toolkit/relic
+language: c++
+oss_fuzz:
+  path: projects/relic
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: relic
+  repository: https://github.com/relic-toolkit/relic
+  commit: 69291e66725edc4fc0d74f3926e7591cbb2a38da
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cryptofuzz-relic
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: relic-bin.tar.zst
+    bytes: 5675339
+    sha256: 247a49c4abfe0cb35d5c2c97f1252b35103a65df714b5e1714ec3970ad405d64
+  src:
+    release: v2026.10.0-src
+    file: relic-src.tar.zst
+    bytes: 3303434
+    sha256: 980744e7b0db2271842a41b6ed5ef199e1d96bf9df16991be5f41e7cfe16a9f8
+  src_manifest:
+    release: v2026.10.0-src
+    file: relic-src.MANIFEST.tsv
+    bytes: 1940
+    sha256: 3486464fbbd926b4d2a178bfa07e4149c9386e5e05ff36c3599bf15b62fed3ec

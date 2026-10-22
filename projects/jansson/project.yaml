@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: jansson
+homepage: https://github.com/akheron/jansson
+language: c++
+oss_fuzz:
+  path: projects/jansson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: jansson
+  repository: https://github.com/akheron/jansson
+  commit: 851a2145e3256f2e67e5dfe24b0e456bf198b741
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: json_equal_copy_fuzzer
+  status: included
+  origin: upstream
+- name: json_load_dump_fuzzer
+  status: included
+  origin: upstream
+- name: json_pack_unpack_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: jansson-bin.tar.zst
+    bytes: 741077
+    sha256: e58948501c62386e88609579d4e2fa99bbdf364b1669ce2c5d5e525d88073124
+  src:
+    release: v2026.10.0-src
+    file: jansson-src.tar.zst
+    bytes: 162186
+    sha256: 2324595157b05b6a66dc48d7ac4eb577c447970d9578af41b42704e7701fbda0
+  src_manifest:
+    release: v2026.10.0-src
+    file: jansson-src.MANIFEST.tsv
+    bytes: 1676
+    sha256: 327f2dfe9d5aa4a3ccc770df90cf29ae25fa4187bb3ed2ac413c09f53afc602f

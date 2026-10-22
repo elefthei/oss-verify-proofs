@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: libcups
+homepage: https://github.com/OpenPrinting/libcups
+language: c++
+oss_fuzz:
+  path: projects/libcups
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libcups
+  repository: https://github.com/OpenPrinting/libcups
+  commit: 2b2786a670f7282979d87483d361026a15297af6
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzfile
+  status: not-included
+  reason: not-attempted
+- name: fuzzhttp
+  status: included
+  origin: upstream
+- name: fuzzipp
+  status: not-included
+  reason: not-attempted
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libcups-bin.tar.zst
+    bytes: 299364
+    sha256: 91980a1e9a35f4b6218c17931ae8ecea6b29603c2c688669614c9a990d03aa2e
+  src:
+    release: v2026.10.0-src
+    file: libcups-src.tar.zst
+    bytes: 12294811
+    sha256: e32ea795e700e4f45fc52b874bd6502e7ff2db7b9077c625e6c600b454d6612a
+  src_manifest:
+    release: v2026.10.0-src
+    file: libcups-src.MANIFEST.tsv
+    bytes: 2350
+    sha256: 1d90cb41349d9118f5e84db43b5249c2576c7e09debb8867969c216bb515ec7e

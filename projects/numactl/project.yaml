@@ -1,0 +1,42 @@
+schema: oss-fuzz-theorems/project/1
+project: numactl
+homepage: https://github.com/numactl/numactl
+language: c
+oss_fuzz:
+  path: projects/numactl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: numactl
+  repository: https://github.com/numactl/numactl
+  commit: 13fb3bf75097d8407d15bb321fa797e0443b6d44
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_parse_str
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: numactl-bin.tar.zst
+    bytes: 386438
+    sha256: ea5a47662482a45f69d2574b9ffb9b0921fbad4dacf0884995fe5c3b1112683d
+  src:
+    release: v2026.10.0-src
+    file: numactl-src.tar.zst
+    bytes: 180748
+    sha256: 99a389a91f2631646b6e86db5ae10120a02c343e89a3e28314d22c6d209f602c
+  src_manifest:
+    release: v2026.10.0-src
+    file: numactl-src.MANIFEST.tsv
+    bytes: 1351
+    sha256: fd0887b8445642acb0489380dda76780e69ea358a676bb9b21b5c00e4837c5f0

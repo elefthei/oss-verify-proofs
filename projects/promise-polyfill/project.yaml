@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: promise-polyfill
+homepage: https://github.com/taylorhakes/promise-polyfill
+language: javascript
+oss_fuzz:
+  path: projects/promise-polyfill
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: javascript

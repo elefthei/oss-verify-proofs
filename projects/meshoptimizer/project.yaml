@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: meshoptimizer
+homepage: https://github.com/zeux/meshoptimizer
+language: c++
+oss_fuzz:
+  path: projects/meshoptimizer
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: meshoptimizer
+  repository: https://github.com/zeux/meshoptimizer
+  commit: b5b2c4391cb62d434d44e7f6ffb96194605fae2f
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: clusterfuzz
+  status: included
+  origin: upstream
+- name: codecfuzzer
+  status: included
+  origin: upstream
+- name: simplifyfuzz
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: meshoptimizer-bin.tar.zst
+    bytes: 897549
+    sha256: 61c8770d183d372a9266eca5b6db9f8724cfd1dd8ff219f3012a476df17e8716
+  src:
+    release: v2026.10.0-src
+    file: meshoptimizer-src.tar.zst
+    bytes: 483426
+    sha256: 6c31ea8d8db39f4ec8fa8d8977b78c1b0c69a704a003c3031a3da666f5d34948
+  src_manifest:
+    release: v2026.10.0-src
+    file: meshoptimizer-src.MANIFEST.tsv
+    bytes: 1647
+    sha256: 23fbff30c955f0402f12691ef3e47b1b9056a9165e41c97fdb7aeb29568a868e

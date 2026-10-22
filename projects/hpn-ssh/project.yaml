@@ -1,0 +1,59 @@
+schema: oss-fuzz-theorems/project/1
+project: hpn-ssh
+homepage: https://www.psc.edu/home-hpn-ssh
+language: c++
+oss_fuzz:
+  path: projects/hpn-ssh
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: hpn-ssh
+  repository: https://github.com/rapier1/hpn-ssh
+  commit: 2c7cc5554b8aa758b3a5c5bd086cdef94f3751b7
+  licence: NOASSERTION
+  patch_count: 1
+harnesses:
+- name: agent_fuzz
+  status: included
+  origin: upstream
+- name: authopt_fuzz
+  status: included
+  origin: upstream
+- name: kex_fuzz
+  status: included
+  origin: upstream
+- name: privkey_fuzz
+  status: included
+  origin: upstream
+- name: pubkey_fuzz
+  status: included
+  origin: upstream
+- name: sig_fuzz
+  status: included
+  origin: upstream
+- name: sshsig_fuzz
+  status: included
+  origin: upstream
+- name: sshsigopt_fuzz
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: hpn-ssh-bin.tar.zst
+    bytes: 11271300
+    sha256: 0aec851c303312fffdbecbf14ec358babd2ee08fc958d805291e6d431180c82a
+  src:
+    release: v2026.10.0-src
+    file: hpn-ssh-src.tar.zst
+    bytes: 1583537
+    sha256: 5aaf7d96189de0d07ca237368b31b6250da383a15cc01ab583883e418bea2129
+  src_manifest:
+    release: v2026.10.0-src
+    file: hpn-ssh-src.MANIFEST.tsv
+    bytes: 2028
+    sha256: 88beed0fa04ddbb9255768c32df6878f07d03b16693b6fe299ac6beae2fb733d

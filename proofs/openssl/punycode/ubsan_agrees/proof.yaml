@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/punycode/ubsan_agrees
+fingerprint: a9b9c6908cc5e5ea83d46bf482f6935dd7dd19d608f9ec69468d9d861df6c3af

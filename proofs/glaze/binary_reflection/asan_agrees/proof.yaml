@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: glaze/binary_reflection/asan_agrees
+fingerprint: f7afb85af8da9b21affb97f3a6c826fb4c28e4be194230c7f1a4fc3bd54074b0

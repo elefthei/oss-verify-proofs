@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: nccl
+homepage: https://github.com/NVIDIA/nccl
+language: c++
+oss_fuzz:
+  path: projects/nccl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: nccl
+  repository: https://github.com/NVIDIA/nccl
+  commit: fd168324a3dc0c9080fd4881b6c7f4bb252a95a2
+  licence: Apache-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_xml
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: nccl-bin.tar.zst
+    bytes: 599442
+    sha256: 0aa080f4b404a621ec22b1889e332c0bed8ad16ed0e68904c518242c8f7551da
+  src:
+    release: v2026.10.0-src
+    file: nccl-src.tar.zst
+    bytes: 3432907
+    sha256: b28e3ca193636336454b9cc503f36f0e593187763d28a213c4510de8d1dd9bc2
+  src_manifest:
+    release: v2026.10.0-src
+    file: nccl-src.MANIFEST.tsv
+    bytes: 1433
+    sha256: b059b74f21d5a80f1c06a5b48e68a0a748060635ce2824940afb29491ea841ba

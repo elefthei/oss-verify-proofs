@@ -1,0 +1,62 @@
+schema: oss-fuzz-theorems/project/1
+project: libiec61850
+homepage: https://github.com/mz-automation/libiec61850
+language: c
+oss_fuzz:
+  path: projects/libiec61850
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libiec61850
+  repository: https://github.com/mz-automation/libiec61850
+  commit: 664aa00b447292afdf86330745df1b25328aa98f
+  licence: GPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_acse_parse
+  status: included
+  origin: upstream
+- name: fuzz_goose_subscriber
+  status: included
+  origin: upstream
+- name: fuzz_mms_decode
+  status: included
+  origin: upstream
+- name: fuzz_mms_encode
+  status: included
+  origin: upstream
+- name: fuzz_mms_print
+  status: included
+  origin: upstream
+- name: fuzz_mms_server_decode_mms_pdu
+  status: included
+  origin: upstream
+- name: fuzz_pres_userdata
+  status: included
+  origin: upstream
+- name: fuzz_sv_subscriber
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libiec61850-bin.tar.zst
+    bytes: 1959737
+    sha256: c257b73ed9d84d6b35601ef9299223b4bb2bb95f57211310de100619884be861
+  src:
+    release: v2026.10.0-src
+    file: libiec61850-src.tar.zst
+    bytes: 1061221
+    sha256: b618c8c8fdd9a0b75677d13223138696c240010ffdca65a541cdc0e726ef9241
+  src_manifest:
+    release: v2026.10.0-src
+    file: libiec61850-src.MANIFEST.tsv
+    bytes: 2431
+    sha256: 42ff8698d8cff1e48f4f7d54bb01adb3d00f56b0c6c96802c00db91289fdb08d

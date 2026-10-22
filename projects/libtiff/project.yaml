@@ -1,0 +1,46 @@
+schema: oss-fuzz-theorems/project/1
+project: libtiff
+language: c++
+oss_fuzz:
+  path: projects/libtiff
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libtiff
+  repository: https://gitlab.com/libtiff/libtiff
+  commit: d23249978a7a99ea2e0752a476611914501577de
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: tiff_decode_fuzzer
+  status: included
+  origin: upstream
+- name: tiff_packbits_fuzzer
+  status: included
+  origin: upstream
+- name: tiff_read_rgba_fuzzer
+  status: included
+  origin: upstream
+- name: write_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libtiff-bin.tar.zst
+    bytes: 5004899
+    sha256: 4743d2b924cef7e3ac033167259e5f8584899b13bcc94687d06d2984f92540e6
+  src:
+    release: v2026.10.0-src
+    file: libtiff-src.tar.zst
+    bytes: 2395299
+    sha256: b82a8f356f594fefa7a54d0953146b9417586be2c3802b73383956f76ede1b94
+  src_manifest:
+    release: v2026.10.0-src
+    file: libtiff-src.MANIFEST.tsv
+    bytes: 2315
+    sha256: 18e7e148efdfa5ef0982842ab62481b19c456abdc42e517851c1113246889892

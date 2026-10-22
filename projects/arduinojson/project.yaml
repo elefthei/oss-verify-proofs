@@ -1,0 +1,47 @@
+schema: oss-fuzz-theorems/project/1
+project: arduinojson
+homepage: https://github.com/bblanchon/ArduinoJson
+language: c++
+oss_fuzz:
+  path: projects/arduinojson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ArduinoJson
+  repository: https://github.com/bblanchon/ArduinoJson
+  commit: 1cd478f48e7c4cd142a0bd26ee17d63d70d04e3f
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: json_fuzzer
+  status: included
+  origin: upstream
+- name: msgpack_fuzzer
+  status: included
+  origin: upstream
+- name: number_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: arduinojson-bin.tar.zst
+    bytes: 707692
+    sha256: 45030fc43022cf5042cbc759e1ffcf5a5710b18cd1901357e47ca9a96f220387
+  src:
+    release: v2026.10.0-src
+    file: arduinojson-src.tar.zst
+    bytes: 240254
+    sha256: d22e9ee54d869c23fedf4334251b2af6bd426faa0e91adcfdaeb895cb2b83d3d
+  src_manifest:
+    release: v2026.10.0-src
+    file: arduinojson-src.MANIFEST.tsv
+    bytes: 1642
+    sha256: eada7acc4178d2deff88afabd9d98c276b185c27d80c62487e6c726e3daa7c6d

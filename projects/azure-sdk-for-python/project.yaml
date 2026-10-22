@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: azure-sdk-for-python
+homepage: https://github.com/azure/azure-sdk-for-python
+language: python
+oss_fuzz:
+  path: projects/azure-sdk-for-python
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

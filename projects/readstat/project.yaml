@@ -1,0 +1,89 @@
+schema: oss-fuzz-theorems/project/1
+project: readstat
+homepage: https://github.com/WizardMac/ReadStat
+language: c++
+oss_fuzz:
+  path: projects/readstat
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ReadStat
+  repository: https://github.com/WizardMac/ReadStat
+  commit: da9fcaa48a78107774ecc7efe83fc77050c68ad8
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_compression_sas_rle
+  status: not-included
+  reason: held
+- name: fuzz_compression_sav
+  status: included
+  origin: upstream
+- name: fuzz_format_dta
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_por
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_sas7bcat
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_sas7bdat
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_sas_commands
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_sav
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_spss_commands
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_stata_dictionary
+  status: not-included
+  reason: not-attempted
+- name: fuzz_format_xport
+  status: not-included
+  reason: not-attempted
+- name: fuzz_grammar_dta_timestamp
+  status: included
+  origin: upstream
+- name: fuzz_grammar_por_double
+  status: included
+  origin: upstream
+- name: fuzz_grammar_sav_date
+  status: included
+  origin: upstream
+- name: fuzz_grammar_sav_time
+  status: included
+  origin: upstream
+- name: fuzz_grammar_spss_format
+  status: included
+  origin: upstream
+- name: fuzz_grammar_xport_format
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: readstat-bin.tar.zst
+    bytes: 579852
+    sha256: 68f60de8bfb9964cc429c0721b0cbd00b0b8898aaff20c2c5571d90e51a7edfd
+  src:
+    release: v2026.10.0-src
+    file: readstat-src.tar.zst
+    bytes: 191321
+    sha256: 193da6e39d131272f45d8b994b74c8120fd5421c507450e4e85920c5e42a8108
+  src_manifest:
+    release: v2026.10.0-src
+    file: readstat-src.MANIFEST.tsv
+    bytes: 2305
+    sha256: 9e702ad199ec708c36c86e97db27b59fcc0d3ba14d5fbff8976c4ecc9e01838c

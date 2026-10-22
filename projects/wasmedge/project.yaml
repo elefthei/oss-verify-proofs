@@ -1,0 +1,48 @@
+schema: oss-fuzz-theorems/project/1
+project: wasmedge
+homepage: https://github.com/WasmEdge/WasmEdge
+language: c++
+oss_fuzz:
+  path: projects/wasmedge
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: WasmEdge
+  repository: https://github.com/WasmEdge/WasmEdge
+  commit: ab9a3d78b20c071388fe26e6995d2df687de6e77
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: wasmedge-fuzzcomponent
+  status: not-included
+  reason: not-attempted
+- name: wasmedge-fuzzpo
+  status: included
+  origin: upstream
+- name: wasmedge-fuzztool
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wasmedge-bin.tar.zst
+    bytes: 1198247
+    sha256: 63add7994790d14d8b719eb89b56b8deb28b93140b746da2ee3455fcfbdf6964
+  src:
+    release: v2026.10.0-src
+    file: wasmedge-src.tar.zst
+    bytes: 3435774
+    sha256: 94ae20d56deb6c2b4456a35247c4ab9fa7a8c9c6318df89021d49e74c16893f4
+  src_manifest:
+    release: v2026.10.0-src
+    file: wasmedge-src.MANIFEST.tsv
+    bytes: 2497
+    sha256: ad0a4aae5f440740834deee423e7cddb751bb1bd6c83840abd109ae78ef9f993

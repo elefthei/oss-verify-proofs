@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: rdkit
+homepage: https://github.com/rdkit/rdkit
+language: c++
+oss_fuzz:
+  path: projects/rdkit
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rdkit
+  repository: https://github.com/rdkit/rdkit
+  commit: d55f8a3efb2bb4896a65e1940155c1e4096b3a4a
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: mol_data_stream_to_mol_fuzzer
+  status: included
+  origin: upstream
+- name: mol_deserialization_fuzzer
+  status: included
+  origin: upstream
+- name: smiles_string_to_mol_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rdkit-bin.tar.zst
+    bytes: 15686451
+    sha256: c31dbc6f5d3bae787648f47a84a027092bef4adadccf951dab79c6cc012313e1
+  src:
+    release: v2026.10.0-src
+    file: rdkit-src.tar.zst
+    bytes: 66908426
+    sha256: 842a224ddfa9b90af7e9224eb3d3802486088b0b8e61e2b7a9c10d9f0e647aa3
+  src_manifest:
+    release: v2026.10.0-src
+    file: rdkit-src.MANIFEST.tsv
+    bytes: 5750
+    sha256: 4c1b0a3a55b7863f4c678d8ba16b4c51ed82e712d856113bdefc51e66b1075a0

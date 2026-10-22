@@ -1,0 +1,51 @@
+schema: oss-fuzz-theorems/project/1
+project: firestore
+homepage: https://firebase.google.com/docs/firestore
+language: c++
+oss_fuzz:
+  path: projects/firestore
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: firebase-ios-sdk
+  repository: https://github.com/firebase/firebase-ios-sdk
+  commit: a51fbca0ae44efe46184c21dd4ff5928ee209933
+  licence: Apache-2.0
+  patch_count: 3
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: firestore_fieldpath_fuzzer
+  status: included
+  origin: upstream
+- name: firestore_leveldb_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: firestore_resourcepath_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: firestore_serializer_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: firestore-bin.tar.zst
+    bytes: 661479
+    sha256: 94db757f41def9f23138dbddfa164b01f885f47b55871c9383ebd94bb17efa2d
+  src:
+    release: v2026.10.0-src
+    file: firestore-src.tar.zst
+    bytes: 91091519
+    sha256: 4b7f7345d3b3d381c7f48742b3438e70d6b890dd4f9f1ca172894bfd17eb1850
+  src_manifest:
+    release: v2026.10.0-src
+    file: firestore-src.MANIFEST.tsv
+    bytes: 5835
+    sha256: df0b896b4af5495ece2e537ac879ed5c7ba04b5b397677d44fe15ba49b65e0e1

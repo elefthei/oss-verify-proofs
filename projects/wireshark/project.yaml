@@ -1,0 +1,59 @@
+schema: oss-fuzz-theorems/project/1
+project: wireshark
+homepage: https://www.wireshark.org
+language: c++
+oss_fuzz:
+  path: projects/wireshark
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wireshark
+  repository: https://gitlab.com/wireshark/wireshark
+  commit: 390f3482d19645065013052effe7bb5edfb4cef5
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzzshark_dis
+  status: included
+  origin: upstream
+- name: fuzzshark_ip
+  status: included
+  origin: upstream
+- name: fuzzshark_ip_proto-ospf
+  status: included
+  origin: upstream
+- name: fuzzshark_ip_proto-udp
+  status: included
+  origin: upstream
+- name: fuzzshark_media_type-json
+  status: included
+  origin: upstream
+- name: fuzzshark_tcp_port-bgp
+  status: included
+  origin: upstream
+- name: fuzzshark_udp_port-dhcp
+  status: included
+  origin: upstream
+- name: fuzzshark_udp_port-dns
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wireshark-bin.tar.zst
+    bytes: 926590192
+    sha256: edaa44f149c3a97ec3035a51eb6e572066557624903020a76b9e073c4488108b
+  src:
+    release: v2026.10.0-src
+    file: wireshark-src.tar.zst
+    bytes: 71205547
+    sha256: e06a44b076327aa596da77504fbab7920465411a9006c52c55b9cd645e5489bc
+  src_manifest:
+    release: v2026.10.0-src
+    file: wireshark-src.MANIFEST.tsv
+    bytes: 16131
+    sha256: d2b1ef48ba474941d3f2eaffa3bbadacbcfc8f464e5ac8b62866de9fb153b9e0

@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: urllib3
+homepage: https://github.com/urllib3/urllib3
+language: python
+oss_fuzz:
+  path: projects/urllib3
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: python

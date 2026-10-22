@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: qubes-os
+homepage: https://www.qubes-os.org
+language: c++
+oss_fuzz:
+  path: projects/qubes-os
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: qubes-app-linux-input-proxy
+  repository: https://github.com/QubesOS/qubes-app-linux-input-proxy
+  commit: ea8710166c6ac29dd4183cdf155bc9a1da34cf4a
+  version: 1.0.46
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: db-daemon_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: input-proxy-receiver_fuzzer
+  status: included
+  origin: upstream
+- name: qrexec_daemon_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: qrexec_remote_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: qubesrpc_parse_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: qubes-os-bin.tar.zst
+    bytes: 283682
+    sha256: fa9b10f5cc947a31674ea549610642eebe66a1eb13d3a30279fe8dd6ed8834fb
+  src:
+    release: v2026.10.0-src
+    file: qubes-os-src.tar.zst
+    bytes: 24738
+    sha256: 7b5086e3f4125c3101b427914dfd779e9b37498ac8163e1e5bc6bf82d73f50e3
+  src_manifest:
+    release: v2026.10.0-src
+    file: qubes-os-src.MANIFEST.tsv
+    bytes: 1450
+    sha256: b6e8ad20dd01f17d2e0d6dc37e8f49a88ff8a91653f0418c7b8b487f827aacb8

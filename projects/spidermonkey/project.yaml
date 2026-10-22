@@ -1,0 +1,11 @@
+schema: oss-fuzz-theorems/project/1
+project: spidermonkey
+homepage: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
+language: c++
+oss_fuzz:
+  path: projects/spidermonkey
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: excluded
+reason: duplicate
+reason_args:
+  same_as: firefox

@@ -1,0 +1,54 @@
+schema: oss-fuzz-theorems/project/1
+project: ntopng
+homepage: https://github.com/ntop/ntopng
+language: c++
+oss_fuzz:
+  path: projects/ntopng
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: ntopng
+  repository: https://github.com/ntop/ntopng
+  commit: 69f8cc78a211b89f69a9ad17a65b1a3315484723
+  licence: GPL-3.0-or-later
+  patch_count: 1
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_dissect_packet
+  status: not-included
+  reason: not-attempted
+- name: fuzz_snmp_response
+  status: not-included
+  reason: not-attempted
+- name: fuzz_syslog_parse
+  status: not-included
+  reason: not-attempted
+- name: fuzz_zmq_flow
+  status: not-included
+  reason: not-attempted
+- name: tokener_parse_ex_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: ntopng-bin.tar.zst
+    bytes: 439934
+    sha256: 15d6537dd7b228e58c9af3675fb5bc1f894152c26e731497ed22bebe11495584
+  src:
+    release: v2026.10.0-src
+    file: ntopng-src.tar.zst
+    bytes: 92237588
+    sha256: 85e7440fdf49ff2ce3dff22d1ef6b2096e6f301a2ff01a27ea4187ca17231400
+  src_manifest:
+    release: v2026.10.0-src
+    file: ntopng-src.MANIFEST.tsv
+    bytes: 3214
+    sha256: bf3808954c84730f5f194c3d588d62e576a760df015dcb45ffe32dda3adfa6c3

@@ -1,0 +1,44 @@
+schema: oss-fuzz-theorems/project/1
+project: stb
+homepage: https://github.com/nothings/stb
+language: c++
+oss_fuzz:
+  path: projects/stb
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: stb
+  repository: https://github.com/nothings/stb
+  commit: 2c980bb59875b0d32144a71867fbdebb2f77cd20
+  licence: Unlicense
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: stb_png_read_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: stbi_read_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: stb-bin.tar.zst
+    bytes: 483555
+    sha256: c49406ab9144c39eb01daedca829205e9a34cf668e1727994d349d4b1f74af9f
+  src:
+    release: v2026.10.0-src
+    file: stb-src.tar.zst
+    bytes: 1229672
+    sha256: fd97f2ab5544670b44166a6d64d95849efde40cd1892b163fd39fb020e3379ac
+  src_manifest:
+    release: v2026.10.0-src
+    file: stb-src.MANIFEST.tsv
+    bytes: 1324
+    sha256: e0fcfffb27038c662912fc69e97f6fdf0a463511f3ed76933cf13afdd762bd93

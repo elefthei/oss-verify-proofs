@@ -1,0 +1,56 @@
+schema: oss-fuzz-theorems/project/1
+project: libmicrohttpd2
+homepage: https://www.gnu.org/s/libmicrohttpd
+language: c
+oss_fuzz:
+  path: projects/libmicrohttpd2
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libmicrohttpd2
+  repository: https://git.gnunet.org/libmicrohttpd2
+  commit: 24a2913c4e1cb31a5cff52047beae146959d50b0
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: fuzz_connection
+  status: included
+- name: fuzz_crypto_ext
+  status: not-included
+  reason: not-attempted
+- name: fuzz_crypto_int
+  status: not-included
+  reason: not-attempted
+- name: fuzz_daemon
+  status: included
+- name: fuzz_daemon_connection
+  status: included
+- name: fuzz_libinfo
+  status: not-included
+  reason: not-attempted
+- name: fuzz_mhd2
+  status: included
+- name: fuzz_response
+  status: included
+- name: fuzz_str
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libmicrohttpd2-bin.tar.zst
+    bytes: 5253860
+    sha256: 1e3c86ca890a906d0163730c37d252a2a4c00d699e5b0c4f4be0011769d2e571
+  src:
+    release: v2026.10.0-src
+    file: libmicrohttpd2-src.tar.zst
+    bytes: 888925
+    sha256: c0f2a82158b18703f52454228ba761a44463162f21cc33ae50b8b1d8b8fa9c1f
+  src_manifest:
+    release: v2026.10.0-src
+    file: libmicrohttpd2-src.MANIFEST.tsv
+    bytes: 4293
+    sha256: 7374636c87b9759448b9f5167df86dc359574e8f88a982681b469e7d128f2ee3

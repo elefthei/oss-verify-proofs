@@ -1,0 +1,49 @@
+schema: oss-fuzz-theorems/harness/1
+project: zlib
+harness: checksum_fuzzer
+rocq: OssFuzzTheorems.zlib.checksum_fuzzer
+origin: oss-fuzz
+summary: Computes CRC-32 and Adler-32 of the input in chunks of data[0] bytes and in one call, and asserts that they agree and that crc32_combine obeys its law.
+entry: LLVMFuzzerTestOneInput
+source:
+  files: [source/checksum_fuzzer.c]
+  from: {repository: https://github.com/google/oss-fuzz, commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842, path: projects/zlib/checksum_fuzzer.c}
+  modified: false
+  licence: Apache-2.0
+library: {repository: https://github.com/madler/zlib, commit: 51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf, version: 1.3.1, licence: Zlib}
+modifications:
+- Linked against zlib 1.3.1 with this project's patches (see the project page).
+- getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program depends only on its input.
+- A small driver reads the input file, calls the harness 1 to 4 times and prints each return value.
+builds:
+  plain: {file: checksum_fuzzer.plain, bytes: 52792, sha256: 64e0aab9f6e65f69a654dcebbc0ee2553fcd665b258f6e6d6bebf3e7bc019543, segments: [1, 1, 1, 1]}
+  ubsan: {file: checksum_fuzzer.ubsan, bytes: 53440, sha256: 04a5addf3cdc6e8f6ccd9057022c9b33e811ce13ced12426eda2e73829c433f1, segments: [1, 1, 1, 1]}
+  asan: {file: checksum_fuzzer.asan, bytes: 571576, sha256: 26d565ec4b5fd0ba2a56ef912c987a777e2dce220006cd7c309811f94751a573, segments: [1, 1, 1, 1]}
+  asan-ubsan: {file: checksum_fuzzer.asan-ubsan, bytes: 571832, sha256: 077a62395c30d21a3ee4ef3859ca7b2937d075f67bdacaf9176e5225527b389f, segments: [1, 1, 1, 1]}
+licence: Zlib AND Apache-2.0 AND MIT AND Apache-2.0 WITH LLVM-exception
+checks:
+- {kind: algebraic, strength: full, stops_with: assert, live: true, where: "source/checksum_fuzzer.c:17", what: For every full chunk the CRC-32 combine law holds.}
+- {kind: differential, strength: full, stops_with: assert, live: true, where: "source/checksum_fuzzer.c:18", what: Chunked CRC-32 equals the one-shot CRC-32.}
+- {kind: differential, strength: full, stops_with: assert, live: true, where: "source/checksum_fuzzer.c:19", what: Chunked Adler-32 equals the one-shot Adler-32.}
+distribution:
+  file: Distribution.v
+  argv0: checksum_fuzzer
+  input_file: input.bin
+  prefix_hex: "000000000000"
+  payload: {length: geometric, p: 1/4097, mean_bytes: 4096, alphabet: bytes}
+  components: {payload: 9/10, wrong_argc: 1/50, missing_file: 1/50, full_support: 3/50}
+  mass: "1"
+statements:
+  plain_halts: {kind: halts, builds: [plain], reading: budget, exits: [0, 2], binds_checks: true, status: open}
+  ubsan_halts: {kind: halts, builds: [ubsan], reading: budget, exits: [0, 2], status: open}
+  asan_halts: {kind: halts, builds: [asan], reading: budget, exits: [0, 2], status: open}
+  asan_ubsan_halts: {kind: halts, builds: [asan-ubsan], reading: budget, exits: [0, 2], status: open}
+  plain_halts_may_fail: {kind: halts, builds: [plain], reading: may-fail, exits: any, status: open}
+  ubsan_halts_may_fail: {kind: halts, builds: [ubsan], reading: may-fail, exits: any, status: witnessed-false,
+    witness: {build: ubsan, input_hex: '01000000000000', refused: {call: mmap, position: 3, bytes: 4096},
+      outcome: abort, after: uncaught-bad-alloc, runner: qemu-riscv64 10.0.11}}
+  ubsan_agrees: {kind: agreement, builds: [plain, ubsan], reading: may-fail, budgets: standard, status: open}
+  asan_agrees: {kind: agreement, builds: [plain, asan], reading: may-fail, budgets: asan, status: open}
+  asan_ubsan_agrees: {kind: agreement, builds: [plain, asan-ubsan], reading: may-fail, budgets: asan, status: open}
+  asan_disagrees_at_most: {kind: bound, builds: [plain, asan], reading: may-fail, status: open}
+  asan_agreement_decidable: {kind: decidability, builds: [plain, asan], reading: may-fail, status: open}

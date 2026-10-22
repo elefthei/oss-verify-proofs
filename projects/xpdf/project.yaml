@@ -1,0 +1,46 @@
+schema: oss-fuzz-theorems/project/1
+project: xpdf
+homepage: https://www.xpdfreader.com
+language: c++
+oss_fuzz:
+  path: projects/xpdf
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: xpdf
+  repository: https://dl.xpdfreader.com/xpdf-4.06.tar.gz
+  archive_sha256: 1c38f527c46caee0f712386d42a885b96a31ed9ce11904e872559859894d137e
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_JBIG2
+  status: not-included
+  reason: not-yet-included
+- name: fuzz_pdfload
+  status: not-included
+  reason: not-yet-included
+- name: fuzz_zxdoc
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: xpdf-bin.tar.zst
+    bytes: 459432
+    sha256: 23bb823b04b7f48b60d43a9b6cb89bffb2f0ebf118e2783d08124c4354355e41
+  src:
+    release: v2026.10.0-src
+    file: xpdf-src.tar.zst
+    bytes: 996621
+    sha256: 12e5fc7c543199463a2a58b263e5103a1d1b7f73eb1426639c4143d286d962e4
+  src_manifest:
+    release: v2026.10.0-src
+    file: xpdf-src.MANIFEST.tsv
+    bytes: 1539
+    sha256: 34c11e1b6525ef35f235220d997b4068911b4f23cb90cb8229471d16c77e7de3

@@ -1,0 +1,80 @@
+schema: oss-fuzz-theorems/project/1
+project: libjxl
+homepage: https://github.com/libjxl/libjxl
+language: c++
+oss_fuzz:
+  path: projects/libjxl
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libjxl
+  repository: https://github.com/libjxl/libjxl
+  commit: aea3a06e281fdee13e04815bfbf4f4132e7f59ea
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: cjxl_fuzzer
+  status: included
+  origin: upstream
+- name: color_encoding_fuzzer
+  status: included
+  origin: upstream
+- name: decode_basic_info_fuzzer
+  status: included
+  origin: upstream
+- name: decode_fuzzer
+  status: included
+  origin: upstream
+- name: djxl_fuzzer
+  status: included
+  origin: upstream
+- name: fields_fuzzer
+  status: included
+  origin: upstream
+- name: fuzz_iccprofile_atf
+  status: included
+  origin: upstream
+- name: fuzz_iccprofile_info
+  status: included
+  origin: upstream
+- name: fuzz_iccprofile_transform
+  status: included
+  origin: upstream
+- name: icc_codec_fuzzer
+  status: included
+  origin: upstream
+- name: rans_fuzzer
+  status: included
+  origin: upstream
+- name: set_from_bytes_fuzzer
+  status: included
+  origin: upstream
+- name: streaming_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: transforms_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libjxl-bin.tar.zst
+    bytes: 20737403
+    sha256: 0b8fd343cf61c7a518268324c6e726c9cc58fbc24ce9fc22bf9f72365a36247e
+  src:
+    release: v2026.10.0-src
+    file: libjxl-src.tar.zst
+    bytes: 116556348
+    sha256: 1c9ddc92c7cf44cb99b27762d827dee15e5a6f432719f7550dc83b904f2a8e4d
+  src_manifest:
+    release: v2026.10.0-src
+    file: libjxl-src.MANIFEST.tsv
+    bytes: 19765
+    sha256: 4a0fd8dd3ad60ae7aeb0c475c5afcbc26bcc13623b1a1cdbeebce7b7b83a7a57

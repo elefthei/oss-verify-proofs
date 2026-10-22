@@ -1,0 +1,58 @@
+schema: oss-fuzz-theorems/project/1
+project: libpng-proto
+language: c++
+oss_fuzz:
+  path: projects/libpng-proto
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libpng
+  repository: https://github.com/pnggroup/libpng
+  commit: cae474558968f015124d7369556a4b1016276e3a
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: libpng_colormap_fuzzer
+  status: included
+  origin: upstream
+- name: libpng_readapi_fuzzer
+  status: included
+  origin: upstream
+- name: libpng_transformations_fuzzer
+  status: included
+  origin: upstream
+- name: png_custom_mutator_fuzzer_example
+  status: not-included
+  reason: not-attempted
+- name: png_proto_fuzzer_example
+  status: not-included
+  reason: not-attempted
+- name: png_proto_fuzzer_example_custom_mutator
+  status: not-included
+  reason: not-attempted
+- name: png_transforms_fuzzer
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libpng-proto-bin.tar.zst
+    bytes: 993508
+    sha256: ea7bbd637cd81e5b36476740ca64e6d95ee5a5697ad595701d81473c4875e285
+  src:
+    release: v2026.10.0-src
+    file: libpng-proto-src.tar.zst
+    bytes: 1101552
+    sha256: 9f353acb5cb8fd56b197ba64f4141208b4dbc54307eabc2d925719fe025c26cb
+  src_manifest:
+    release: v2026.10.0-src
+    file: libpng-proto-src.MANIFEST.tsv
+    bytes: 1785
+    sha256: 7a1a8232fa537b8f7d1b5c0a6c8fdc5ae87ac9e2d7287133c90bca2ecba2bfde

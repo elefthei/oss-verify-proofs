@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: openh264
+homepage: https://www.openh264.org
+language: c++
+oss_fuzz:
+  path: projects/openh264
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: openh264
+  repository: https://github.com/cisco/openh264
+  commit: 8ed656019aab87820ffb876353db9e6a598b4d00
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: decoder_fuzzer
+  status: included
+build:
+  system: meson
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: openh264-bin.tar.zst
+    bytes: 1527370
+    sha256: a26fbadc0c00556e5e60845feab5823399a8ab049b13bc41b4a859f366b30e2c
+  src:
+    release: v2026.10.0-src
+    file: openh264-src.tar.zst
+    bytes: 59068003
+    sha256: 84aa3656b623f97a9fb81fbdc1cb25d502523e3a455dc10c61116169cbbeeb89
+  src_manifest:
+    release: v2026.10.0-src
+    file: openh264-src.MANIFEST.tsv
+    bytes: 1548
+    sha256: 5749a5c0b5beedfaab5c9ed61645d036f2e06a5cc648e2c87d1c5c0d16e85199

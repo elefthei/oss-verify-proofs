@@ -1,0 +1,41 @@
+schema: oss-fuzz-theorems/project/1
+project: libxls
+homepage: https://github.com/libxls/libxls
+language: c++
+oss_fuzz:
+  path: projects/libxls
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libxls
+  repository: https://github.com/libxls/libxls
+  commit: 881f6ec3dabb017af878949a6ed7167613bd7a69
+  licence: BSD-2-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_xls
+  status: included
+  origin: upstream
+build:
+  system: autotools
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libxls-bin.tar.zst
+    bytes: 500297
+    sha256: 10378eca22d0a370b26ba99640bfe239dbe39b2356cdb2b69a972558c111e890
+  src:
+    release: v2026.10.0-src
+    file: libxls-src.tar.zst
+    bytes: 171923
+    sha256: 371603ad2d12677277bff8261f08c7d3e5583d2df0ebdd4981ab75331f71d2bd
+  src_manifest:
+    release: v2026.10.0-src
+    file: libxls-src.MANIFEST.tsv
+    bytes: 1315
+    sha256: 4535473a2f5dc7207bf392d78f570c307054ab7da552a2bc4e10bc1fff197404

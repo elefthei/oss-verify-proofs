@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: ms-tpm-20-ref
+homepage: https://github.com/microsoft/ms-tpm-20-ref
+language: c
+oss_fuzz:
+  path: projects/ms-tpm-20-ref
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: not-yet-built
+reason: not-attempted

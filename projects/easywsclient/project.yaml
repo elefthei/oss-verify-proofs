@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: easywsclient
+homepage: https://github.com/dhbaird/easywsclient
+language: c++
+oss_fuzz:
+  path: projects/easywsclient
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: easywsclient
+  repository: https://github.com/dhbaird/easywsclient
+  commit: afc1d8cfc584e0f1f4a77e8c0ce3e979d9fe7ce2
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: easyws_fuzzer
+  status: included
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: easywsclient-bin.tar.zst
+    bytes: 449879
+    sha256: f4e3e44f67fe2131aa876fdafa3b60c6d4f925f99be541f31af8d9d94331d539
+  src:
+    release: v2026.10.0-src
+    file: easywsclient-src.tar.zst
+    bytes: 13109
+    sha256: b1cf1b9f0009652c8ba36318640a81a0af61f0d915192833b307af4078171796
+  src_manifest:
+    release: v2026.10.0-src
+    file: easywsclient-src.MANIFEST.tsv
+    bytes: 1588
+    sha256: b892e4dfc3987a5406deae72bbe46badfd1105dbd983984184e848c16f86974a

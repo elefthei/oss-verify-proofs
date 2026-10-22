@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: wolfboot
+homepage: https://www.wolfssl.com/products/wolfboot
+language: c++
+oss_fuzz:
+  path: projects/wolfboot
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: wolfBoot
+  repository: https://github.com/wolfSSL/wolfBoot
+  commit: 9fc5f75234d1f8f5c1be49d2be01de24fd54b666
+  licence: GPL-3.0-or-later
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_delta
+  status: not-included
+  reason: not-attempted
+- name: fuzz_elf
+  status: not-included
+  reason: not-attempted
+- name: fuzz_gpt
+  status: not-included
+  reason: not-attempted
+- name: fuzz_gzip
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wolfboot-bin.tar.zst
+    bytes: 296388
+    sha256: 5ff4c9b7395fe9328d20fdc71a6a590fbeff16f739229aa18d36940d0460add9
+  src:
+    release: v2026.10.0-src
+    file: wolfboot-src.tar.zst
+    bytes: 27095713
+    sha256: 7dc72719627d2edc2b4d849e44c0d0466193203ad3de0db2b2220a06d1498626
+  src_manifest:
+    release: v2026.10.0-src
+    file: wolfboot-src.MANIFEST.tsv
+    bytes: 5686
+    sha256: 459bae1190d075bae4d9bacf7a9c1ab499c1d268e3b96dadd2fa88ea6105e0f9

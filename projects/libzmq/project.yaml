@@ -1,0 +1,74 @@
+schema: oss-fuzz-theorems/project/1
+project: libzmq
+homepage: https://github.com/zeromq/libzmq
+language: c++
+oss_fuzz:
+  path: projects/libzmq
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: libzmq
+  repository: https://github.com/zeromq/libzmq
+  commit: 46493370217ac135246617fa2f6ac819d8b61bfc
+  licence: MPL-2.0
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: test_bind_curve_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_bind_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_bind_null_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_bind_stream_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_bind_ws_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_connect_curve_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_connect_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_connect_null_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_connect_stream_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_connect_ws_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_socket_options_fuzzer
+  status: not-included
+  reason: not-attempted
+- name: test_z85_decode_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: libzmq-bin.tar.zst
+    bytes: 365103
+    sha256: a68abd4b474c175a5c294a82a9f4596cc06a93423205e4b60a9635f43d6087f7
+  src:
+    release: v2026.10.0-src
+    file: libzmq-src.tar.zst
+    bytes: 615573
+    sha256: 00d5e7f281ae9ecd73796a2f414e8bea6bc540e5d7be20c460b312695c4a037d
+  src_manifest:
+    release: v2026.10.0-src
+    file: libzmq-src.MANIFEST.tsv
+    bytes: 1378
+    sha256: 69f252a125bcdd81c3038eb5d945fb653fb52ac64ff82f1595ff87388c6c370c

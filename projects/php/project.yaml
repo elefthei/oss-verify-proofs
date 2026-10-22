@@ -1,0 +1,58 @@
+schema: oss-fuzz-theorems/project/1
+project: php
+language: c++
+oss_fuzz:
+  path: projects/php
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: php-src
+  repository: https://github.com/php/php-src
+  commit: 1979890d21d629d1a29f5c67333ce0b087d7985e
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: php-fuzz-execute
+  status: included
+  origin: upstream
+- name: php-fuzz-exif
+  status: included
+  origin: upstream
+- name: php-fuzz-function-jit
+  status: not-included
+  reason: not-attempted
+- name: php-fuzz-json
+  status: included
+  origin: upstream
+- name: php-fuzz-parser
+  status: included
+  origin: upstream
+- name: php-fuzz-tracing-jit
+  status: not-included
+  reason: not-attempted
+- name: php-fuzz-unserialize
+  status: included
+  origin: upstream
+- name: php-fuzz-unserializehash
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: php-bin.tar.zst
+    bytes: 86188658
+    sha256: 353164f72ff67785e42c813850231484d5a575dd0a7fdc52bbfc2d57cd5f4ce5
+  src:
+    release: v2026.10.0-src
+    file: php-src.tar.zst
+    bytes: 15841054
+    sha256: 6808f3f6c6861a2a1e4296b2844020a5d775796321bb65196f87bd1d0c560650
+  src_manifest:
+    release: v2026.10.0-src
+    file: php-src.MANIFEST.tsv
+    bytes: 1871
+    sha256: ead5cf0cd79cef26e44f96129c286fadcd379f84c2f1ead0611e52ce2bfb0172

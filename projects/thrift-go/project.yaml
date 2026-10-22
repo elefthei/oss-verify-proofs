@@ -1,0 +1,9 @@
+schema: oss-fuzz-theorems/project/1
+project: thrift-go
+homepage: https://thrift.apache.org
+language: go
+oss_fuzz:
+  path: projects/thrift-go
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: language-pending
+reason: go

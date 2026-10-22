@@ -1,0 +1,113 @@
+schema: oss-fuzz-theorems/project/1
+project: opus
+homepage: https://opus-codec.org
+language: c++
+oss_fuzz:
+  path: projects/opus
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: opus
+  repository: https://gitlab.xiph.org/xiph/opus
+  commit: 3704fb816bc8d299eaa2ff2879070b790edf6f5e
+  licence: NOASSERTION
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: opus_decode_fuzzer
+  status: included
+  origin: upstream
+- name: opus_encode_fuzzer_fixed
+  status: not-included
+  reason: not-attempted
+- name: opus_encode_fuzzer_fixed_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_encode_fuzzer_floating
+  status: not-included
+  reason: not-attempted
+- name: opus_encode_fuzzer_floating_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_decode_fuzzer_fixed
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_decode_fuzzer_fixed_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_decode_fuzzer_floating
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_decode_fuzzer_floating_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_encode_fuzzer_fixed
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_encode_fuzzer_fixed_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_encode_fuzzer_floating
+  status: not-included
+  reason: not-attempted
+- name: opus_multistream_encode_fuzzer_floating_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_decoder_fuzzer_fixed
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_decoder_fuzzer_fixed_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_decoder_fuzzer_floating
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_decoder_fuzzer_floating_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_encoder_fuzzer_fixed
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_encoder_fuzzer_fixed_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_encoder_fuzzer_floating
+  status: not-included
+  reason: not-attempted
+- name: opus_projection_encoder_fuzzer_floating_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_repacketizer_fuzzer_fixed
+  status: not-included
+  reason: not-attempted
+- name: opus_repacketizer_fuzzer_fixed_qext
+  status: not-included
+  reason: not-attempted
+- name: opus_repacketizer_fuzzer_floating
+  status: not-included
+  reason: not-attempted
+- name: opus_repacketizer_fuzzer_floating_qext
+  status: not-included
+  reason: not-attempted
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: opus-bin.tar.zst
+    bytes: 731169
+    sha256: 53c7fd2fa8c56ba4e5eab256120698a790ba5a8b917711c23d6d02d0357c297e
+  src:
+    release: v2026.10.0-src
+    file: opus-src.tar.zst
+    bytes: 3704790
+    sha256: 3217bf4b8d368f1c91bb42931736c448c28e640e685e8c7d41aadcbe1841d7ce
+  src_manifest:
+    release: v2026.10.0-src
+    file: opus-src.MANIFEST.tsv
+    bytes: 1403
+    sha256: d8f818dbe98ebff1dd2061af6eef1e9792dddbb29949d8b6c50ee2659a46891a

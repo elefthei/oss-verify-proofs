@@ -1,0 +1,5 @@
+simdjson: src/fallback.cpp attributes its UTF-8 validator, fallback::implementation::validate_utf8 (lines 422-483 at f807de973580fb22cc0db6b3b896716684b0266c), with this line (line 422):
+
+// credit: based on code from Google Fuchsia (Apache Licensed)
+
+No further notice is carried. The Apache License 2.0 text is LICENSES/simdjson-LICENSE (the simdjson repository's LICENSE, which is the Apache License 2.0).

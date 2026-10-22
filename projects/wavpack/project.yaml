@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: wavpack
+language: c++
+oss_fuzz:
+  path: projects/wavpack
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: WavPack
+  repository: https://github.com/dbry/WavPack
+  commit: eccf998c7acce58e18dedd354e6b025728dcf6da
+  licence: BSD-3-Clause
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: wavpack-bin.tar.zst
+    bytes: 579480
+    sha256: 4408046b10e8a0bbc2ec12458df775d16d9e6590472544a180e324626c04c810
+  src:
+    release: v2026.10.0-src
+    file: wavpack-src.tar.zst
+    bytes: 1556258
+    sha256: c81f788008a15985ac095b600645b784716563360221ad9bcdb168967c3f0c11
+  src_manifest:
+    release: v2026.10.0-src
+    file: wavpack-src.MANIFEST.tsv
+    bytes: 1324
+    sha256: d0995c947d224010d10a75e5ae96a57aa00d7269979064abcf6ff44a20ea1512

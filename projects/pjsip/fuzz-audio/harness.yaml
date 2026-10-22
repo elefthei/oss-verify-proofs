@@ -1,0 +1,322 @@
+schema: oss-fuzz-theorems/harness/1
+project: pjsip
+harness: fuzz-audio
+rocq: OssFuzzTheorems.pjsip.fuzz_audio
+origin: upstream
+summary: 'For each registered audio codec (G.711 A/U-law, G.722, GSM, Speex, iLBC, L16 8/16/48 kHz, Opus
+  when built) on a non-overlapping chunk: codec modify (VAD bit from input), decode the chunk, re-encode
+  the decoded PCM, encode the chunk as PCM, parse, and PLC recover twice; then pjmedia_linear2alaw/ulaw
+  and alaw2linear/ulaw2linear/alaw2ulaw/ulaw2alaw over the remaining bytes. Every result is discarded:
+  decode->encode and linear->alaw->linear look like round trips but nothing is compared.'
+entry: LLVMFuzzerTestOneInput
+source:
+  files:
+  - source/fuzz-audio.c
+  from:
+    repository: https://github.com/pjsip/pjproject
+    commit: 708f894e9cb2fa47d3d119d46105b786495ba5a1
+    path: tests/fuzz/fuzz-audio.c
+  modified: false
+  licence: GPL-2.0-or-later
+library:
+  repository: https://github.com/pjsip/pjproject
+  commit: 708f894e9cb2fa47d3d119d46105b786495ba5a1
+  licence: NOASSERTION
+modifications:
+- Linked against pjproject at commit 708f894e with 1 patch to the library (listed on the project page).
+- In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
+  depends only on its input.
+- A small driver reads the input file, calls the harness one to four times and prints each return value.
+builds:
+  plain:
+    file: fuzz-audio.plain
+    bytes: 438944
+    sha256: b60fe947d4b24711164607da8f960a26533d8141b0282f9155d635a74ce52033
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libmount.a
+      kind: image-library
+      sha256: ab05d0848cd36ce728a8508e9fe240f9549fbbaf66aaec477871140f97e7b6d4
+    - name: libuuid.a
+      kind: image-library
+      sha256: 0ac0cc26f84a5a27a2d2bdc7dc855824f8cc6d4d7253652360579681aec3c045
+  ubsan:
+    file: fuzz-audio.ubsan
+    bytes: 539816
+    sha256: 97a857ba3efc83583eb702b41ad6298ed801af4b4d3a715d800f69749272294d
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libmount.a
+      kind: image-library
+      sha256: ab05d0848cd36ce728a8508e9fe240f9549fbbaf66aaec477871140f97e7b6d4
+    - name: libuuid.a
+      kind: image-library
+      sha256: 0ac0cc26f84a5a27a2d2bdc7dc855824f8cc6d4d7253652360579681aec3c045
+  asan:
+    file: fuzz-audio.asan
+    bytes: 1661296
+    sha256: 6b6253ce0cbd6e57acb653501435f8c49fc0a76683de87c3d5c2178c33439649
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libmount.a
+      kind: image-library
+      sha256: ab05d0848cd36ce728a8508e9fe240f9549fbbaf66aaec477871140f97e7b6d4
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libuuid.a
+      kind: image-library
+      sha256: 0ac0cc26f84a5a27a2d2bdc7dc855824f8cc6d4d7253652360579681aec3c045
+  asan-ubsan:
+    file: fuzz-audio.asan-ubsan
+    bytes: 1706768
+    sha256: 85c639a3f258d003aad31bbbcc8b8eac4bb0e7b822a4b45592773389e52043be
+    segments:
+    - 1
+    - 1
+    - 1
+    - 1
+    uninstrumented:
+    - name: clang_rt.crtbegin.o
+      kind: compiler-rt
+      sha256: 0ba7749fe1a9cfc61b7b4dbb8616ce4cffad430bdd04ec029cd291d030925e72
+    - name: libclang_rt.asan.a
+      kind: sanitizer-runtime
+      sha256: 078168dea88da7f13cccc6ca7305c6e2df0202f4f0364c7caa23a20a1faa5418
+    - name: libclang_rt.builtins.a
+      kind: compiler-rt
+      sha256: 7e376dbc917599242272aa6e70e66b249ed063d78bd707e88e607e6ed375fa29
+    - name: crt1.o
+      kind: libc
+      sha256: 111e0dda16a02983fee66cc70e332b41860dccad42d8fb0990776814ef70930a
+    - name: libc++.a
+      kind: cxx-runtime
+      sha256: 9f938a67536a35ed70027d736d48ee9033f9a02e8cde0f2064aad2b735c7ca97
+    - name: libc.a
+      kind: libc
+      sha256: f19509197da87e158d2111bde83f0943296a4ee5506b024004f1d68c63c496e9
+    - name: libmount.a
+      kind: image-library
+      sha256: ab05d0848cd36ce728a8508e9fe240f9549fbbaf66aaec477871140f97e7b6d4
+    - name: libunwind.a
+      kind: cxx-runtime
+      sha256: 80167e95a699a1a21d3933967631fe5484817812aeda2cb98a55b652d608f812
+    - name: libuuid.a
+      kind: image-library
+      sha256: 0ac0cc26f84a5a27a2d2bdc7dc855824f8cc6d4d7253652360579681aec3c045
+licence: NOASSERTION
+checks: []
+distribution:
+  file: Distribution.v
+  argv0: fuzz-audio
+  input_file: input.bin
+  prefix_hex: '000000000000'
+  payload:
+    length: geometric
+    p: 1/4097
+    mean_bytes: 4096
+    alphabet: bytes
+  components:
+    payload: 9/10
+    wrong_argc: 1/50
+    missing_file: 1/50
+    full_support: 3/50
+  mass: '1'
+statements:
+  asan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    budgets: asan
+    abort: signal
+    status: model-gap
+    gap:
+    - threads
+  asan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  asan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan
+    reading: may-fail
+    status: open
+  ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    budgets: standard
+    abort: signal
+    status: model-gap
+    gap:
+    - threads
+  ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agrees:
+    kind: agreement
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    budgets: asan
+    abort: signal
+    status: model-gap
+    gap:
+    - threads
+  asan_ubsan_disagrees_at_most:
+    kind: bound
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  asan_ubsan_agreement_decidable:
+    kind: decidability
+    builds:
+    - plain
+    - asan-ubsan
+    reading: may-fail
+    status: open
+  plain_halts:
+    kind: halts
+    builds:
+    - plain
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+    gap:
+    - threads
+  plain_halts_may_fail:
+    kind: halts
+    builds:
+    - plain
+    reading: may-fail
+    exits: any
+    binds_checks: false
+    status: model-gap
+    gap:
+    - threads
+  asan_halts:
+    kind: halts
+    builds:
+    - asan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+    gap:
+    - threads
+  ubsan_halts:
+    kind: halts
+    builds:
+    - ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+    gap:
+    - threads
+  ubsan_halts_may_fail:
+    kind: halts
+    builds:
+    - ubsan
+    reading: may-fail
+    exits: any
+    binds_checks: false
+    status: model-gap
+    gap:
+    - threads
+  asan_ubsan_halts:
+    kind: halts
+    builds:
+    - asan-ubsan
+    reading: budget
+    exits:
+    - 0
+    - 2
+    binds_checks: false
+    status: model-gap
+    gap:
+    - threads

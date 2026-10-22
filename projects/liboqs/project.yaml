@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: liboqs
+homepage: https://openquantumsafe.org
+language: c
+oss_fuzz:
+  path: projects/liboqs
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: liboqs
+  repository: https://github.com/open-quantum-safe/liboqs
+  commit: 8979276ad1eb008215aa78a3c56b3649f604bbb1
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_test_kem
+  status: included
+  origin: upstream
+- name: fuzz_test_sig
+  status: included
+  origin: upstream
+- name: fuzz_test_sig_stfl_lms
+  status: included
+  origin: upstream
+- name: fuzz_test_sig_stfl_xmss
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: liboqs-bin.tar.zst
+    bytes: 7420704
+    sha256: a7ae3df529c0d48a58402d18c9be6cb92bcc0793d07d155b7b12b69650350f72
+  src:
+    release: v2026.10.0-src
+    file: liboqs-src.tar.zst
+    bytes: 1962702
+    sha256: f72075096e6c72154be978b8ff6d8a765a1f1a3920ae69794d0fe3cec4187f5b
+  src_manifest:
+    release: v2026.10.0-src
+    file: liboqs-src.MANIFEST.tsv
+    bytes: 1743
+    sha256: d41c6fc2556590cd4378253d937b7871d61714436dcd1b3b2e681ec53cb24892

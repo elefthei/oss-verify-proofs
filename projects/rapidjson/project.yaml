@@ -1,0 +1,40 @@
+schema: oss-fuzz-theorems/project/1
+project: rapidjson
+homepage: https://github.com/tencent/rapidjson
+language: c++
+oss_fuzz:
+  path: projects/rapidjson
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rapidjson
+  repository: https://github.com/Tencent/rapidjson
+  commit: 24b5e7a8b27f42fa16b96fc70aade9106cf7102f
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzzer
+  status: included
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rapidjson-bin.tar.zst
+    bytes: 501787
+    sha256: a11af5fe82b5089d51ebb809841dfd29723f370fe3b47f10dfc4c0f35f9aba8a
+  src:
+    release: v2026.10.0-src
+    file: rapidjson-src.tar.zst
+    bytes: 1564789
+    sha256: 79dcc5b0b893e8a09d001d79c514310b06f0274f727ffb8d0811a48108f81ea2
+  src_manifest:
+    release: v2026.10.0-src
+    file: rapidjson-src.MANIFEST.tsv
+    bytes: 2055
+    sha256: d3ffd3c6d91a030b8ee11ed1600a9e49be5dc02a0f90c55edf0f0064ad3c1df4

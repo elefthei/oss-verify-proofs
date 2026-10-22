@@ -1,0 +1,50 @@
+schema: oss-fuzz-theorems/project/1
+project: pacemaker
+homepage: https://www.clusterlabs.org/pacemaker
+language: c
+oss_fuzz:
+  path: projects/pacemaker
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pacemaker
+  repository: https://github.com/ClusterLabs/pacemaker
+  commit: d2652215344da5501846f7e513c59e23391fbb0d
+  licence: NOASSERTION
+  patch_count: 0
+harnesses:
+- name: cib_file_fuzzer
+  status: included
+  origin: upstream
+- name: iso8601_fuzzer
+  status: included
+  origin: upstream
+- name: scores_fuzzer
+  status: included
+  origin: upstream
+- name: strings_fuzzer
+  status: included
+  origin: upstream
+- name: xml_fuzzer
+  status: included
+  origin: upstream
+build:
+  system: custom
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pacemaker-bin.tar.zst
+    bytes: 9029770
+    sha256: 8fdc7baa96a4cf9cb23e1ab7900f4bea6bcaa8f6e631ed6c9a0a1efd87409869
+  src:
+    release: v2026.10.0-src
+    file: pacemaker-src.tar.zst
+    bytes: 9768971
+    sha256: 9e9cc5ed6ecf0de20c84c199078de904e4cd5e1cdc2b5823ed57d8009690605e
+  src_manifest:
+    release: v2026.10.0-src
+    file: pacemaker-src.MANIFEST.tsv
+    bytes: 3867
+    sha256: 3d04e637e1eb20d75ec9e98f1cb359b37a08695c7becb7f063f6f56f1d7a5331

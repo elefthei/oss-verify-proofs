@@ -1,0 +1,62 @@
+schema: oss-fuzz-theorems/project/1
+project: rabbitmq-c
+homepage: https://github.com/alanxz/rabbitmq-c
+language: c
+oss_fuzz:
+  path: projects/rabbitmq-c
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: rabbitmq-c
+  repository: https://github.com/alanxz/rabbitmq-c
+  commit: 6ddbdb2d8c1f63dcd3eb65c7a33d36b1d6417eed
+  licence: MIT
+harnesses:
+- name: api-driver
+  status: not-included
+  origin: this-repository
+  reason: held
+- name: fuzz_codec
+  status: included
+  origin: upstream
+- name: fuzz_handle_input
+  status: included
+  origin: upstream
+- name: fuzz_method_decode
+  status: included
+  origin: upstream
+- name: fuzz_properties_decode
+  status: included
+  origin: upstream
+- name: fuzz_read_message
+  status: not-included
+  reason: not-attempted
+- name: fuzz_server
+  status: included
+  origin: upstream
+- name: fuzz_table
+  status: included
+  origin: upstream
+- name: fuzz_url
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: rabbitmq-c-bin.tar.zst
+    bytes: 897283
+    sha256: 6c16558b7f7c0d7c4b38b7ce9497d74a36327599c376f2e4726259b7604f411a
+  src:
+    release: v2026.10.0-src
+    file: rabbitmq-c-src.tar.zst
+    bytes: 131864
+    sha256: 621ed4a2504823cd614ee6d0bf5dc51a5e326f6fdc63c4acf0e9189759b8c151
+  src_manifest:
+    release: v2026.10.0-src
+    file: rabbitmq-c-src.MANIFEST.tsv
+    bytes: 3414
+    sha256: a14a1a5082c1bd6cb887c747b09eeeef844c90e2d8660d503a4eb3db8cd70d28

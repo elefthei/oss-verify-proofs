@@ -1,0 +1,37 @@
+schema: oss-fuzz-theorems/project/1
+project: pistache
+language: c++
+oss_fuzz:
+  path: projects/pistache
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: available
+library:
+  name: pistache
+  repository: https://github.com/pistacheio/pistache
+  commit: a7b0dc9ec01b96b95bde55331d83e27a9bf800b9
+  licence: NOASSERTION
+  patch_count: 2
+harnesses:
+- name: fuzz_parsers
+  status: included
+  origin: upstream
+build:
+  system: cmake
+  clang: 20.1.8
+  builder: ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b
+assets:
+  bin:
+    release: v2026.10.0
+    file: pistache-bin.tar.zst
+    bytes: 1754619
+    sha256: a438ad5a3e56c478b6282afc067a83bef2ac37d4d6c07867efa7da18a17ac06c
+  src:
+    release: v2026.10.0-src
+    file: pistache-src.tar.zst
+    bytes: 1712888
+    sha256: 61a93845f715df6381bfa5891e19cd9a45ad435decfc862fcd7d88a6a3d75166
+  src_manifest:
+    release: v2026.10.0-src
+    file: pistache-src.MANIFEST.tsv
+    bytes: 2157
+    sha256: 06a68a16931d3eef46dee2bf3a972e5933402016d3045beebf135d3ba4a302b3

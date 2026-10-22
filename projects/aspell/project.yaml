@@ -1,0 +1,12 @@
+schema: oss-fuzz-theorems/project/1
+project: aspell
+homepage: https://github.com/GNUAspell/aspell
+language: c++
+oss_fuzz:
+  path: projects/aspell
+  commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
+status: held
+reason: no-licence-grant
+reason_args:
+  commit: 66df330351f54d90a544d81ab083e24412302831
+  text: aspell-fuzz

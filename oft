@@ -1,0 +1,6 @@
+#!/bin/sh
+# ./oft <command> [...]: the tools of this repository (tools/oft/README.md).
+# Needs Python 3 and PyYAML.  Writes no bytecode, so running it leaves
+# nothing behind in the tree.
+here=$(cd -- "$(dirname -- "$0")" && pwd)
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$here/tools${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m oft --root "$here" "$@"

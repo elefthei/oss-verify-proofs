@@ -66,7 +66,7 @@ jobs:
           find proofs -mindepth 4 -maxdepth 4 -name proof.yaml | sort \
             | sed -E 's|^(proofs/[^/]+/[^/]+)/[^/]+/proof\.yaml$|\1/|' | sort -u > "$RUNNER_TEMP/changed.txt"
           [ -s "$RUNNER_TEMP/changed.txt" ] || { echo "::error::no committed proof: nothing to check"; exit 1; }
-          PYTHONPATH=tools python -m oft plan --changed "$RUNNER_TEMP/changed.txt" --max-jobs 32 > "$RUNNER_TEMP/plan.json"
+          PYTHONPATH=tools python -m oft plan --changed "$RUNNER_TEMP/changed.txt" --max-jobs 256 > "$RUNNER_TEMP/plan.json"
           n="$(jq '.units | length' "$RUNNER_TEMP/plan.json")"
           [ "$n" -gt 0 ] || { echo "::error::the committed proofs name no harness that builds: nothing to check"; exit 1; }
           echo "plan=$(jq -c .jobs "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"

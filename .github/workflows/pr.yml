@@ -110,7 +110,7 @@ jobs:
             echo 'plan=[]' >> "$GITHUB_OUTPUT"; echo "units=0" >> "$GITHUB_OUTPUT"; exit 0
           fi
           PYTHONPATH=base/tools python -m oft --root head plan --changed "$RUNNER_TEMP/changed.txt" \
-            --max-jobs 20 > "$RUNNER_TEMP/plan.json"
+            --max-jobs 256 > "$RUNNER_TEMP/plan.json"
           echo "plan=$(jq -c .jobs "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
           echo "units=$(jq '.units | length' "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
           { echo "### harnesses to check"; jq -r '.units[]' "$RUNNER_TEMP/plan.json"; } >> "$GITHUB_STEP_SUMMARY"

@@ -77,7 +77,7 @@ jobs:
           fi
           [ -s "$RUNNER_TEMP/units.txt" ] || { echo "::error::no harness to check: nothing examined"; exit 1; }
           sed 's|^|projects/|; s|$|/harness.yaml|' "$RUNNER_TEMP/units.txt" > "$RUNNER_TEMP/changed.txt"
-          PYTHONPATH=tools python -m oft plan --changed "$RUNNER_TEMP/changed.txt" --max-jobs 32 > "$RUNNER_TEMP/plan.json"
+          PYTHONPATH=tools python -m oft plan --changed "$RUNNER_TEMP/changed.txt" --max-jobs 256 > "$RUNNER_TEMP/plan.json"
           echo "plan=$(jq -c .jobs "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
           echo "units=$(jq '.units | length' "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
           echo "harnesses: $(jq '.units | length' "$RUNNER_TEMP/plan.json") of $(jq '.units | length' "$RUNNER_TEMP/all.json")" >> "$GITHUB_STEP_SUMMARY"

@@ -147,6 +147,122 @@ class Fetch(unittest.TestCase):
             self.assertIn("no binaries in this release", out)
 
 
+    def split(self, t, a, name="zlib-bin.tar.zst", kind="bin", n=3):
+        """Ship the asset `name` as `n` numbered parts, as a release does with a file GitHub cannot take whole, and
+        record them under `parts` in the facts."""
+        whole = os.path.join(a, name)
+        with open(whole, "rb") as f:
+            data = f.read()
+        os.unlink(whole)
+        step = -(-len(data) // n)
+        parts = []
+        for i in range(0, len(data), step):
+            piece, pn = data[i:i + step], "%s.%03d" % (name, i // step)
+            with open(os.path.join(a, pn), "wb") as f:
+                f.write(piece)
+            parts.append({"file": pn, "bytes": len(piece), "sha256": hashlib.sha256(piece).hexdigest()})
+        p = t.yaml("projects/zlib/project.yaml")
+        p["assets"][kind]["parts"] = parts
+        t.put_yaml("projects/zlib/project.yaml", p)
+        self.assertEqual(t.generate(), 0, t.last_output)
+        return parts
+
+    def test_an_asset_that_ships_in_parts_is_joined_and_checked(self):
+        """OSSV-126: a bundle of 2 GiB or more ships as <file>.000, .001, ...; fetch downloads each, checks it
+        against its own bytes and SHA-256, and checks the join against the record before it unpacks anything."""
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            files = make_release(t, a)
+            self.split(t, a)
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("zlib-bin.tar.zst in 3 parts", out)
+            self.assertIn("8 binaries, each SHA-256 checked", out)
+            for name, data in files.items():
+                with open(t.path("projects/zlib/bin", name), "rb") as f:
+                    self.assertEqual(f.read(), data)
+
+    def test_a_part_that_is_not_the_pinned_one_is_refused(self):
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            parts = self.split(t, a)
+            with open(os.path.join(a, parts[1]["file"]), "r+b") as f:
+                b = f.read(1)
+                f.seek(0)
+                f.write(bytes([b[0] ^ 1]))
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a)
+            self.assertEqual(rc, 1)
+            self.assertIn(parts[1]["file"], out)
+            self.assertFalse(os.path.isdir(t.path("projects/zlib/bin", "checksum_fuzzer")),
+                             "a bad part unpacks nothing")
+
+    def test_parts_that_are_not_the_record_are_refused(self):
+        """A parts list that is not .000, .001, ... in order, whose bytes do not add up, or whose join is not the
+        record's SHA-256, is refused before anything is unpacked."""
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            parts = self.split(t, a)
+            for change, why in ((lambda ps: ps[1:], "in order"),
+                                (lambda ps: [dict(ps[0], bytes=ps[0]["bytes"] + 1)] + ps[1:], "bytes")):
+                p = t.yaml("projects/zlib/project.yaml")
+                p["assets"]["bin"]["parts"] = change([dict(x) for x in parts])
+                t.put_yaml("projects/zlib/project.yaml", p)
+                rc, out = run(fetch.fetch, t.root, ["zlib"], source=a)
+                self.assertEqual(rc, 1, out)
+                self.assertIn(why, out)
+
+    def test_a_source_asset_ships_parts_the_same_way(self):
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            src = os.path.join(a, "zlib-src.tar.zst")
+            with open(src, "wb") as f:
+                f.write(b"a source bundle's bytes" * 10)
+            p = t.yaml("projects/zlib/project.yaml")
+            with open(src, "rb") as f:
+                data = f.read()
+            p["assets"]["src"]["bytes"], p["assets"]["src"]["sha256"] = len(data), hashlib.sha256(data).hexdigest()
+            t.put_yaml("projects/zlib/project.yaml", p)
+            self.assertEqual(t.generate(), 0, t.last_output)
+            parts = self.split(t, a, "zlib-src.tar.zst", "src", n=2)
+            # the fixture's source directory holds no MANIFEST and no recipe, so those two are reported missing;
+            # the source asset itself is joined from its parts and checked
+            _rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, only_check_assets=True)
+            self.assertIn("zlib-src.tar.zst in 2 parts", out)
+            self.assertIn("SHA-256 matches", out)
+            self.assertEqual(len(parts), 2)
+            for part in parts:                            # a bad part of a source asset is refused as a bin one is
+                with open(os.path.join(a, part["file"]), "ab") as f:
+                    f.write(b"x")
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, only_check_assets=True)
+            self.assertEqual(rc, 1)
+            self.assertIn(parts[0]["file"], out)
+
+    def test_the_listing_prints_one_line_per_part(self):
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            parts = self.split(t, a)
+            rc, out = run(fetch.fetch, t.root, ["zlib"], listing=True)
+            self.assertEqual(rc, 0, out)
+            listed = [l.split() for l in out.splitlines()]
+            for p in parts:
+                self.assertTrue(any(f == p["file"] and s == p["sha256"] for _r, f, s in listed), (p, out))
+            self.assertFalse(any(f == "zlib-bin.tar.zst" for _r, f, _s in listed), out)
+
+    def test_the_harness_filter_writes_one_harness_and_still_checks_the_archive(self):
+        """--harness names what is written; every member is still read and checked against its harness.yaml."""
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            files = make_release(t, a)
+            one = sorted({n.split("/")[0] for n in files})[0]
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, harnesses={one})
+            self.assertEqual(rc, 0, out)
+            for name in files:
+                self.assertEqual(os.path.exists(t.path("projects/zlib/bin", name)), name.startswith(one + "/"), name)
+            self.assertIn("binaries, each SHA-256 checked", out)
+        with tree() as t, tempfile.TemporaryDirectory() as a:      # a bad archive is still refused
+            make_release(t, a, tamper=lambda f: dict(f, **{"checksum_fuzzer/checksum_fuzzer.asan": b"\x7fELF other"}))
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, harnesses={"checksum_fuzzer"})
+            self.assertEqual(rc, 1, out)
+            self.assertIn("does not match its harness.yaml", out)
+
 class Listing(unittest.TestCase):
     """`oft fetch --release TAG --list`, what release.yml compares a draft with: each tag lists exactly the files the
     facts attach to it, and the recipe goes with the source assets."""

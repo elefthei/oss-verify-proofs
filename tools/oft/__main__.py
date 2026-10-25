@@ -28,7 +28,7 @@ def cmd_lint(a):
 
 def cmd_fetch(a):
     return fetch.fetch(_root(a), a.projects, source=a.source, all_projects=a.all, only_check_assets=a.assets_only,
-                       release=a.release, listing=a.list)
+                       release=a.release, listing=a.list, harnesses=set(a.harness) or None)
 
 
 def cmd_verify_sha(a):
@@ -69,7 +69,10 @@ def main(argv=None):
     f.add_argument("--assets-only", action="store_true",
                    help="check every archive's SHA-256 (binaries and source) without unpacking")
     f.add_argument("--release", help="only the projects whose assets are attached to this release tag")
-    f.add_argument("--list", action="store_true", help="print <release> <file> <sha256> per asset; fetch nothing")
+    f.add_argument("--list", action="store_true",
+                   help="print <release> <file> <sha256> per file an asset ships (one line per part); fetch nothing")
+    f.add_argument("--harness", action="append", default=[],
+                   help="write only this harness's files; the whole archive is still read and checked (repeatable)")
     f.set_defaults(fn=cmd_fetch)
 
     v = sub.add_parser("verify-sha", help="check fetched binaries against harness.yaml")

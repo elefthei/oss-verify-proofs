@@ -8,6 +8,17 @@ The archive may also hold the licence files of the copyleft components compiled
 into the binaries, as LICENSES/<component>/<file>; they go to
 projects/<p>/bin/LICENSES/.  Any other member is refused, so an archive can
 never write anywhere else.
+
+An asset GitHub cannot take whole (2 GiB per release file) ships as numbered
+parts, <file>.000, .001, ..., listed under `parts` in its record; `cat` of them
+in order is the file.  `fetch` downloads every part, checks each against its own
+bytes and SHA-256, and checks the joined stream against the record's before it
+unpacks anything; `--list` prints one line per part, which is what a CI job
+downloads.  A bin asset and a src asset ship parts the same way.
+
+`--harness` names the harnesses to write: the whole archive is still read and
+every member checked, and only the named harnesses' files are moved into the
+tree.
 """
 import hashlib
 import os
@@ -37,21 +48,59 @@ def _project(tree, name):
     return proj
 
 
-def _download(url_or_path, dest, want_bytes, want_sha):
+def _download(url_or_path, dest, want_bytes, want_sha, append=False, digest=None):
+    """Copy one file to `dest` (appending to it for a part of a split asset) and check it against `want_bytes` and
+    `want_sha`. `digest`, when given, is also fed every byte, so a caller can check the join of the parts."""
     h = hashlib.sha256()
     n = 0
     if "://" in url_or_path:
         src = urllib.request.urlopen(url_or_path, timeout=120)
     else:
         src = open(url_or_path, "rb")
-    with src, open(dest, "wb") as out:
+    with src, open(dest, "ab" if append else "wb") as out:
         for chunk in iter(lambda: src.read(1 << 20), b""):
             h.update(chunk)
+            if digest is not None:
+                digest.update(chunk)
             n += len(chunk)
             out.write(chunk)
     if n != want_bytes or h.hexdigest() != want_sha:
         raise FetchError("%s: got %d bytes with SHA-256 %s; project.yaml pins %d bytes, %s"
                          % (url_or_path, n, h.hexdigest(), want_bytes, want_sha))
+
+
+def asset_files(asset):
+    """The files an asset ships, in order: [its record] when it is one file, else its `parts`. A `parts` list that is
+    not <file>.000, .001, ... in order, or whose bytes do not add up to the record's, is refused here, before a byte
+    is downloaded."""
+    parts = asset.get("parts")
+    if not parts:
+        return [asset]
+    want = ["%s.%03d" % (asset["file"], i) for i in range(len(parts))]
+    if [p["file"] for p in parts] != want:
+        raise FetchError("%s: its parts are not %s in order" % (asset["file"], ", ".join(want[:3] + ["..."])))
+    if sum(p["bytes"] for p in parts) != asset["bytes"]:
+        raise FetchError("%s: its parts hold %d bytes, the record %d"
+                         % (asset["file"], sum(p["bytes"] for p in parts), asset["bytes"]))
+    return parts
+
+
+def _download_asset(source, asset, dest):
+    """Download an asset into `dest`, whole or part by part, and check every SHA-256 the record pins: each part's own,
+    and the joined stream's."""
+    files = asset_files(asset)
+    if len(files) == 1 and files[0] is asset:
+        _download(_where(source, asset["release"], asset["file"]), dest, asset["bytes"], asset["sha256"])
+        return 1
+    whole = hashlib.sha256()
+    for i, p in enumerate(files):
+        _download(_where(source, asset["release"], p["file"]), dest, p["bytes"], p["sha256"],
+                  append=i > 0, digest=whole)
+    if whole.hexdigest() != asset["sha256"] or os.path.getsize(dest) != asset["bytes"]:
+        raise FetchError("%s: its %d parts joined are %d bytes with SHA-256 %s; project.yaml pins %d bytes, %s"
+                         % (asset["file"], len(files), os.path.getsize(dest), whole.hexdigest(),
+                            asset["bytes"], asset["sha256"]))
+    return len(files)
 
 
 def _expected(proj):
@@ -75,9 +124,10 @@ def _licence_member(name):
     return tuple(parts[1:])
 
 
-def _unpack(archive, proj, bindir):
+def _unpack(archive, proj, bindir, harnesses=None):
     """Unpack the archive's binaries into bindir/<harness>/ and its licence files into bindir/LICENSES/; returns the
-    number of each."""
+    number of each. `harnesses`, when given, names the harnesses to write: every member of the archive is still read
+    and checked against its harness.yaml, and only those harnesses' files are moved into the tree."""
     want = _expected(proj)
     got = set()
     licences = set()
@@ -124,6 +174,8 @@ def _unpack(archive, proj, bindir):
     if missing:
         raise FetchError("%s lacks %s" % (archive, ", ".join(missing)))
     for name in sorted(got):
+        if harnesses is not None and name.split("/")[0] not in harnesses:
+            continue
         dest = os.path.join(bindir, name)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         os.replace(os.path.join(stage, name.replace("/", "__")), dest)
@@ -135,23 +187,29 @@ def _unpack(archive, proj, bindir):
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         os.replace(os.path.join(stage, "LICENSES__%s__%s" % (comp, f)), dest)
         os.chmod(dest, 0o644)
+    for left in sorted(os.listdir(stage)):
+        os.unlink(os.path.join(stage, left))      # a harness --harness did not name: checked, not written
     os.rmdir(stage)
-    return len(got), len(licences)
+    written = got if harnesses is None else {n for n in got if n.split("/")[0] in harnesses}
+    return len(written), len(licences)
 
 
-def _where(source, asset):
+def _where(source, release, name):
     if source and "://" not in source:
-        return os.path.join(source, asset["file"])
-    return "%s/%s" % ((source or RELEASES + "/" + asset["release"]).rstrip("/"), asset["file"])
+        return os.path.join(source, name)
+    return "%s/%s" % ((source or RELEASES + "/" + release).rstrip("/"), name)
 
 
 def fetch(root, projects, source=None, all_projects=False, only_check_assets=False, release=None, listing=False,
-          out=sys.stdout):
+          harnesses=None, out=sys.stdout):
     """Fetch the named projects' binaries.  all_projects: every available
     project; release: only those whose binaries are attached to that release
     tag; only_check_assets: download and check every asset (binaries and
     source), unpack nothing; listing: print `<release> <file> <sha256>` for
-    each asset and download nothing (for CI, which downloads with gh)."""
+    each file an asset ships -- one line per part for an asset that ships in
+    parts -- and download nothing (for CI, which downloads with gh);
+    harnesses: write only those harnesses' files, the whole archive still read
+    and every member checked."""
     tree = facts.load(root)
     if all_projects or release:
         projects = sorted(p.name for p in tree.available())
@@ -169,22 +227,24 @@ def fetch(root, projects, source=None, all_projects=False, only_check_assets=Fal
                 n_assets += 1
                 want_recipe = want_recipe or kind == "src"
                 if listing:
-                    print("%s %s %s" % (asset["release"], asset["file"], asset["sha256"]), file=out)
+                    for f in asset_files(asset):
+                        print("%s %s %s" % (asset["release"], f["file"], f["sha256"]), file=out)
                     continue
                 bindir = tree.path(proj.dir, "bin")
                 os.makedirs(bindir, exist_ok=True)
                 fd, tmp = tempfile.mkstemp(prefix=".asset-", suffix=".tar.zst", dir=bindir)
                 os.close(fd)
                 try:
-                    _download(_where(source, asset), tmp, asset["bytes"], asset["sha256"])
-                    n = None if only_check_assets else _unpack(tmp, proj, bindir)
+                    nf = _download_asset(source, asset, tmp)
+                    n = None if only_check_assets else _unpack(tmp, proj, bindir, harnesses)
                 finally:
                     os.unlink(tmp)
+                where = asset["file"] if nf == 1 else "%s in %d parts" % (asset["file"], nf)
                 if n is None:
                     what = "SHA-256 matches"
                 else:
                     what = "%d binaries, each SHA-256 checked" % n[0] + ("; %d licence files" % n[1] if n[1] else "")
-                print("%s: %s (%s), %s" % (name, asset["file"], asset["sha256"][:12], what), file=out)
+                print("%s: %s (%s), %s" % (name, where, asset["sha256"][:12], what), file=out)
         except (FetchError, OSError) as e:
             print("%s: %s" % (name, e), file=out)
             bad += 1
@@ -193,12 +253,13 @@ def fetch(root, projects, source=None, all_projects=False, only_check_assets=Fal
     if want_recipe and recipe is not None and not (release and recipe["release"] != release):
         n_assets += 1
         if listing:
-            print("%s %s %s" % (recipe["release"], recipe["file"], recipe["sha256"]), file=out)
+            for f in asset_files(recipe):
+                print("%s %s %s" % (recipe["release"], f["file"], f["sha256"]), file=out)
         else:
             fd, tmp = tempfile.mkstemp(prefix=".asset-", suffix=".tar.zst", dir=root)
             os.close(fd)
             try:
-                _download(_where(source, recipe), tmp, recipe["bytes"], recipe["sha256"])
+                _download_asset(source, recipe, tmp)
                 print("release: %s (%s), SHA-256 matches" % (recipe["file"], recipe["sha256"][:12]), file=out)
             except (FetchError, OSError) as e:
                 print("release: %s" % e, file=out)

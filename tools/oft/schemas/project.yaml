@@ -107,6 +107,17 @@ defs:
       file: {type: str, pattern: '^[a-z0-9][a-z0-9_-]*-(bin|src)\.tar\.zst$'}
       bytes: {type: int, min: 1}
       sha256: {type: sha256}
+      # a file GitHub cannot take whole (2 GiB per release file) ships as numbered parts of its one stream, `cat` of
+      # them in order being the file; the fields above stay the whole stream's. The parts are .000, .001, ... in
+      # order, each with its own bytes and SHA-256; a bin asset and a src asset ship them the same way.
+      parts: {type: list, min: 1, items: {type: ref, name: asset_part}, optional: true}
+
+  asset_part:
+    type: object
+    fields:
+      file: {type: str, pattern: '^[a-z0-9][a-z0-9_-]*-(bin|src)\.tar\.zst\.[0-9]{3}$'}
+      bytes: {type: int, min: 1}
+      sha256: {type: sha256}
 
   # the source asset's manifest: one row per tree (its upstream URL and commit, or its sha256) and where the build
   # lays it down

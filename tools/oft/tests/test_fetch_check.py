@@ -8,12 +8,13 @@ import resource
 import shutil
 import stat
 import subprocess
+import sys
 import tarfile
 import tempfile
 import unittest
 
-from oft import check, facts, fetch
-from oft.tests.helpers import tree
+from oft import check, facts, fetch, rules, schema, yamlio
+from oft.tests.helpers import REPO, add_findings, later_release, older_shape, recipe_only_rebuild, tree
 
 HAVE_ZSTD = shutil.which("zstd") is not None
 
@@ -92,6 +93,23 @@ class Fetch(unittest.TestCase):
             self.assertEqual(rc, 0, out)
             self.assertIn("8 binaries, each SHA-256 checked", out)
 
+    def test_an_archive_cut_off_in_its_zstd_stream(self):
+        """The pinned archive is cut off halfway: zstd fails on it, the project's fetch fails by name, nothing is
+        unpacked or left staged, and the fetch goes on to the next project."""
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            arc = os.path.join(a, "zlib-bin.tar.zst")
+            os.truncate(arc, os.path.getsize(arc) // 2)
+            p = t.yaml("projects/zlib/project.yaml")
+            p["assets"]["bin"]["bytes"] = os.path.getsize(arc)
+            p["assets"]["bin"]["sha256"] = facts.sha256_file(arc)
+            t.put_yaml("projects/zlib/project.yaml", p)
+            rc, out = run(fetch.fetch, t.root, ["zlib", "imagemagick"], source=a)
+            self.assertEqual(rc, 1)
+            self.assertRegex(out, r"(?m)^zlib: zstd failed on \S+\.tar\.zst$")
+            self.assertIn("imagemagick: imagemagick has no binaries in this release", out)
+            self.assertEqual(os.listdir(t.path("projects/zlib/bin")), [])
+
     def test_a_member_that_is_not_a_harness_file(self):
         with tree() as t, tempfile.TemporaryDirectory() as a:
             make_release(t, a, tamper=lambda f: dict(f, **{"../escape": b"x"}))
@@ -116,12 +134,28 @@ class Fetch(unittest.TestCase):
             self.assertFalse(os.path.exists(t.path("projects/zlib/bin/LICENSES")))
 
     def test_a_licence_member_outside_licenses_component_file(self):
-        for bad in ("LICENSES/COPYING", "LICENSES/zlib/doc/COPYING", "LICENSES/../escape", "LICENSES/.hidden/x"):
+        for bad in ("LICENSES/COPYING", "LICENSES/zlib/doc/COPYING", "LICENSES/../escape", "LICENSES/.hidden/x",
+                    "LICENSES/zlib/LICENSE\n"):
             with self.subTest(bad), tree() as t, tempfile.TemporaryDirectory() as a:
                 make_release(t, a, tamper=lambda f: dict(f, **{bad: b"x"}))
                 rc, out = run(fetch.fetch, t.root, ["zlib"], source=a)
                 self.assertEqual(rc, 1, out)
                 self.assertIn("unexpected member", out)
+                self.assertEqual(os.listdir(t.path("projects/zlib/bin")), [], "nothing is unpacked or left staged")
+
+    def test_licence_files_whose_names_join_alike(self):
+        """Each member is staged under a name of its own, so two whose component and file names joined with __ are
+        alike each land with their own bytes."""
+        lic = {"LICENSES/a__b/c": b"first\n", "LICENSES/a/b__c": b"second\n"}
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a, tamper=lambda f: dict(f, **lic))
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("8 binaries, each SHA-256 checked; 2 licence files", out)
+            for name, data in lic.items():
+                with open(t.path("projects/zlib/bin", name), "rb") as f:
+                    self.assertEqual(f.read(), data)
+            self.assertFalse([n for n in os.listdir(t.path("projects/zlib/bin")) if n.startswith(".fetch-")])
 
     def test_a_member_whose_bytes_are_not_pinned(self):
         with tree() as t, tempfile.TemporaryDirectory() as a:
@@ -148,8 +182,8 @@ class Fetch(unittest.TestCase):
 
 
 class Listing(unittest.TestCase):
-    """`oft fetch --release TAG --list`, what release.yml compares a draft with: each tag lists exactly the files the
-    facts attach to it, and the recipe goes with the source assets."""
+    """`oft fetch --list`, whose rows for one tag are what release.yml compares a draft with: each tag lists exactly
+    the files the facts attach to it, the recipe each binary archive pins among them."""
 
     def listed(self, t, release):
         rc, out = run(fetch.fetch, t.root, [], release=release, listing=True)
@@ -166,12 +200,15 @@ class Listing(unittest.TestCase):
 
     def test_a_source_release_lists_the_source_assets_and_the_recipe_and_the_release_the_binaries(self):
         with tree() as t:
-            p = t.yaml("projects/zlib/project.yaml")
-            for k in ("src", "src_manifest"):
-                p["assets"][k]["release"] = "v2026.11.0-src"
-            t.put_yaml("projects/zlib/project.yaml", p)
+            for name in ("zlib", "json"):
+                p = t.yaml("projects/%s/project.yaml" % name)
+                for k in ("src", "src_manifest"):
+                    if k in p["assets"]:
+                        p["assets"][k]["release"] = "v2026.11.0-src"
+                p["assets"]["bin"]["recipe"]["release"] = "v2026.11.0-src"
+                t.put_yaml("projects/%s/project.yaml" % name, p)
             r = t.yaml("release.yaml")
-            r["recipe"]["release"] = "v2026.11.0-src"
+            r["recipes"][0]["release"] = "v2026.11.0-src"
             t.put_yaml("release.yaml", r)
             self.assertEqual(t.generate(), 0, t.last_output)
             rc, main = self.listed(t, "v2026.11.0")
@@ -183,6 +220,107 @@ class Listing(unittest.TestCase):
             rc, src = self.listed(t, "v2026.11.0-src")
             self.assertEqual(rc, 0)
             self.assertEqual(src, ["recipe.tar.zst", "zlib-src.MANIFEST.tsv", "zlib-src.tar.zst"])
+
+    def test_each_release_lists_what_it_adds(self):
+        """Without copying, a release holds only the files it adds: json's new archive, source assets and recipe; zlib's
+        unchanged ones stay in the release that first held them."""
+        with tree() as t:
+            later_release(t)
+            rc, new = self.listed(t, "v2026.12.0-src")
+            self.assertEqual(rc, 0)
+            self.assertEqual(new, ["json-src.MANIFEST.tsv", "json-src.tar.zst", "recipe-2.tar.zst"])
+            self.assertEqual(self.listed(t, "v2026.12.0"), (0, ["json-bin.tar.zst"]))
+            rc, old = self.listed(t, "v2026.11.0")
+            self.assertEqual(rc, 0)
+            self.assertEqual(old, ["recipe.tar.zst", "zlib-bin.tar.zst", "zlib-src.MANIFEST.tsv", "zlib-src.tar.zst"])
+
+    def test_a_recipe_only_rebuild_lists_the_recipe_in_a_release_without_source_assets(self):
+        """A rebuild with a new recipe adds the archive and the recipe it pins, and nothing else: the project's source
+        asset and MANIFEST stay listed where they were."""
+        with tree() as t:
+            recipe_only_rebuild(t, record=False)
+            self.assertEqual(self.listed(t, "v2026.12.0-src"), (0, ["recipe-2.tar.zst"]))
+            self.assertEqual(self.listed(t, "v2026.12.0"), (0, ["zlib-bin.tar.zst"]))
+            rc, old = self.listed(t, "v2026.11.0")
+            self.assertEqual(rc, 0)
+            self.assertEqual(old, ["json-bin.tar.zst", "recipe.tar.zst", "zlib-src.MANIFEST.tsv", "zlib-src.tar.zst"])
+
+    def test_the_shape_before_recipes_lists_the_same_files(self):
+        with tree() as t:
+            newer = self.listed(t, "v2026.11.0")
+            older_shape(t)
+            self.assertEqual(t.generate(), 0, t.last_output)
+            self.assertEqual(self.listed(t, "v2026.11.0"), newer)
+            self.assertIn("recipe.tar.zst", newer[1])
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_recipe_that_fails_its_check_names_the_file_that_pins_it(self):
+        """A project's archive names its own recipe, so a recipe that does not match points at that project.yaml; in
+        the shape before recipes, release.yaml's one recipe stands in for it, and release.yaml is named."""
+        for shape in ("newer", "older"):
+            with self.subTest(shape=shape), tree() as t, tempfile.TemporaryDirectory() as a:
+                if shape == "older":
+                    older_shape(t)
+                make_release(t, a)
+                # only the binary archive and its recipe are checked: the source assets are not attached here
+                p = t.yaml("projects/zlib/project.yaml")
+                for k in ("src", "src_manifest"):
+                    p["assets"].pop(k, None)
+                t.put_yaml("projects/zlib/project.yaml", p)
+                with open(os.path.join(a, "recipe.tar.zst"), "wb") as f:
+                    f.write(b"not the pinned recipe")
+                rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, only_check_assets=True)
+                self.assertEqual(rc, 1, out)
+                want = "projects/zlib/project.yaml pins" if shape == "newer" else "release.yaml pins"
+                self.assertIn(want, out)
+
+    def test_a_project_that_attaches_nothing_is_not_an_error(self):
+        """An available project that withholds every build has no `assets`: listing every project skips it."""
+        with tree() as t:
+            shutil.rmtree(t.path("counterexamples/json"))
+            p = t.yaml("projects/json/project.yaml")
+            del p["assets"]
+            p["withheld"] = {"unpublished": True}
+            t.put_yaml("projects/json/project.yaml", p)
+            y = t.yaml("projects/json/fuzzer-parse_bjdata/harness.yaml")
+            n = 0
+            for b in y["builds"].values():
+                b["withheld"] = "not-yet-published"
+                for k in ("bytes", "sha256", "segments"):
+                    del b[k]
+                n += 1
+            for s in y["statements"].values():
+                for k in ("basis", "reason"):
+                    s.pop(k, None)
+                s["status"], s["withheld"] = "withheld", "not-yet-published"
+            t.put_yaml("projects/json/fuzzer-parse_bjdata/harness.yaml", y)
+            r = t.yaml("release.yaml")
+            r["counts"]["binaries"] -= n
+            t.put_yaml("release.yaml", r)
+            self.assertEqual(t.generate(), 1)         # the statement files it rendered before are now stale
+            for line in t.last_output.splitlines():
+                if line.endswith("no longer produce; remove it"):
+                    os.unlink(t.path(line.split(":")[0]))
+            self.assertEqual(t.generate(), 0, t.last_output)
+            self.assertEqual([str(f) for f in t.lint()], [])
+            rc, out = run(fetch.fetch, t.root, [], all_projects=True, listing=True)
+            self.assertEqual(rc, 0, out)
+            files = sorted(line.split()[1] for line in out.splitlines())
+            self.assertIn("zlib-bin.tar.zst", files)
+            self.assertNotIn("json-bin.tar.zst", files)
+
+    def test_a_project_that_publishes_builds_and_attaches_nothing_is_an_error(self):
+        """lint refuses an available project with published builds and no `assets`; listing every project says so
+        too, rather than hashing fewer files without a word."""
+        with tree() as t:
+            p = t.yaml("projects/json/project.yaml")
+            del p["assets"]
+            t.put_yaml("projects/json/project.yaml", p)
+            self.assertTrue(any("an available project with published binaries needs 'assets'" in f.msg
+                                for f in t.lint()))
+            rc, out = run(fetch.fetch, t.root, [], all_projects=True, listing=True)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("json: json has no binaries in this release", out)
 
 
 ROCQCHK_OK = """Checking library: X
@@ -207,11 +345,18 @@ Modules were successfully checked
 class Tools:
     """Stand-ins for dune, rocq, rocqchk and qemu-riscv64 on PATH."""
 
-    def __init__(self, d, extra_axiom="", unsafe="<none>", wrapper_fails=False, compile_fails_on=None):
+    def __init__(self, d, extra_axiom="", unsafe="<none>", wrapper_fails=False, dune_fails_on=None):
         self.bin = os.path.join(d, "stub-bin")
         self.log = os.path.join(d, "calls.log")
         os.makedirs(self.bin)
-        self.put("dune", 'echo "dune $*" >> "%s"\nexit 0\n' % self.log)
+        # dune copies each source it builds into _build/default (the real one does too), so the library's .v files are
+        # on the proofs' -Q path, where `rocq dep -sort` below finds them.
+        self.put("dune", 'echo "dune $*" >> "%s"\n%s'
+                         'root=""; prev=""; for a in "$@"; do [ "$prev" = --root ] && root="$a"; prev="$a"; done\n'
+                         'for a in "$@"; do case "$a" in proofs/*/lib/*.vo)\n'
+                         '  mkdir -p "$root/_build/default/$(dirname "$a")" && cp "$root/${a%%.vo}.v" "$root/_build/default/${a%%.vo}.v" ;;\n'
+                         'esac; done\nexit 0\n'
+                 % (self.log, ('case "$*" in *%s*) exit 1 ;; esac\n' % dune_fails_on) if dune_fails_on else ""))
         body = ROCQCHK_OK % (("    " + extra_axiom + "\n") if extra_axiom else "", unsafe)
         with open(os.path.join(d, "rocqchk.out"), "w") as f:
             f.write(body)
@@ -225,24 +370,15 @@ class Tools:
         with open(os.path.join(d, "wrapper.out"), "w") as f:
             f.write(wrapper)
         # `rocq dep -sort` prints, in order, the whole closure of the .v files it is given: the files of a library on its
-        # -Q path (a ...lib logical name) first, as the real one does, then the files given.  `rocq dep` prints make
-        # rules, in which Sub/Deep.v requires Base.v beside Sub/, so a test can see that a library is compiled in
-        # dependency order.
+        # -Q path (a ...lib logical name) first, as the real one does, then the files given.
         self.put("rocq", 'echo "rocq $*" >> "%s"\nulimit -s >> "%s"\n'
                          'if [ "$1" = dep ] && [ "$2" = -sort ]; then\n'
                          '  prev=""; for a in "$@"; do\n'
                          '    case "$a" in *.lib) find "$prev" -name "*.v" | sort ;; esac; prev="$a"; done\n'
                          '  for f in "$@"; do case "$f" in *.v) echo "$f" ;; esac; done; exit 0; fi\n'
-                         'if [ "$1" = dep ]; then\n'
-                         '  for f in "$@"; do case "$f" in *.v) x=""\n'
-                         '    case "$f" in */Sub/Deep.v) x=" $(dirname "$(dirname "$f")")/Base.vo" ;; esac\n'
-                         '    echo "${f%%.v}.vo ${f%%.v}.glob: $f$x" ;; esac; done; exit 0; fi\n'
                          'case "$*" in *Wrapper.v*) cat "%s"; %s ;; esac\n'
-                         '%s'
-                         'case "$*" in "compile "*/Base.v) sleep 0.5; echo "finished Base.v" >> "%s" ;; esac\n'
                          'exit 0\n'
-                 % (self.log, self.log, os.path.join(d, "wrapper.out"), "exit 1" if wrapper_fails else "exit 0",
-                    ('case "$*" in *%s*) exit 1 ;; esac\n' % compile_fails_on) if compile_fails_on else "", self.log))
+                 % (self.log, self.log, os.path.join(d, "wrapper.out"), "exit 1" if wrapper_fails else "exit 0"))
         # aborts on the 13-byte counterexample input, exits 0 on the 8-byte control
         # and records the core file limit it was started with
         self.put("qemu-riscv64", 'ulimit -c >> "%s"\n'
@@ -256,6 +392,9 @@ class Tools:
         os.chmod(p, os.stat(p).st_mode | stat.S_IEXEC)
 
     def calls(self):
+        """Every call of a stand-in so far, one per line ("" when none ran)."""
+        if not os.path.exists(self.log):
+            return ""
         with open(self.log) as f:
             return f.read()
 
@@ -343,26 +482,103 @@ class Check(unittest.TestCase):
         self._proof(t, "Theorem plain_halts_may_fail_holds : True. Proof. exact I. Qed.\n", s="plain_halts_may_fail")
 
     @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
-    def test_a_harness_library_is_compiled_once_and_is_on_every_load_path(self):
+    def test_a_harness_library_is_built_once_by_dune_and_is_on_every_load_path(self):
         with tree() as t:
             self.ready(t)
             self._two_proofs_and_a_library(t)
             tl = self.tools()
             rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
             self.assertEqual(rc, 0, out)
-            self.assertIn("proofs/zlib/checksum_fuzzer/lib: 2 files compiled", out)
+            self.assertIn("proofs/zlib/checksum_fuzzer/lib: 2 files compiled or taken from dune's cache", out)
             calls = tl.calls().splitlines()
-            deep = [c for c in calls if c.startswith("rocq compile") and c.endswith("/Sub/Deep.v")]
-            self.assertEqual(len(deep), 1, "the library is compiled once for two proofs, never again by a proof")
-            libdir = re.search(r"-Q (\S+) " + re.escape(self.LIB_MOD) + r"(\s|$)", deep[0]).group(1)
-            mapping = "-Q %s %s" % (libdir, self.LIB_MOD)
+            builds = [c for c in calls if c.startswith("dune build") and "/lib/" in c]
+            self.assertEqual(len(builds), 1, "the library is built once for two proofs")
+            self.assertTrue(builds[0].endswith(" proofs/zlib/checksum_fuzzer/lib/Base.vo"
+                                               " proofs/zlib/checksum_fuzzer/lib/Sub/Deep.vo"), builds[0])
+            self.assertFalse([c for c in calls if c.startswith("rocq compile") and "/lib/" in c.split()[-1]],
+                             "no library file is compiled outside dune")
+            mapping = "-Q %s %s" % (t.path("_build", "default", "proofs", "zlib", "checksum_fuzzer", "lib"),
+                                    self.LIB_MOD)
             users = [c for c in calls if c.startswith("rocq compile") and c.endswith(("/Proof.v", "/Wrapper.v"))]
-            self.assertEqual(len(users), 4, "two proofs and two wrappers compiled")
+            self.assertEqual(len(users), 4, "two proofs and two wrappers compiled afresh")
             for c in users:
                 self.assertIn(mapping, c)
             self.assertNotIn("rocqchk", tl.calls(), "rocqchk runs only when asked")
-            self.assertLess(calls.index("finished Base.v"), calls.index(deep[0]),
-                            "Sub/Deep.v, which requires Base.v, starts only after Base.v is compiled")
+
+    def _refused_with(self, rel, text):
+        """check's output for a harness library that also holds file rel; nothing is built."""
+        with tree() as t:
+            self.ready(t)
+            self._two_proofs_and_a_library(t)
+            t.write(rel, text)
+            tl = self.tools()
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
+            self.assertEqual(rc, 1)
+            self.assertNotIn("dune build", tl.calls())
+            return out
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_harness_library_with_a_build_file_of_its_own_is_refused(self):
+        rel = "proofs/zlib/checksum_fuzzer/lib/Sub/dune"
+        out = self._refused_with(rel, "(rule (targets Deep.vo) (action (copy x Deep.vo)))\n")
+        self.assertIn("%s: a proof library holds no build file but lib/dune" % rel, out)
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_harness_library_with_a_dune_file_variant_is_refused(self):
+        rel = "proofs/zlib/checksum_fuzzer/lib/dune-file"
+        self.assertIn("%s: a proof library holds no build file but lib/dune" % rel, self._refused_with(rel, "(rule)\n"))
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_build_file_above_a_harness_library_is_refused(self):
+        # (subdir lib ...) or (env (_ (binaries ... as rocq))) there would reach the library's rules
+        for rel in ("proofs/zlib/checksum_fuzzer/dune", "proofs/zlib/dune-file", "proofs/dune", "dune"):
+            with self.subTest(rel=rel):
+                self.d.cleanup()
+                self.d = tempfile.TemporaryDirectory()
+                out = self._refused_with(rel, "(subdir lib (rule (targets Base.vo) (action (copy x Base.vo))))\n")
+                self.assertIn("%s: no directory above a proof library holds a build file" % rel, out)
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_symbolic_link_above_a_harness_library_is_refused(self):
+        with tree() as t:
+            self.ready(t)
+            self._two_proofs_and_a_library(t)
+            os.rename(t.path("proofs/zlib/checksum_fuzzer"), t.path("elsewhere"))
+            os.symlink(t.path("elsewhere"), t.path("proofs/zlib/checksum_fuzzer"))
+            tl = self.tools()
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
+            self.assertEqual(rc, 1)
+            self.assertIn("proofs/zlib/checksum_fuzzer: a proof library holds no symbolic link", out)
+            self.assertNotIn("dune build", tl.calls())
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_symbolic_link_in_a_harness_library_is_refused(self):
+        with tree() as t:
+            self.ready(t)
+            self._two_proofs_and_a_library(t)
+            os.makedirs(t.path("elsewhere"))
+            t.write("elsewhere/dune", "(rule)\n")
+            os.symlink(t.path("elsewhere"), t.path("proofs/zlib/checksum_fuzzer/lib/x"))
+            tl = self.tools()
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
+            self.assertEqual(rc, 1)
+            self.assertIn("proofs/zlib/checksum_fuzzer/lib/x: a proof library holds no symbolic link", out)
+            self.assertNotIn("dune build", tl.calls())
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_lib_dune_is_built_as_this_tool_renders_it(self):
+        # a tree rendered by other tools (a maintainer's change to the template) is built with this tool's rule
+        with tree() as t:
+            self.ready(t)
+            self._two_proofs_and_a_library(t)
+            rel = "proofs/zlib/checksum_fuzzer/lib/dune"
+            want = t.read(rel)
+            t.write(rel, want + "(rule (targets Base.vo) (action (copy x Base.vo)))\n")
+            self.tools()
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
+            self.assertEqual(rc, 0, out)
+            self.assertIn("%s: written as this oft generate renders it" % rel, out)
+            self.assertEqual(t.read(rel), want)
 
     @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
     def test_with_rocqchk_one_run_checks_every_proof_of_a_harness(self):
@@ -385,12 +601,11 @@ class Check(unittest.TestCase):
         with tree() as t:
             self.ready(t)
             self._two_proofs_and_a_library(t)
-            tl = self.tools(compile_fails_on="Deep.v")
+            tl = self.tools(dune_fails_on="Deep.vo")
             rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
             self.assertEqual(rc, 1)
             self.assertEqual(out.count("proofs/zlib/checksum_fuzzer/lib: does not compile"), 2, out)
-            self.assertEqual(len([c for c in tl.calls().splitlines()
-                                  if c.startswith("rocq compile") and c.endswith("/Sub/Deep.v")]), 1)
+            self.assertEqual(len([c for c in tl.calls().splitlines() if c.startswith("dune build") and "/lib/" in c]), 1)
             self.assertNotIn("Wrapper.v", tl.calls())
 
     @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
@@ -409,6 +624,29 @@ class Check(unittest.TestCase):
             self.assertIn("Definition certified : OssFuzzTheorems.zlib.checksum_fuzzer.Statements.plain_halts := "
                           "OssFuzzTheorems.Proofs.zlib.checksum_fuzzer.plain_halts.Proof.plain_halts_holds.\n"
                           "Set Printing Fully Qualified.\nPrint Assumptions certified.\n", text)
+
+    @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+    def test_a_bound_proof_s_wrapper_imports_the_notation_its_bound_is_written_in(self):
+        """A bound's b reaches the wrapper as `(n # d)`, QArith's notation, which Rocq parses only after QArith is
+        imported: without the import every bound proof is refused as not of its statement."""
+        with tree() as t:
+            self.ready(t)
+            st = next(x for x in facts.load(t.root).statements() if x.id == "zlib/checksum_fuzzer/asan_disagrees_at_most")
+            t.put_yaml("proofs/zlib/checksum_fuzzer/asan_disagrees_at_most/proof.yaml", {
+                "schema": "oss-fuzz-theorems/proof/1", "proves": st.id, "fingerprint": st.fingerprint,
+                "bound": "1/4"})
+            t.write("proofs/zlib/checksum_fuzzer/asan_disagrees_at_most/Proof.v",
+                    "Theorem asan_disagrees_at_most_holds : True. Proof. exact I. Qed.\n")
+            self.assertEqual(t.generate(), 0, t.last_output)
+            tl = self.tools()
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
+            self.assertEqual(rc, 0, out)
+            wrapper = [l for l in tl.calls().splitlines() if "Wrapper.v" in l][0].split()[-1]
+            with open(wrapper) as f:
+                lines = f.read().splitlines()
+            certified = next(i for i, l in enumerate(lines) if l.startswith("Definition certified"))
+            self.assertIn(" (1 # 4) := ", lines[certified])
+            self.assertIn("From Stdlib Require Import QArith.", lines[:certified])
 
     @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
     def test_rocq_runs_with_the_largest_stack_allowed(self):
@@ -558,11 +796,484 @@ class Plan(unittest.TestCase):
     def test_units(self):
         with tree() as t:
             self.assertEqual(self.plan(t, ["docs/proving.md", "notes/zlib.md"])["units"], [])
-            self.assertEqual(self.plan(t, ["proofs/zlib/checksum_fuzzer/plain_halts/Proof.v"])["units"],
-                             ["zlib/checksum_fuzzer"])
+            one = self.plan(t, ["proofs/zlib/checksum_fuzzer/plain_halts/Proof.v"])
+            self.assertEqual(one["units"], ["zlib/checksum_fuzzer"])
+            self.assertEqual(one["check_units"], ["zlib/checksum_fuzzer"])
             everything = self.plan(t, ["theories/Shapes.v"])
             self.assertTrue(everything["all"])
             self.assertEqual(len(everything["units"]), 3)
+            self.assertEqual(everything["check_units"], everything["units"])
+
+    def test_a_changed_finding_marks_its_unit_and_puts_it_in_the_findings_list(self):
+        with tree() as t:
+            add_findings(t)
+            for changed in (["findings/zlib/checksum_fuzzer/stand-in-abort/finding.yaml"],
+                            ["findings/zlib/checksum_fuzzer/series"], ["findings/zlib/unpatched.yaml"]):
+                with self.subTest(changed=changed):
+                    got = self.plan(t, changed)
+                    self.assertEqual(got["units"], ["zlib/checksum_fuzzer"])
+                    self.assertEqual([j["findings"] for j in got["jobs"]], ["zlib/checksum_fuzzer"])
+            got = self.plan(t, ["proofs/json/fuzzer-parse_bjdata/plain_halts/Proof.v"])
+            self.assertEqual([j["findings"] for j in got["jobs"]], [""])
+
+    def test_a_unit_whose_only_finding_is_pruned_is_still_in_the_findings_list(self):
+        with tree() as t:
+            add_findings(t)
+            prune(t)
+            got = self.plan(t, ["theories/Shapes.v"])
+            self.assertEqual(" ".join(j["findings"] for j in got["jobs"]).split(), ["zlib/checksum_fuzzer"])
+
+    def test_a_withheld_finding_is_planned_and_keeps_its_findings_job(self):
+        """A finding on a harness that withholds every build still makes a job: pr.yml runs its check job, and
+        required wants it to pass, when the plan's units are not empty (pr.yml's lint outputs.units).  Readers that
+        fetch binaries or build statements (each job's check-units.sh step, weekly's determinism sample, ossv-gate's
+        quick statements) read check_units, which leaves the harness out."""
+        with tree() as t:
+            add_findings(t)
+            withhold_checksum_fuzzer(t)
+            got = self.plan(t, ["findings/zlib/checksum_fuzzer/stand-in-abort/finding.yaml"])
+            self.assertEqual(got["units"], ["zlib/checksum_fuzzer"])
+            self.assertEqual(got["check_units"], [])
+            self.assertEqual(len(got["jobs"]), 1)
+            self.assertEqual(got["jobs"][0]["check_units"], "")
+            self.assertEqual(got["jobs"][0]["projects"], "")
+            self.assertEqual(got["jobs"][0]["findings"], "zlib/checksum_fuzzer")
+            mixed = self.plan(t, ["findings/zlib/checksum_fuzzer/stand-in-abort/finding.yaml",
+                                  "proofs/json/fuzzer-parse_bjdata/plain_halts/Proof.v"])
+            self.assertEqual(mixed["units"], ["json/fuzzer-parse_bjdata", "zlib/checksum_fuzzer"])
+            self.assertEqual(mixed["check_units"], ["json/fuzzer-parse_bjdata"])
+
+    def release_check_plan(self, t):
+        """release-check.yml's plan step, run as the workflow runs it on the tree t: (its exit, its output, the plan)."""
+        step = next(s for s in yamlio.load_file(os.path.join(REPO, ".github", "workflows", "release-check.yml"))
+                    ["jobs"]["plan"]["steps"] if s.get("id") == "plan")
+        with tempfile.TemporaryDirectory() as d:
+            os.symlink(os.path.dirname(os.path.dirname(os.path.abspath(check.__file__))), t.path("tools"))
+            os.mkdir(os.path.join(d, "bin"))
+            with open(os.path.join(d, "bin", "python"), "w") as f:
+                f.write('#!/bin/sh\nexec "%s" "$@"\n' % sys.executable)
+            os.chmod(os.path.join(d, "bin", "python"), 0o755)
+            script = os.path.join(d, "plan.sh")
+            with open(script, "w") as f:
+                f.write(step["run"])
+            env = dict(os.environ, PATH=os.path.join(d, "bin") + os.pathsep + os.environ["PATH"], RUNNER_TEMP=d,
+                       GITHUB_OUTPUT=os.path.join(d, "output"), GITHUB_STEP_SUMMARY=os.path.join(d, "summary"))
+            r = subprocess.run(["bash", "--noprofile", "--norc", "-eo", "pipefail", script], cwd=t.root, env=env,
+                               capture_output=True, text=True)
+            if r.returncode != 0:
+                return r.returncode, r.stdout + r.stderr, None
+            with open(os.path.join(d, "plan.json")) as f, open(os.path.join(d, "output")) as o:
+                return 0, o.read(), json.load(f)
+
+    @unittest.skipUnless(shutil.which("jq"), "jq is not installed")
+    def test_release_check_plans_every_committed_proof_and_finding(self):
+        """release-check.yml's plan step: a harness with a committed finding is checked, also when it withholds every
+        build and has no proof, and only the harnesses with published builds are built."""
+        with tree() as t:
+            add_findings(t)
+            withhold_checksum_fuzzer(t)
+            t.write("proofs/json/fuzzer-parse_bjdata/plain_halts/proof.yaml", "a committed proof\n")
+            rc, output, got = self.release_check_plan(t)
+            self.assertEqual(rc, 0, output)
+            self.assertEqual(got["units"], ["json/fuzzer-parse_bjdata", "zlib/checksum_fuzzer"])
+            self.assertEqual(got["check_units"], ["json/fuzzer-parse_bjdata"])
+            self.assertEqual(" ".join(j["findings"] for j in got["jobs"]).split(), ["zlib/checksum_fuzzer"])
+            self.assertIn("units=2\n", output)
+
+    @unittest.skipUnless(shutil.which("jq"), "jq is not installed")
+    def test_release_check_plans_findings_in_a_tree_with_no_proofs(self):
+        """The cross-model review's case: a tree with a finding and no proofs/ directory plans that finding."""
+        with tree() as t:
+            add_findings(t)
+            self.assertFalse(os.path.exists(t.path("proofs")))
+            rc, output, got = self.release_check_plan(t)
+            self.assertEqual(rc, 0, output)
+            self.assertEqual(got["units"], ["zlib/checksum_fuzzer"])
+            self.assertEqual(" ".join(j["findings"] for j in got["jobs"]).split(), ["zlib/checksum_fuzzer"])
+
+    def test_a_project_file_marks_every_harness_of_its_project(self):
+        with tree() as t:
+            every = self.plan(t, ["theories/Shapes.v"])["units"]
+            zlib = [u for u in every if u.startswith("zlib/")]
+            self.assertTrue(zlib and len(zlib) < len(every))
+            self.assertEqual(self.plan(t, ["projects/zlib/project.yaml"])["units"], zlib)
+
+    def test_a_quoted_path_marks_every_harness(self):
+        with tree() as t:
+            self.assertTrue(self.plan(t, ['"proofs/zlib/checksum_fuzzer/lib/a\\"b.v"'])["all"])
+
+    def test_a_gitattributes_file_marks_every_harness(self):
+        with tree() as t:
+            for rel in (".gitattributes", "proofs/zlib/.gitattributes"):
+                self.assertTrue(self.plan(t, [rel])["all"], rel)
+
+
+FINDING = "findings/zlib/checksum_fuzzer/stand-in-abort"
+UNPATCHED = "findings/zlib/unpatched.yaml"
+
+
+def prune(t):
+    """Mark the fixture finding pruned, its record showing no statement false, and drop its patch from the series."""
+    y = t.yaml(FINDING + "/finding.yaml")
+    y["state"] = "pruned"
+    y["input"] = {b: dict(y["control"][b]) for b in y["control"]}
+    t.put_yaml(FINDING + "/finding.yaml", y)
+    t.write("findings/zlib/checksum_fuzzer/series", "")
+
+
+def withhold_checksum_fuzzer(t):
+    """Withhold every published checksum_fuzzer build and statement, but leave its findings and unpatched pins: the
+    planner must still rerun the finding on the latter."""
+    y = t.yaml("projects/zlib/checksum_fuzzer/harness.yaml")
+    n = 0
+    for build in y["builds"].values():
+        build["withheld"] = "not-yet-published"
+        for key in ("bytes", "sha256", "segments"):
+            build.pop(key, None)
+        n += 1
+    for statement in y["statements"].values():
+        for key in ("witness", "binds_checks"):
+            statement.pop(key, None)
+        statement["status"], statement["withheld"] = "withheld", "not-yet-published"
+    t.put_yaml("projects/zlib/checksum_fuzzer/harness.yaml", y)
+    release = t.yaml("release.yaml")
+    release["counts"]["binaries"] -= n
+    t.put_yaml("release.yaml", release)
+
+
+def unpatched_release(t, assets, tamper=None):
+    """Give the unpatched builds that the fixture's unpatched.yaml pins stand-in bytes, pack them as
+    zlib-unpatched-bin.tar.zst in `assets`, and pin both levels of SHA-256 in unpatched.yaml."""
+    y = t.yaml(UNPATCHED)
+    files = {}
+    for h, builds in y["harnesses"].items():
+        for b, rec in builds.items():
+            data = b"\x7fELF unpatched stand-in for " + rec["file"].encode()
+            files["%s/%s" % (h, rec["file"])] = data
+            rec["bytes"], rec["sha256"] = len(data), hashlib.sha256(data).hexdigest()
+    raw = io.BytesIO()
+    with tarfile.open(fileobj=raw, mode="w") as tf:
+        for name, data in (tamper(files) if tamper else files).items():
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            tf.addfile(info, io.BytesIO(data))
+    tar = os.path.join(assets, "zlib-unpatched-bin.tar")
+    with open(tar, "wb") as f:
+        f.write(raw.getvalue())
+    subprocess.run(["zstd", "-q", "-f", "--rm", tar], check=True)
+    y["asset"]["bytes"] = os.path.getsize(tar + ".zst")
+    y["asset"]["sha256"] = facts.sha256_file(tar + ".zst")
+    t.put_yaml(UNPATCHED, y)
+    return files
+
+
+# The unpatched binaries, run under qemu: a build aborts on an input that has the line "<build>: abort", prints
+# "differs" first on one that has "<build>: differs", and otherwise prints "ran" and exits 0.
+QEMU_BY_BUILD = ('b="${1##*.}"\n'
+                 'if grep -qax "$b: abort" "$2"; then kill -ABRT $$; fi\n'
+                 'if grep -qax "$b: differs" "$2"; then echo differs; fi\n'
+                 'echo ran\nexit 0\n')
+
+
+@unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
+class Findings(unittest.TestCase):
+    def setUp(self):
+        self.d = tempfile.TemporaryDirectory()
+        self.assets = os.path.join(self.d.name, "assets")
+        os.makedirs(self.assets)
+        self.old_path = os.environ["PATH"]
+        self.tl = Tools(self.d.name)
+        self.tl.put("qemu-riscv64", QEMU_BY_BUILD)
+        os.environ["PATH"] = self.tl.bin + os.pathsep + self.old_path
+
+    def tearDown(self):
+        os.environ["PATH"] = self.old_path
+        self.d.cleanup()
+
+    def ready(self, t):
+        add_findings(t)
+        unpatched_release(t, self.assets)
+        rc, out = run(fetch.fetch, t.root, ["zlib"], source=self.assets, findings=True)
+        self.assertEqual(rc, 0, out)
+
+    def check(self, t, **kw):
+        return run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="findings", **kw)
+
+    def test_fetch_unpacks_the_unpatched_binaries_under_findings(self):
+        with tree() as t:
+            add_findings(t)
+            files = unpatched_release(t, self.assets)
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=self.assets, findings=True)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("zlib: zlib-unpatched-bin.tar.zst", out)
+            self.assertIn("4 binaries, each SHA-256 checked", out)
+            for name, data in files.items():
+                with open(t.path("findings/zlib/bin", name), "rb") as f:
+                    self.assertEqual(f.read(), data)
+            self.assertFalse(os.path.exists(t.path("projects/zlib/bin")), "the published binaries are not fetched")
+            self.assertEqual([str(f) for f in t.lint()], [], "the fetched binaries are never tracked")
+
+    def test_fetch_unpacks_the_licence_files_beside_the_unpatched_binaries(self):
+        """The unpatched archive may carry the licence files of the components compiled into its binaries, as a
+        published one does; they go to findings/<p>/bin/LICENSES/."""
+        lic = {"LICENSES/zlib/LICENSE": b"zlib licence\n"}
+        with tree() as t:
+            add_findings(t)
+            unpatched_release(t, self.assets, tamper=lambda f: dict(f, **lic))
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=self.assets, findings=True)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("4 binaries, each SHA-256 checked; 1 licence files", out)
+            with open(t.path("findings/zlib/bin/LICENSES/zlib/LICENSE"), "rb") as f:
+                self.assertEqual(f.read(), lic["LICENSES/zlib/LICENSE"])
+            self.assertEqual([str(f) for f in t.lint()], [], "the fetched licence files are never tracked")
+
+    def test_fetch_lists_the_unpatched_asset(self):
+        with tree() as t:
+            add_findings(t)
+            rc, out = run(fetch.fetch, t.root, ["zlib"], findings=True, listing=True)
+            self.assertEqual(rc, 0, out)
+            self.assertEqual(out, "findings-zlib zlib-unpatched-bin.tar.zst %s\n" % t.yaml(UNPATCHED)["asset"]["sha256"])
+
+    def test_fetch_refuses_a_member_whose_sha256_differs_from_unpatched_yaml(self):
+        with tree() as t:
+            add_findings(t)
+            unpatched_release(t, self.assets, tamper=lambda f: dict(
+                f, **{"checksum_fuzzer/checksum_fuzzer.asan": b"\x7fELF other"}))
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=self.assets, findings=True)
+            self.assertEqual(rc, 1)
+            self.assertIn("checksum_fuzzer/checksum_fuzzer.asan does not match its unpatched.yaml SHA-256", out)
+            self.assertFalse(os.path.exists(t.path("findings/zlib/bin/checksum_fuzzer/checksum_fuzzer.plain")))
+
+    def test_fetch_refuses_a_project_without_unpatched_binaries(self):
+        with tree() as t:
+            add_findings(t)
+            rc, out = run(fetch.fetch, t.root, ["json"], source=self.assets, findings=True)
+            self.assertEqual(rc, 1)
+            self.assertIn("json: no findings/json/unpatched.yaml", out)
+
+    def test_a_finding_whose_runs_match_its_record(self):
+        with tree() as t:
+            self.ready(t)
+            rc, out = self.check(t)
+            self.assertEqual(rc, 0, out)
+            self.assertIn(FINDING + ": 6 runs match the record; the input shows asan_agrees and asan_ubsan_agrees "
+                          "false\n", out)
+            self.assertIn("oft check: 1 step(s) passed, 0 failed", out)
+
+    def test_a_recorded_stdout_that_differs_names_the_build_the_input_and_both_values(self):
+        with tree() as t:
+            self.ready(t)
+            y = t.yaml(FINDING + "/finding.yaml")
+            y["input"]["plain"]["stdout_sha256"] = "0" * 63 + "1"
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            rc, out = self.check(t)
+            self.assertEqual(rc, 1)
+            self.assertIn("FAIL %s: input.bin on plain: stdout_sha256 is %s, recorded %s" % (
+                FINDING, y["control"]["plain"]["stdout_sha256"], "0" * 63 + "1"), out)
+
+    def test_an_unpatched_binary_that_is_not_the_pinned_one(self):
+        with tree() as t:
+            self.ready(t)
+            with open(t.path("findings/zlib/bin/checksum_fuzzer/checksum_fuzzer.asan"), "ab") as f:
+                f.write(b"!")
+            rc, out = self.check(t)
+            self.assertEqual(rc, 1)
+            self.assertIn("findings/zlib/bin/checksum_fuzzer/checksum_fuzzer.asan does not match its SHA-256 in "
+                          "findings/zlib/unpatched.yaml (run ./oft fetch --findings zlib)", out)
+
+    def test_a_pruned_finding_that_still_reproduces(self):
+        with tree() as t:
+            self.ready(t)
+            prune(t)
+            rc, out = self.check(t)
+            self.assertEqual(rc, 1)
+            self.assertIn("FAIL %s: pruned, but still reproduces: on the unpatched binaries the input shows "
+                          "asan_agrees and asan_ubsan_agrees false" % FINDING, out)
+
+    def test_a_pruned_finding_whose_input_agrees(self):
+        with tree() as t:
+            self.ready(t)
+            prune(t)
+            t.write(FINDING + "/input.bin", b"\0\0\0\0\0\0\nno longer aborts\n", "wb")
+            rc, out = self.check(t)
+            self.assertEqual(rc, 0, out)
+            self.assertIn(FINDING + ": 6 runs match the record; pruned: the input shows no statement false\n", out)
+
+    def test_record_prints_the_runs_to_commit(self):
+        with tree() as t:
+            self.ready(t)
+            y = t.yaml(FINDING + "/finding.yaml")
+            recorded = {"input": y.pop("input"), "control": y.pop("control")}
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            rc, out = self.check(t)
+            self.assertEqual(rc, 1, "without --record, a finding with no runs is a tree error")
+            self.assertIn("no runs recorded", out)
+            rc, out = self.check(t, record=True)
+            self.assertEqual(rc, 0, out)
+            head = "# %s/finding.yaml: add these runs\n" % FINDING
+            self.assertIn(head, out)
+            printed = out.split(head, 1)[1].split("\noft check:", 1)[0]
+            self.assertEqual(yamlio.load(printed), recorded)
+            t.put_yaml(FINDING + "/finding.yaml", dict(y, **yamlio.load(printed)))
+            self.assertEqual(self.check(t)[0], 0)
+
+    def test_record_prints_no_runs_unless_the_input_shows_each_statement_false(self):
+        """The final gate's case: the record names asan_agrees and plain_halts, and its input aborts asan but exits 0
+        on plain.  Runs printed for it would anchor a record lint refuses, whose statements never shrink."""
+        with tree() as t:
+            self.ready(t)
+            y = t.yaml(FINDING + "/finding.yaml")
+            del y["input"], y["control"]
+            y["statements"] = ["asan_agrees", "plain_halts"]
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            rc, out = self.check(t, record=True)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("FAIL %s: on the unpatched binaries the input does not show plain_halts false, so there are "
+                          "no runs to record" % FINDING, out)
+            self.assertNotIn("add these runs", out)
+
+    def test_record_prints_no_runs_when_the_control_shows_a_statement_false(self):
+        with tree() as t:
+            self.ready(t)
+            y = t.yaml(FINDING + "/finding.yaml")
+            del y["input"], y["control"]
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            t.write(FINDING + "/control.bin", b"\0\0\0\0\0\0\nasan: abort\n", "wb")
+            rc, out = self.check(t, record=True)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("FAIL %s: the control does not behave normally: on the unpatched binaries it shows asan_agrees "
+                          "false, so there are no runs to record" % FINDING, out)
+            self.assertNotIn("add these runs", out)
+
+    def test_record_of_a_pruned_finding_prints_runs_only_when_the_input_shows_none_false(self):
+        with tree() as t:
+            self.ready(t)
+            prune(t)
+            y = t.yaml(FINDING + "/finding.yaml")
+            del y["input"], y["control"]
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            rc, out = self.check(t, record=True)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("pruned, but still reproduces", out)
+            self.assertNotIn("add these runs", out)
+            t.write(FINDING + "/input.bin", b"\0\0\0\0\0\0\nno longer aborts\n", "wb")
+            rc, out = self.check(t, record=True)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("add these runs", out)
+
+    def test_record_prints_no_runs_when_a_build_times_out(self):
+        """A timeout is not a fixed outcome: a slower or faster machine gives another.  The input runs past the limit
+        on its first build, so --record fails, prints nothing, and the record stays a draft; the same timeout in a
+        re-run fails that run."""
+        self.tl.put("qemu-riscv64", 'if grep -qax "slow" "$2"; then exec sleep 30; fi\n' + QEMU_BY_BUILD)
+        with tree() as t:
+            self.ready(t)
+            t.write(FINDING + "/input.bin", b"\0\0\0\0\0\0\nasan: abort\nslow\n", "wb")
+            y = t.yaml(FINDING + "/finding.yaml")
+            del y["input"], y["control"]
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            rc, out = self.check(t, record=True, timeout=1)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("FAIL %s: input.bin on plain ran past the 1 s limit: a timeout is not a fixed outcome, so "
+                          "there are no runs to record" % FINDING, out)
+            self.assertNotIn("add these runs", out)
+        with tree() as t:
+            self.ready(t)
+            t.write(FINDING + "/input.bin", b"\0\0\0\0\0\0\nasan: abort\nslow\n", "wb")
+            rc, out = self.check(t, timeout=1)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("ran past the 1 s limit: a timeout is not a fixed outcome, so the record is not reproduced",
+                          out)
+
+    def test_record_prints_no_runs_ended_by_a_signal_no_finding_records(self):
+        """The cross-model review's case: the input's asan runs die of SIGKILL, which the finding schema and the
+        ledger refuse, so --record fails and prints nothing."""
+        self.tl.put("qemu-riscv64", 'b="${1##*.}"\ncase "$b" in asan|asan-ubsan) '
+                    'if grep -qax "$b: abort" "$2"; then kill -KILL $$; fi ;; esac\n' + QEMU_BY_BUILD)
+        with tree() as t:
+            self.ready(t)
+            y = t.yaml(FINDING + "/finding.yaml")
+            del y["input"], y["control"]
+            t.put_yaml(FINDING + "/finding.yaml", y)
+            rc, out = self.check(t, record=True)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("FAIL %s: input.bin on asan ended by SIGKILL, which a finding's run does not record (only "
+                          "SIGABRT, SIGILL, SIGSEGV, SIGBUS, SIGFPE, SIGTRAP), so there are no runs to record" % FINDING,
+                          out)
+            self.assertNotIn("add these runs", out)
+
+    def test_the_run_shape_matches_the_finding_schema(self):
+        """rules.run_ok, which --record and the ledger share, allows the signals the finding schema allows."""
+        self.assertEqual(tuple(schema.load_schema("finding")["defs"]["run"]["fields"]["signal"]["values"]),
+                         rules.RUN_SIGNALS)
+
+    def test_record_without_the_findings_part(self):
+        with tree() as t:
+            self.ready(t)
+            rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="counterexamples", record=True)
+            self.assertEqual(rc, 1)
+            self.assertIn("--record records findings: add findings to --parts", out)
+
+    def test_a_unit_without_findings_has_nothing_to_check(self):
+        with tree() as t:
+            self.ready(t)
+            rc, out = run(check.run, t.root, ["json/fuzzer-parse_bjdata"], parts="findings")
+            self.assertEqual(rc, 1)
+            self.assertIn("json/fuzzer-parse_bjdata: nothing to check for parts findings", out)
+
+    def test_the_counterexample_check_is_unchanged_by_the_shared_run(self):
+        with tree() as t:
+            t.write("projects/json/bin/fuzzer-parse_bjdata/fuzzer-parse_bjdata.plain", "stand-in")
+            t.write("counterexamples/json/fuzzer-parse_bjdata/plain_halts/input.bin",
+                    "\0\0\0\0\0\0\nplain: abort\n")
+            rc, out = run(check.run, t.root, ["json/fuzzer-parse_bjdata"], parts="counterexamples")
+            self.assertEqual(rc, 0, out)
+            self.assertIn("reproduces (exit 134 SIGABRT); control exits 0", out)
+
+    def test_check_units_runs_a_withheld_finding_without_published_units(self):
+        with tree() as t:
+            add_findings(t)
+            withhold_checksum_fuzzer(t)
+            unpatched_release(t, self.assets)
+            log = os.path.join(self.d.name, "check-units.log")
+            tl = self.tl
+            tl.put("qemu-riscv64", QEMU_BY_BUILD)
+            tl.put("gh", """echo "gh $*" >> "$CHECK_UNITS_LOG"
+for arg; do
+  case "$arg" in *-unpatched-bin.tar.zst) cp "$CHECK_UNITS_SOURCE/$arg" "$CHECK_UNITS_DEST/$arg"; exit 0 ;; esac
+done
+exit 2
+""")
+            tl.put("docker", """echo "docker $*" >> "$CHECK_UNITS_LOG"
+case "$1" in
+  pull) exit 0 ;;
+  run)
+    while [ "$#" -gt 0 ] && [ "$1" != python3 ]; do shift; done
+    shift 3
+    [ "$1" = --root ] && shift 2
+    PYTHONPATH="$TOOLS" python3 -m oft --root "$WORK" "$@"
+    ;;
+esac
+""")
+            assets = os.path.join(self.d.name, "ci-assets")
+            cache = os.path.join(self.d.name, "cache")
+            os.makedirs(assets)
+            os.makedirs(cache)
+            tools = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            script = os.path.join(tools, "ci", "check-units.sh")
+            env = dict(os.environ, PATH=tl.bin + os.pathsep + self.old_path, WORK=t.root, TOOLS=os.path.dirname(tools),
+                       UNITS="", PROJECTS="", CX_UNITS="", FINDINGS="zlib/checksum_fuzzer", ASSETS=assets,
+                       PYDEPS=self.d.name, CACHE=cache, GITHUB_REPOSITORY="example/proofs",
+                       CHECK_UNITS_LOG=log, CHECK_UNITS_SOURCE=self.assets, CHECK_UNITS_DEST=assets,
+                       PYTHONDONTWRITEBYTECODE="1")
+            r = subprocess.run(["bash", script], env=env, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            self.assertIn("oft check: 1 step(s) passed, 0 failed", r.stdout)
+            with open(log) as f:
+                calls = f.read()
+            self.assertIn("gh release download findings-zlib", calls)
+            self.assertIn("check zlib/checksum_fuzzer --parts findings", calls)
+            self.assertNotIn("statements,proofs", calls)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,9 @@
-# The one dependency of tools/oft, pinned by every file PyPI publishes for it, so that
+# The dependencies of tools/oft, each pinned by every file PyPI publishes for it, so that
 # `pip install --require-hashes -r tools/oft/requirements.txt` installs exactly these bytes.
+# idna (pure Python) maps a link's host as a browser does (UTS #46), for `oft lint`; nothing else imports it.
+idna==3.20 \
+    --hash=sha256:ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c \
+    --hash=sha256:a7db850025b95ded1eae8a46181a1a6c56c92c96f0e2b005d9ff8dc0210cab44
 PyYAML==6.0.3 \
     --hash=sha256:00c4bdeba853cc34e7dd471f16b4114f4162dc03e6b7afcc2128711f0eca823c \
     --hash=sha256:0150219816b6a1fa26fb4699fb7daa9caf09eb1999f3b70fb6e786805e80375a \

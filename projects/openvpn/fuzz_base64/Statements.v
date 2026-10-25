@@ -67,10 +67,11 @@ Definition asan_ubsan_halts : Prop :=
 
 (** Every execution of the plain build exits, with any status, on every input
     and whatever the environment refuses (any allocation, open or read may fail
-    at any time).  This is stronger than [plain_halts].  There is no ASan
-    statement of this form: the ASan runtime deliberately waits forever when its
-    start-up reservation is refused, so such a statement would be false for a
-    reason that has nothing to do with this harness.
+    at any time).  It covers every input and any refusal, unlike [plain_halts],
+    but allows any exit status.  There is no ASan statement of this form: the
+    ASan runtime deliberately waits forever when its start-up reservation is
+    refused, so such a statement would be false for a reason that has nothing to
+    do with this harness.
 
     Not claimed: anything about what the program writes. *)
 Definition plain_halts_may_fail : Prop :=

@@ -1,0 +1,8 @@
+schema: oss-fuzz-theorems/unpatched/1
+asset: {release: findings-zlib, file: zlib-unpatched-bin.tar.zst, bytes: 17000000, sha256: 6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e}
+harnesses:
+  checksum_fuzzer:
+    plain: {file: checksum_fuzzer.plain, bytes: 52700, sha256: 7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a}
+    ubsan: {file: checksum_fuzzer.ubsan, bytes: 53400, sha256: 7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b}
+    asan: {file: checksum_fuzzer.asan, bytes: 571500, sha256: 7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c}
+    asan-ubsan: {file: checksum_fuzzer.asan-ubsan, bytes: 571800, sha256: 7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d}

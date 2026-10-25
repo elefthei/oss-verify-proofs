@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Runs the facts review: the review agent follows .claude/skills/review-facts/SKILL.md on the files facts-review-gather
+# wrote, and its last message, the comment for the reviewers, is written to <directory>/comment.md.
+#
+#   PR=<number> tools/oft/ci/facts-review-run <directory inside this checkout>
+#
+# Run it from the root of a checkout of main. facts-review.yml's review job runs it in CI. A person can run it on their
+# own machine too, with their own login to the review agent's tool, to see the comment a pull request would get: run
+# facts-review-gather first, then this, and read comment.md. Nothing is posted.
+# The model gets three tools only, Read, Glob and Grep, in the agent's restricted mode, which also keeps them inside
+# this checkout: no shell, no network tool, no file writes, no MCP server. It reads what the pull request holds as
+# data (the skill's rule 1). Its environment holds only PATH, HOME, the locale and the ANTHROPIC_* variables and the
+# tool's own ones, those of its credential (in CI, those of workload identity federation).
+set -euo pipefail
+
+in=${1:?usage: facts-review-run <directory>}
+[[ $PR =~ ^[0-9]+$ ]] || { echo "facts-review-run: PR is not a number" >&2; exit 2; }
+case $(realpath "$in")/ in "$(pwd -P)"/*) ;; *) echo "facts-review-run: $in is not inside this checkout" >&2; exit 2 ;; esac
+[ -s "$in/changed.txt" ] || { echo "facts-review-run: the pull request changes no facts file" >&2; exit 3; }
+model=${REVIEW_MODEL:-claude-opus-5-5}
+
+prompt="You are the facts review agent, in CI, on pull request #$PR of this repository, which adds or changes \
+projects' facts. Read .claude/skills/review-facts/SKILL.md and do the review that it describes, as its section \
+\"In CI\" says. The workflow gathered the inputs into $in/: the pull request is in $in/pr.md, the facts files it \
+changes in $in/changed.txt, the fuzz targets to review in $in/targets.txt, and the pull request's files in $in/head/. \
+Your last message is the comment for the reviewers, in Markdown, and nothing else."
+
+pass=()
+for variable in $(compgen -e); do
+  case $variable in ANTHROPIC_*|CLAUDE_CODE_*) pass+=("$variable=${!variable}") ;; esac
+done
+env -i PATH="$PATH" HOME="$HOME" LANG=C.UTF-8 "${pass[@]}" \
+  claude -p "$prompt" --restricted --tools Read,Glob,Grep --strict-mcp-config --permission-mode dontAsk \
+    --model "$model" --max-turns 200 --output-format json < /dev/null > "$in/review.json"
+jq -r 'if .is_error then error("the review ended with an error: \(.result // .subtype)") else .result end' \
+  "$in/review.json" > "$in/comment.md"
+[ -s "$in/comment.md" ] || { echo "facts-review-run: the review wrote no comment" >&2; exit 1; }
+echo "facts-review-run: $(wc -c < "$in/comment.md") bytes in $in/comment.md, by $model," \
+  "$(jq -r '.num_turns // "?"' "$in/review.json") turns"

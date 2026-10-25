@@ -5,16 +5,24 @@
   statements       verify every published ELF's SHA-256; `dune build` the
                    images (elf-snapshot, at build time), Images.v,
                    Statements.v, Characterise.v
-  proofs           each proofs/<p>/<h>/<s>/: compile it against the statements
-                   (from --base, when given: the base branch's build) and the
-                   harness's proof library proofs/<p>/<h>/lib/ if it has one
-                   (compiled once), then compile a wrapper this tool writes,
-                   which ascribes the proof's theorem to the statement and
-                   prints its assumptions; every assumption must be in
-                   toolchain/allowed-axioms.txt.  The kernel checks every term
-                   as it compiles.
+  proofs           build the harness's proof library proofs/<p>/<h>/lib/, if
+                   it has one, with dune (once; dune's cache may supply it),
+                   then compile each proofs/<p>/<h>/<s>/ afresh with `rocq
+                   compile` against the statements and the library, then a
+                   wrapper this tool writes, which ascribes the proof's theorem
+                   to the statement and prints its assumptions; every
+                   assumption must be in toolchain/allowed-axioms.txt.  The
+                   kernel checks every term as it compiles.
   counterexamples  run the binary on input.bin and on control.bin under
                    qemu-user and compare with expect.yaml
+  findings         run each finding's input.bin and control.bin on every
+                   build its statements name, on the unpatched binaries
+                   (findings/<p>/unpatched.yaml), under qemu-user, and compare
+                   each run's exit, signal, stdout and stderr with
+                   finding.yaml; --record prints the runs of a finding that
+                   has none yet, to commit, only when no run timed out or
+                   died of a signal a finding does not record, its input
+                   shows each statement false and its control none
 
 --rocqchk adds rocqchk, an independent re-check of the compiled libraries:
 over the statements, and once per harness over the wrappers of all its proofs.
@@ -26,7 +34,7 @@ Each part fails when it examined nothing it was asked to examine.
 `plan --changed FILE` maps a change to the harnesses it affects, for CI's
 job matrix.
 """
-import concurrent.futures
+import hashlib
 import json
 import os
 import re
@@ -37,9 +45,12 @@ import subprocess
 import sys
 import tempfile
 
-from . import facts, fetch, names, rules
+from . import facts, fetch, names, render, rules, schema, yamlio
 
+# A bound statement takes its b as `(n # d)`, QArith's notation, which parses only where QArith is imported; the
+# import adds no assumption, and a b that is not the proof's still fails to unify.
 WRAPPER = """(* written by oft check; never supplied by a pull request *)
+From Stdlib Require Import QArith.
 Require {stmt_mod}.
 Require {proof_mod}.
 Definition certified : {neg}{stmt_mod}.{stmt}{args} := {proof_mod}.{theorem}.
@@ -162,7 +173,8 @@ def check_statements(root, h, allowed, work, out, rocqchk=False):
     targets = [os.path.join(h.dir, f[:-2] + ".vo") for f in ("Images.v", "Statements.v", "Characterise.v")
                if os.path.isfile(os.path.join(root, h.dir, f))]
     log = os.path.join(work, "dune.log")
-    if _run(["dune", "build", "--root", root] + targets, root, log) != 0:
+    # --display short: the log names each rule dune ran; one it took from its cache is not named.
+    if _run(["dune", "build", "--root", root, "--display", "short"] + targets, root, log) != 0:
         raise CheckError("dune build failed (see %s)" % log)
     if not rocqchk:
         print("%s: statements compiled" % h.dir, file=out)
@@ -174,10 +186,19 @@ def check_statements(root, h, allowed, work, out, rocqchk=False):
     print("%s: statements compiled; rocqchk: %d axioms, all allowed" % (h.dir, n), file=out)
 
 
-def compile_lib(root, h, base, work, libs, out):
+# The names under which dune reads build rules in a directory.  dune builds a proof library from the rules of lib/ and
+# of every directory above it ((subdir ...) adds stanzas below; (env ...) sets flags or the compiler for everything
+# below).  So oft check writes lib/dune itself and refuses any other build file in lib/ or above it (the root's
+# dune-project, which oft generate writes, aside): every .vo of a library is `rocq compile` of its own .v files.
+DUNE_FILES = ("dune", "dune-file", "dune-project", "dune-workspace")
+
+
+def compile_lib(root, h, work, libs, out):
     """The -Q mapping of h's proof library, proofs/<p>/<h>/lib/ (OssFuzzTheorems.Proofs.<p>.<h>.lib, every .v at any
-    depth), or [] when h has none.  Compiled once per check run against the statements in `base`; `libs` holds the
-    mapping, or the error, per harness."""
+    depth), or [] when h has none.  Built once per check run by dune, from the rocq.theory stanza of oft generate's
+    lib/dune, against the statements in root's _build; `libs` holds the mapping, or the error, per harness.  dune takes a
+    file from its cache (DUNE_CACHE) only when the file's sources, its dependencies and the Rocq binary all hash the
+    same as when the cached copy was compiled."""
     if h.dir in libs:
         if isinstance(libs[h.dir], CheckError):
             raise libs[h.dir]
@@ -187,81 +208,72 @@ def compile_lib(root, h, base, work, libs, out):
     if not os.path.isdir(src):
         libs[h.dir] = []
         return []
-    lib_mod = names.rocq_proof(h.project.name, h.name, "lib")
-    d = tempfile.mkdtemp(prefix="lib-", dir=work)
-    files = []
-    for dp, _dn, fn in os.walk(src):
-        for f in fn:
-            if f.endswith(".v"):
-                dst = os.path.join(d, os.path.relpath(os.path.join(dp, f), src))
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.copy(os.path.join(dp, f), dst)
-                files.append(dst)
-    q = _loadpath(base, h) + ["-Q", d, lib_mod]
     try:
-        if not files:
-            raise CheckError("%s: holds no .v file" % rel)
-        _compile_in_parallel(rel, files, d, q)
+        targets = _lib_targets(root, h, rel, out)
+        log = os.path.join(work, "%s.%s.lib.dune.log" % (names.ident(h.project.name), names.ident(h.name)))
+        if _run(["dune", "build", "--root", root, "--display", "short", "-j", str(len(os.sched_getaffinity(0)))]
+                + targets, root, log) != 0:
+            raise CheckError("%s: does not compile (see %s)" % (rel, log))
     except CheckError as e:
         libs[h.dir] = e
         raise
-    libs[h.dir] = ["-Q", d, lib_mod]
-    print("%s: %d files compiled" % (rel, len(files)), file=out)
+    libs[h.dir] = ["-Q", os.path.join(root, "_build", "default", rel), names.rocq_proof(h.project.name, h.name, "lib")]
+    print("%s: %d files compiled or taken from dune's cache (log %s)" % (rel, len(targets), log), file=out)
     return libs[h.dir]
 
 
-def _compile_in_parallel(rel, files, d, q):
-    """`rocq compile` every file of `files` (all under d) with load path q, each as soon as the files it requires are
-    compiled, as many at once as there are CPUs this process may run on (a container's --cpuset-cpus, not the host's
-    count).  Each file's output goes to its own log under d/logs/."""
-    r = subprocess.run(["rocq", "dep"] + q + sorted(files), capture_output=True, text=True)
-    if r.returncode != 0:
-        raise CheckError("%s: rocq dep failed: %s" % (rel, r.stderr.strip()))
-    deps = {f: set() for f in files}
-    for line in r.stdout.splitlines():
-        targets, colon, prereqs = line.partition(":")
-        vo = next((t for t in targets.split() if t.endswith(".vo")), None) if colon else None
-        if vo is None or vo[:-3] + ".v" not in deps:
-            continue
-        deps[vo[:-3] + ".v"] |= {p[:-3] + ".v" for p in prereqs.split()
-                                 if p.endswith(".vo") and p[:-3] + ".v" in deps and p != vo}
-    logs = os.path.join(d, "logs")
-    os.makedirs(logs)
-    log_of = {f: os.path.join(logs, os.path.relpath(f, d).replace(os.sep, "__") + ".log") for f in files}
-    pending, done, running, failed = set(files), set(), {}, None
-    with concurrent.futures.ThreadPoolExecutor(len(os.sched_getaffinity(0))) as ex:
-        while pending or running:
-            if failed is None:
-                for f in sorted(x for x in pending if deps[x] <= done):
-                    pending.discard(f)
-                    running[ex.submit(_run, ["rocq", "compile"] + q + [f], d, log_of[f])] = f
-            if not running:
-                raise CheckError("%s: the files %s require each other" % (rel, ", ".join(
-                    os.path.relpath(f, d) for f in sorted(pending))))
-            finished, _ = concurrent.futures.wait(running, return_when=concurrent.futures.FIRST_COMPLETED)
-            for fut in finished:
-                f = running.pop(fut)
-                if fut.result() == 0:
-                    done.add(f)
-                elif failed is None:
-                    failed = f
-            if failed is not None and not running:
-                raise CheckError("%s: does not compile: %s (see %s)" % (rel, os.path.relpath(failed, d), log_of[failed]))
+def _lib_targets(root, h, rel, out):
+    """The .vo of every .v file in proofs/<p>/<h>/lib/ (relative to root).  Refuses a symbolic link in the library (dune
+    follows one, a walk does not) and any dune build file in it or in a directory above it; writes lib/dune as this
+    oft generate renders it, so the rule dune runs is this tool's, whichever tools rendered the tree."""
+    from . import generate
+    src = os.path.join(root, rel)
+    d = rel
+    while True:
+        for f in DUNE_FILES:
+            p = os.path.join(d, f)
+            if p != "dune-project" and d != rel and os.path.lexists(os.path.join(root, p)):
+                raise CheckError("%s: no directory above a proof library holds a build file" % p)
+        if d and os.path.islink(os.path.join(root, d)):
+            raise CheckError("%s: a proof library holds no symbolic link" % d)
+        if not d:
+            break
+        d = os.path.dirname(d)
+    targets = []
+    for dp, dn, fn in os.walk(src):
+        for f in dn + fn:
+            if os.path.islink(os.path.join(dp, f)):
+                raise CheckError("%s: a proof library holds no symbolic link" % os.path.relpath(os.path.join(dp, f), root))
+        for f in fn:
+            path = os.path.relpath(os.path.join(dp, f), root)
+            if f in DUNE_FILES and path != os.path.join(rel, "dune"):
+                raise CheckError("%s: a proof library holds no build file but lib/dune" % path)
+            if f.endswith(".v"):
+                targets.append(path[:-2] + ".vo")
+    if not targets:
+        raise CheckError("%s: holds no .v file" % rel)
+    dune, want = os.path.join(src, "dune"), generate.proof_lib_dune(h.project.name, h.name)
+    if not os.path.isfile(dune) or facts.read(dune) != want:
+        with open(dune, "w", encoding="utf-8") as f:
+            f.write(want)
+        print("%s: written as this oft generate renders it" % os.path.join(rel, "dune"), file=out)
+    return sorted(targets)
 
 
-def check_proof(root, st, pd, base, allowed, work, out, libs, rocqchk=False):
-    """Compile one proof directory against the statements in `base` (a _build/default tree) and its harness's proof
-    library, then the wrapper, and audit the wrapper's assumptions.  With rocqchk, return what rocqchk_proofs needs."""
+def check_proof(root, st, pd, allowed, work, out, libs, rocqchk=False):
+    """Compile one proof directory afresh, against the statements in root's _build and its harness's proof library, then
+    the wrapper, and audit the wrapper's assumptions.  With rocqchk, return what rocqchk_proofs needs."""
     h = st.harness
     p, hn, s = st.id.split("/")
     proof_mod = names.rocq_proof(p, hn, s)
     main = "Refutation" if pd.refutes else "Proof"
-    libq = compile_lib(root, h, base, work, libs, out)
+    libq = compile_lib(root, h, work, libs, out)
     d = tempfile.mkdtemp(prefix="proof-", dir=work)
     src = os.path.join(root, pd.path)
     for f in os.listdir(src):
         if f.endswith(".v"):
             shutil.copy(os.path.join(src, f), os.path.join(d, f))
+    base = os.path.join(root, "_build", "default")
     q = _loadpath(base, h) + libq + ["-Q", d, proof_mod]
     log = os.path.join(d, "compile.log")
     deps = subprocess.run(["rocq", "dep", "-sort"] + libq + ["-Q", d, proof_mod] + sorted(
@@ -332,6 +344,17 @@ def _no_core_file():
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
 
+def _run_input(qemu_path, elf, input_path, work, timeout):
+    """(exit, signal, stdout SHA-256, stderr SHA-256) of one run of elf under qemu on a copy of input_path, named
+    input.bin, in a fresh directory, with an empty environment and no core file."""
+    d = tempfile.mkdtemp(prefix=os.path.basename(input_path)[:-len(".bin")] + "-", dir=work)
+    shutil.copy(input_path, os.path.join(d, "input.bin"))
+    # an empty environment: the binaries read none, and the model gives them none
+    r = subprocess.run([qemu_path, elf, "input.bin"], cwd=d, capture_output=True, timeout=timeout, env={},
+                       preexec_fn=_no_core_file)
+    return _outcome(r.returncode) + (hashlib.sha256(r.stdout).hexdigest(), hashlib.sha256(r.stderr).hexdigest())
+
+
 def check_counterexample(root, st, cx, qemu, timeout, work, out):
     h = st.harness
     exp = cx.data
@@ -341,14 +364,8 @@ def check_counterexample(root, st, cx, qemu, timeout, work, out):
     qemu_path = shutil.which(qemu)
     if qemu_path is None:
         raise CheckError("%s: %s is not installed (the runner image has it)" % (cx.path, qemu))
-    results = {}
-    for which in ("input", "control"):
-        d = tempfile.mkdtemp(prefix=which + "-", dir=work)
-        shutil.copy(os.path.join(root, cx.path, which + ".bin"), os.path.join(d, "input.bin"))
-        # an empty environment: the binaries read none, and the model gives them none
-        r = subprocess.run([qemu_path, elf, "input.bin"], cwd=d, capture_output=True, timeout=timeout, env={},
-                           preexec_fn=_no_core_file)
-        results[which] = _outcome(r.returncode)
+    results = {which: _run_input(qemu_path, elf, os.path.join(root, cx.path, which + ".bin"), work, timeout)[:2]
+               for which in ("input", "control")}
     want = exp["observed"]
     got_exit, got_sig = results["input"]
     if got_exit != want["exit"] or got_sig != want.get("signal"):
@@ -359,6 +376,81 @@ def check_counterexample(root, st, cx, qemu, timeout, work, out):
                          % (cx.path, results["control"][0], exp["control"]["exit"]))
     print("%s: reproduces (exit %d%s); control exits %d" % (
         cx.path, got_exit, " " + got_sig if got_sig else "", exp["control"]["exit"]), file=out)
+
+
+def check_finding(root, h, f, qemu, timeout, work, out, record=False):
+    """Run the finding's input.bin, then its control.bin, on each build its statements name, on the unpatched
+    binaries, as check_counterexample runs a counterexample, and compare every run's exit, signal, stdout and stderr
+    with finding.yaml.  A pruned finding is checked the same way, and fails first if its input still shows a statement
+    false.  With record, a finding that has no runs yet prints the input and control to commit instead, and only when
+    they are evidence: every run ended within the timeout (a timeout is not a fixed outcome: a slower or faster machine
+    gives another) and has the shape a finding records (rules.run_ok, which `oft ledger` anchors a record by), the
+    input shows each statement false (none, when it is pruned) and the control shows none false.  Runs that are not
+    evidence are never printed, so a record never gets runs the rules refuse."""
+    sts = [h.statements[s] for s in f.data["statements"]]
+    builds = sorted({b for st in sts for b in st.data["builds"]}, key=schema.BUILDS.index)
+    pins = os.path.join("findings", f.project, "unpatched.yaml")
+    elves = {}
+    for b in builds:
+        rel = h.unpatched_elf_path(b)
+        rec = h.tree.unpatched[f.project]["harnesses"][h.name][b]
+        p = os.path.join(root, rel)
+        if not os.path.isfile(p):
+            raise CheckError("%s is not fetched (run ./oft fetch --findings %s)" % (rel, f.project))
+        if os.path.getsize(p) != rec["bytes"] or facts.sha256_file(p) != rec["sha256"]:
+            raise CheckError("%s does not match its SHA-256 in %s (run ./oft fetch --findings %s)"
+                             % (rel, pins, f.project))
+        elves[b] = p
+    qemu_path = shutil.which(qemu)
+    if qemu_path is None:
+        raise CheckError("%s is not installed (the runner image has it)" % qemu)
+    recording = record and "input" not in f.data
+    got = {}
+    for which in ("input", "control"):
+        got[which] = {}
+        for b in builds:
+            try:
+                ex, sig, so, se = _run_input(qemu_path, elves[b], os.path.join(root, f.path, which + ".bin"), work,
+                                             timeout)
+            except subprocess.TimeoutExpired:
+                raise CheckError("%s.bin on %s ran past the %s s limit: a timeout is not a fixed outcome, so %s"
+                                 % (which, b, timeout, "there are no runs to record" if recording
+                                    else "the record is not reproduced")) from None
+            got[which][b] = dict([("exit", ex)] + ([("signal", sig)] if sig else []) +
+                                 [("stdout_sha256", so), ("stderr_sha256", se)])
+    false = [st.name for st in sts if rules.shows_false(st, got["input"])]
+    if f.data["state"] == "pruned" and false:
+        raise CheckError("pruned, but still reproduces: on the unpatched binaries the input shows %s false"
+                         % render.join_words(false))
+    if recording:
+        # the shape a run must have to anchor a record (rules.run_ok, which `oft ledger` uses too): the runs qemu gives
+        # always have an exit from 0 to 255 and two SHA-256s, so only a signal no finding records can break it
+        for which in ("input", "control"):
+            for b in builds:
+                if not rules.run_ok(got[which][b]):
+                    raise CheckError("%s.bin on %s ended by %s, which a finding's run does not record (only %s), so "
+                                     "there are no runs to record" % (which, b, got[which][b].get("signal"),
+                                                                      ", ".join(rules.RUN_SIGNALS)))
+        unshown = [st.name for st in sts if st.name not in false] if f.data["state"] != "pruned" else []
+        if unshown:
+            raise CheckError("on the unpatched binaries the input does not show %s false, so there are no runs to "
+                             "record" % render.join_words(unshown))
+        control = [st.name for st in sts if rules.shows_false(st, got["control"])]
+        if control:
+            raise CheckError("the control does not behave normally: on the unpatched binaries it shows %s false, so "
+                             "there are no runs to record" % render.join_words(control))
+        print("# %s: add these runs\n%s" % (os.path.join(f.path, "finding.yaml"), yamlio.dump(got)), end="", file=out)
+        return
+    for which in ("input", "control"):
+        for b in builds:
+            want = f.data[which][b]
+            for k in rules.RUN_FIELDS:
+                if got[which][b].get(k) != want.get(k):
+                    raise CheckError("%s.bin on %s: %s is %s, recorded %s"
+                                     % (which, b, k, got[which][b].get(k), want.get(k)))
+    print("%s: %d runs match the record; %s" % (
+        f.path, 2 * len(builds), "pruned: the input shows no statement false" if f.data["state"] == "pruned"
+        else "the input shows %s false" % render.join_words(false)), file=out)
 
 
 STACK_NEEDED = 1 << 30
@@ -376,15 +468,18 @@ def raise_stack_limit():
 
 
 
-def run(root, units, base=None, parts="statements,proofs,counterexamples", allowed="toolchain/allowed-axioms.txt",
-        qemu="qemu-riscv64", timeout=600, rocqchk=False, out=sys.stdout):
-    tree = facts.load(root)
+def run(root, units, parts="statements,proofs,counterexamples", allowed="toolchain/allowed-axioms.txt",
+        qemu="qemu-riscv64", timeout=600, rocqchk=False, record=False, out=sys.stdout):
+    want = set(parts.split(","))
+    if record and "findings" not in want:
+        print("FAIL --record records findings: add findings to --parts", file=out)
+        return 1
+    tree = facts.load(root, record=record)
     rules.check(tree)
     if tree.errors:
         for e in tree.errors:
             print("error: " + e, file=out)
         return 1
-    want = set(parts.split(","))
     work = tempfile.mkdtemp(prefix="oft-check-")
     bad = examined = 0
     libs = {}  # harness dir -> its proof library's -Q mapping, or the error compiling it
@@ -409,11 +504,14 @@ def run(root, units, base=None, parts="statements,proofs,counterexamples", allow
         for st in h.statements.values():
             if st.proof and "proofs" in want:
                 steps.append((st.proof.path, lambda st=st: checked.append((st.proof.path, check_proof(
-                    root, st, st.proof, base or os.path.join(root, "_build", "default"), allow, work, out, libs,
+                    root, st, st.proof, allow, work, out, libs,
                     rocqchk))), not rocqchk))
             if st.counterexample and "counterexamples" in want:
                 steps.append((st.counterexample.path, lambda st=st: check_counterexample(
                     root, st, st.counterexample, qemu, timeout, work, out), True))
+        for f in sorted(tree.findings.values(), key=lambda f: f.path) if "findings" in want else []:
+            if f.unit == unit:
+                steps.append((f.path, lambda f=f: check_finding(root, h, f, qemu, timeout, work, out, record), True))
         if not steps:
             print("%s: nothing to check for parts %s" % (unit, parts), file=out)
             bad += 1
@@ -462,34 +560,59 @@ def snapshot_segments(elf, tool="elf-snapshot"):
 # ---------------------------------------------------------------------- plan
 
 def plan(root, changed_file, max_jobs=20, out=sys.stdout):
-    """The harness units a change affects, as {"units": [...], "all": bool, "jobs": [[...], ...]}.
+    """The harness units a change affects, as {"units": [...], "check_units": [...], "all": bool, "jobs": [...]}.
 
-    A changed harness directory, proof or counterexample marks its harness; a
-    change under theories/ or toolchain/ marks every harness; anything else
-    (docs, notes, tools, workflows) marks none.  The controls run on every
-    pull request regardless."""
+    A changed harness directory, proof, counterexample or finding marks its
+    harness, and a changed findings/<p>/unpatched.yaml every harness of p with
+    a finding; a changed file of a project's own (projects/<p>/project.yaml,
+    the assets a check fetches) marks every harness of the project; a change
+    under theories/ or toolchain/, to dune-project or to a .gitattributes file
+    (which changes how git checks out any file under it), or a path git quotes
+    (it holds a '"', a '\\' or a control character, so no pattern here can
+    read it) marks every harness; anything else (docs, notes, tools, workflows,
+    lean/) marks none.  Whether the controls run is pr.yml's to decide.  units
+    is every harness CI checks in any way, so a plan with no units checks
+    nothing; check_units, the ones among them with published builds, whose
+    binaries are fetched and whose statements and proofs are built.  A harness
+    whose every build is withheld can still have a finding to re-run.  Each job
+    lists its units, its check_units and their projects, those with
+    counterexamples and those with findings, pruned ones included."""
     tree = facts.load(root)
     with open(changed_file, encoding="utf-8") as f:
         changed = [l.strip() for l in f if l.strip()]
-    every = sorted("%s/%s" % (h.project.name, h.name) for h in tree.harnesses() if h.builds())
+    published = {"%s/%s" % (h.project.name, h.name) for h in tree.harnesses() if h.builds()}
+    with_findings = {f.unit for f in tree.findings.values()}
+    every = sorted(published | with_findings)
     units, full = set(), False
     for rel in changed:
-        if rel.startswith(("theories/", "toolchain/")) or rel == "dune-project":
+        if (rel.startswith(("theories/", "toolchain/", '"')) or rel == "dune-project"
+                or os.path.basename(rel) == ".gitattributes"):
             full = True
             continue
-        m = re.match(r"(projects|proofs|counterexamples)/([^/]+)/([^/]+)/", rel)
+        m = re.match(r"(projects|proofs|counterexamples|findings)/([^/]+)/([^/]+)/", rel)
+        u = re.match(r"findings/([^/]+)/unpatched\.yaml$", rel)
         if m and m.group(2) != "lib":
             unit = "%s/%s" % (m.group(2), m.group(3))
             if unit in every:
                 units.add(unit)
+        elif u:
+            units.update(f.unit for f in tree.findings.values() if f.project == u.group(1))
         elif rel.startswith("proofs/lib/"):
             units.update(sid.rsplit("/", 1)[0] for sid in tree.proofs)
+        elif re.fullmatch(r"projects/[^/]+/[^/]+", rel):
+            units.update(u for u in every if u.split("/")[0] == rel.split("/")[1])
     chosen = every if full else sorted(units)
     n = max(1, min(max_jobs, len(chosen)))
     shards = [chosen[i::n] for i in range(n)] if chosen else []
     with_cx = {sid.rsplit("/", 1)[0] for sid in tree.counterexamples}
-    jobs = [{"index": i, "units": " ".join(j), "projects": " ".join(sorted({u.split("/")[0] for u in j})),
-             "counterexamples": " ".join(u for u in j if u in with_cx)} for i, j in enumerate(shards)]
-    json.dump({"all": full, "units": chosen, "jobs": jobs}, out, indent=None)
+    jobs = []
+    for i, shard in enumerate(shards):
+        check_units = [u for u in shard if u in published]
+        jobs.append({"index": i, "units": " ".join(shard), "check_units": " ".join(check_units),
+                     "projects": " ".join(sorted({u.split("/")[0] for u in check_units})),
+                     "counterexamples": " ".join(u for u in shard if u in with_cx),
+                     "findings": " ".join(u for u in shard if u in with_findings)})
+    json.dump({"all": full, "units": chosen, "check_units": [u for u in chosen if u in published], "jobs": jobs},
+              out, indent=None)
     out.write("\n")
     return 0

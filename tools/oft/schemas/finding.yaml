@@ -1,0 +1,37 @@
+# findings/<project>/<harness>/<slug>/finding.yaml: a library bug found while proving, kept on the proof branch with
+# its input.bin, its control.bin and its patch, and re-run by CI on the unpatched binaries
+# (findings/<project>/unpatched.yaml) until it is public.  findings/ never ships.
+#
+# Each run is one build on input.bin or control.bin, as `oft check --parts findings` makes it: its exit status as a
+# shell reports it, the signal that ended it, and the SHA-256 of its stdout and of its stderr.  `oft check --parts
+# findings --record` prints the input and control of a finding that has none yet.
+tag: oss-fuzz-theorems/finding/1
+root: {type: ref, name: finding}
+defs:
+  run:
+    type: object
+    fields:
+      exit: {type: int, min: 0, max: 255}
+      signal: {type: enum, values: [SIGABRT, SIGILL, SIGSEGV, SIGBUS, SIGFPE, SIGTRAP], optional: true}
+      stdout_sha256: {type: sha256}
+      stderr_sha256: {type: sha256}
+  runs:
+    type: map
+    keys: build-name
+    values: {type: ref, name: run}
+  finding:
+    type: object
+    fields:
+      schema: {type: const, value: oss-fuzz-theorems/finding/1}
+      statements: {type: list, items: {type: statement-name}, min: 1}   # the harness's statements it shows false
+      # open: found, not yet patched; patched: the patched build carries its fix; pruned: its input no longer shows a
+      # statement false on the unpatched binaries, and its patch leaves the series; reported; public; not-a-defect:
+      # the statement is false but the library is right (no report; a previous patch stays in the ledger and leaves
+      # the series)
+      state: {type: enum, values: [open, patched, pruned, reported, public, not-a-defect]}
+      summary: {type: text, max: 400}
+      patch: {type: str, pattern: '^[A-Za-z0-9][A-Za-z0-9._+-]*\.patch$', optional: true}   # a file beside this one
+      upstream: {type: url, optional: true}       # a prior public report or an upstream fix, once one is known
+      calls: {type: int, min: 1, max: 4}          # the harness calls the driver header of input.bin asks for
+      input: {type: ref, name: runs, optional: true}     # one run per build the statements name
+      control: {type: ref, name: runs, optional: true}   # the same builds, on control.bin

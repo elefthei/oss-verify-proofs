@@ -15,7 +15,7 @@ Built from espeak-ng (commit `7d426728`).
 Not included: **api-driver** (held from this release).
 
 ## What the statements say, for espeak-ng
-- **`<build>_halts`**: on every input on which the build is never refused memory for exceeding 16 GiB (a premise: an input that needs more is not covered), and when the environment refuses nothing it is not forced to, every execution exits with status any status, without crashing, failing an assertion, hanging or tripping its sanitizer.
+- **`<build>_halts`**: on every input on which the build is never refused memory for exceeding 16 GiB (a premise: an input that needs more is not covered), and when the environment refuses nothing it is not forced to, every execution exits with any status, without crashing, failing an assertion, hanging or tripping its sanitizer.
 - **`<build>_halts_may_fail`**: with no memory premise, and even if any request is refused at any point, every execution exits, with any status. Stated for the plain and UBSan builds only.
 - **`<build>_agrees`**: on every input on which the plain build is never refused memory for exceeding its budget (a premise), neither build reaches an error, and the two have the same set of observable behaviours: every sequence of writes and exit status one can show, the other can too. A sanitizer report aborts, so this rules out every error the sanitizer build's configuration detects. It does not rule out a run that never ends; only a halts statement does.
 - **`<build>_disagrees_at_most b`**: for inputs drawn from the harness's `Distribution.v`, the plain and sanitizer builds disagree with probability at most *b*.

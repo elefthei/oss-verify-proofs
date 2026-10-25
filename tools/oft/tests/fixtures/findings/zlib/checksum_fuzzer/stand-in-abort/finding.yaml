@@ -1,0 +1,14 @@
+schema: oss-fuzz-theorems/finding/1
+statements: [asan_agrees, asan_ubsan_agrees]
+state: patched
+summary: A stand-in finding for these tests; it describes no bug in zlib. Its input makes both ASan builds abort.
+patch: 0001-stand-in.patch
+calls: 1
+input:
+  plain: {exit: 0, stdout_sha256: f4472a14b6160e58b35bfeb710d23d240ab59402cc84bc7b5a579c7373849295, stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855}
+  asan: {exit: 134, signal: SIGABRT, stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855}
+  asan-ubsan: {exit: 134, signal: SIGABRT, stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855}
+control:
+  plain: {exit: 0, stdout_sha256: f4472a14b6160e58b35bfeb710d23d240ab59402cc84bc7b5a579c7373849295, stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855}
+  asan: {exit: 0, stdout_sha256: f4472a14b6160e58b35bfeb710d23d240ab59402cc84bc7b5a579c7373849295, stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855}
+  asan-ubsan: {exit: 0, stdout_sha256: f4472a14b6160e58b35bfeb710d23d240ab59402cc84bc7b5a579c7373849295, stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855}

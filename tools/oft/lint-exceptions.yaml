@@ -1,5 +1,8 @@
 # Reviewed occurrences that are correct where they are: a `private-data`
-# finding inside an upstream source copy, such as its authors' own address.
+# finding inside an upstream source copy, such as a host path in its authors'
+# comments, or inside a build record's copy of the port's project.yaml, or an
+# e-mail address in another file of that record's copy of the port's project
+# files (port/projects/<project>/), such as its author's copyright line.
 # Each entry: {path, rule, key, count, reason}; the key is the one the finding
 # names.  An entry that clears fewer occurrences than its count is itself a
 # finding.

@@ -78,6 +78,39 @@ def _who(h):
     return "driver" if h.data["origin"] == "this-repository" else "harness"
 
 
+def _origin(h):
+    """The harness's origin as its pages word it: an upstream target of a project OSS-Fuzz does not have is the
+    project's own, which OSS-Fuzz does not run."""
+    o = h.data["origin"]
+    return o + "_no_oss_fuzz" if o == "upstream" and "oss_fuzz" not in h.project.data else o
+
+
+# the blocks with a Rust variant. A Rust build's UB checks are rustc's (-Zub-checks), whose failure is a panic, which
+# the OSS Verify port's hook ends with status 79, and UBSan's in the C code its crates build (which trap); and a
+# may-fail halts statement that allows any status says that a panic does not falsify it
+RUST_BLOCKS = {"build_ubsan", "note_ubsan", "note_asan-ubsan", "agree_ubsan", "agree_asan-ubsan",
+               "fires_ubsan", "fires_asan-ubsan", "stronger"}
+
+
+def _lang(h, block):
+    """The template block for this harness's language."""
+    return block + "_rust" if block in RUST_BLOCKS and h.project.data["language"] == "rust" else block
+
+
+def _port_repository_words(port):
+    """The port repository as a project page may publish it: the port's
+    name, or a generic phrase for its private prelaunch variant."""
+    if port["repository"] == schema.PRELAUNCH_REPOSITORY:
+        return "the private prelaunch OSS Verify port"
+    return "`%s`" % port["repository"]
+
+
+def _project_subject(proj):
+    """The public name for a project's statement subjects: "OSS-Fuzz harnesses" or "fuzz targets"."""
+    return ("OSS-Fuzz harnesses"
+            if "oss_fuzz" in proj.data and not proj.targets(("oss-verify",)) else "fuzz targets")
+
+
 def _binding_letters(h, st):
     return [chr(ord("a") + i) for i, c in enumerate(h.data["checks"]) if shapes.binds(c, st.data)]
 
@@ -89,11 +122,12 @@ def statements_v(h):
     lib, lib_name = _library(h)
     builds = [b for b, _ in h.builds()]
     header = _t(T, "header",
-                subject=_t(T, "subject_" + h.data["origin"], count=COUNT_WORDS[len(builds)],
+                subject=_t(T, "subject_" + _origin(h), count=COUNT_WORDS[len(builds)],
                            harness=h.name, project=h.project.name, library=lib),
-                build_table="\n".join(_t(T, "build_" + b) for b in builds),
+                build_table="\n".join(_t(T, _lang(h, "build_" + b)) for b in builds),
                 driver=(_t(T, "driver_api", library_name=lib_name, source=_source_words(h))
-                        if h.data["origin"] == "this-repository" else _t(T, "driver_harness", entry=h.data["entry"])),
+                        if h.data["origin"] == "this-repository" else _t(T, "driver_harness", entry=h.data["entry"])
+                        + (_t(T, "driver_rust") if h.project.data["language"] == "rust" else "")),
                 checks=_checks_paragraph(h))
     sections, current, firsts = [], None, {}
     rendered = [s for s in _order(h) if s.rendered()]
@@ -106,7 +140,8 @@ def statements_v(h):
             continue
         params, body = shapes.term(st.data)
         # a statement is written "As [first], for the X build" only after one of the same family
-        family = (st.kind, st.data["reading"], st.data.get("abort"), st.data.get("machine"))
+        family = (st.kind, st.data["reading"], st.data.get("abort"), st.data.get("machine"),
+                  shapes.exits_key(st.data.get("exits", "any")))
         doc = _statement_doc(h, st, firsts.get(family), rendered, lib_name)
         firsts.setdefault(family, st.name)
         sections.append(_t(T, "definition", doc=_comment(doc), name=st.name, params=params, body=body))
@@ -191,20 +226,27 @@ def _statement_doc(h, st, first, rendered, lib_name):
                        letters=render.join_words("(%s)" % x for x in letters))
         if first and letters == _binding_letters(h, h.statements[first]):
             binds = ""          # the same as the statement this one is stated like
-        note = _t(T, "note_" + san)
+        ex = d.get("exits", "any")
+        block = _lang(h, "note_" + san)
+        if block == "note_ubsan_rust" and ex == "any":
+            block += "_any"     # a failed rustc UB check exits with status 79, which such a statement allows
+        note = _t(T, block)
+        rejected = ""
+        if ex != "any" and shapes.REJECTED in ex:
+            rejected = _t(T, "rejected", where=render.join_words([r["where"] for r in h.data["rejects"]], "and"))
         if d["reading"] == "budget":
             if first:
                 return "As [%s], for the %s build.%s%s" % (first, words, binds, note)
             return _t(T, "doc_halts_budget", build=words, budget=shapes.HALTS_BUDGET[1],
-                      exits=_exits_words(d), binds=binds, note=note, library_name=lib_name)
+                      exits=_exits_words(d), rejected=rejected, binds=binds, note=note, library_name=lib_name)
         twin = names.statement_name("halts", d["builds"], "budget")
-        stronger = _t(T, "stronger", budget_name=twin) if any(s.name == twin for s in rendered) else ""
+        stronger = _t(T, _lang(h, "stronger"), budget_name=twin) if any(s.name == twin for s in rendered) else ""
         if first:
             return "As [%s], for the %s build.%s%s%s" % (first, words, stronger, binds, note)
         has_asan = any(s.kind == "halts" and s.data["reading"] == "may-fail" and "asan" in s.data["builds"][0]
                        for s in rendered)
-        return _t(T, "doc_halts_may_fail", build=words, exits=_exits_words(d), stronger=stronger, binds=binds,
-                  note=note, no_asan="" if has_asan else _t(T, "no_asan", who=_who(h)))
+        return _t(T, "doc_halts_may_fail", build=words, exits=_exits_words(d), rejected=rejected, stronger=stronger,
+                  binds=binds, note=note, no_asan="" if has_asan else _t(T, "no_asan", who=_who(h)))
     if st.kind == "agreement":
         budget = shapes.BUDGETS[d["budgets"]][1]
         variant = ""
@@ -212,7 +254,10 @@ def _statement_doc(h, st, first, rendered, lib_name):
             variant += _t(T, "variant_abort")
         if d.get("machine") == "rv64gc":
             variant += _t(T, "variant_rv64gc")
-        san_note = _t(T, "agree_" + san, library_name=lib_name)
+        if (not first and d["reading"] == "alloc-forced-only" and "asan" in san
+                and h.project.data["language"] == "rust"):
+            variant += _t(T, "variant_alloc_rust")
+        san_note = _t(T, _lang(h, "agree_" + san), library_name=lib_name)
         if first:
             return "As [%s], for the %s build, with %s for the plain build.  %s%s" % (
                 first, words, budget, san_note, variant)
@@ -313,11 +358,11 @@ def dune_project(tree):
         if "assets" not in proj.data:
             continue                    # every binary withheld: nothing to build, so no package
         pk.append(_t(T, "package", name=names.opam_package(proj.name),
-                     synopsis="Theorem statements about %s's OSS-Fuzz harnesses" % proj.name))
+                     synopsis="Theorem statements about %s's %s" % (proj.name, _project_subject(proj))))
     with_proofs = sorted({sid.split("/")[0] for sid in tree.proofs} | {u.split("/")[0] for u in tree.proof_libs})
     for p in with_proofs:
         pk.append(_t(T, "package", name=names.opam_package(p) + "-proofs",
-                     synopsis="Proofs of statements about %s's OSS-Fuzz harnesses" % p))
+                     synopsis="Proofs of statements about %s's %s" % (p, _project_subject(tree.projects[p]))))
     r = tree.release
     rv = r["rocq"]["version"].split(".")
     return _t(T, "file", packages=("\n" + "\n\n".join(pk)) if pk else "", rocq_min="%s.%s" % (rv[0], rv[1]),
@@ -329,7 +374,7 @@ def project_opam(tree, proj):
     rv = r["rocq"]["version"].split(".")
     a = proj.data["assets"]["bin"]
     return _t("project.opam.tmpl", "file", package=names.opam_package(proj.name), release=r["release"],
-              project=proj.name, rocq_min="%s.%s" % (rv[0], rv[1]),
+              project=proj.name, subject=_project_subject(proj), rocq_min="%s.%s" % (rv[0], rv[1]),
               rocq_next="%s.%d" % (rv[0], int(rv[1]) + 1), lps_name=r["semantics"]["name"],
               bin_file=a["file"], bin_release=a["release"], bin_sha256=a["sha256"]) + "\n"
 
@@ -394,7 +439,9 @@ def _statement_line(h, st):
             v.append("RV64GC")
         if d["reading"] == "alloc-forced-only":
             v.append("memory refused only when forced")
-        return _t(T, "line_agreement", san=san, budget=shapes.BUDGETS[d["budgets"]][1],
+        block = _lang(h, "fires_" + d["builds"][-1])
+        fires = _t(T, block if block.endswith("_rust") else "fires", san=san)
+        return _t(T, "line_agreement", fires=fires, budget=shapes.BUDGETS[d["budgets"]][1],
                   variant="".join("; " + x for x in v))
     return _t(T, "line_" + st.kind, san=san)
 
@@ -450,23 +497,40 @@ def harness_readme(tree, h):
     else:
         source_link = _t(T, "source_link", file=src["files"][0],
                          modified="modified; see below" if src["modified"] else "unmodified")
-    intro = _t(T, "intro_" + h.data["origin"], harness=h.name, project=h.project.name, library=lib,
+    intro = _t(T, "intro_" + _origin(h), harness=h.name, project=h.project.name, library=lib,
                library_name=lib_name, source_link=source_link)
     mods = ""
     if h.data["modifications"]:
-        mods = "\n" + _t(T, "modifications", items="\n".join("- " + m for m in h.data["modifications"])) + "\n"
-    checks = []
-    for c in h.data["checks"]:
-        f, _, rng = c["where"].rpartition(":")
+        # a target OSS-Fuzz does not run differs from a libFuzzer build of it, not from what OSS-Fuzz runs
+        block = ("modifications_libfuzzer" if _origin(h) in ("oss-verify", "upstream_no_oss_fuzz")
+                 else "modifications")
+        mods = "\n" + _t(T, block, items="\n".join("- " + m for m in h.data["modifications"])) + "\n"
+
+    def link(where):
+        f, _, rng = where.rpartition(":")
         a, _, b = rng.partition("-")
         anchor = "L%s-L%s" % (a, b) if b else "L%s" % a
-        checks.append(_t(T, "check_row", what=c["what"].rstrip("."), lines=("lines %s" % rng) if b else ("line %s" % a),
+        return ("lines %s" % rng) if b else ("line %s" % a), f, anchor
+    checks = []
+    for c in h.data["checks"]:
+        lines, f, anchor = link(c["where"])
+        checks.append(_t(T, "check_row", what=c["what"].rstrip("."), lines=lines,
                          file=f, anchor=anchor, stops=_stop(c), live=LIVE_WORDS[c["live"]]))
     if checks:
         if any(_binding_letters(h, s) for s in h.statements.values()):
             checks.append("\n" + _t(T, "checks_bind", that="them" if len(h.data["checks"]) > 1 else "it"))
     else:
         checks.append(_t(T, "checks_none", who=_who(h), claim=_no_check_claim(h)))
+    if h.data.get("rejects"):
+        reject_rows = []
+        for r in h.data["rejects"]:
+            lines, f, anchor = link(r["where"])
+            reject_rows.append(_t(T, "reject_row", what=r["what"].rstrip("."), lines=lines, file=f, anchor=anchor))
+        checks.append("\n" + _t(T, "rejects", who=_who(h), status=shapes.REJECTED, rows="\n".join(reject_rows)))
+        returning = [c["where"][len("source/"):] for c in h.data["checks"] if c["stops_with"] == "return-only"]
+        if returning:
+            checks.append("\n" + _t(T, "rejects_return_only", status=shapes.REJECTED,
+                                    lines=render.join_words(returning, "and")))
     files = ["[Statements.v](Statements.v)"] if h.builds() else []
     if characterise_v(h) is not None and h.builds():
         files.append("[Characterise.v](Characterise.v)")
@@ -494,7 +558,9 @@ def harness_readme(tree, h):
         items = []
         for u in rec.get("uninstrumented") or []:
             src = (" from `%s`" % u["source"]) if u.get("source") else ""
-            items.append("`%s`%s (%s)" % (u["name"], src, UNINSTRUMENTED_WORDS[u["kind"]]))
+            words = ("the OSS Verify port's driver" if u["kind"] == "driver" and facts.port(h.project)
+                     else UNINSTRUMENTED_WORDS[u["kind"]])
+            items.append("`%s`%s (%s)" % (u["name"], src, words))
         if items:
             urows.append(_t(T, "uninstrumented_row", build=b, items=", ".join(items)))
     if urows:
@@ -527,12 +593,18 @@ def _counts(statements):
 def _lead(tree, proj):
     T = "project-README.md.tmpl"
     d = proj.data
-    url = "https://github.com/google/oss-fuzz/tree/%s/projects/%s" % (d["oss_fuzz"]["commit"], proj.name)
-    if d.get("homepage"):
-        links = _t(T, "links_homepage", homepage=d["homepage"], homepage_label=facts.repo_label(d["homepage"]),
-                   project=proj.name, oss_fuzz_url=url)
+    if "oss_fuzz" in d:
+        url = "https://github.com/google/oss-fuzz/tree/%s/projects/%s" % (d["oss_fuzz"]["commit"], proj.name)
+        if d.get("homepage"):
+            links = _t(T, "links_homepage", homepage=d["homepage"], homepage_label=facts.repo_label(d["homepage"]),
+                       project=proj.name, oss_fuzz_url=url)
+        else:
+            links = _t(T, "links_oss_fuzz", project=proj.name, oss_fuzz_url=url)
+    elif d.get("homepage"):
+        links = _t(T, "links_homepage_no_oss_fuzz", homepage=d["homepage"],
+                   homepage_label=facts.repo_label(d["homepage"]), project=proj.name)
     else:
-        links = _t(T, "links_oss_fuzz", project=proj.name, oss_fuzz_url=url)
+        links = _t(T, "links_no_oss_fuzz", project=proj.name)
     desc = d.get("description", "")
     return _t(T, "lead", description=(desc.rstrip(".") + ". ") if desc else "", links=links)
 
@@ -555,6 +627,15 @@ def _check_summary(ch):
     return "%s (%s)" % (render.plural(len(ch), "check", "checks"), "; ".join(parts))
 
 
+def _coverage(T, block, targets, included, api_note, **values):
+    """One coverage sentence of the status line: of these harness entries (targets), how many (included) have
+    statements."""
+    return _t(T, block, n_included=len(included), n_targets=len(targets),
+              have=("fuzz target" if len(targets) == 1 else "fuzz targets")
+              + (" has" if len(included) == 1 else " have"),
+              api_note=api_note, **values)
+
+
 def project_readme(tree, proj):
     T = "project-README.md.tmpl"
     d = proj.data
@@ -563,8 +644,10 @@ def project_readme(tree, proj):
         return _t(T, "file_short", project=proj.name, lead=_lead(tree, proj),
                   status_words=PB["projects"][status]["words"], sentence=facts.project_sentence(proj)) + "\n"
     hs = [proj.harnesses[e["name"]] for e in proj.entries() if e["status"] == "included" and e["name"] in proj.harnesses]
-    targets = [e for e in proj.entries() if e["name"] != names.API_DRIVER]
-    included = [e for e in targets if e["status"] == "included"]
+    oss_fuzz_targets = proj.targets()
+    oss_verify_targets = proj.targets(("oss-verify",))
+    included = [e for e in oss_fuzz_targets if e["status"] == "included"]
+    oss_verify_included = [e for e in oss_verify_targets if e["status"] == "included"]
     api = any(e["name"] == names.API_DRIVER and e["status"] == "included" for e in proj.entries())
     stmts = [s for h in hs for s in h.statements.values()]
     c = _counts(stmts)
@@ -596,14 +679,19 @@ def project_readme(tree, proj):
     fams = []
     kinds = {(s.kind, s.data["reading"]) for s in stmts if s.status != "withdrawn"}
     if ("halts", "budget") in kinds:
-        ex = {_exits_words(s.data) for s in stmts if s.kind == "halts" and s.data["reading"] == "budget"}
-        fams.append(_t(T, "family_halts", exits=" or ".join(sorted(ex)).replace("status ", "")))
+        by_words = {}
+        for s in stmts:
+            if s.kind == "halts" and s.data["reading"] == "budget":
+                by_words.setdefault(_exits_words(s.data), set()).add(s.harness.name)
+        common = max(sorted(by_words), key=lambda w: len(by_words[w]))
+        others = ["%s for %s" % (w, render.join_words(sorted(by_words[w]), "and")) for w in sorted(by_words) if w != common]
+        fams.append(_t(T, "family_halts", exits=common + (" (%s)" % "; ".join(others) if others else "")))
     if ("halts", "may-fail") in kinds:
         ex = {_exits_words(s.data) for s in stmts if s.kind == "halts" and s.data["reading"] == "may-fail"}
         fams.append(_t(T, "family_halts_may_fail", exits=" or ".join(sorted(ex))))
     for k in ("agreement", "bound", "decidability"):
         if any(s.kind == k for s in stmts):
-            fams.append(_t(T, "family_" + k))
+            fams.append(_t(T, "family_" + k + ("_rust" if k == "agreement" and d["language"] == "rust" else "")))
     binding = ""
     bitems = []
     for h in hs:
@@ -644,8 +732,9 @@ def project_readme(tree, proj):
         pitems.append(_t(T, "patch_unlisted", n=render.plural(n_unlisted, "patch", "patches"),
                          more=" more" if patches else ""))
     mods = [h.name for h in hs if h.data["source"]["modified"]]
-    harness_mods = ("the harness files are modified in %s (see each harness page); the others are unmodified"
-                    % render.join_words("`%s`" % m for m in mods)) if mods else "unmodified"
+    harness_mods = ("the harness files are modified in %s (see each harness page)%s"
+                    % (render.join_words("`%s`" % m for m in mods),
+                       "; the others are unmodified" if len(mods) < len(hs) else "")) if mods else "unmodified"
     proofs = [(sid, pd) for sid, pd in sorted(tree.proofs.items()) if sid.split("/")[0] == proj.name]
     if proofs:
         ptxt = _t(T, "proofs_table", rows="\n".join(
@@ -657,20 +746,47 @@ def project_readme(tree, proj):
     a = d.get("assets") or {}
     src = a.get("src")
     rel = lambda tag: "%s/releases/tag/%s" % (REPO_URL, tag)
+    recipe = facts.bin_recipe(tree, proj)
+    this = ("v" + tree.release["release"], "v" + tree.release["release"] + "-src")
+
+    def recipe_text():
+        """The recipe the binary archive pins: beside the source asset, in this release or an earlier one, or in a
+        release of its own, named apart."""
+        if recipe and recipe["release"] != src["release"]:
+            return _t(T, "recipe_apart", recipe_file=recipe["file"], recipe_release=recipe["release"],
+                      recipe_url=rel(recipe["release"]))
+        return _t(T, "recipe_this_release" if src["release"] in this else "recipe_that_release",
+                  recipe_file=recipe["file"] if recipe else "(none)")
+
+    oss_fuzz_runs_all = "oss_fuzz" in d and not oss_verify_targets
     get = (_t(T, "get_binaries", project=proj.name, bin_file=a["bin"]["file"], bin_release=a["bin"]["release"],
-              bin_url=rel(a["bin"]["release"])) if "bin" in a else _t(T, "get_none"))
+              bin_url=rel(a["bin"]["release"]),
+              testcase="an OSS-Fuzz testcase" if oss_fuzz_runs_all else "a testcase")
+           if "bin" in a else _t(T, "get_none"))
     licences = sorted({h.data["licence"] for h in hs})
     lib_licences = sorted({h.data["library"]["licence"] for h in hs} | {lib["licence"]})
     known_lib = [x for x in lib_licences if x != "NOASSERTION"]
     builder = d["build"]["builder"]
+    port = facts.port(proj)
     copyleft_sentence = _copyleft_sources(tree, T, hs)
-    return _t(T, "file_available", project=proj.name, lead=_lead(tree, proj),
+    # each group of fuzz targets has its own coverage sentence: OSS-Fuzz's, the project's own when OSS-Fuzz does not
+    # have the project, and those OSS Verify builds; an API driver is noted with the first
+    api_note = _t(T, "api_note") if api else ""
+    sentences = []
+    if "oss_fuzz" in d:
+        sentences.append(_coverage(T, "coverage", oss_fuzz_targets, included, api_note))
+        api_note = ""
+    own_targets = [] if "oss_fuzz" in d else proj.targets(("upstream",))
+    if own_targets:
+        sentences.append(_coverage(T, "coverage_own", own_targets, [e for e in own_targets if e["status"] == "included"],
+                                   api_note, project=proj.name))
+        api_note = ""
+    if oss_verify_targets:
+        sentences.append(_coverage(T, "coverage_oss_verify", oss_verify_targets, oss_verify_included, api_note))
+    coverage = " ".join(sentences)
+    return _t(T, "file_available", project=proj.name, lead=_lead(tree, proj), coverage=coverage,
               sources=("project.yaml, */harness.yaml, proofs/, counterexamples/ and notes/%s.md" % proj.name
                        if proj.notes else "project.yaml, */harness.yaml, proofs/ and counterexamples/"),
-              coverage=_t(T, "coverage", n_included=len(included), n_targets=len(targets),
-                          have=("fuzz target" if len(targets) == 1 else "fuzz targets")
-                          + (" has" if len(included) == 1 else " have"),
-                          api_note=_t(T, "api_note") if api else ""),
               binaries=(_t(T, "binaries_some", n_binaries=render.plural(len(builds), "binary", "binaries"),
                            bytes=render.human_bytes(sum(r["bytes"] for _, _, r in builds)),
                            held=(", %d more withheld" % n_held) if n_held else "")
@@ -687,16 +803,24 @@ def project_readme(tree, proj):
                                                                           "patch", "patches"))
               if patches or lib.get("patch_count") else "",
               glance_rows="\n".join(glance), not_included=not_included, families="\n".join(fams), binding=binding,
-              issues=issues_txt, get_binaries=get, library_repo=lib["repository"],
+              issues=issues_txt, get_binaries=get,
+              library_repo=lib["repository"],
               library_label=facts.repo_label(lib["repository"]),
               pin_long=("at `%s`" % lib["commit"]) if "commit" in lib
               else ("from the release archive whose SHA-256 is `%s`" % lib["archive_sha256"]),
               library_version_paren=(" (%s)" % lib["version"]) if lib.get("version") else "",
-              build_system=PB["build_systems"][d["build"]["system"]], patch_items=(":\n" + "\n".join(pitems)) if pitems else "",
-              harness_mods=harness_mods, clang=d["build"]["clang"],
-              # A rebuild needs the image and the build scripts, which come with the
-              # source bundle: with no bundle attached, the page must not invite one.
+              build_system=PB["build_systems"][d["build"]["system"]],
+              patch_items=(":\n" + "\n".join(pitems)) if pitems else "",
+              harness_mods=harness_mods,
+              compiled=_t(T, "compiled_rust" if d["language"] == "rust" else "compiled", clang=d["build"]["clang"]),
               builder_sentence=(_t(T, "builder_unpublished") if builder.endswith(PLACEHOLDER_DIGEST)
+                                else _t(T, "builder_port", builder=builder, port_path=port["path"],
+                                        port_commit=port["commit"], port_repository=_port_repository_words(port),
+                                        port_file=a["port"]["file"], port_url=rel(a["port"]["release"]),
+                                        src_file=src["file"])
+                                if port and src and "port" in a
+                                else _t(T, "builder_port_no_archive", builder=builder, port_path=port["path"],
+                                        port_commit=port["commit"], port_repository=_port_repository_words(port)) if port
                                 else _t(T, "builder_published", builder=builder) if src
                                 else _t(T, "builder_no_source", builder=builder)),
               proofs=ptxt, notes=notes,
@@ -712,10 +836,15 @@ def project_readme(tree, proj):
                                        if not licences or "NOASSERTION" in licences else
                                        _t(T, "binary_licences_known",
                                           binary_licences=render.join_words("`%s`" % x for x in licences))),
-              source_sentence=(_t(T, "source_with_bundle", src_file=src["file"], src_release=src["release"],
+              source_sentence=(_t(T, "source_with_port", src_file=src["file"], src_release=src["release"],
+                                  src_url=rel(src["release"]), manifest_file=a["src_manifest"]["file"],
+                                  port_file=a["port"]["file"], port_release=a["port"]["release"],
+                                  port_url=rel(a["port"]["release"]), port_path=port["path"],
+                                  port_commit=port["commit"]) if src and port else
+                               _t(T, "source_with_bundle", src_file=src["file"], src_release=src["release"],
                                   src_url=rel(src["release"]),
                                   manifest_file=(a.get("src_manifest") or {}).get("file", "(none)"),
-                                  recipe_file=((tree.release or {}).get("recipe") or {}).get("file", "(none)"))
+                                  recipe=recipe_text())
                                if src else _t(T, "source_none")),
               copyleft_sentence=copyleft_sentence) + "\n"
 
@@ -756,6 +885,8 @@ def _n_builds(proj, published):
 def status_md(tree):
     T = "STATUS.md.tmpl"
     r = tree.release
+    not_in_oss_fuzz = tree.not_in_oss_fuzz()
+    projects = render.join_words("`%s`" % n for n in not_in_oss_fuzz)
     totals, rows = [], []
     for status, spec in PB["projects"].items():
         n = sum(1 for p in tree.projects.values() if p.data["status"] == status)
@@ -765,7 +896,8 @@ def status_md(tree):
         d = proj.data
         c = _project_row_counts(proj)
         if d["status"] == "available":
-            targets = [e for e in proj.entries() if e["name"] != names.API_DRIVER]
+            # every fuzz target: OSS-Fuzz's, the project's own and those OSS Verify builds; not the API driver
+            targets = proj.targets(facts.OSS_FUZZ_ORIGINS + ("oss-verify",))
             inc = sum(1 for e in targets if e["status"] == "included")
             t = "%d of %d" % (inc, len(targets))
             if any(e["name"] == names.API_DRIVER and e["status"] == "included" for e in proj.entries()):
@@ -780,6 +912,11 @@ def status_md(tree):
                        targets=t, binaries=bins, statements=render.thousands(c["n"]), open=c["open"], proved=c["proved"],
                        false=c["false"], suspected=c["suspected"], blocked=c["model_gap"], withheld=c["withheld"]))
     return _t(T, "file", release=r["release"], oss_fuzz_commit8=r["oss_fuzz"]["commit"][:8], totals="\n".join(totals),
+              title="Status of every project" if not_in_oss_fuzz else "Status of every OSS-Fuzz project",
+              language_note=_t(T, "language_note") if not_in_oss_fuzz else "",
+              not_in_oss_fuzz_note=_t(T, "not_in_oss_fuzz_note", projects=projects,
+                                      pronoun="it" if len(not_in_oss_fuzz) == 1 else "them")
+              if not_in_oss_fuzz else "",
               n_projects=render.thousands(len(tree.projects)), rows="\n".join(rows)) + "\n"
 
 
@@ -877,11 +1014,31 @@ def readme(tree):
     n_halts = sum(1 for x in proved for s in x["statements"] if s.kind == "halts")
     halts_words = (_t(T, "halts_none") if not n_halts else
                    _t(T, "halts_some", n_halts=render.thousands(n_halts)))
-    n_targets = sum(1 for p in tree.available() for e in p.entries() if e["name"] != names.API_DRIVER)
-    return _t(T, "file", n_projects=render.thousands(len(tree.projects)), n_available=render.thousands(len(tree.available())),
+    # the OSS-Fuzz paragraph counts OSS-Fuzz's projects and their OSS-Fuzz targets alone (no OSS Verify target and no
+    # API driver), as each project page and index/projects.tsv do
+    oss_fuzz_available = [p for p in tree.available() if "oss_fuzz" in p.data]
+    oss_fuzz_targets = [e for p in oss_fuzz_available for e in p.targets()]
+    n_oss_fuzz_included = sum(1 for e in oss_fuzz_targets if e["status"] == "included")
+    not_in_oss_fuzz = tree.not_in_oss_fuzz()
+    projects = render.join_words("[`%s`](projects/%s/)" % (n, n) for n in not_in_oss_fuzz)
+    any_port = any(facts.port(p) for p in tree.projects.values())
+    return _t(T, "file", n_projects=render.thousands(len(tree.projects)),
+              n_oss_fuzz_projects=render.thousands(tree.oss_fuzz_project_count()),
+              n_available=render.thousands(len(tree.available())),
+              n_oss_fuzz_available=render.thousands(len(oss_fuzz_available)),
               example=example, status_counts=counts_sentence(tree), coverage_rows="\n".join(cov),
+              total_label="all projects" if not_in_oss_fuzz else "all OSS-Fuzz projects",
+              not_in_oss_fuzz=_t(T, "not_in_oss_fuzz", projects=projects,
+                                  project_directories=("a project directory" if len(not_in_oss_fuzz) == 1
+                                                       else "project directories"),
+                                  pronoun="it" if len(not_in_oss_fuzz) == 1 else "them")
+              if not_in_oss_fuzz else "",
+              source_description=(_t(T, "source_description_recipe_mixed" if any_port else "source_description_recipe")
+                                  if facts.release_recipes(tree) else ""),
+              port_description=_t(T, "port_description") if any_port else "",
               proved_words=proved_words, proved_lead=proved_lead, proved_table=proved_table,
-              n_harnesses=render.thousands(len(harnesses)), n_targets=render.thousands(n_targets),
+              n_harnesses=render.thousands(len(harnesses)), n_oss_fuzz_included=render.thousands(n_oss_fuzz_included),
+              n_oss_fuzz_targets=render.thousands(len(oss_fuzz_targets)),
               halts_words=halts_words,
               n_binaries=render.thousands(n_pub), n_withheld_binaries=render.thousands(n_held),
               n_statements=render.thousands(len(stmts)), oss_fuzz_commit8=r["oss_fuzz"]["commit"][:8],
@@ -923,7 +1080,7 @@ def index_files(tree):
     prow, hrow, srow, brow, crow = [], [], [], [], []
     for proj in sorted(tree.projects.values(), key=lambda p: p.name):
         d = proj.data
-        targets = [e for e in proj.entries() if e["name"] != names.API_DRIVER]
+        targets = proj.targets()
         c = _project_row_counts(proj)
         prow.append([proj.name, d["language"], d["status"], d.get("reason") or "-", len(targets),
                      sum(1 for e in targets if e["status"] == "included"),
@@ -1103,7 +1260,7 @@ def run(root, check=False, out=sys.stdout):
     bad = 0
     for rel, text in sorted(rendered.items()):
         p = os.path.join(root, rel)
-        old = facts.read(p) if os.path.isfile(p) else None
+        old = facts.read_raw(p) if os.path.isfile(p) else None
         if old == text:
             continue
         if check:

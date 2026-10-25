@@ -9,10 +9,17 @@ from . import facts, names, schema, shapes
 
 PB = facts.PHRASEBOOK
 PLACEHOLDER = re.compile(r"\{([a-z_0-9]+)\}")
+# the (status, reason) sentences that say what OSS-Fuzz has for the project, so a project OSS-Fuzz does not have (no
+# oss_fuzz) cannot take them
+OSS_FUZZ_REASONS = {("no-harness", "none-at-commit"), ("excluded", "stub-harness")}
+# the harness reasons that say a fuzz target was not built, which an oss-verify entry (a fuzz target OSS Verify builds)
+# cannot take
+UNBUILT_REASONS = {"not-attempted", "build-system", "harness-framework", "dependency"}
 
 
 def check(tree):
     _release(tree)
+    _records(tree)
     idents = {}
     for proj in tree.projects.values():
         _project(tree, proj)
@@ -26,39 +33,87 @@ def check(tree):
         _proof(tree, sid, pd)
     for sid, cx in tree.counterexamples.items():
         _counterexample(tree, sid, cx)
+    _approvals(tree)
+    patches = {}
+    for f in sorted(tree.findings.values(), key=lambda f: f.path):
+        _finding(tree, f, patches)
+    _series(tree)
+    _held(tree)
     return tree.errors
+
+
+def _approvals(tree):
+    """approvals.yaml: each entry names an included fuzz target, once, of a project no finding holds back and not private
+    (release: private), and statements of it, each once, none of them refuted; a submission names the record of its review, and only a
+    submission does."""
+    if not tree.approvals:
+        return
+    harnesses = {"%s/%s" % (h.project.name, h.name): h for h in tree.harnesses()}
+    held, private = facts.held_projects(tree), facts.private_projects(tree)
+    seen = set()
+    for i, e in enumerate(tree.approvals["fuzz_targets"]):
+        where = "approvals.yaml: approvals.fuzz_targets[%d]" % i
+        unit = e["fuzz_target"]
+        if unit not in harnesses:
+            tree.err(where, "%s is not an included fuzz target" % unit)
+        else:
+            for s in sorted(set(e["statements"]) - set(harnesses[unit].statements)):
+                tree.err(where, "%s is not a statement of %s" % (s, unit))
+        if unit.split("/")[0] in held:
+            tree.err(where, "%s: a finding holds back project %s, so none of its proofs is published"
+                     % (unit, unit.split("/")[0]))
+        if unit.split("/")[0] in private:
+            tree.err(where, "%s: project %s is private (release: private in its project.yaml), so no public release "
+                            "carries it"
+                     % (unit, unit.split("/")[0]))
+        for s in sorted(set(e["statements"])):
+            pd = tree.proofs.get("%s/%s" % (unit, s))
+            if pd is not None and pd.refutes:
+                tree.err(where, "%s/%s: its proof is a refutation, which is never listed" % (unit, s))
+        for s in sorted({s for s in e["statements"] if e["statements"].count(s) > 1}):
+            tree.err(where, "%s/%s is listed twice" % (unit, s))
+        if unit in seen:
+            tree.err(where, "%s is listed twice" % unit)
+        seen.add(unit)
+        if (e["origin"] == "submission") != ("record" in e):
+            tree.err(where, "%s: a submission names the record of its review, and only a submission does" % unit)
 
 
 def _release(tree):
     r = tree.release
     if not r:
         return
+    # counts describe the tree this file is in, so the rendered pages and the index agree with them; oft release-tree
+    # writes the release's own counts into the cut (release_tree._public_release), which this rule then checks
+    harnesses = list(tree.harnesses())
     n = {
         "projects": len(tree.projects),
         "available": len(tree.available()),
-        "harnesses": sum(1 for _ in tree.harnesses()),
-        "binaries": sum(len(h.builds()) for h in tree.harnesses()),
+        "harnesses": len(harnesses),
+        "binaries": sum(len(h.builds()) for h in harnesses),
     }
     for k, v in n.items():
         if r["counts"][k] != v:
             tree.err("release.yaml", "counts.%s is %d but the tree has %d" % (k, r["counts"][k], v))
-    if r["oss_fuzz"]["projects"] != len(tree.projects):
-        tree.err("release.yaml", "oss_fuzz.projects is %d but projects/ has %d directories"
-                 % (r["oss_fuzz"]["projects"], len(tree.projects)))
+    n_oss_fuzz = tree.oss_fuzz_project_count()
+    if r["oss_fuzz"]["projects"] != n_oss_fuzz:
+        tree.err("release.yaml", "oss_fuzz.projects is %d but projects/ has %d OSS-Fuzz projects (a project.yaml with "
+                 "oss_fuzz)" % (r["oss_fuzz"]["projects"], n_oss_fuzz))
     builders = (r.get("images") or {}).get("builder") or []
     for proj in tree.projects.values():
-        if proj.data["oss_fuzz"]["commit"] != r["oss_fuzz"]["commit"]:
+        if "oss_fuzz" in proj.data and proj.data["oss_fuzz"]["commit"] != r["oss_fuzz"]["commit"]:
             tree.err(proj.dir, "oss_fuzz.commit differs from release.yaml's")
         # the image a project names as its builder is one the release pins
         b = (proj.data.get("build") or {}).get("builder")
         if b is not None and b not in builders:
             tree.err(os.path.join(proj.dir, "project.yaml"), "build.builder is not one of release.yaml's images.builder")
+
     # every library a build links from the build image has a release.yaml entry: its licence, whether it makes a
     # binary copyleft, and whether sources.sysroot holds its source; a copyleft binary that links one ships only once
     # that source is in it
     known = r.get("image_libraries") or {}
     linked = set()
-    for h in tree.harnesses():
+    for h in harnesses:
         names_ = facts.image_libraries(h)
         linked.update(names_)
         where = os.path.join(h.dir, "harness.yaml")
@@ -75,6 +130,38 @@ def _release(tree):
                          "builds (source-bundle) until it does" % ", ".join(missing))
     for n in sorted(set(known) - linked):
         tree.err("release.yaml", "image_libraries lists %s, which no build links" % n)
+    # one shape at a time: recipes, or the shape before it, its one recipe
+    if "recipe" in r and "recipes" in r:
+        tree.err("release.yaml", "names both recipe and recipes: recipes lists every recipe, and replaces recipe")
+    # a GitHub release carries at most one recipe; and each recipe has a file name of its own, since a download keeps
+    # the assets of every release in one directory by file name
+    for key, msg in (("release", "recipes lists more than one recipe in %s: a release carries at most one recipe"),
+                     ("file", "recipes names the file %s more than once: each recipe has a file name of its own")):
+        values = [x[key] for x in facts.release_recipes(tree)]
+        for v in sorted({v for v in values if values.count(v) > 1}):
+            tree.err("release.yaml", msg % v)
+
+
+def _records(tree):
+    """Every build record of a project cites (recipe.asset) the recipe its binary archive pins (assets.bin.recipe):
+    the binaries of one archive were built with one recipe.  A port-built project's records cite none: the OSS Verify
+    port built its binaries (facts.load lets them cite none)."""
+    for (p, h), asset in sorted(tree.records.items()):
+        proj = tree.projects.get(p)
+        where = "proofs/%s/%s/provenance/PROVENANCE.yaml" % (p, h)
+        if proj and facts.port(proj):
+            tree.err(where, "recipe.asset, %s in %s: build.oss_verify says the OSS Verify port built projects/%s's "
+                     "binaries, and no recipe did, so its build records cite none" % (asset["file"], asset["release"], p))
+            continue
+        pinned = facts.bin_recipe(tree, proj) if proj else None
+        if pinned is None and proj and not tree.release:
+            continue  # release.yaml did not load (its errors are reported), so an archive of its older shape has none
+        if asset != pinned:
+            b = ((proj.data.get("assets") or {}).get("bin") or {}) if proj else {}
+            named = "release.yaml's recipe" if b and "recipe" not in b else "assets.bin.recipe"
+            tree.err(where, "recipe.asset, %s in %s, is not the recipe of projects/%s's binary archive (%s: %s)"
+                     % (asset["file"], asset["release"], p, named,
+                        "%s in %s" % (pinned["file"], pinned["release"]) if pinned else "none"))
 
 
 def _sentence_ok(tree, where, shape, args):
@@ -88,8 +175,10 @@ def _project(tree, proj):
     d, where = proj.data, os.path.join(proj.dir, "project.yaml")
     if d["project"] != proj.name:
         tree.err(where, "project is %r but the directory is %r" % (d["project"], proj.name))
-    if d["oss_fuzz"]["path"] != "projects/" + proj.name:
+    if "oss_fuzz" in d and d["oss_fuzz"]["path"] != "projects/" + proj.name:
         tree.err(where, "oss_fuzz.path must be projects/%s" % proj.name)
+    if facts.port(proj) and facts.port(proj)["path"] != "projects/" + proj.name:
+        tree.err(where, "build.oss_verify.path must be projects/%s" % proj.name)
     status, reason = d["status"], d.get("reason")
     reasons = PB["projects"][status]["reasons"]
     if status == "available":
@@ -108,6 +197,9 @@ def _project(tree, proj):
             tree.err(where, "reason %r is not a %s reason (%s)" % (reason, status, ", ".join(reasons)))
         else:
             _sentence_ok(tree, where, reasons[reason], d.get("reason_args") or {})
+        if "oss_fuzz" not in d and (status, reason) in OSS_FUZZ_REASONS:
+            tree.err(where, "reason %s says what OSS-Fuzz has for the project, and OSS-Fuzz has no such project (no "
+                     "oss_fuzz)" % reason)
         for k in ("library", "patches", "assets", "build", "withheld"):
             if k in d:
                 tree.err(where, "%r belongs to available projects only" % k)
@@ -125,10 +217,18 @@ def _project(tree, proj):
             tree.err(where, "harness %r listed twice" % n)
         seen.add(n)
         idents.setdefault(names.ident(n), []).append(n)
+        if e.get("origin") == "oss-verify" and not facts.port(proj):
+            tree.err(where, "%s: origin oss-verify requires build.oss_verify" % n)
+        if e.get("origin") == "oss-verify" and e.get("reason") in UNBUILT_REASONS:
+            tree.err(where, "%s: origin oss-verify says OSS Verify builds it, and reason %s says it is not built"
+                     % (n, e["reason"]))
         if n in names.RESERVED_HARNESS_NAMES:
             tree.err(where, "%r is a reserved name" % n)
         if (n == names.API_DRIVER) != (e.get("origin") == "this-repository"):
             tree.err(where, "%s: api-driver, and only api-driver, has origin this-repository" % n)
+        if "oss_fuzz" not in d and e.get("origin", "oss-fuzz") == "oss-fuzz":
+            tree.err(where, "%s: OSS-Fuzz has no such project (no oss_fuzz), so no fuzz target of it is OSS-Fuzz's file "
+                     "(origin oss-fuzz; an entry with no origin is oss-fuzz)" % n)
         if e["status"] == "included":
             if "reason" in e:
                 tree.err(where, "%s: an included harness has no reason" % n)
@@ -161,30 +261,52 @@ def _project(tree, proj):
         tree.err(where, "withheld names no reason: source_bundle or unpublished")
     if (wh or {}).get("unpublished") and "patch_count" in lib:
         tree.err(where, "a project with unpublished builds does not count its patches")
-    # a binary is GPL or LGPL if its own expression, its library's or a library it links from the build image binds it
+    # A binary is GPL or LGPL if its own expression, its library's or a library it links from the build image binds it.
     copyleft = [h for h in proj.harnesses.values() if facts.copyleft(tree, h)]
-    if any(h.builds() for h in copyleft) and "src" not in d.get("assets", {}):
-        tree.err(where, "a GPL- or LGPL-licensed binary ships only with its source bundle (assets.src)")
-    # the corresponding source is three files: the upstream trees (assets.src), where each goes (assets.src_manifest)
-    # and the release's build recipe (release.yaml recipe)
+    # the corresponding source: the upstream trees (assets.src) and where each goes (assets.src_manifest), in one
+    # release, which may be a second one, v<release>-src (a GitHub release holds at most 1,000 files); and what built
+    # the binaries: the build recipe the binary archive pins (assets.bin.recipe), one that release.yaml lists, in any
+    # release, or for a port-built project (build.oss_verify) the port archive (assets.port), in the release of
+    # assets.src, and no recipe
     a = d.get("assets") or {}
+    port = facts.port(proj)
+    if "port" in a and not port:
+        tree.err(where, "assets.port requires build.oss_verify")
     if ("src" in a) != ("src_manifest" in a):
         tree.err(where, "assets.src and assets.src_manifest go together: the trees and where each is laid down")
-    if "src" in a and not (tree.release or {}).get("recipe"):
-        tree.err(where, "assets.src ships with the release's build recipe, and release.yaml names none")
-    for k, suffix in (("src", "-src.tar.zst"), ("src_manifest", "-src.MANIFEST.tsv")):
+    if port and "src" in a and "port" not in a:
+        tree.err(where, "a project with build.oss_verify and assets.src also needs assets.port, the port archive")
+    if "port" in a and "src" not in a:
+        tree.err(where, "assets.port goes with assets.src: the port archive is attached as part of the corresponding "
+                        "source, with the source trees and their manifest")
+    # each archive is named for its project: the release workflows and fetch read the project from the name
+    for k, suffix in (("bin", "-bin.tar.zst"), ("src", "-src.tar.zst"), ("src_manifest", "-src.MANIFEST.tsv"),
+                      ("port", "-port.tar.zst")):
         if k in a and a[k]["file"] != proj.name + suffix:
             tree.err(where, "assets.%s.file must be %s%s" % (k, proj.name, suffix))
     if "src" in a and "src_manifest" in a and a["src"]["release"] != a["src_manifest"]["release"]:
         tree.err(where, "assets.src and assets.src_manifest are attached to different releases")
-    # a source asset and the recipe are in one release, which may be a second one, v<release>-src, for the source
-    # assets alone (a GitHub release holds at most 1,000 files); `oft fetch --release` lists the recipe with them
-    recipe = (tree.release or {}).get("recipe")
-    if "src" in a and recipe and a["src"]["release"] != recipe["release"]:
-        tree.err(where, "assets.src is attached to %s and release.yaml's recipe to %s: a source asset ships with the "
-                        "recipe, in one release" % (a["src"]["release"], recipe["release"]))
+    if "src" in a and "port" in a and a["src"]["release"] != a["port"]["release"]:
+        tree.err(where, "assets.port and assets.src are attached to different releases")
+    pinned = facts.bin_recipe(tree, proj)
+    if port and "recipe" in a.get("bin", {}):
+        tree.err(where, "assets.bin.recipe: build.oss_verify says the OSS Verify port built every binary, and no recipe "
+                        "did; the corresponding source is assets.src, assets.src_manifest and assets.port")
+    elif "bin" in a and tree.release and not port and pinned is None:
+        tree.err(where, "assets.bin.recipe is missing: each binary archive names the recipe it was built with, unless "
+                        "release.yaml has the shape before recipes, whose one recipe stands for it")
+    elif "bin" in a and tree.release and not port and pinned not in facts.release_recipes(tree):
+        tree.err(where, "assets.bin.recipe, %s in %s, is not one of release.yaml's recipes"
+                 % (pinned["file"], pinned["release"]))
     if "bin" in a and a["bin"]["release"].endswith("-src"):
         tree.err(where, "assets.bin is attached to %s, a release of source assets" % a["bin"]["release"])
+    if any(h.builds() for h in copyleft):
+        if "src" not in a:
+            tree.err(where, "a GPL- or LGPL-licensed binary ships only with its source bundle (assets.src)")
+        if "src_manifest" not in a:
+            tree.err(where, "a GPL- or LGPL-licensed binary ships only with its source manifest (assets.src_manifest)")
+        if not ((port and "port" in a) or (not port and pinned)):
+            tree.err(where, "a GPL- or LGPL-licensed binary ships only with its build recipe or port archive")
     if (wh or {}).get("source_bundle"):
         if "src" in d.get("assets", {}):
             tree.err(where, "withheld.source_bundle, but the source bundle is attached")
@@ -204,6 +326,20 @@ def _harness(tree, h):
     entry = [e for e in h.project.entries() if e["name"] == h.name]
     if entry and entry[0].get("origin", "oss-fuzz") != d["origin"]:
         tree.err(where, "origin differs from project.yaml")
+    # the port, by its name or by a GitHub URL in any case, with or without .git or a trailing slash. repo_label reads
+    # the URL: these rules also run in `oft check` and `oft generate`, which need only PyYAML, and urls.parse needs idna
+    repo = (d["source"].get("from") or {}).get("repository")
+    if repo and facts.repo_label(repo.lower()) == "theorem-labs/oss-verify" and d["origin"] != "oss-verify":
+        tree.err(where, "only an oss-verify target may name theorem-labs/oss-verify as source.from.repository")
+    # a build record says what built the binaries: recipe/ (proofs/<p>/<h>/provenance/recipe/) a build recipe, port/
+    # the OSS Verify port; build.oss_verify must say the same
+    record = tree.path("proofs", h.project.name, h.name, "provenance")
+    if facts.port(h.project) and os.path.isdir(os.path.join(record, "recipe")):
+        tree.err(where, "build.oss_verify says the port built every binary, and %s's build record carries a build "
+                 "recipe (proofs/%s/%s/provenance/recipe/)" % (h.name, h.project.name, h.name))
+    if not facts.port(h.project) and os.path.isdir(os.path.join(record, "port")):
+        tree.err(where, "%s's build record carries a port build (proofs/%s/%s/provenance/port/), and project.yaml's "
+                 "build.oss_verify names no port" % (h.name, h.project.name, h.name))
     # sources: listed files exist, nothing unlisted, pending means none
     src = d["source"]
     held = src.get("pending")
@@ -211,8 +347,8 @@ def _harness(tree, h):
         tree.err(where, "a pending source lists no files")
     if not held and not src["files"]:
         tree.err(where, "source.files is empty")
-    if held and d["checks"]:
-        tree.err(where, "checks name lines of a source that is not published")
+    if held and (d["checks"] or d.get("rejects")):
+        tree.err(where, "checks and rejects name lines of a source that is not published")
     lines = {}
     for f in src["files"]:
         p = h.tree.path(h.dir, f)
@@ -228,14 +364,24 @@ def _harness(tree, h):
                 rel = os.path.relpath(os.path.join(dp, f), h.tree.path(h.dir))
                 if rel not in src["files"]:
                     tree.err(where, "%s is not listed in source.files" % rel)
-    for i, c in enumerate(d["checks"]):
+    sites = [("checks[%d]" % i, c) for i, c in enumerate(d["checks"])]
+    sites += [("rejects[%d]" % i, r) for i, r in enumerate(d.get("rejects") or [])]
+    for label, c in sites:
         f, _, rng = c["where"].rpartition(":")
         if f not in lines and f not in src["files"]:
-            tree.err(where, "checks[%d].where names %s, which is not a source file" % (i, f))
+            tree.err(where, "%s.where names %s, which is not a source file" % (label, f))
         elif f in lines and int(rng.split("-")[-1]) > lines[f]:
-            tree.err(where, "checks[%d].where runs past the end of %s" % (i, f))
+            tree.err(where, "%s.where runs past the end of %s" % (label, f))
+    for i, c in enumerate(d["checks"]):
         if (c["stops_with"] == "exit") != ("exit_status" in c):
             tree.err(where, "checks[%d]: exit_status goes with stops_with: exit, and only there" % i)
+    for name, s in d["statements"].items():
+        ex = s.get("exits", "any")
+        if s["kind"] != "halts" or ex == "any":
+            continue
+        if (shapes.REJECTED in ex) != bool(d.get("rejects")):
+            tree.err(where, "statements.%s: exits include %d exactly when the harness lists rejects"
+                     % (name, shapes.REJECTED))
     if ("commit" in d["library"]) == ("archive_sha256" in d["library"]):
         tree.err(where, "library names exactly one of commit and archive_sha256")
     for b, rec in d["builds"].items():
@@ -422,8 +568,9 @@ def _proof(tree, sid, pd):
         tree.err(y, "a bound proof names its bound")
     if st.kind != "bound" and "bound" in pd.data:
         tree.err(y, "only a bound proof names a bound")
-    if st.fingerprint and pd.data["fingerprint"] != st.fingerprint:
-        tree.err(y, "fingerprint differs from the statement's current one (%s): re-check the proof"
+    if st.fingerprint and pd.data["fingerprint"] not in (st.fingerprint, st.v1_fingerprint):
+        tree.err(y, "fingerprint differs from the statement's current one (%s): re-check the proof; when only the "
+                 "fingerprint's version changed, `./oft revisions PREVIOUS --write-pins` sets it (docs/versioning.md)"
                  % st.fingerprint)
 
 
@@ -444,4 +591,131 @@ def _counterexample(tree, sid, cx):
     if ex != "any" and cx.data["control"]["exit"] not in ex:
         tree.err(y, "the control input must exit with an allowed status")
 
+
+# A run's outcome, as `oft check --parts findings` compares it: two runs agree when all of these are equal.
+RUN_FIELDS = ("exit", "signal", "stdout_sha256", "stderr_sha256")
+# The shape of a run as `oft check --record` prints it and the finding schema's `run` allows it: an exit status from 0
+# to 255, the signal that ended it if it is one of these, and the SHA-256 of its stdout and of its stderr.  `oft check
+# --record` prints no run of another shape, and `oft ledger` anchors no record with one.  It is written out here rather
+# than read from the schema, so that no later change to the schema turns a record that was evidence back into a draft;
+# test_findings checks that the schema allows the same signals.
+RUN_SIGNALS = ("SIGABRT", "SIGILL", "SIGSEGV", "SIGBUS", "SIGFPE", "SIGTRAP")
+_SHA256 = re.compile(r"[0-9a-f]{64}")
+
+
+def run_ok(run):
+    """Whether run (one build's run, as finding.yaml records it) has the shape `oft check --record` prints."""
+    if not isinstance(run, dict) or not {"exit", "stdout_sha256", "stderr_sha256"} <= set(run) <= set(RUN_FIELDS):
+        return False
+    exit_ok = isinstance(run["exit"], int) and not isinstance(run["exit"], bool) and 0 <= run["exit"] <= 255
+    return (exit_ok and run.get("signal", RUN_SIGNALS[0]) in RUN_SIGNALS
+            and all(isinstance(run[k], str) and _SHA256.fullmatch(run[k]) for k in ("stdout_sha256", "stderr_sha256")))
+
+
+def shows_false(st, runs):
+    """Whether the runs of one input (build -> run) show the statement false.  An agreement is false when its two
+    builds differ in exit, signal, stdout or stderr, or when either dies by a signal: it requires both runs to be
+    error-free (facts._refute_agreements).  A halts statement is false when its build dies by a signal or exits with a
+    status the statement does not allow."""
+    if st.kind == "agreement":
+        a, b = (runs[x] for x in st.data["builds"])
+        return "signal" in a or "signal" in b or any(a.get(k) != b.get(k) for k in RUN_FIELDS)
+    r = runs[st.data["builds"][0]]
+    exits = st.data.get("exits", "any")
+    return "signal" in r or (exits != "any" and r["exit"] not in exits)
+
+
+# The statuses that record a statement as false: derived from a counterexample or a refutation, or exported.
+FALSE_STATUSES = ("counterexample", "refuted", "witnessed-false", "suspected-false")
+
+
+def _finding(tree, f, patches):
+    """A finding's input shows each of its statements false, unless it is pruned, when it shows none false; its
+    control shows none false; it runs only the builds its statements name; its patch has a name no other finding of
+    its project has; and a not-a-defect finding's statements are recorded as false in the facts.  patches: (project,
+    patch file name) -> the first finding that names it."""
+    d, y = f.data, os.path.join(f.path, "finding.yaml")
+    if d.get("patch"):
+        first = patches.setdefault((f.project, d["patch"]), f.path)
+        if first != f.path:
+            tree.err(y, "its patch %s has the name of the patch of %s: each patch of a project has a name of its own"
+                     % (d["patch"], first))
+    h = f.project in tree.projects and tree.projects[f.project].harnesses.get(f.harness)
+    if not h:
+        return
+    sts = [h.statements[s] for s in d["statements"] if s in h.statements
+           and h.statements[s].kind in ("agreement", "halts")]
+    if d["state"] == "not-a-defect":
+        for st in sts:
+            if st.status not in FALSE_STATUSES:
+                tree.err(y, "not-a-defect, but %s is not recorded as false" % st.name)
+    if "input" not in d or "control" not in d:
+        return
+    named = {b for st in sts for b in st.data["builds"]}
+    for which in ("input", "control"):
+        for b in sorted(set(d[which]) - named, key=schema.BUILDS.index):
+            tree.err(y, "%s runs build %s, which none of its statements names" % (which, b))
+    for st in sts:
+        if any(b not in d["input"] or b not in d["control"] for b in st.data["builds"]):
+            continue            # the loader names the missing run
+        false = shows_false(st, d["input"])
+        if d["state"] == "pruned" and false:
+            tree.err(y, "pruned, but its record shows %s false" % st.name)
+        elif d["state"] != "pruned" and not false:
+            tree.err(y, "the input does not show %s false" % st.name)
+        if shows_false(st, d["control"]):
+            tree.err(y, "the control does not behave normally: it shows %s false" % st.name)
+
+
+PATCH_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]*\.patch")
+# the states whose patch the patched build carries; a pruned or not-a-defect finding may keep its patch in the ledger
+SERIES_STATES = ("patched", "reported", "public")
+
+
+def _series(tree):
+    """findings/<p>/<h>/series lists patch file names, one per line, in build order: exactly the patches of that
+    harness's findings that are patched, reported or public."""
+    units = {f.unit for f in tree.findings.values()} | set(tree.finding_series)
+    for unit in sorted(units):
+        rel = os.path.join("findings", unit, "series")
+        listed = tree.finding_series.get(unit, "").split("\n")
+        if listed and listed[-1] == "":
+            listed.pop()
+        mine = [f for f in tree.findings.values() if f.unit == unit]
+        seen = set()
+        for no, name in enumerate(listed, 1):
+            if not PATCH_NAME.fullmatch(name):
+                tree.err(rel, "line %d is not a patch file name" % no)
+                continue
+            if name in seen:
+                tree.err(rel, "lists %s twice" % name)
+                continue
+            seen.add(name)
+            n = sum(1 for f in mine if f.data.get("patch") == name and f.data["state"] in SERIES_STATES)
+            if n != 1:
+                tree.err(rel, "lists %s, which is the patch of %d findings that are patched, reported or public, not "
+                         "exactly one" % (name, n))
+        for f in sorted(mine, key=lambda f: f.path):
+            if f.data["state"] in SERIES_STATES and f.data.get("patch") and f.data["patch"] not in seen:
+                tree.err(os.path.join(f.path, "finding.yaml"), "a %s finding's patch %s is not listed in %s"
+                         % (f.data["state"], f.data["patch"], rel))
+
+
+def _held(tree):
+    """Only a project a finding holds back builds from the port's private
+    prelaunch variant, and only it attaches assets to a findings-<project>
+    release, its own: no shipping release names either."""
+    held = facts.held_projects(tree)
+    for proj in tree.projects.values():
+        where = os.path.join(proj.dir, "project.yaml")
+        port = facts.port(proj)
+        if port and port["repository"] == schema.PRELAUNCH_REPOSITORY and proj.name not in held:
+            tree.err(where, "build.oss_verify.repository is %s: only a project held by a finding builds from %s"
+                     % (schema.PRELAUNCH_REPOSITORY, schema.PRELAUNCH_REPOSITORY))
+        assets = proj.data.get("assets") or {}
+        for k in ("bin", "src", "src_manifest", "port"):
+            release = (assets.get(k) or {}).get("release", "")
+            if release.startswith("findings-") and (proj.name not in held or release != "findings-" + proj.name):
+                tree.err(where, "assets.%s is attached to %s: only a project held by a finding attaches to "
+                                "findings-<project>, its own" % (k, release))
 

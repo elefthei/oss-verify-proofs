@@ -4,10 +4,12 @@
                   request changes only what its kind of pull request may change,
                   and no derived file, binary, LFS pointer or link is stored
     schema        closed schemas and the rules between facts (schema.py, rules.py)
-    private-data  no host paths, private network addresses, internal host names,
+    private-data  no host paths, private network addresses, private host
+                  names, private theorem-labs repositories named in a path,
                   e-mail addresses, private keys or access tokens in what this
-                  repository wrote
-    links         links point only where they may
+                  repository wrote, and no build host in a port build record
+    links         links point only where they may: never to a machine on a
+                  private network or to a private theorem-labs repository
     free-text     every free-text field has a place in the rendering
     proofs        no axioms, admits, plugins, file effects or wall-clock limits in proofs/
     withheld      a withheld item shows no detail anywhere
@@ -17,23 +19,32 @@ command exits 1 if there is any.
 """
 import bisect
 import hashlib
+import html
+import ipaddress
 import os
 import re
+import socket
+import stat
 import subprocess
+import urllib.parse
 
-from . import facts, names, paths, rules, yamlio
+from . import facts, names, paths, rocq, rules, schema, urls, yamlio
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 MAX_BYTES = 5 << 20
-CAPS = [  # (pattern, bytes)
+CAPS = [
     ("index/*.tsv", 64 << 20),
     ("projects/*/*/source/**", 256 << 10),
     ("counterexamples/**", 64 << 10),
+    ("findings/*/*/*/input.bin", facts.FINDING_INPUT_CAP),
+    ("findings/*/*/*/control.bin", facts.FINDING_INPUT_CAP),
+    ("findings/**", facts.FINDING_FILE_CAP),
     ("proofs/*/*/*/classifier/**", 1 << 20),
 ]
 PROOF_DIR_CAP = 5 << 20
 DERIVED_SUFFIXES = (".vo", ".vos", ".vok", ".glob", ".aux", ".hex", ".cache", ".pyc", ".pyo")
+QUOTED_NAME = re.compile(r'["\\\x00-\x1f\x7f]')  # what git quotes in a path whatever core.quotePath says
 LFS_POINTER = b"version https://git-lfs.github.com/spec/v1"
 
 
@@ -50,8 +61,9 @@ class Finding:
 def walk(root):
     """Every file that could be committed, as relative paths: in a git
     checkout, the tracked files and the untracked ones .gitignore does not
-    exclude; elsewhere, every file outside _build/ and projects/*/bin/."""
-    if os.path.isdir(os.path.join(root, ".git")):
+    exclude; elsewhere, every file outside _build/, projects/*/bin/ and
+    findings/*/bin/."""
+    if os.path.exists(os.path.join(root, ".git")):   # a directory in a clone, a file in a worktree
         r = subprocess.run(["git", "-C", root, "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
                            capture_output=True, check=True)
         return sorted(p for p in r.stdout.decode().split("\0")
@@ -72,16 +84,21 @@ def walk(root):
     return out
 
 
-def read_text(path):
-    """The file's text, or None if it is binary."""
-    with open(path, "rb") as f:
-        data = f.read()
+def file_cap(rel):
+    """The size cap of the file at rel."""
+    return next((c for pt, c in CAPS if paths.match(pt, rel) is not None), MAX_BYTES)
+
+
+def read_text(path, cap=MAX_BYTES):
+    """The file's text, or None if it is binary, or is not a regular file of at most cap bytes: check_paths reports a
+    link, a special file or a file over its cap, so none is followed, opened or read whole here."""
+    try:
+        data = facts.read_bounded(path, cap)
+    except facts.BoundedFileError:
+        return None
     if b"\0" in data[:8192]:
         return None
-    try:
-        return data.decode("utf-8")
-    except UnicodeDecodeError:
-        return None
+    return data.decode("utf-8", errors="replace")
 
 
 # Verbatim copies of files from elsewhere, pinned by content: the licence texts and the notice that came with the proofs
@@ -95,13 +112,66 @@ PINNED_VERBATIM = {
 
 def verbatim(rel, text=None):
     """Bytes that ship as they are: the jargon and link rules do not apply.  Upstream copies (a harness's source/, the
-    licence texts of a build record), the slice of the release's recipe a build record carries, and the files of
-    PINNED_VERBATIM when text is their pinned content.  The API driver's source is this repository's own text, so it
-    is held to them."""
+    licence texts of a build record), the slice of its recipe a build record carries, and the files of
+    PINNED_VERBATIM when text is their pinned content.  The API driver's and an OSS Verify target's source are this
+    repository's own text, so they are held to those rules."""
     if rel in PINNED_VERBATIM:
         return text is not None and hashlib.sha256(text.encode()).hexdigest() == PINNED_VERBATIM[rel]
     return bool(re.match(r"projects/[^/]+/(?!api-driver/)[^/]+/source/", rel)
-                or re.match(r"proofs/[^/]+/[^/]+/provenance/(LICENSES|recipe)/", rel))
+                or re.match(r"proofs/(?!lib/)[^/]+/[^/]+/provenance/(LICENSES|recipe)/", rel))
+
+
+def oss_verify_sources(tree):
+    """The source/ directories of the fuzz targets OSS Verify builds (origin oss-verify), as
+    projects/<p>/<h>/source/: what oss_verify_source reads."""
+    return frozenset("projects/%s/%s/source/" % (h.project.name, h.name) for h in tree.harnesses()
+                     if h.data["origin"] == "oss-verify")
+
+
+def oss_verify_source(own, rel):
+    """Whether rel is source text copied from the OSS Verify port: a file under one of `own`
+    (oss_verify_sources)."""
+    m = re.match(r"projects/[^/]+/[^/]+/source/", rel)
+    return m is not None and m.group() in own
+
+
+def port_record(rel):
+    """Whether rel is one of the port's files in a port-built build record (proofs/<p>/<h>/provenance/port/).  They
+    ship as they are, and are the port's own text: the private-data rules, the private-host rule and the rule
+    against links to a private repository apply.  The allowlist of other links does not: the port's sources file pins
+    every upstream tree by its URL."""
+    return bool(re.match(r"proofs/(?!lib/)[^/]+/[^/]+/provenance/port/", rel))
+
+
+PORT_MANIFEST = re.compile(r"proofs/(?!lib/)[^/]+/[^/]+/provenance/port/manifest\.yaml$")
+# a build record's copy of the port's own files for its project: the record's project, never proofs/lib/
+PORT_PROJECT_FILE = re.compile(r"proofs/((?!lib/)[^/]+)/[^/]+/provenance/port/projects/\1/")
+PORT_PROJECT_YAML = re.compile(r"proofs/((?!lib/)[^/]+)/[^/]+/provenance/port/projects/\1/project\.yaml$")
+
+
+
+def scan_port_manifest(text, where):
+    """private-data.  The manifest the port's tools/check writes names the machine of a --twice rebuild
+    (rebuild.host); a build record's copy leaves every host out."""
+    try:
+        data = yamlio.load(text, where)
+    except yamlio.YamlError as e:
+        return [Finding("private-data", where, "not YAML: %s" % e)]
+    out = []
+
+    def visit(v, at):
+        if isinstance(v, dict):
+            for k, x in v.items():
+                if k == "host":
+                    out.append(Finding("private-data", where, "%shost names the build machine: leave it out"
+                                       % (at + "." if at else ""), key=_key(str(x))))
+                visit(x, (at + "." if at else "") + str(k))
+        elif isinstance(v, list):
+            for x in v:
+                visit(x, at)
+
+    visit(data, "")
+    return out
 
 
 # ------------------------------------------------------------- private-data
@@ -109,54 +179,149 @@ def verbatim(rel, text=None):
 # /home/opam/ is the home of the user of the official OCaml/opam container
 # images that toolchain/*.Dockerfile builds on; it names no host.
 HOST_PATH = re.compile(r"(?<![\w.~-])/(?:data|home(?!/opam\b)|srv|Users|root|mnt/disks)/[\w.@+-]+")
-PRIVATE_IP = re.compile(r"(?<![\d.])(?:10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])|192\.168|169\.254)\.\d{1,3}\.\d{1,3}(?![\d.])")
-INTERNAL_HOST = re.compile(r"\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:internal|local|corp|lan)\b")
+# Addresses on a private network, including the shared address space Tailscale assigns to its nodes.
+PRIVATE_IP = re.compile(r"(?<![\d.])(?:10\.\d{1,3}|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])|172\.(?:1[6-9]|2\d|3[01])|192\.168|169\.254)\.\d{1,3}\.\d{1,3}(?![\d.])")
+# Host names that resolve only on a private network: one label (a bare machine name), localhost and its names
+# (RFC 6761), or one of these suffixes (ts.net is a Tailscale network's own names; internal.cloudapp.net is Azure's).
+PRIVATE_SUFFIXES = ("localhost", "internal", "local", "corp", "lan", "home.arpa", "ts.net",
+                    "internal.cloudapp.net")
+PUBLIC_REPOS = ("oss-verify", "oss-verify-proofs", "rocq-linux-process-semantics", "rocq-read-file", "static-asan")
+PRELAUNCH_PORT_REPO = schema.PRELAUNCH_REPOSITORY.split("/", 1)[1]
+# Private names, refused in any text whether or not it is a link (the link rule judges links by what they open):
+# a host name under a private suffix, in any case; and a theorem-labs repository named as a path (after a /,
+# backslash or the : of an ssh remote) or as owner/name, also with %2F or a character reference (a line with % or &
+# is read decoded too) and, in a file GitHub renders as Markdown, split by a backslash escape or an HTML comment (a
+# line of it is read as GitHub shows its text too, urls.unescape_markdown).  An image on ghcr.io, also as a regular
+# expression writes it, is the GHCR rule's.  A host name starts after anything but a name character or a name and a
+# dot, so a proof's qualified names (`AW_Init.internal`, `Mod_X.Sub.internal`) are not read as one.
+PRIVATE_HOST_NAME = re.compile(r"(?i)(?<![\w-])(?<![\w-]\.)(?:[a-z0-9-]+\.)+(?:%s)(?![\w-]|\.[a-z0-9])"
+                               % "|".join(re.escape(s) for s in PRIVATE_SUFFIXES))
+REPOSITORY_PATH = re.compile(r"(?i)(?:(?<![\w.@/\\:%-])|(?<!ghcr\.io)(?<!ghcr\\\.io)[/\\:])theorem-labs[/\\]+([a-z0-9._-]+)"
+                             r"|(?<![\w.-])theorem-labs" r"\.github\.io\.?[/\\]+([a-z0-9._-]+)")
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b")
 EMAIL_OK = re.compile(r"@users\.noreply\.github\.com$|^noreply@github\.com$")
+# what comes just before an EMAIL match that is really a URL's user information: "//" then an optional "user:"
+URL_USERINFO_BEFORE = re.compile(r"//[^\s/@]*:?$")
 PRIVATE_KEY = re.compile(r"-----BEGIN (?:[A-Z]+ )*PRIVATE KEY-----")
 TOKEN = re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{22,}|AKIA[0-9A-Z]{16}"
                    r"|xox[abprs]-[A-Za-z0-9-]{10,}|AIza[0-9A-Za-z_-]{35}|ya29\.[0-9A-Za-z_-]{20,})")
+GITHUB_ORG_PACKAGES = re.compile(r"(?i)(?<![\w.-])(?:https?://)?(?:www\.)?github\.com/orgs\Z")
+ROCQ_QUALIFIED_LINE = re.compile(r"(?i)^\s*(?:Lemma\s+\w+\s*:\s+|Require\s+Import\s+)[A-Za-z_][\w.]*\.\s*$")
+
+
+def _ordinary_code_name(where, line, match):
+    """Whether a private-host shape is an ordinary code name, not a machine name."""
+    name = match.group().lower()
+    if name == "threading" + ".local" and line[match.end():].startswith("("):
+        return True
+    if name == "env" + ".local" and match.start() and line[match.start() - 1] == ".":
+        return True
+    if (name.startswith(("com.", "org.", "net.", "io.", "edu.", "gov."))
+            and re.search(r"(?i)(?:^|[`\s])(?:import|package)\s+$", line[:match.start()])
+            and line[match.end():].startswith(";")):
+        return True
+    return where.startswith("proofs/") and where.endswith(".v") and ROCQ_QUALIFIED_LINE.fullmatch(line) is not None
+
+
+def _github_org_page(line, match):
+    """Whether a theorem-labs path is GitHub's organisation packages page, not a repository."""
+    return ((match.group(1) or match.group(2)).lower().rstrip(".").removesuffix(".git") == "packages"
+            and GITHUB_ORG_PACKAGES.search(line[:match.start()]) is not None)
+
+
+def held_prelaunch_fields(tree):
+    """The project.yaml files whose build.oss_verify.repository may name the port's private prelaunch variant, the sole
+    field that may: those of the projects a finding holds back that build from it."""
+    held = facts.held_projects(tree)
+    return frozenset("projects/%s/project.yaml" % name for name, proj in tree.projects.items()
+                     if name in held and (facts.port(proj) or {}).get("repository") == schema.PRELAUNCH_REPOSITORY)
+
+
+def _repository_value(line, match):
+    """Whether match is the YAML value of a repository key, in block or flow
+    form, rather than a comment or another free-text use."""
+    before, after = line[:match.start()], line[match.end():]
+    return ("#" not in before
+            and re.search(r"(?<![\w-])repository\s*:\s*(?:['\"])?$", before) is not None
+            and re.match(r"(?:['\"])?\s*(?:[,}]|#|$)", after) is not None)
 
 
 def _key(text):
     return hashlib.sha256(text.encode()).hexdigest()[:16]
 
 
-def scan_shapes(text, where, source=False, email_text=None):
+def scan_shapes(text, where, source=False, email_text=None, allow_prelaunch=False):
     """private-data.  Upstream copies (source=True) keep their authors'
-    addresses and their own example addresses, so there only paths, keys and
-    tokens count.  email_text, when given, is the text the e-mail check reads
-    instead: a proof's .v file with its string literals blanked, because an
-    encoded payload holds random runs of an address's shape.  Paths, keys and
-    tokens are still searched inside those strings."""
+    addresses and their own example addresses, so there only paths, keys,
+    tokens and private repository names count.  email_text, when given, is the
+    text the e-mail check reads instead: a proof's .v file with its string
+    literals blanked, because an encoded payload holds random runs of an
+    address's shape.  Everything else is still searched inside those strings."""
     out = []
     rx = [("a host path", HOST_PATH), ("a private key", PRIVATE_KEY), ("an access token", TOKEN)]
+    names = [("a private repository's name", REPOSITORY_PATH)]
     if not source:
-        rx += [("a private address", PRIVATE_IP), ("an internal host name", INTERNAL_HOST)]
+        rx += [("a private address", PRIVATE_IP)]
+        names += [("a private host name", PRIVATE_HOST_NAME)]
+    markdown = urls.MARKDOWN.search(where) is not None
     for no, line in enumerate(text.split("\n"), 1):
         for what, r in rx:
             for m in r.finditer(line):
                 out.append(Finding("private-data", "%s:%d" % (where, no), what, key=_key(m.group())))
+        seen, variants = set(), [line]
+        if markdown:
+            variants.append(urls.unescape_markdown(line))
+        variants += [urllib.parse.unquote(html.unescape(v)) for v in variants if "%" in v or "&" in v]
+        for variant in dict.fromkeys(variants):
+            for what, r in names:
+                for m in r.finditer(variant):
+                    if r is REPOSITORY_PATH:
+                        if _github_org_page(variant, m):
+                            continue
+                        name = (m.group(1) or m.group(2)).lower().rstrip(".").removesuffix(".git")
+                        bare = m.group(1) is not None and m.group()[:1].lower() == "t"
+                        if name in PUBLIC_REPOS or (allow_prelaunch and bare and name == PRELAUNCH_PORT_REPO
+                                                    and _repository_value(variant, m)):
+                            continue
+                    if r is PRIVATE_HOST_NAME and _ordinary_code_name(where, variant, m):
+                        continue
+                    if m.group().lower() not in seen:
+                        seen.add(m.group().lower())
+                        out.append(Finding("private-data", "%s:%d" % (where, no), what, key=_key(m.group())))
     if not source:
         for no, line in enumerate((text if email_text is None else email_text).split("\n"), 1):
             for m in EMAIL.finditer(line):
                 if not EMAIL_OK.search(m.group()):
-                    out.append(Finding("private-data", "%s:%d" % (where, no), "an e-mail address", key=_key(m.group())))
+                    # user:password@host or user@host after a scheme's //: a URL's user information, which can be
+                    # a credential, and which no exception for an address clears
+                    what = ("a URL's user information" if URL_USERINFO_BEFORE.search(line[:m.start()])
+                            else "an e-mail address")
+                    out.append(Finding("private-data", "%s:%d" % (where, no), what, key=_key(m.group())))
     return out
 
 
 # -------------------------------------------------------------------- links
 
-PUBLIC_REPOS = ("oss-verify", "oss-verify-proofs", "rocq-linux-process-semantics", "rocq-read-file", "static-asan")
+# Where a link in rendered text may go, each compared with the parsed URL (urls.parse): its scheme, host and port, and
+# a prefix of its path.
 FIXED_URLS = ("https://github.com/google/oss-fuzz", "https://google.github.io/oss-fuzz",
               "https://rocq-prover.org", "https://github.com/rocq-prover/", "https://reuse.software",
               "https://spdx.org/", "https://www.qemu.org", "https://opam.ocaml.org")
-URL = re.compile(r"\b[a-z][a-z0-9+.-]*://[^\s<>()\[\]\"'`|]+")
+URL = urls.URL
 GHCR = re.compile(r"\bghcr\.io/theorem-labs/([a-z0-9._-]+)")
+# The hosts GitHub serves a repository's contents from, the repository named first in the path; the API names it
+# under /repos/.
+GITHUB_HOSTS = ("github.com", "www.github.com", "codeload.github.com", "raw.github.com", "raw.githubusercontent.com")
+WEB_SCHEMES = ("http", "https", "ws", "wss", "ftp")
+NETWORK_HOST = re.compile(r"(?i)[a-z0-9._-]+|\[[0-9a-f:.]+\]")
 # The dated snapshots of the Debian archive the runner image installs from
 # (toolchain/runner.Dockerfile).  apt reads the archive over http, as Debian's
 # own images do, and checks every index against the archive's signing key.
 DEBIAN_SNAPSHOT = ("http://snapshot.debian.org/archive/debian/", "https://snapshot.debian.org/")
+# Where GitHub shows a file of this repository, which its relative links resolve against: its own page, and for a
+# README, the page of its directory too.
+PAGE_BASE = "https://github.com/theorem-labs/oss-verify-proofs/blob/main/"
+DIRECTORY_BASE = "https://github.com/theorem-labs/oss-verify-proofs/tree/main/"
 
 
 def fact_urls(tree):
@@ -176,26 +341,78 @@ def fact_urls(tree):
         visit(p.data)
         for h in p.harnesses.values():
             visit(h.data)
+    for f in tree.findings.values():
+        visit(f.data)
     return out
 
 
-def url_ok(url, known, strict=True):
-    """A link to theorem-labs must name a public repository.  In rendered
-    text, docs and facts (strict), any other link must also be https and be
-    one of ours, OSS-Fuzz's, or a URL the facts themselves record."""
-    url = url.rstrip(".,;:)]}'\"")
-    m = re.match(r"https?://github\.com/theorem-labs/([^/#?]+)", url)
-    if m:
-        return m.group(1).removesuffix(".git") in PUBLIC_REPOS
-    if not strict:
-        return True
-    if url.startswith(DEBIAN_SNAPSHOT):
-        return True
-    if not url.startswith("https://"):
+def private_host(host):
+    """Whether a machine host is an address that is not global, a single label, or a private suffix."""
+    host = host.lower().rstrip(".")
+    try:
+        return not ipaddress.ip_address(host.strip("[]")).is_global
+    except ValueError:
+        pass
+    try:
+        address = socket.inet_ntoa(socket.inet_aton(host))
+    except OSError:
+        pass
+    else:
+        return not ipaddress.ip_address(address).is_global
+    return "." not in host or any(host == s or host.endswith("." + s) for s in PRIVATE_SUFFIXES)
+
+
+def theorem_repositories(u):
+    """Every theorem-labs repository a parsed URL names, on any host: each path segment after a theorem-labs one
+    (github.dev and vscode.dev/github/ open a repository too), or the first segment on the organisation's Pages host,
+    lower case."""
+    parts = u.path.lower().split("/")
+    out = [r.removesuffix(".git") for o, r in zip(parts, parts[1:]) if o == "theorem-labs" and r]
+    if u.host.lower().rstrip(".") == "theorem-labs.github.io" and len(parts) > 1 and parts[1]:
+        out.append(parts[1].removesuffix(".git"))
+    return out
+
+
+def public_repository(u):
+    """Whether a parsed URL is one of the public theorem-labs repositories, where GitHub serves it."""
+    path = u.path.lower()
+    if u.host == "api.github.com" and path.startswith("/repos/"):
+        path = path[len("/repos"):]
+    elif u.host not in GITHUB_HOSTS:
         return False
-    if any(url.startswith(f) for f in FIXED_URLS):
+    parts = path.split("/")
+    return len(parts) > 2 and parts[1] == "theorem-labs" and parts[2].removesuffix(".git") in PUBLIC_REPOS
+
+
+def _prefix_of(u, allowed, segment=False):
+    """Whether allowed (a URL) names the same scheme, host and port as u and a prefix of its path; with segment=True,
+    a prefix that ends where a path segment ends."""
+    try:
+        a = urls.parse(allowed)
+    except urls.Unreadable:
+        return False
+    if a is None or (u.scheme, u.host, u.port) != (a.scheme, a.host, a.port) or not u.path.startswith(a.path):
+        return False
+    return not segment or len(u.path) == len(a.path) or a.path.endswith("/") or u.path[len(a.path)] == "/"
+
+
+def judge(u, known, strict=True, full=True):
+    """Whether a parsed link (urls.parse) may stay: it must not name a machine on a private network or a theorem-labs
+    repository that is not public.  A full link in rendered text, docs and facts (strict) must also be https and be
+    one of ours, OSS-Fuzz's or one the facts record.  A link that opens nothing (None) is judged by its text alone."""
+    if u is None:
         return True
-    return any(url == k or url.startswith(k + "/") or url.startswith(k + "#") for k in known)
+    if u.host and (u.scheme in WEB_SCHEMES or NETWORK_HOST.fullmatch(u.host)) and private_host(u.host):
+        return False
+    if any(r not in PUBLIC_REPOS for r in theorem_repositories(u)):
+        return False
+    if public_repository(u):
+        return True
+    if not (strict and full) or any(_prefix_of(u, d) for d in DEBIAN_SNAPSHOT):
+        return True
+    if u.scheme != "https":
+        return False
+    return any(_prefix_of(u, f) for f in FIXED_URLS) or any(_prefix_of(u, k, segment=True) for k in known)
 
 
 def link_strict(rel):
@@ -204,12 +421,47 @@ def link_strict(rel):
     return not rel.startswith(("tools/", "tests/", ".github/"))
 
 
+def _bases(where):
+    bases = [PAGE_BASE + where]
+    if os.path.basename(where).lower().startswith("readme"):
+        bases.append((DIRECTORY_BASE + os.path.dirname(where)).rstrip("/"))
+    return [urls.parse(b) for b in bases]
+
+
 def scan_links(text, where, known, strict=True):
-    out = []
+    """links.  Every link a reader can follow (urls.links), judged by what a browser opens for it: an absolute URL
+    alone, a Markdown or HTML link against each page that shows the file, and another reading of the same text
+    (GitHub's extent of a bare URL, the text with character references decoded, a line of Markdown as GitHub shows
+    its text) for privacy only.  A URL urls.parse cannot read for sure is refused wherever this rule reads; one that
+    opens nothing, only in rendered text, docs and facts (strict), and only as an absolute URL.  One finding per line
+    and target."""
+    out, reported, judged = [], set(), set()
+    bases = None
+    for link in urls.links(text, bool(urls.MARKDOWN.search(where))):
+        if link.kind == "link":
+            bases = bases or _bases(where)
+        targets = []
+        for base in (bases if link.kind == "link" else [None]):
+            try:
+                targets.append(urls.parse(link.ref, base))
+            except urls.Unreadable:
+                targets.append(False)
+        for target in targets:
+            key = (link.line, link.ref if target is None or target is False else str(target))
+            if (key, link.kind == "reading") in judged:
+                continue
+            judged.add((key, link.kind == "reading"))
+            if target is False:
+                ok = False
+            elif target is None:
+                ok = link.kind != "url" or not strict
+            else:
+                ok = judge(target, known, strict, full=link.kind != "reading")
+            if not ok and key not in reported:
+                reported.add(key)
+                out.append(Finding("links", "%s:%d" % (where, link.line),
+                                   "a link that is not on the allowlist: %s" % link.text))
     for no, line in enumerate(text.split("\n"), 1):
-        for m in URL.finditer(line):
-            if not url_ok(m.group(), known, strict):
-                out.append(Finding("links", "%s:%d" % (where, no), "a link that is not on the allowlist: %s" % m.group()))
         for m in GHCR.finditer(line):
             if not m.group(1).startswith("oss-fuzz-theorems-"):
                 out.append(Finding("links", "%s:%d" % (where, no), "an image that is not one of ours: %s" % m.group()))
@@ -425,38 +677,9 @@ def scan_timeouts(code, where):
             for s, e, form, n in timeout_violations(code, where)]
 
 
-def strip_rocq(text, comments=True):
-    """Text with string literals blanked, and comments (nested) too unless comments=False; lines kept."""
-    out, i, depth, n = [], 0, 0, len(text)
-    while i < n:
-        if text.startswith("(*", i):
-            depth += 1
-            out.append("  " if comments else "(*")
-            i += 2
-        elif depth and text.startswith("*)", i):
-            depth -= 1
-            out.append("  " if comments else "*)")
-            i += 2
-        elif text[i] == '"':
-            j = i + 1
-            while j < n:
-                if text[j] == '"':
-                    if text.startswith('""', j):
-                        j += 2
-                        continue
-                    break
-                j += 1
-            out.append(re.sub(r"[^\n]", " ", text[i:j + 1]))
-            i = j + 1
-        else:
-            out.append(text[i] if (not depth or not comments or text[i] == "\n") else " ")
-            i += 1
-    return "".join(out)
-
-
 def scan_proof(text, where):
     out = []
-    stripped = strip_rocq(text)
+    stripped = rocq.strip(text)
     for no, line in enumerate(stripped.split("\n"), 1):
         for m in FORBIDDEN_IN_PROOFS.finditer(line):
             out.append(Finding("proofs", "%s:%d" % (where, no), "%r is not allowed in a proof" % m.group()))
@@ -471,8 +694,15 @@ def scan_proof(text, where):
 # --------------------------------------------------------- paths, withheld
 
 def check_paths(tree, files):
-    out = []
+    out, notes = [], []
     for rel in files:
+        if tree.projects and rel.startswith("notes/") and rel[len("notes/"):-len(".md")] not in tree.projects:
+            notes.append(Finding("paths", rel, "notes for a project this release does not list"))
+        if QUOTED_NAME.search(rel):
+            # git lists such a name quoted (even with core.quotePath=false), and the changed-path list CI reads
+            # (pr.yml, check_changes, oft plan) holds it in that form: no path pattern can judge it
+            out.append(Finding("paths", rel, "a name with a '\"', a '\\' or a control character"))
+            continue
         m = paths.classify(rel)
         if len(m) != 1:
             out.append(Finding("paths", rel, "matches no path pattern" if not m else
@@ -495,26 +725,36 @@ def check_paths(tree, files):
         if pat.endswith(".opam") and os.path.basename(rel) != names.opam_package(p) + ".opam":
             out.append(Finding("paths", rel, "the opam file of %s is %s.opam" % (p, names.opam_package(p))))
         full = tree.path(rel)
-        if os.path.islink(full):
+        st = os.lstat(full)
+        if stat.S_ISLNK(st.st_mode):
             out.append(Finding("paths", rel, "a symbolic link"))
             continue
-        size = os.path.getsize(full)
-        cap = next((c for pt, c in CAPS if paths._match(pt.split("/"), rel.split("/"), {})), MAX_BYTES)
+        if not stat.S_ISREG(st.st_mode):
+            out.append(Finding("paths", rel, "not a regular file"))
+            continue
+        size, cap = st.st_size, file_cap(rel)
         if size > cap:
             out.append(Finding("paths", rel, "%d bytes, over the %d-byte cap" % (size, cap)))
         if rel.endswith(DERIVED_SUFFIXES) or "__pycache__" in rel.split("/"):
             out.append(Finding("paths", rel, "a derived file (.vo, .hex, .pyc, ...): these are never stored"))
-        with open(full, "rb") as f:
-            head = f.read(64)
+        try:
+            with os.fdopen(facts.open_bounded(full, max(size, cap)), "rb") as f:
+                head = f.read(64)
+        except facts.BoundedFileError as e:
+            out.append(Finding("paths", rel, str(e)))
+            continue
         if head.startswith(b"\x7fELF") and "/classifier/" not in rel:
             out.append(Finding("paths", rel, "an ELF file: binaries are release assets, not files in git"))
         if head.startswith(LFS_POINTER):
             out.append(Finding("paths", rel, "a Git LFS pointer"))
-        if rel == ".gitattributes" and "filter=lfs" in facts.read(full):
-            out.append(Finding("paths", rel, "an LFS filter"))
-    for rel in files:
-        if tree.projects and rel.startswith("notes/") and rel[len("notes/"):-len(".md")] not in tree.projects:
-            out.append(Finding("paths", rel, "notes for a project this release does not list"))
+        if rel == ".gitattributes" and size <= cap:   # over its cap, it is a finding already and is not read
+            attributes = facts.read(full)
+            if "filter=lfs" in attributes:
+                out.append(Finding("paths", rel, "an LFS filter"))
+            # a checkout in another encoding than the blob's hides a file's text from the text rules
+            if "working-tree-encoding" in attributes:
+                out.append(Finding("paths", rel, "a working-tree-encoding"))
+    out += notes
     for sid, pd in tree.proofs.items():
         total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(tree.path(pd.path)) for f in fs)
         if total > PROOF_DIR_CAP:
@@ -525,9 +765,110 @@ def check_paths(tree, files):
     return out
 
 
-def check_changes(tree, changed, kind):
-    """The pull-request half of `paths`.  kind: release | maintainer | contributor."""
+def _base_ledger(base):
+    """The trusted base's findings/ files, relative to base, outside each project's fetched bin/.  The pull-request
+    workflow sparse-checks out findings/ beside the base's tools just for this ledger comparison; never load it as
+    facts, since the head's trusted tools judge the proposed tree."""
     out = []
+    for dp, dns, fns in os.walk(os.path.join(base, "findings")):
+        rel = os.path.relpath(dp, base).replace(os.sep, "/")
+        if rel.count("/") == 1:
+            dns[:] = [d for d in dns if d != "bin"]
+        out += [rel + "/" + fn for fn in fns]
+    return out
+
+
+_FINDING_FILE = re.compile(r"findings/[^/]+/[^/]+/[^/]+/")
+_UNPATCHED_FILE = re.compile(r"findings/([^/]+)/unpatched\.yaml$")
+# What a finding's runs are of: CI re-runs its record against these, so they never change once the base has it.
+# Its state, summary, upstream and patch text may.
+_FIXED_FILES = ("input.bin", "control.bin")
+
+
+def _ledger_yaml(root, rel, cap=facts.FINDING_FILE_CAP):
+    return yamlio.load(facts.read_bounded(os.path.join(root, rel), cap).decode(), where=os.path.join(root, rel))
+
+
+def _runner(release):
+    """images.runner of a release.yaml's YAML: the image CI re-runs findings in."""
+    images = release.get("images") if isinstance(release, dict) else None
+    return images.get("runner") if isinstance(images, dict) else None
+
+
+def _fixed_evidence(tree, base, ledger):
+    """Each finding the base has keeps its input.bin and control.bin, its statements include the base's (a longer list
+    makes a stronger claim, and CI checks each), and the unpatched pin of each build its statements name stays as it
+    is; a pin for another build may be added or changed.  Its recorded runs of those builds stay as they are too,
+    unless the proposed tree's runner image (release.yaml's images.runner) differs from the base's: the base is
+    checked, so its runs are what that runner gave on those pins, and only another runner gives others.  The builds
+    are read from the base record's statement names (names.statement_builds), as `oft ledger` reads them.  A file the
+    proposed tree deleted is reported as a deletion, and one the loader refused as a tree error, so neither is
+    compared here."""
+    out = []
+    ran = {}   # (project, harness) -> the builds a base finding of it names
+    base_runner = _runner(_ledger_yaml(base, "release.yaml", file_cap("release.yaml")))
+    new_runner = None not in (base_runner, _runner(tree.release)) and _runner(tree.release) != base_runner
+    for rel in sorted(ledger):
+        if not (_FINDING_FILE.match(rel) and rel.endswith("/finding.yaml")):
+            continue
+        d = rel[:-len("/finding.yaml")]
+        _, p, h, s = d.split("/")
+        was = _ledger_yaml(base, rel)
+        builds = {b for st in was["statements"] for b in names.statement_builds(st) or ()}
+        ran.setdefault((p, h), set()).update(builds)
+        for name in _FIXED_FILES:
+            fixed = d + "/" + name
+            if fixed not in ledger or not os.path.lexists(tree.path(fixed)):
+                continue
+            try:
+                proposed = facts.read_bounded(tree.path(fixed), facts.FINDING_INPUT_CAP)
+            except facts.BoundedFileError:
+                continue
+            if proposed != facts.read_bounded(os.path.join(base, fixed), facts.FINDING_INPUT_CAP):
+                out.append(Finding("paths", fixed, "a finding's %s is never changed: %s" % (name, fixed)))
+        head = tree.findings.get("%s/%s/%s" % (p, h, s))
+        dropped = sorted(set(was["statements"]) - set(head.data["statements"])) if head else []
+        if dropped:
+            out.append(Finding("paths", rel, "a finding's statements only grow: %s no longer names %s"
+                               % (rel, ", ".join(dropped))))
+        for which in ("input", "control") if head and "input" in was and not new_runner else ():
+            for b in sorted(builds & set(was[which]), key=schema.BUILDS.index):
+                if (head.data.get(which) or {}).get(b) != was[which][b]:
+                    out.append(Finding("paths", rel, "a finding's recorded runs are never changed: %s %s.%s"
+                                       % (rel, which, b)))
+    for p in sorted({p for p, _ in ran}):
+        rel = "findings/%s/unpatched.yaml" % p
+        head = tree.unpatched.get(p)
+        if rel not in ledger or head is None:
+            continue
+        pinned = _ledger_yaml(base, rel)["harnesses"]
+        for (q, h), builds in sorted(ran.items()):
+            if q != p:
+                continue
+            was, now = pinned.get(h, {}), head["harnesses"].get(h, {})
+            for b in sorted(builds & set(was), key=schema.BUILDS.index):
+                if was[b] != now.get(b):
+                    out.append(Finding("paths", rel, "a finding's unpatched pins are never changed: %s harnesses.%s.%s"
+                                       % (rel, h, b)))
+    return out
+
+
+def check_changes(tree, changed, kind, base=None):
+    """The pull-request half of `paths`.  kind: release | maintainer | contributor.  base is the trusted base tree
+    when CI compares the findings ledger: every record remains in the proposed tree, the unpatched pins remain while
+    its project has a base finding, and what a base finding's runs are of stays as it is (_fixed_evidence).  The base
+    is walked as well as changed read, since a diff that detects renames lists a moved file only where it went."""
+    out = []
+    ledger = _base_ledger(base) if base else []
+    with_finding = {rel.split("/")[1] for rel in ledger if _FINDING_FILE.match(rel) and rel.endswith("/finding.yaml")}
+    for rel in sorted({rel for rel in list(changed) + ledger if not os.path.lexists(tree.path(rel))}):
+        if _FINDING_FILE.match(rel):
+            out.append(Finding("paths", rel, "a finding is never deleted: %s" % rel))
+        m_unpatched = _UNPATCHED_FILE.fullmatch(rel)
+        if m_unpatched and m_unpatched.group(1) in with_finding:
+            out.append(Finding("paths", rel, "a finding's unpatched pins are never deleted: %s" % rel))
+    if base:
+        out += _fixed_evidence(tree, base, set(ledger))
     for rel in changed:
         m = paths.classify(rel)
         cls = m[0][0] if len(m) == 1 else None
@@ -659,42 +1000,146 @@ def check_free_text(tree):
 # --------------------------------------------------------------- exceptions
 
 def load_exceptions(root):
-    p = os.path.join(root, "tools", "oft", "lint-exceptions.yaml")
+    p = os.path.join(root, EXCEPTIONS)
     if not os.path.isfile(p):
         return []
     data = yamlio.load_file(p)
     return data.get("exceptions") or []
 
 
-def apply_exceptions(findings, exceptions):
-    """A private-data finding in an upstream copy (its authors' own address,
-    say) may be cleared by a reviewed entry naming (path, rule, key) and how
-    often.  Nothing else can be cleared."""
+def apply_exceptions(findings, exceptions, own, scanned=None):
+    """A private-data finding in an upstream copy (a host path in its authors' comments, say) or in a port record's
+    copied project.yaml (the project's own address, say), or an e-mail address in any other file of a port record's
+    copy of the port's project files (port/projects/<project>/: the enrollment author's copyright line, say), may be
+    cleared by a reviewed entry naming (path, rule, key) and how often; an OSS Verify target's source (under one of
+    `own`, oss_verify_sources) is not an upstream copy.  Nothing else can be cleared: a host path or a URL's user
+    information in a copied build script stays a finding.  An entry left unused is a finding, unless its path is
+    outside `scanned` (the files the per-file rules read, when they read only some)."""
     budget = {(e["path"], e["rule"], e["key"]): e["count"] for e in exceptions}
     used = {}
     kept = []
     for f in findings:
         key = (f.where.rsplit(":", 1)[0], f.rule, f.key)
-        clearable = f.rule == "private-data" and verbatim(key[0])
+        clearable = f.rule == "private-data" and (PORT_PROJECT_YAML.match(key[0])
+                                                   or (PORT_PROJECT_FILE.match(key[0])
+                                                       and f.msg == "an e-mail address")
+                                                   or (verbatim(key[0]) and not oss_verify_source(own, key[0])))
         if clearable and key in budget and used.get(key, 0) < budget[key]:
             used[key] = used.get(key, 0) + 1
             continue
         kept.append(f)
     for key, n in budget.items():
-        if used.get(key, 0) < n:
-            kept.append(Finding("paths", "tools/oft/lint-exceptions.yaml",
+        if used.get(key, 0) < n and (scanned is None or key[0] in scanned):
+            kept.append(Finding("paths", EXCEPTIONS,
                                 "an exception for %s %s that is not used %d time(s)" % (key[1], key[0], n)))
     return kept
 
 
 # --------------------------------------------------------------------- run
 
-def run(root, changed=None, pr_kind=None, skeleton=False, release=False):
+def scan_file(root, rel, known, own, prelaunch):
+    """(whether rel is a text file, the findings of the per-file text rules on it); a binary file, or one that is not
+    a regular file of at most its cap, is not read.  known: the links the facts record (fact_urls); own: the source
+    directories of the fuzz targets OSS Verify builds (oss_verify_sources); prelaunch: the project.yaml files that may
+    name the port's prelaunch variant (held_prelaunch_fields)."""
+    text = read_text(os.path.join(root, rel), file_cap(rel))
+    if text is None:
+        return False, []
+    out = []
+    src = verbatim(rel, text)
+    own_source = oss_verify_source(own, rel)
+    port_text = port_record(rel)
+    proof_v = rel.startswith("proofs/") and rel.endswith(".v")
+    # In a proof, a string literal holds encoded data whose random byte runs can take the shape of an address or a
+    # link: the e-mail and link checks read the file with string literals blanked (comments are still read).
+    blanked = None
+    if proof_v and (EMAIL.search(text) or URL.search(text) or GHCR.search(text)):
+        blanked = rocq.strip(text, comments=False)
+    out += scan_shapes(text, rel, source=src and not own_source, email_text=blanked, allow_prelaunch=rel in prelaunch)
+    if not src or own_source:
+        out += scan_links(text if blanked is None else blanked, rel, known,
+                          strict=link_strict(rel) and not port_text and not own_source)
+    if PORT_MANIFEST.match(rel):
+        out += scan_port_manifest(text, rel)
+    if proof_v:
+        out += scan_proof(text, rel)
+    return True, out
+
+
+_POOL_ARGS = {}
+
+
+def _pool_init(root, known, own, prelaunch):
+    _POOL_ARGS.update(root=root, known=known, own=own, prelaunch=prelaunch)
+
+
+def _scan_chunk(chunk):
+    n_text, out = 0, []
+    for rel in chunk:
+        is_text, found = scan_file(_POOL_ARGS["root"], rel, _POOL_ARGS["known"], _POOL_ARGS["own"],
+                                   _POOL_ARGS["prelaunch"])
+        n_text += is_text
+        out += found
+    return n_text, out
+
+
+# Below this many files the per-file rules run in this process: a pool costs more than it saves.
+POOL_MIN_FILES = 2000
+
+
+def scan_files(root, files, known, own, prelaunch, jobs=None):
+    """(text files examined, findings) of the per-file text rules over files, in the order of files, with the work
+    spread over `jobs` processes (default: every CPU this process may run on, facts.cpus())."""
+    jobs = jobs or facts.cpus()
+    if jobs == 1 or len(files) < POOL_MIN_FILES:
+        _pool_init(root, known, own, prelaunch)
+        return _scan_chunk(files)
+    from concurrent.futures import ProcessPoolExecutor
+    n = max(1, len(files) // (jobs * 16))
+    chunks = [files[i:i + n] for i in range(0, len(files), n)]
+    n_text, out = 0, []
+    with ProcessPoolExecutor(max_workers=jobs, initializer=_pool_init, initargs=(root, known, own, prelaunch)) as pool:
+        for k, found in pool.map(_scan_chunk, chunks):   # map keeps the chunks' order, so the output is the serial one
+            n_text += k
+            out += found
+    return n_text, out
+
+
+def changed_since(root, base):
+    """The files that differ from commit `base`: changed, added or renamed since it, staged or not, and the untracked
+    files .gitignore does not exclude."""
+    diff = subprocess.run(["git", "-C", root, "diff", "--name-only", "--no-renames", "-z", base],
+                          capture_output=True, check=True).stdout.decode().split("\0")
+    new = subprocess.run(["git", "-C", root, "ls-files", "-z", "--others", "--exclude-standard"],
+                         capture_output=True, check=True).stdout.decode().split("\0")
+    return {p for p in diff + new if p}
+
+
+EXCEPTIONS = "tools/oft/lint-exceptions.yaml"
+
+
+def read_by_every_verdict(rel):
+    """Whether the per-file rules' verdict on any file reads rel: a fact (a file paths.py classes as facts), a
+    finding's finding.yaml, whose links fact_urls records and whose state decides which project.yaml may name the
+    port's prelaunch variant (held_prelaunch_fields), or lint-exceptions.yaml, whose entries clear findings in other
+    files (an entry removed there leaves a finding in a file that did not change)."""
+    return (rel == EXCEPTIONS or any(cls == "facts" for cls, _, _ in paths.classify(rel))
+            or (_FINDING_FILE.match(rel) is not None and rel.endswith("/finding.yaml")))
+
+
+def run(root, changed=None, pr_kind=None, base=None, skeleton=False, release=False, changed_only=None, jobs=None):
     """All findings for the tree at root.  skeleton=True accepts a tree with
     no facts at all (no release.yaml, no projects/): the text rules still run
     over every file, which is how the repository's own tools are checked
     before a release has been exported into it.  release=True adds what only
-    a release must satisfy: no placeholder digest or commit is left."""
+    a release must satisfy: no placeholder digest or commit is left.  base:
+    the trusted base tree CI compares the findings ledger with
+    (check_changes).  changed_only=BASE runs the per-file text rules only
+    over the files that differ from commit BASE, or over every file when a
+    fact (a file paths.py classes as facts), a finding's finding.yaml or
+    lint-exceptions.yaml differs from it (read_by_every_verdict); the rules
+    over the whole tree still run.  jobs: how many processes run the
+    per-file text rules (scan_files); the findings do not depend on it."""
     root = os.path.abspath(root)
     tree = facts.load(root)
     if skeleton and not tree.projects and not os.path.exists(tree.path("release.yaml")):
@@ -712,26 +1157,18 @@ def run(root, changed=None, pr_kind=None, skeleton=False, release=False):
     if release:
         found += check_placeholders(tree)
     if changed is not None:
-        found += check_changes(tree, changed, pr_kind or "maintainer")
-    known = fact_urls(tree)
-    n_text = 0
-    for rel in files:
-        text = read_text(os.path.join(root, rel))
-        if text is None:
-            continue
-        n_text += 1
-        src = verbatim(rel, text)
-        proof_v = rel.startswith("proofs/") and rel.endswith(".v")
-        # In a proof, a string literal holds encoded data whose random byte runs can take the shape of an address or a
-        # link: the e-mail and link checks read the file with string literals blanked (comments are still read).
-        blanked = None
-        if proof_v and (EMAIL.search(text) or URL.search(text) or GHCR.search(text)):
-            blanked = strip_rocq(text, comments=False)
-        found += scan_shapes(text, rel, source=src, email_text=blanked)
-        if not src:
-            found += scan_links(text if blanked is None else blanked, rel, known, strict=link_strict(rel))
-        if proof_v:
-            found += scan_proof(text, rel)
-    if not n_text:
+        found += check_changes(tree, changed, pr_kind or "maintainer", base)
+    scanned = files
+    if changed_only is not None:
+        since = changed_since(root, changed_only)
+        # a file's verdict reads the facts and the findings (the links they record, the sources that are OSS Verify's
+        # own, the projects a finding holds back): a change to one can change the verdict on a file that did not
+        # change, so then every file is read
+        if not any(read_by_every_verdict(rel) for rel in since):
+            scanned = [rel for rel in files if rel in since]
+    own = oss_verify_sources(tree)
+    n_text, per_file = scan_files(root, scanned, fact_urls(tree), own, held_prelaunch_fields(tree), jobs)
+    found += per_file
+    if not n_text and changed_only is None:
         found.append(Finding("private-data", root, "no text files: nothing examined"))
-    return apply_exceptions(found, load_exceptions(root))
+    return apply_exceptions(found, load_exceptions(root), own, None if changed_only is None else set(scanned))

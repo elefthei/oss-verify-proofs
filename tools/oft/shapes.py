@@ -27,7 +27,18 @@ AGREEMENT = {
     ("alloc-forced-only", "error", "rv64gc"): "agrees_in_rv64gc",
 }
 
-EXIT_SETS = {"any": "Exits.any", (0, 2): "Exits.ok_or_refused"}
+# The driver's status when a call of the fuzz target returns a value other than 0 or -1.  libFuzzer reserves
+# those values; a libFuzzer built without assertions treats them as -1 (the input is rejected, not a crash).  A
+# harness whose fuzz target returns one to turn an input away lists where (harness.yaml `rejects`), and its halts
+# statements allow this status too.
+REJECTED = 78
+
+# The set with 78 is spelled out in the statement rather than named in Shapes.Exits: any change to the code of
+# theories/Shapes.v moves every statement's fingerprint, through its digest.  Statements.v opens neither list_scope
+# nor a scope with N numerals (QArith's Q scope is open), so the term uses `cons` and lets the word width (64)
+# come from `list word`; it elaborates to Z_to_bv 64 78 :: [Z_to_bv 64 0; Z_to_bv 64 2].
+EXIT_SETS = {"any": "Exits.any", (0, 2): "Exits.ok_or_refused",
+             (0, 2, REJECTED): "(cons (stdpp.bitvector.definitions.Z_to_bv _ %d%%Z) Exits.ok_or_refused)" % REJECTED}
 
 
 class ShapeError(ValueError):
@@ -107,20 +118,30 @@ def templates(reading, san, with_distribution, machine="rv64g"):
     return out
 
 
+# The status a Rust fuzz target exits with when it panics: the OSS Verify port's panic hook ends the process with it
+# (docs/running.md), where a libFuzzer build would abort().
+RUST_PANIC_STATUS = 79
+# The status the process ends with when a fuzz target calls exit() while it runs, whatever status it passes: the
+# driver's exit guard ends it with this one (docs/running.md, theories/Driver.v's harness_exited).
+HARNESS_EXIT_STATUS = 77
+
+
 def binds(check, st):
     """Does a failure of `check` contradict halts statement `st`?
 
-    Computed, never read: a check that stops by abort, assert, trap, throw or
-    panic contradicts every halts statement; one that stops by exit(n) only a
-    halts statement whose exit set leaves out n; a print-only or return-only
-    check contradicts nothing.  Only checks observed live in the binaries
-    count."""
+    Computed, never read: a check that stops by abort, assert, trap or throw
+    contradicts every halts statement; one that stops by exit(), which ends the
+    process with status 77 whatever status the source passes, or by a Rust
+    panic, which exits with status 79, only a halts statement whose exit set
+    leaves out that status; a print-only or return-only check contradicts
+    nothing.  Only checks observed live in the binaries count."""
     if st["kind"] != "halts" or check["live"] is not True:
         return False
     stop = check["stops_with"]
-    if stop in ("abort", "assert", "trap", "throw", "panic"):
+    if stop in ("abort", "assert", "trap", "throw"):
         return True
-    if stop == "exit":
+    if stop in ("exit", "panic"):
         exits = st.get("exits", "any")
-        return exits != "any" and check.get("exit_status") not in exits
+        status = RUST_PANIC_STATUS if stop == "panic" else HARNESS_EXIT_STATUS
+        return exits != "any" and status not in exits
     return False

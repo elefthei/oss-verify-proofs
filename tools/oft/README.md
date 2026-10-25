@@ -8,7 +8,7 @@ root.
 |---|---|
 | `./oft generate [--check]` | renders every generated file from the facts; `--check` compares instead of writing, and is what CI runs |
 | `./oft lint` | the repository's rules (below) |
-| `./oft fetch <project>...` | downloads a project's binaries from its release asset and checks the archive's SHA-256 and every file's |
+| `./oft fetch <project>...` | downloads a project's binaries from its release asset and checks the archive's SHA-256 and every file's; an asset of 2 GiB or more (GitHub's per-file limit) ships as numbered parts (`<file>.000`, `.001`, ...), each checked against its own SHA-256 and their join against the asset's; `--list` prints one line per file a release holds, one per part; `--harness H` (repeatable) writes only those harnesses' files, the whole archive still read and checked |
 | `./oft verify-sha <project>...` | checks fetched binaries against their `harness.yaml` |
 | `./oft check <project>/<harness>...` | builds the images and statements, checks every proof through a wrapper and every assumption the wrapper prints against `toolchain/allowed-axioms.txt`, and re-runs every counterexample; `--rocqchk` adds an independent re-check with `rocqchk`, which can take hours for one proof and is not part of the verdict |
 | `./oft plan --changed FILE` | the harnesses a change affects, as JSON for CI |

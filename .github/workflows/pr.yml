@@ -1,93 +1,339 @@
-# pr.yml: every pull request, and every push to main.
+# pr.yml: every pull request, every merge queue group and every push to main.  ledger.yml judges a push to a proofs/
+# branch.
 #
 # The rules come from the base branch, never from the pull request.  The lint,
-# the generator and the check all run from a worktree of the base, and the
+# the generator, the plan and the check all run from a worktree of the base, and the
 # statements they check are the base's: a pull request contributes only its
-# proofs/ and counterexamples/ (and, for a release pull request, its facts).
-# No job has more than read access, no repository secret is used, and the
-# untrusted compile runs in the checker image with no network.
+# proofs/, counterexamples/ and findings/ (and, for a release pull request, its
+# facts).  For any other pull request, the check renders the generated files of
+# that tree again, with the base's tools.
+# No repository secret is used, the untrusted compile runs in the checker image
+# with no network, and no job but fetch-drafts has more than read access.  A
+# token with contents: read cannot see a draft release, and a release pull
+# request's new binaries stay drafts until release.yml publishes them, which it
+# does only once this workflow's run for the push of the tagged commit to main
+# has passed.  So fetch-drafts alone has
+# contents: write; it checks out nothing and runs no script from the tree, only
+# `gh release download` of the pins plan listed and a SHA-256 check of each.
+# Its YAML is the pull request's own copy of fetch-drafts.yml, as this file is
+# (GitHub reads a pull request's workflows from its merge commit).  That is the
+# boundary: only a branch of this repository gets a write token, and its author
+# already has write access; a pull request from a fork gets a read-only token,
+# so fetch-drafts cannot read a draft for it, and plan says so.
+# A check job that read a draft saves no cache: any pull request can restore a
+# cache saved on main, and the images in it hold the binaries' bytes, which
+# would then outlive the draft's one-day artifact.
+# The artifact widens who can read a draft binary, for one day: a draft release
+# is visible only with write access, an artifact to anyone who can read the
+# repository, which for a public repository is anyone signed in to GitHub.
+# That is accepted: the facts already publish each archive's SHA-256, a project
+# held by its status pins no asset and a findings-<project> release holds only
+# the project a finding holds back (tools/oft/rules.py), the publishing gate
+# outside this repository refuses any asset of a project it holds back, and the
+# files are the ones the release is to publish; if publishing is refused, they
+# were still readable for that day.
 #
-#   lint      the repository's rules (tools/oft/README.md), from the base; generated files equal
-#             their rendering; the tools' own tests; the plan
-#   check     per group of affected harnesses: fetch, build, every proof
-#             through its wrapper with its assumptions against the allowlist,
-#             counterexamples
-#   controls  tests/: positive controls pass and negative controls fail
-#   required  the one required status: fails if anything failed, or if the
-#             plan named harnesses and none was checked
+#   plan          the base and the harnesses the change affects (oft plan, from the base); the planned
+#                 binaries in a release that a read-only token cannot see (a draft), and which group needs
+#                 each; whether the change can alter what `oft lint` finds when run with the change's own
+#                 tools, and whether it touches an input of the controls
+#   lint          the repository's rules (tools/oft/README.md), from the base, over every file of the
+#                 change's tree; the findings ledger over the change's history (oft ledger); generated
+#                 files equal their rendering
+#   tests         the tools' own tests, at this change; their test of this whole repository under the
+#                 change's tools only when plan says the change can alter what that finds
+#   fetch-drafts  each draft binary once, checked against its pin, as an artifact of its own, after
+#                 lint passed (skipped when there is none)
+#   check         per group of affected harnesses: fetch (a draft from its artifact), build,
+#                 every proof through its wrapper with its assumptions against the allowlist,
+#                 counterexamples, findings on the unpatched binaries
+#   controls      tests/: positive controls pass and negative controls fail, when plan says the
+#                 change touches what they read
+#   required      fails if anything failed, or if the plan named harnesses and none was checked, or named the
+#                 controls and they did not pass; on theorem-labs/oss-verify-proofs, where it is the status
+#                 main's ruleset requires, also when a pull request's base is not main
+#   main-gate     the status a main that merges through a merge queue requires, of a pull request and of each
+#                 queue group: required passed, and a pull request's base is main
+#
+# lint and plan start at once.  check (which compiles the change's proofs), tests and controls (which run the
+# change's own code: its tools' tests, its tests/check.sh) wait for lint as well: nothing from a pull request runs
+# before lint has accepted it.  fetch-drafts waits for lint too, so a draft is downloaded only for facts lint
+# accepted, and check waits for fetch-drafts when a group needs a draft.  This file runs as the change has it, as
+# GitHub runs any pull request's workflows (a pull request from a fork gets a read-only token whatever it says), so
+# a change to it needs a reviewer's eye before its run is trusted; the local actions it uses come from the base, as
+# the tools do: a GitHub App can change .github/actions/ with the Contents permission alone, and this file only
+# with the Workflows permission as well.  So a change to an action takes effect for the pull requests after it
+# lands.  A push to main runs lint, tests and controls in full, and checks the harnesses the push changes;
+# release-check.yml, when enabled, checks every committed proof and finding on it.  A merge queue group is the
+# commit main becomes, and is checked as a push to main is.
+#
+# required and main-gate have no condition that skips them, since a skipped job reports success.  A pull request
+# runs again when it is edited, which is the event for a new base, and a new base is checked as any other run is.
+# A new title or description changes nothing a job reads: plan and lint (and with them every job after them) do
+# not run, and required restates the verdict of the last run that checked this head.  Such a run is named
+# `restate: <title>`, and it cancels no other run and waits for none to end.
 name: pr
+# A run for a new title or description (RESTATE) is named for it, so that the run list shows which runs checked
+# nothing.  The name is for readers only: a run with GitHub's default name shows the pull request's current title,
+# so a title can make any name, and required tells a restate by its skipped plan instead.  An empty run-name means
+# the default name.
+run-name: >-
+  ${{ github.event.action == 'edited' && github.event.changes.base == null
+  && format('restate: {0}', github.event.pull_request.title) || '' }}
 on:
   pull_request:
+    # `edited` is the event for "the base branch of a pull request was changed"; without it, a pull request made
+    # green against another branch and then retargeted at main would keep that green.  The other three are the
+    # default list, which naming any type replaces.
+    types: [opened, synchronize, reopened, edited]
+  merge_group:
   push:
     branches: [main]
 permissions:
   contents: read
   packages: read   # to pull the pinned checker and runner images from ghcr.io
 concurrency:
-  group: pr-${{ github.event.pull_request.number || github.ref }}
+  # A pull request's new push cancels its old run, and so does a new base.  A new title or description (RESTATE)
+  # has a group of its own, keyed by its run, so that it cancels nothing and replaces no run that waits in the
+  # pull request's group.  A push to main and a merge queue group each have a run of their own that nothing
+  # cancels, keyed by the branch and the commit, so release.yml tags only a commit of main whose run passed.
+  group: >-
+    pr-${{ (github.event.action == 'edited' && github.event.changes.base == null) && format('restate-{0}', github.run_id)
+    || github.event.pull_request.number || format('{0}-{1}', github.ref, github.sha) }}
   cancel-in-progress: true
 defaults:
   run:
     shell: bash
 env:
   PYTHONDONTWRITEBYTECODE: "1"
+  # The kind of change, from the event alone, so that every job reads the same.  A push to main is a pull request
+  # that was checked and reviewed: release; so is a merge queue group, the commit main becomes.  An owner, member
+  # or collaborator is a maintainer, and so is a branch of this repository, which only someone with write access
+  # can push (a GitHub App's pull requests come with association NONE or CONTRIBUTOR); a maintainer's branch
+  # release/* is a release (startsWith ignores case, so Release/* is one too).  Anyone else is a contributor.
+  KIND: >-
+    ${{ (github.event_name == 'push' || github.event_name == 'merge_group') && 'release'
+    || (contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)
+        || github.event.pull_request.head.repo.full_name == github.repository)
+       && (startsWith(github.head_ref, 'release/') && 'release' || 'maintainer')
+    || 'contributor' }}
+  # The commit the change is judged against: the pull request's base, the merge queue's base, or main before the
+  # push (all zeros when the push made the branch: then the pushed commit itself).
+  EVENT_BASE: >-
+    ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha
+    || github.event_name == 'merge_group' && github.event.merge_group.base_sha
+    || github.event.before }}
+  # A pull request edited with its base unchanged (a new title or description): no job checks anything, and
+  # required restates the verdict of the last run that checked this head.  run-name, the concurrency group and
+  # plan's and lint's `if:` spell the same condition out, since none of them can read env.
+  RESTATE: ${{ github.event.action == 'edited' && github.event.changes.base == null }}
 
 jobs:
-  lint:
-    runs-on: ubuntu-24.04
-    # the full-tree lint is single-threaded and took 33-35 min at 36 proofs; then the tools' own tests
-    timeout-minutes: 180
+  plan:
+    # not on a new title or description alone (RESTATE); facts-review.yml spells it the same way.  required's restate
+    # tells an earlier restate by this job's being skipped, so this `if:` is the only condition that may skip it.
+    if: github.event.action != 'edited' || github.event.changes.base != null
+    # its checkout is on the way to every check job; this runner's is the faster
+    runs-on: ubuntu-24.04-16core
+    timeout-minutes: 20
     outputs:
-      plan: ${{ steps.plan.outputs.plan }}
+      plan: ${{ steps.drafts.outputs.plan }}
       units: ${{ steps.plan.outputs.units }}
-      kind: ${{ steps.kind.outputs.kind }}
       base: ${{ steps.base.outputs.base }}
+      draft_legs: ${{ steps.drafts.outputs.draft_legs }}
+      repository_lint: ${{ steps.reach.outputs.repository_lint }}
+      controls: ${{ steps.reach.outputs.controls }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          fetch-depth: 0
           path: head
       - name: the base branch, whose tools judge this change
         id: base
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = pull_request ]; then base="${{ github.event.pull_request.base.sha }}"
-          else base="${{ github.event.before }}"; fi
+          trap 'df -h "$GITHUB_WORKSPACE"' EXIT
+          base="$EVENT_BASE"
           case "$base" in ''|0000000000000000000000000000000000000000) base="$(git -C head rev-parse HEAD)" ;; esac
-          git -C head worktree add --detach "$GITHUB_WORKSPACE/base" "$base"
+          # one commit each of the change and its base: the jobs compare two trees and read no history, and a
+          # clone of every branch's history does not fit beside the two trees on the runner's disk
+          git -C head fetch --no-tags --depth=1 origin "$base"
+          if [ "$KIND" = release ]; then
+            # a release's pins are its own facts (head), so this job reads only the base's tools and the local
+            # actions it runs; cone mode also keeps the files at the top of the tree
+            git -C head worktree add --no-checkout --detach "$GITHUB_WORKSPACE/base" "$base"
+            git -C base sparse-checkout set --cone tools .github/actions
+            git -C base checkout --detach "$base"
+          else
+            # any other change's check jobs fetch the base's pins, which the drafts step reads from the base's facts
+            git -C head worktree add --detach "$GITHUB_WORKSPACE/base" "$base"
+          fi
           [ -d base/tools/oft ] || { echo "::error::the base branch has no tools/oft: nothing trusted to judge with"; exit 1; }
-          git -C head diff --name-only "$base" HEAD > "$RUNNER_TEMP/changed.txt"
+          # this workflow runs the base's copy of its shared actions, so they land on the base before a workflow uses them
+          for a in plan-drafts place-drafts; do
+            [ -f "base/.github/actions/$a/action.yml" ] || {
+              echo "::error::the base branch has no .github/actions/$a/action.yml: this workflow runs the base's copy of its shared actions, so they must land on the base first"; exit 1; }
+          done
+          # the check job runs the base's copy of the cache key script, as it does check-units.sh
+          [ -f base/tools/oft/ci/cache-key.sh ] || {
+            echo "::error::the base branch has no tools/oft/ci/cache-key.sh: the check job runs the base's copy, so it must land on the base first"; exit 1; }
+          # --no-renames: a renamed file is its old path and its new one; with renames, git lists only the new.
+          # core.quotePath=false: a name with a byte above 0x7f is listed as it is, not quoted.
+          git -c core.quotePath=false -C head diff --no-renames --name-only "$base" HEAD > "$RUNNER_TEMP/changed.txt"
           echo "base=$base" >> "$GITHUB_OUTPUT"
-          echo "changed paths: $(wc -l < "$RUNNER_TEMP/changed.txt")"
+          echo "changed paths: $(wc -l < "$RUNNER_TEMP/changed.txt"); kind of change: $KIND"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: "3.12"
-      - name: PyYAML, hash-pinned, from the base
+      - name: the tools' dependencies (PyYAML, idna), hash-pinned, from the base
         run: python -m pip install --quiet --require-hashes -r base/tools/oft/requirements.txt
-      - name: the kind of change
-        id: kind
-        env:
-          ASSOC: ${{ github.event.pull_request.author_association }}
-          HEAD_REF: ${{ github.head_ref }}
+
+      - name: plan
+        id: plan
         run: |
           set -euo pipefail
-          kind=contributor
-          case "$ASSOC" in
-            OWNER|MEMBER|COLLABORATOR)
-              kind=maintainer
-              case "$HEAD_REF" in release/*) kind=release ;; esac ;;
-          esac
-          # a push to main is a pull request that was checked and reviewed
-          if [ "${{ github.event_name }}" = push ]; then kind=release; fi
-          echo "kind=$kind" >> "$GITHUB_OUTPUT"
-          echo "kind of change: $kind"
+          if [ ! -e head/release.yaml ]; then
+            echo "units=0" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          changed="$RUNNER_TEMP/changed.txt"
+          if [ "$KIND" != release ]; then
+            # The check job renders the dune-project of the tree it builds itself, from the base's facts and this
+            # change's proofs, so no check job reads this change's own. A project's first proofs package comes with
+            # the proofs/ paths that mark its harnesses; counted as a change, it would mark every harness.
+            { grep -vx 'dune-project' "$changed" || [ $? -eq 1 ]; } > "$RUNNER_TEMP/plan-changed.txt"
+            changed="$RUNNER_TEMP/plan-changed.txt"
+          fi
+          PYTHONPATH=base/tools python -m oft --root head plan --changed "$changed" \
+            --max-jobs 256 > "$RUNNER_TEMP/plan.json"
+          # the plan output is written by the next step, with each group's draft binaries in its entry
+          echo "units=$(jq '.units | length' "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
+          { echo "### harnesses to check"; jq -r '.units[]' "$RUNNER_TEMP/plan.json"; } >> "$GITHUB_STEP_SUMMARY"
+      - name: for each group of the plan, its binaries in a release this read-only token cannot see (a draft)
+        id: drafts
+        # The base's, like the tools: a GitHub App can change .github/actions/ with the Contents permission alone, while
+        # this file needs the Workflows permission too, so the change's copy of the action is not trusted.  The pins it
+        # lists are by the base's tools, of the tree the check jobs read.
+        uses: ./base/.github/actions/plan-drafts
+        with:
+          plan-file: ${{ runner.temp }}/plan.json
+          tools: ${{ github.workspace }}/base/tools
+          # the pins the check jobs read, by the tools they run (the base's): a release pull request's own facts, any
+          # other change's base's
+          root: ${{ github.workspace }}/${{ env.KIND == 'release' && 'head' || 'base' }}
+      # A fork's pull request gets a read-only token whatever a job asks for, so fetch-drafts could not read the drafts.
+      - name: a pull request from a fork needs no draft binary
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        env:
+          DRAFT_LEGS: ${{ steps.drafts.outputs.draft_legs }}
+        run: |
+          set -euo pipefail
+          [ "$DRAFT_LEGS" = '[]' ] || {
+            echo "::error::this change needs draft binaries, which a pull request from a fork cannot read: its token is read-only. A maintainer runs the change again from a branch in this repository. A fork's pull request that needs no draft binary is unaffected."; exit 1; }
+          echo "a pull request from a fork, and no draft binary needed"
+      - name: what the change can reach beyond the harnesses it names
+        id: reach
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          changed="$RUNNER_TEMP/changed.txt"
+          # A push to main and a merge queue group are the merge path: lint, tests and controls run in full there,
+          # whatever the change.  So they do for a change to the workflows, which run as the change has them; to a
+          # .gitattributes file, which changes how git checks out any file (line ends, encoding); and for a path git
+          # still quotes (one with a '"', a '\' or a control character), which no pattern below can read.
+          full=false
+          if [ "$EVENT" = push ] || [ "$EVENT" = merge_group ] ||
+             grep -qE '^(\.github/|")|(^|/)\.gitattributes$' "$changed"; then
+            full=true
+          fi
+
+          # The tests' whole-repository lint (test_this_repository_is_clean).  lint runs the base's tools over the
+          # change's tree.  The change's own tools differ from the base's only in what the change touches under
+          # tools/; if that is only data under tools/oft/tests/ (fixtures, which both runs read only as files of the
+          # tree; no Python file, since a test module runs in the same process as that test and could change what it
+          # sees), tools/oft/ci/ (shell scripts) or tools/oft/README.md, the two runs are the same code over the same
+          # tree, and lint's run covers the test's.  Anything else under tools/ runs that test.
+          if [ "$full" = true ] ||
+             grep -qP '^tools/(?!oft/(tests/(?!.*\.py$)|ci/|README\.md$))' "$changed"; then
+            echo "repository_lint=true" >> "$GITHUB_OUTPUT"
+            echo "the tests lint the whole tree with this change's tools"
+          else
+            echo "repository_lint=false" >> "$GITHUB_OUTPUT"
+            echo "tools/ unchanged but for test data, ci/ and README.md: lint's run covers the tests' whole-tree lint"
+          fi
+
+          # The controls: `dune build @theories/default @tests/default` and tests/check.sh in the checker image that
+          # toolchain/toolchain.lock names.  They read theories/, tests/ and toolchain/; dune also reads every dune,
+          # dune-project and dune-workspace file of the tree.  A change that touches none of these leaves their
+          # outcome as the base's, and the merge queue group and the push of the merge to main run them in full.
+          if [ "$full" = true ] || grep -qE '^(theories|tests|toolchain)/|(^|/)dune(-project|-workspace)?$' "$changed"; then
+            echo "controls=true" >> "$GITHUB_OUTPUT"
+            echo "the controls run"
+          else
+            echo "controls=false" >> "$GITHUB_OUTPUT"
+            echo "no input of the controls changed: they do not run"
+          fi
+
+  lint:
+    # not on a new title or description alone (RESTATE)
+    if: github.event.action != 'edited' || github.event.changes.base != null
+    # The text rules run in one process per CPU (tools/oft/lint.py, scan_files): some 36 CPU-minutes over proofs/.
+    # Disk too: on a private repository's ubuntu-24.04 runner this job ran out of disk at about 13.5 GB written; the
+    # 16-core runner has 600 GB.
+    runs-on: ubuntu-24.04-16core
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          path: head
+      # as plan's step of this name, with only the base's tools and findings ledger: lint reads the change's tree
+      - name: the base branch, whose tools judge this change
+        id: base
+        run: |
+          set -euo pipefail
+          trap 'df -h "$GITHUB_WORKSPACE"' EXIT
+          base="$EVENT_BASE"
+          case "$base" in ''|0000000000000000000000000000000000000000) base="$(git -C head rev-parse HEAD)" ;; esac
+          # one commit each of the change and its base, with their files: a clone of every branch's history with its
+          # files does not fit beside the two trees on the runner's disk (the ledger step adds the history without them)
+          git -C head fetch --no-tags --depth=1 origin "$base"
+          # this job reads the base's trusted tools and findings ledger; cone mode also keeps the top-level files the
+          # tools need (release.yaml, whose runner the ledger comparison reads)
+          git -C head worktree add --no-checkout --detach "$GITHUB_WORKSPACE/base" "$base"
+          git -C base sparse-checkout set --cone tools findings
+          git -C base checkout --detach "$base"
+          [ -d base/tools/oft ] || { echo "::error::the base branch has no tools/oft: nothing trusted to judge with"; exit 1; }
+          git -c core.quotePath=false -C head diff --no-renames --name-only "$base" HEAD > "$RUNNER_TEMP/changed.txt"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "changed paths: $(wc -l < "$RUNNER_TEMP/changed.txt"); kind of change: $KIND"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: the tools' dependencies (PyYAML, idna), hash-pinned, from the base
+        run: python -m pip install --quiet --require-hashes -r base/tools/oft/requirements.txt
+      - name: the findings ledger over the change's history, by the base's rules
+        env:
+          BASE: ${{ steps.base.outputs.base }}
+        run: |
+          set -euo pipefail
+          # tools older than oft ledger judge only the two trees, in the lint step
+          [ -f base/tools/oft/ledger.py ] || { echo "the base's tools have no oft ledger"; exit 0; }
+          # base..HEAD as commits and trees, without file contents (11 MiB for main and proofs/make, where one
+          # checkout of either is 4.6 GB); git fetches the few finding.yaml and unpatched.yaml the ledger reads, and
+          # release.yaml at the tip and where the tip's history meets the base
+          git -C head fetch --no-tags --filter=blob:none --unshallow origin "$BASE" "$(git -C head rev-parse HEAD)"
+          PYTHONPATH=base/tools python -m oft --root head ledger --base "$BASE"
       - name: lint, by the base's rules
         run: |
           set -euo pipefail
-          args=(--changed "$RUNNER_TEMP/changed.txt" --pr-kind "${{ steps.kind.outputs.kind }}")
+          args=(--changed "$RUNNER_TEMP/changed.txt" --pr-kind "$KIND")
+          # the findings ledger is compared with the base's when the base has one; tools older than findings/
+          # take no --base
+          [ ! -d base/findings ] || args+=(--base "$GITHUB_WORKSPACE/base")
           # before the first release is exported there are no facts, and the text rules still run
           [ -e head/release.yaml ] || args+=(--skeleton)
           PYTHONPATH=base/tools python -m oft --root head lint "${args[@]}"
+      # The change's own code runs last: the generator, for a maintainer's change to tools/ (the tools' tests run in the
+      # tests job).  It runs as this job's user in this workspace, so it could rewrite base/; no step after it reads base/.
       - name: generated files equal their rendering
         run: |
           set -euo pipefail
@@ -95,103 +341,179 @@ jobs:
           # A maintainer's change to the tools is rendered with the tools it brings,
           # and reviewed; any other change, with the base's.
           tools=base/tools
-          if [ "${{ steps.kind.outputs.kind }}" != contributor ] && grep -q '^tools/oft/' "$RUNNER_TEMP/changed.txt"; then
+          if [ "$KIND" != contributor ] && grep -q '^tools/oft/' "$RUNNER_TEMP/changed.txt"; then
             tools=head/tools
           fi
           PYTHONPATH="$tools" python -m oft --root head generate --check
+
+  tests:
+    # the change's own code: only after lint has accepted the paths it changes
+    needs: [plan, lint]
+    # the whole-tree lint, when it runs, takes one process per CPU
+    runs-on: ${{ needs.plan.outputs.repository_lint == 'true' && 'ubuntu-24.04-16core' || 'ubuntu-24.04' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          path: head
+          persist-credentials: false   # the change's code runs here, and this job fetches nothing more
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: the tools' dependencies (PyYAML, idna), hash-pinned, at this change
+        run: python -m pip install --quiet --require-hashes -r head/tools/oft/requirements.txt
       - name: the tools' own tests, at this change
         working-directory: head/tools
+        env:
+          OFT_SKIP_REPOSITORY_LINT: ${{ needs.plan.outputs.repository_lint == 'true' && '0' || '1' }}
         run: python -m unittest discover -s oft/tests -t .
-      - name: plan
-        id: plan
-        run: |
-          set -euo pipefail
-          if [ ! -e head/release.yaml ]; then
-            echo 'plan=[]' >> "$GITHUB_OUTPUT"; echo "units=0" >> "$GITHUB_OUTPUT"; exit 0
-          fi
-          PYTHONPATH=base/tools python -m oft --root head plan --changed "$RUNNER_TEMP/changed.txt" \
-            --max-jobs 256 > "$RUNNER_TEMP/plan.json"
-          echo "plan=$(jq -c .jobs "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
-          echo "units=$(jq '.units | length' "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
-          { echo "### harnesses to check"; jq -r '.units[]' "$RUNNER_TEMP/plan.json"; } >> "$GITHUB_STEP_SUMMARY"
+
+  # Each leg a call of fetch-drafts.yml, which GitHub runs from this workflow's own commit (for a pull request, its merge
+  # commit: the boundary is in the header); a called workflow runs with the token the calling job grants, here contents:
+  # write and nothing else.  It waits for lint: a draft binary is downloaded, and kept as an artifact, only for facts
+  # that lint accepted (no GPL binary without its source).
+  fetch-drafts:
+    needs: [plan, lint]
+    if: needs.plan.outputs.draft_legs != '[]'
+    name: fetch-drafts ${{ matrix.leg.index }}
+    permissions:
+      contents: write   # the only permission with which the workflow's token sees a draft release; nothing is written
+    strategy:
+      matrix:
+        leg: ${{ fromJSON(needs.plan.outputs.draft_legs) }}
+    uses: ./.github/workflows/fetch-drafts.yml
+    with:
+      pins: ${{ toJSON(matrix.leg.pins) }}
 
   check:
-    needs: lint
-    if: needs.lint.outputs.units != '0'
+    # the change's proofs are compiled here: only after lint has accepted the paths and the proof text it changes.
+    # fetch-drafts is skipped when no group has a draft, and a job whose need was skipped is skipped too unless its
+    # condition says otherwise: run when fetch-drafts passed or had nothing to do, never when it failed, was cancelled
+    # or was skipped because lint failed
+    needs: [plan, lint, fetch-drafts]
+    if: >-
+      !cancelled() && needs.plan.result == 'success' && needs.lint.result == 'success'
+      && needs.plan.outputs.units != '0'
+      && (needs.fetch-drafts.result == 'success'
+          || (needs.fetch-drafts.result == 'skipped' && needs.plan.outputs.draft_legs == '[]'))
     name: check ${{ matrix.job.index }}
-    # a proof check peaks at 14.5-19.4 GiB on 16 cores: the 16-core/64 GB GitHub-hosted larger runner
-    runs-on: ubuntu-24.04-16core
-    timeout-minutes: 360
+    # a proof check peaks at 14.5-19.4 GiB on 16 cores: the 16-core/64 GB GitHub-hosted larger runner.  The
+    # repository variables PROOF_RUNNER and PROOF_TIMEOUT_MINUTES move every proof check job (pr.yml, release-check.yml,
+    # weekly.yml) to a larger runner or a longer limit; a GitHub-hosted job stops at 6 hours whatever the limit.  A merge
+    # queue's group is checked like a push to main and must report within the queue's 360 minutes of its creation,
+    # runner waits included: a group whose checks run longer leaves the queue unmerged.
+    runs-on: ${{ vars.PROOF_RUNNER || 'ubuntu-24.04-16core' }}
+    timeout-minutes: ${{ fromJSON(vars.PROOF_TIMEOUT_MINUTES || '360') }}
     strategy:
       fail-fast: false
       max-parallel: 20
       matrix:
-        job: ${{ fromJSON(needs.lint.outputs.plan) }}
+        job: ${{ fromJSON(needs.plan.outputs.plan) }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          fetch-depth: 0
           path: head
-      - name: statements from the base; proofs and counterexamples from this change
+      - name: statements from the base; proofs, counterexamples and findings from this change
         id: work
         run: |
           set -euo pipefail
-          git -C head worktree add --detach "$GITHUB_WORKSPACE/base" "${{ needs.lint.outputs.base }}"
-          if [ "${{ needs.lint.outputs.kind }}" = release ]; then
+          trap 'df -h "$GITHUB_WORKSPACE"' EXIT
+          base="${{ needs.plan.outputs.base }}"
+          git -C head fetch --no-tags --depth=1 origin "$base"
+          git -C head worktree add --detach "$GITHUB_WORKSPACE/base" "$base"
+          if [ "$KIND" = release ]; then
             # a release pull request brings new facts; they were checked against the base's rendering
             echo "work=$GITHUB_WORKSPACE/head" >> "$GITHUB_OUTPUT"
           else
-            for d in proofs counterexamples; do
-              [ ! -d "head/$d" ] || rsync -a --delete -- "head/$d/" "base/$d/"
+            for d in proofs counterexamples findings; do
+              [ -d "head/$d" ] || continue
+              # the next step writes the tree's generated files, and a link would carry a write out of the tree
+              links="$(find "head/$d" -type l)"
+              [ -z "$links" ] || { echo "::error::symbolic links in $d/: $links"; exit 1; }
+              rsync -a --delete -- "head/$d/" "base/$d/"
             done
             echo "work=$GITHUB_WORKSPACE/base" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: "3.12"
-      - name: PyYAML, hash-pinned, for this runner and for the containers
+      - name: the tools' dependencies (PyYAML, idna), hash-pinned, for this runner and for the containers
         run: |
           set -euo pipefail
           python -m pip install --quiet --require-hashes -r base/tools/oft/requirements.txt
           python -m pip install --quiet --require-hashes --target "$RUNNER_TEMP/pydeps" -r base/tools/oft/requirements.txt
-      - name: the compiled images of earlier runs on main (read only)
+      # the check's container mounts the tree it checks writable; the host runs these tools, from outside that tree
+      - name: the tools, copied out of the tree they check
+        run: cp -r -- base/tools "$RUNNER_TEMP/tools"
+      # Every generated file of that tree, rendered by the base's tools from the base's facts and this change's proofs.
+      # dune-project defines each project's proofs package, and a project's first proofs bring one that the base's
+      # dune-project lacks, so without this dune stops at the first proof's dune file.
+      - name: the generated files of that tree, by the base's tools
+        if: env.KIND != 'release'
+        run: PYTHONPATH="$RUNNER_TEMP/tools" python -m oft --root base generate
+      # The base's copy of the key script, as of check-units.sh: no step before the check runs this change's code. A key
+      # only picks which cache is read, and a pull request saves none.
+      - name: cache key
+        id: keys
+        env:
+          UNITS: ${{ matrix.job.units }}
+        run: |
+          set -euo pipefail
+          read -r -a units <<< "$UNITS"
+          # the image check-units.sh runs: the release.yaml of the tree it checks
+          bash "$RUNNER_TEMP/tools/oft/ci/cache-key.sh" "${{ steps.work.outputs.work }}/release.yaml" "${units[@]}" >> "$GITHUB_OUTPUT"
+      - name: dune's cache from earlier runs of the base branch (read only)
         uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: ${{ runner.temp }}/dune-cache
-          key: dune-${{ hashFiles('base/release.yaml') }}-${{ matrix.job.index }}-${{ github.sha }}
-          restore-keys: |
-            dune-${{ hashFiles('base/release.yaml') }}-
+          key: ${{ steps.keys.outputs.key }}
+          restore-keys: ${{ steps.keys.outputs.restore }}
       - name: sign in to ghcr.io, where the pinned images are (needed while their packages are private)
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      # Only the archives this group's projects pin in a draft, from this group's plan entry, each from its own
+      # artifact, into ASSETS. The base's copy of the action, as at plan: no step before it runs this change's code.
+      - name: the draft binaries this group needs, which fetch-drafts checked and this job's read-only token cannot download
+        if: join(matrix.job.drafts, ',') != ''
+        uses: ./base/.github/actions/place-drafts
+        with:
+          drafts: ${{ toJSON(matrix.job.drafts) }}
+          assets: ${{ runner.temp }}/assets
       - name: check
         env:
           WORK: ${{ steps.work.outputs.work }}
-          TOOLS: ${{ github.workspace }}/base/tools
-          UNITS: ${{ matrix.job.units }}
+          TOOLS: ${{ runner.temp }}/tools
+          UNITS: ${{ matrix.job.check_units }}
           PROJECTS: ${{ matrix.job.projects }}
           CX_UNITS: ${{ matrix.job.counterexamples }}
+          FINDINGS: ${{ matrix.job.findings }}
           ASSETS: ${{ runner.temp }}/assets
           PYDEPS: ${{ runner.temp }}/pydeps
           CACHE: ${{ runner.temp }}/dune-cache
           GH_TOKEN: ${{ github.token }}
-        run: bash base/tools/oft/ci/check-units.sh
-      - name: keep the compiled images (main only)
-        if: github.event_name == 'push'
+        run: bash "$RUNNER_TEMP/tools/oft/ci/check-units.sh"
+      - name: keep dune's cache (main only, and not from a draft)
+        if: github.event_name == 'push' && join(matrix.job.drafts, ',') == ''
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: ${{ runner.temp }}/dune-cache
-          key: dune-${{ hashFiles('base/release.yaml') }}-${{ matrix.job.index }}-${{ github.sha }}
+          key: ${{ steps.keys.outputs.key }}
 
   controls:
-    needs: lint
-    runs-on: ubuntu-24.04
+    # the change's own tests/check.sh and dune files: only after lint has accepted the paths it changes
+    needs: [plan, lint]
+    if: needs.plan.outputs.controls == 'true'
+    # Disk: on a private repository's ubuntu-24.04 runner, pulling the checker image beside the tree ran out of disk
+    # ('no space left on device' while registering its layers); on the public repository the same job fits. The
+    # 16-core runner has 600 GB.
+    runs-on: ubuntu-24.04-16core
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           path: head
+          persist-credentials: false   # the change's code runs here, and this job fetches nothing more
       - name: the checker image, by digest (fail closed)
         id: image
         run: |
@@ -213,19 +535,128 @@ jobs:
             bash -c 'dune build --root . @theories/default @tests/default && ./tests/check.sh'
 
   required:
-    needs: [lint, check, controls]
+    needs: [plan, lint, tests, fetch-drafts, check, controls]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions:
+      actions: read   # a new title or description: the earlier runs of this workflow on this head
     steps:
-      - name: every job green, and something checked when the plan named anything
+      - name: a pull request into theorem-labs/oss-verify-proofs is a pull request into main
+        if: github.repository == 'theorem-labs/oss-verify-proofs' && github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+        run: '[ "$BASE" = main ] || { echo "::error::the base is $BASE: this repository takes pull requests into main"; exit 1; }'
+      # The verdict of the run that checked this head for this pull request last, of those created before this one.
+      # Restates are passed over, so a restate restates a run that checked: a restate is a run whose plan was
+      # skipped, since plan's `if:` is the RESTATE condition.  A run's name cannot tell them apart (see run-name).
+      # GitHub writes a skipped job's record up to several seconds after its run starts, and even after it ends, so a
+      # run with no plan record yet is asked again, for up to 30 seconds, before it counts as a run that checked.  A
+      # run that ended with no job records at all (cancelled while queued) will get none and is not asked again.
+      # A run from a fork names no pull request, so it is matched by its head repository and branch instead.  Only
+      # that run is restated: an older one may have been judged against an earlier base.  A run that has not
+      # finished has no verdict yet, so this one fails; that run's own required and main-gate normally end after
+      # this one's and are then the verdict the pull request shows, and if that run ended first, re-running this one
+      # restates it.  A cancelled run has no verdict (its required ran, always(), over cancelled jobs).  On a pull
+      # request into main, the restated verdict is that run's main-gate, which passed only if that run's base was
+      # main too, so a green earned against another base stays out.
+      - name: a new title or description restates the last verdict on this head
+        if: env.RESTATE == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail
+          runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pr.yml/runs?event=pull_request&head_sha=$HEAD&per_page=100" \
+            --jq '[.workflow_runs[]
+              | select(.id < (env.GITHUB_RUN_ID | tonumber))
+              | select(any(.pull_requests[]; .number == (env.PR | tonumber))
+                  or (.pull_requests == [] and .head_repository.full_name == env.HEAD_REPO and .head_branch == env.HEAD_REF))]
+              | sort_by(.run_started_at) | reverse | .[] | "\(.id) \(.status) \(.conclusion)"')"
+          last=
+          while read -r run status conclusion; do
+            [ -n "$run" ] || continue
+            for try in 1 2 3 4 5 6 7; do
+              plan="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/jobs?per_page=100" \
+                --jq 'if .jobs == [] then "none" else ([.jobs[] | select(.name == "plan") | .conclusion // .status][0] // "") end')"
+              case "$plan" in
+                none) [ "$status" = completed ] && break ;;
+                ?*) break ;;
+              esac
+              [ "$try" = 7 ] && break
+              sleep 5
+            done
+            [ "$plan" = skipped ] && continue
+            last="$run $status $conclusion"
+            break
+          done <<< "$runs"
+          [ -n "$last" ] || { echo "::error::no earlier run of this workflow checked this head; push, or close and reopen"; exit 1; }
+          read -r run status conclusion <<< "$last"
+          if [ "$status" != completed ]; then
+            echo "::error::run $run, the last to check this head, is $status: its own verdict follows when it ends (if it ended before this run did, re-run this run)"
+            exit 1
+          fi
+          if [ "$conclusion" = cancelled ]; then
+            echo "::error::run $run, the last to check this head, was cancelled: it has no verdict to restate; re-run run $run"
+            exit 1
+          fi
+          job=required
+          [ "$BASE" = main ] && job=main-gate
+          verdict="$(JOB=$job gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/jobs?per_page=100" \
+            --jq '[.jobs[] | select(.name == env.JOB)][0].conclusion // empty')"
+          case "$verdict" in
+            success) echo "run $run on this head: $job passed, and a new title or description changes nothing"; exit 0 ;;
+            failure) echo "::error::run $run on this head: $job failed, and a new title or description changes nothing"; exit 1 ;;
+          esac
+          echo "::error::run $run, the last on this head, has no $job verdict (${verdict:-none}): push, or close and reopen"
+          exit 1
+      - name: every job green, and something checked when the plan named anything
+        if: env.RESTATE != 'true'
+        env:
+          DRAFTS_LISTED: ${{ needs.plan.outputs.draft_legs != '[]' }}
+        run: |
+          set -euo pipefail
+          [ "${{ needs.plan.result }}" = success ] || { echo "::error::the plan failed"; exit 1; }
           [ "${{ needs.lint.result }}" = success ] || { echo "::error::lint failed"; exit 1; }
-          [ "${{ needs.controls.result }}" = success ] || { echo "::error::the controls failed"; exit 1; }
-          if [ "${{ needs.lint.outputs.units }}" != 0 ]; then
+          [ "${{ needs.tests.result }}" = success ] || { echo "::error::the tools' tests failed"; exit 1; }
+          if [ "$DRAFTS_LISTED" = true ]; then
+            [ "${{ needs.fetch-drafts.result }}" = success ] || { echo "::error::fetching the draft binaries failed or did not run"; exit 1; }
+          else
+            [ "${{ needs.fetch-drafts.result }}" = skipped ] || { echo "::error::no draft binary listed, yet fetch-drafts ran"; exit 1; }
+          fi
+          if [ "${{ needs.plan.outputs.controls }}" = true ]; then
+            [ "${{ needs.controls.result }}" = success ] || { echo "::error::the controls failed or did not run"; exit 1; }
+          else
+            [ "${{ needs.controls.result }}" = skipped ] || { echo "::error::no input of the controls changed, yet they ran"; exit 1; }
+          fi
+          if [ "${{ needs.plan.outputs.units }}" != 0 ]; then
             [ "${{ needs.check.result }}" = success ] || { echo "::error::a check failed or did not run"; exit 1; }
           else
             [ "${{ needs.check.result }}" = skipped ] || { echo "::error::no harness planned, yet check ran"; exit 1; }
           fi
-          echo "harnesses checked: ${{ needs.lint.outputs.units }}"
+          echo "harnesses checked: ${{ needs.plan.outputs.units }}"
+
+  # The status a main that merges through a merge queue requires, of each pull request and each queue group.  A pull
+  # request made green against another branch and then retargeted at main must not carry that green into main, so on
+  # a pull request it also judges the base.
+  main-gate:
+    name: main-gate
+    needs: [required]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: required passed
+        env:
+          REQUIRED: ${{ needs.required.result }}
+        run: '[ "$REQUIRED" = success ] || { echo "::error::required did not pass"; exit 1; }'
+      - name: a pull request's base is main
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+        run: '[ "$BASE" = main ] || { echo "::error::the base is $BASE, not main"; exit 1; }'

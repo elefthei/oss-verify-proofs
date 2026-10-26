@@ -1,0 +1,146 @@
+# fetch-drafts.yml: one leg of the fetch-drafts job of pr.yml and release-check.yml.  That job is a matrix of legs,
+# each a call of this workflow (`uses: ./.github/workflows/fetch-drafts.yml`), which GitHub runs from the same commit
+# as the calling workflow.
+#
+# A token with contents: read cannot see a draft release, so a check job reads a draft binary from the artifact this
+# workflow uploads for it.  It declares no permissions, so it runs with the token the calling job grants: contents:
+# write and nothing else (a called workflow may narrow its caller's grant, never widen it).  It checks out nothing and
+# runs no script from the tree: the pins come from its input, and every value is checked against the shape the facts'
+# schema gives it before it reaches a command or an artifact's name; the token goes to `gh release download` alone.
+# This file itself is code the token runs: for pr.yml, the pull request's own copy.  Only a branch of this repository
+# gets a write token, and its author already has write access; a pull request from a fork gets a read-only token.
+# release-check.yml runs on main, on a schedule and on request, so there it is the checked commit's copy.  Who can read
+# the artifacts, and why that is accepted, is in pr.yml's header.
+name: fetch-drafts
+on:
+  workflow_call:
+    inputs:
+      pins:
+        description: this leg's pins, a JSON list of 1 to 6 {release, file, sha256}
+        type: string
+        required: true
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  fetch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: this job's draft binaries, each by the tag its pin names, checked against its SHA-256
+        id: fetch
+        env:
+          PINS: ${{ inputs.pins }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # at most 6: the cap of 6, explained at the upload steps
+          jq -e 'type == "array" and length >= 1 and length <= 6' <<< "$PINS" > /dev/null || {
+            echo "::error::this leg's pins are not a list of 1 to 6"; exit 1; }
+          jq -r '.[] | [.release, .file, .sha256] | map(strings) |
+                 if length == 3 then @tsv else error("a pin without release, file and sha256 strings") end' \
+            <<< "$PINS" > "$RUNNER_TEMP/pins.tsv"
+          dir="$RUNNER_TEMP/drafts"
+          mkdir -p -- "$dir"
+          : > "$RUNNER_TEMP/pins.sha256"
+          : > "$RUNNER_TEMP/names.txt"
+          while IFS=$'\t' read -r rel file sha; do
+            [[ "$rel" =~ ^v[0-9]{4}\.[0-9]{1,2}\.[0-9]+(-rc\.[0-9]+)?(-src)?$ ]] || { echo "::error::not a release tag: '$rel'"; exit 1; }
+            # no glob character either, so --pattern matches this one file
+            [[ "$file" =~ ^[a-z0-9][a-z0-9_-]*-bin\.tar\.zst$ ]] || { echo "::error::not a binary archive's name: '$file'"; exit 1; }
+            [[ "$sha" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::not a SHA-256: '$sha'"; exit 1; }
+            [ ! -e "$dir/$file" ] || { echo "::error::$file is pinned twice"; exit 1; }
+            gh release download "$rel" --repo "$GITHUB_REPOSITORY" --pattern "$file" --dir "$dir"
+            printf '%s  %s\n' "$sha" "$file" >> "$RUNNER_TEMP/pins.sha256"
+            # Named by run, archive and attempt, from characters upload-artifact accepts. A full re-run uploads its own;
+            # a re-run of failed jobs runs only the legs that failed, and a check job matches any attempt.
+            name="drafts-$GITHUB_RUN_ID-$file-$GITHUB_RUN_ATTEMPT"
+            [[ "$name" =~ ^drafts-[0-9]+-[a-z0-9][a-z0-9_-]*-bin\.tar\.zst-[0-9]+$ ]] || { echo "::error::not an artifact name: '$name'"; exit 1; }
+            printf '%s %s\n' "$file" "$name" >> "$RUNNER_TEMP/names.txt"
+          done < "$RUNNER_TEMP/pins.tsv"
+          # a file that differs from its pin, or is missing, fails the job; so does a file no pin names
+          (cd -- "$dir" && sha256sum --check --strict -- "$RUNNER_TEMP/pins.sha256")
+          n="$(find "$dir" -type f | wc -l)"
+          [ "$n" -eq "$(wc -l < "$RUNNER_TEMP/pins.sha256")" ] || { echo "::error::$n files downloaded for $(wc -l < "$RUNNER_TEMP/pins.sha256") pins"; exit 1; }
+          # the upload steps below read only these outputs, written once every file has passed
+          k=0
+          while read -r file name; do
+            { echo "file$k=$file"; echo "name$k=$name"; } >> "$GITHUB_OUTPUT"
+            k=$((k + 1))
+          done < "$RUNNER_TEMP/names.txt"
+      # One artifact per archive, so that a check job downloads only the archives its projects pin. A step uploads one
+      # artifact, so there is one step per place in the list: the planning job gives a leg at most 6, so fetch-drafts
+      # holds 1,536 archives over 256 jobs. The limit that remains is the planning job's outputs, at most 1 MB per job:
+      # the plan with each group's draft names, and these pins. compression-level 0: a zstd archive gains nothing from
+      # it.
+      # The cap of 6 is written in three places, which change together: the planning action's `256 * 6`
+      # (.github/actions/plan-drafts/action.yml), the fetch step's `length <= 6` above, and these six upload steps.
+      # The step after them fails the leg when fewer archives were uploaded than it pins, so a cap raised without a
+      # step to match fails closed.
+      - id: upload0
+        if: steps.fetch.outputs.name0 != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ steps.fetch.outputs.name0 }}
+          path: ${{ runner.temp }}/drafts/${{ steps.fetch.outputs.file0 }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - id: upload1
+        if: steps.fetch.outputs.name1 != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ steps.fetch.outputs.name1 }}
+          path: ${{ runner.temp }}/drafts/${{ steps.fetch.outputs.file1 }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - id: upload2
+        if: steps.fetch.outputs.name2 != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ steps.fetch.outputs.name2 }}
+          path: ${{ runner.temp }}/drafts/${{ steps.fetch.outputs.file2 }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - id: upload3
+        if: steps.fetch.outputs.name3 != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ steps.fetch.outputs.name3 }}
+          path: ${{ runner.temp }}/drafts/${{ steps.fetch.outputs.file3 }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - id: upload4
+        if: steps.fetch.outputs.name4 != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ steps.fetch.outputs.name4 }}
+          path: ${{ runner.temp }}/drafts/${{ steps.fetch.outputs.file4 }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - id: upload5
+        if: steps.fetch.outputs.name5 != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ steps.fetch.outputs.name5 }}
+          path: ${{ runner.temp }}/drafts/${{ steps.fetch.outputs.file5 }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: every archive of this leg uploaded, one artifact each
+        env:
+          PINS: ${{ inputs.pins }}
+          # the artifact id of each upload step that uploaded one
+          UPLOADED: ${{ toJSON(steps.*.outputs.artifact-id) }}
+        run: |
+          set -euo pipefail
+          pins="$(jq length <<< "$PINS")"
+          uploaded="$(jq length <<< "$UPLOADED")"
+          [ "$uploaded" -eq "$pins" ] || {
+            echo "::error::$pins archives in this leg, $uploaded uploaded: a leg holds at most one archive per upload step"; exit 1; }
+          echo "archives uploaded: $uploaded of $pins"

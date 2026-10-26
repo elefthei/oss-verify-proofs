@@ -1,31 +1,60 @@
-# release-check.yml: every committed proof, checked; the README's badge.
+# release-check.yml: every committed proof and finding, checked; the README's badge.
 #
-#   plan           every harness with a committed proof (proofs/<p>/<h>/<s>/proof.yaml),
-#                  through `oft plan`, as weekly.yml plans its sweep
-#   check          each group of harnesses: fetch, build the images and statements,
-#                  every proof and its assumptions against the allowlist, every
-#                  counterexample (tools/oft/ci/check-units.sh)
-#   release-check  the badge's status: fails if anything failed, or if no proof
+#   plan           every harness with a committed proof (proofs/<p>/<h>/<s>/proof.yaml)
+#                  or finding (findings/<p>/<h>/<slug>/finding.yaml, also on a harness
+#                  that withholds every build), through `oft plan`, as weekly.yml plans its
+#                  sweep; and the planned binaries in a release that a read-only token
+#                  cannot see (a draft), and which group needs each
+#   fetch-drafts   each of those binaries once, checked against its pin, as an artifact
+#                  of its own (skipped when there is none)
+#   check          each group of harnesses: fetch (a draft from its artifact), build the
+#                  images and statements, every proof and its assumptions against the
+#                  allowlist, every counterexample and every finding
+#                  (tools/oft/ci/check-units.sh)
+#   release-check  the badge's status: fails if anything failed, or if nothing
 #                  was checked
 #
 # It runs on every push to main, weekly and on request.  pr.yml checks only what
 # a change touches, so its status on main can be green with no proof checked;
-# this workflow's status says every committed proof checked.  The proof checks
+# this workflow's status says every committed proof and finding checked.  The proof checks
 # run on ubuntu-24.04-16core, a 16-core/64 GB GitHub-hosted larger runner (a proof
 # check peaks at 14.5-19.4 GiB on 16 cores).
 #
+# A token with contents: read cannot see a draft release, and a release's new
+# binaries stay drafts until release.yml publishes them.  So fetch-drafts alone
+# has contents: write; it checks out nothing and runs no script from the tree,
+# only `gh release download` of the pins the plan listed and a SHA-256 check of
+# each.  Its YAML is the checked commit's fetch-drafts.yml: this workflow runs
+# on a push to main, on a schedule and on a request by someone with write
+# access (of main or another branch), never for a pull request.  Every other
+# job has read access only.
+#
 # Caches, which make a run cheaper, never more trusting:
-#   - dune's own content-addressed cache, for the images and statements that
-#     `dune build` makes: a file is reused only when every input, the rules and
-#     the Rocq binary hash the same.  The key names the checker image's digest
-#     and release.yaml; only the release checker image writes it, and only a
-#     push to main or a maintainer's workflow_dispatch saves it, never a pull
-#     request.  The proofs and
-#     their libraries are compiled afresh every run (oft check compiles them with
-#     `rocq compile` in fresh directories), so every proof is checked each time.
+#   - dune's own content-addressed cache, for what `dune build` makes: the
+#     images, the statements and each harness's proof library
+#     (proofs/<p>/<h>/lib/).  dune reuses a file only when its sources, its
+#     dependencies, the rules and the Rocq binary hash the same.  The key names
+#     the checker image's digest and the job's harnesses
+#     (tools/oft/ci/cache-key.sh); only a push to main or a maintainer's
+#     workflow_dispatch saves it, never a pull request, and nothing outside
+#     this repository's own runs writes it.  Each proof itself, and the wrapper
+#     that ties it to its statement and prints its assumptions, is compiled
+#     afresh every run (oft check compiles them with `rocq compile` in fresh
+#     directories).
 #   - the release assets, keyed by their pinned SHA-256; `oft fetch` checks every
 #     archive and file against the facts before using it.
-# weekly.yml reads no cache, so a bad cache is caught within a week.
+# A job that read a draft saves neither cache: a pull request can restore a
+# cache saved on main, and both hold the binaries' bytes, which would then
+# outlive the draft's one-day artifact.  weekly.yml's sweep reads no cache.
+# The artifact widens who can read a draft binary, for one day: a draft release
+# is visible only with write access, an artifact to anyone who can read the
+# repository, which for a public repository is anyone signed in to GitHub.
+# That is accepted: the facts already publish each archive's SHA-256, a project
+# held by its status pins no asset and a findings-<project> release holds only
+# the project a finding holds back (tools/oft/rules.py), the publishing gate
+# outside this repository refuses any asset of a project it holds back, and the
+# files are the ones the release is to publish; if publishing is refused, they
+# were still readable for that day.
 name: release-check
 on:
   push:
@@ -33,12 +62,21 @@ on:
   schedule:
     - cron: "41 4 * * 1"
   workflow_dispatch:
+    inputs:
+      units:
+        description: "PROJECT/HARNESS ... to check instead of every harness with a proof or a finding (not on main: the badge says every one)"
+        default: ""
 permissions:
   contents: read
   packages: read   # to pull the pinned checker and runner images from ghcr.io
 concurrency:
-  group: release-check-${{ github.ref }}
-  cancel-in-progress: true
+  # Each push has a run of its own that nothing cancels, keyed by the branch as well as
+  # the commit: a second push to main never cancels the run of the commit a release
+  # tags.  A schedule or workflow_dispatch run of the same commit waits for that run
+  # (a later one of the same commit replaces it in the queue).  A dispatch for named
+  # units is its own group, so it never replaces or waits for the run behind the badge.
+  group: release-check-${{ format('{0}-{1}-{2}', github.ref, github.sha, inputs.units) }}
+  cancel-in-progress: false
 defaults:
   run:
     shell: bash
@@ -50,8 +88,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
-      plan: ${{ steps.plan.outputs.plan }}
+      plan: ${{ steps.drafts.outputs.plan }}
       units: ${{ steps.plan.outputs.units }}
+      draft_legs: ${{ steps.drafts.outputs.draft_legs }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
@@ -60,24 +99,76 @@ jobs:
       - run: python -m pip install --quiet --require-hashes -r tools/oft/requirements.txt
       - name: plan
         id: plan
+        env:
+          UNITS: ${{ inputs.units }}
         run: |
           set -euo pipefail
-          # each committed proof's directory marks its harness, as a change to it would
-          find proofs -mindepth 4 -maxdepth 4 -name proof.yaml | sort \
-            | sed -E 's|^(proofs/[^/]+/[^/]+)/[^/]+/proof\.yaml$|\1/|' | sort -u > "$RUNNER_TEMP/changed.txt"
-          [ -s "$RUNNER_TEMP/changed.txt" ] || { echo "::error::no committed proof: nothing to check"; exit 1; }
+          # each committed proof's and finding's directory marks its harness, as a change to it would; a tree may
+          # have either without the other
+          : > "$RUNNER_TEMP/changed.txt"
+          if [ -d proofs ]; then
+            find proofs -mindepth 4 -maxdepth 4 -name proof.yaml \
+              | sed -E 's|^(proofs/[^/]+/[^/]+)/[^/]+/proof\.yaml$|\1/|' | sort -u >> "$RUNNER_TEMP/changed.txt"
+          fi
+          if [ -d findings ]; then
+            find findings -mindepth 4 -maxdepth 4 -name finding.yaml \
+              | sed -E 's|^(findings/[^/]+/[^/]+)/[^/]+/finding\.yaml$|\1/|' | sort -u >> "$RUNNER_TEMP/changed.txt"
+          fi
+          if [ -n "${UNITS:-}" ]; then
+            [ "$GITHUB_REF" != refs/heads/main ] || { echo "::error::on main every harness is checked: the badge says so"; exit 1; }
+            read -r -a units <<< "$UNITS"
+            for u in "${units[@]}"; do
+              grep -qxF -e "proofs/$u/" -e "findings/$u/" "$RUNNER_TEMP/changed.txt" \
+                || { echo "::error::$u has no committed proof or finding"; exit 1; }
+            done
+            for u in "${units[@]}"; do printf 'proofs/%s/\nfindings/%s/\n' "$u" "$u"; done \
+              | grep -xF -f - "$RUNNER_TEMP/changed.txt" > "$RUNNER_TEMP/units.txt"
+            mv "$RUNNER_TEMP/units.txt" "$RUNNER_TEMP/changed.txt"
+          fi
+          [ -s "$RUNNER_TEMP/changed.txt" ] || { echo "::error::no committed proof or finding: nothing to check"; exit 1; }
           PYTHONPATH=tools python -m oft plan --changed "$RUNNER_TEMP/changed.txt" --max-jobs 256 > "$RUNNER_TEMP/plan.json"
           n="$(jq '.units | length' "$RUNNER_TEMP/plan.json")"
-          [ "$n" -gt 0 ] || { echo "::error::the committed proofs name no harness that builds: nothing to check"; exit 1; }
-          echo "plan=$(jq -c .jobs "$RUNNER_TEMP/plan.json")" >> "$GITHUB_OUTPUT"
+          [ "$n" -gt 0 ] || { echo "::error::the committed proofs and findings name no harness to check"; exit 1; }
+          # the plan output is written by the next step, with each group's draft binaries in its entry
           echo "units=$n" >> "$GITHUB_OUTPUT"
-          { echo "### harnesses with a committed proof: $n"; jq -r '.units[]' "$RUNNER_TEMP/plan.json"; } >> "$GITHUB_STEP_SUMMARY"
+          { echo "### harnesses with a committed proof or finding: $n"; jq -r '.units[]' "$RUNNER_TEMP/plan.json"; } \
+            >> "$GITHUB_STEP_SUMMARY"
+      - name: for each group of the plan, its binaries in a release this read-only token cannot see (a draft)
+        id: drafts
+        # a local action resolves in the workspace (`./`): the checkout of this workflow's own commit
+        uses: ./.github/actions/plan-drafts
+        with:
+          plan-file: ${{ runner.temp }}/plan.json
+          tools: ${{ github.workspace }}/tools
+          root: ${{ github.workspace }}
+
+  # Each leg a call of fetch-drafts.yml, which GitHub runs from this workflow's own commit; a called workflow runs with
+  # the token the calling job grants, here contents: write and nothing else.
+  fetch-drafts:
+    needs: plan
+    if: needs.plan.outputs.draft_legs != '[]'
+    name: fetch-drafts ${{ matrix.leg.index }}
+    permissions:
+      contents: write   # the only permission with which the workflow's token sees a draft release; nothing is written
+    strategy:
+      matrix:
+        leg: ${{ fromJSON(needs.plan.outputs.draft_legs) }}
+    uses: ./.github/workflows/fetch-drafts.yml
+    with:
+      pins: ${{ toJSON(matrix.leg.pins) }}
 
   check:
-    needs: plan
+    needs: [plan, fetch-drafts]
+    # fetch-drafts is skipped when no planned binary is a draft, and a job whose need was skipped is skipped too unless
+    # its condition says otherwise: run when fetch-drafts passed or had nothing to do, never when it failed or was
+    # cancelled
+    if: >-
+      !cancelled() && needs.plan.result == 'success'
+      && (needs.fetch-drafts.result == 'success' || needs.fetch-drafts.result == 'skipped')
     name: check ${{ matrix.job.index }}
-    runs-on: ubuntu-24.04-16core
-    timeout-minutes: 360
+    # the proof runner and its limit: pr.yml's check job says how to change them
+    runs-on: ${{ vars.PROOF_RUNNER || 'ubuntu-24.04-16core' }}
+    timeout-minutes: ${{ fromJSON(vars.PROOF_TIMEOUT_MINUTES || '360') }}
     strategy:
       fail-fast: false
       max-parallel: 32
@@ -90,7 +181,7 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: "3.12"
-      - name: PyYAML, hash-pinned
+      - name: the tools' dependencies (PyYAML, idna), hash-pinned
         run: |
           set -euo pipefail
           python -m pip install --quiet --require-hashes -r work/tools/oft/requirements.txt
@@ -100,16 +191,27 @@ jobs:
       - name: cache keys
         id: keys
         env:
+          UNITS: ${{ matrix.job.units }}
           PROJECTS: ${{ matrix.job.projects }}
+          FINDINGS: ${{ matrix.job.findings }}
         run: |
           set -euo pipefail
-          checker="$(python -c 'import yaml; print(yaml.safe_load(open("work/release.yaml"))["images"]["checker"])')"
-          echo "checker=${checker##*@sha256:}" >> "$GITHUB_OUTPUT"
+          read -r -a units <<< "$UNITS"
+          bash "$RUNNER_TEMP/tools/oft/ci/cache-key.sh" work/release.yaml "${units[@]}" >> "$GITHUB_OUTPUT"
           read -r -a projects <<< "$PROJECTS"
-          # the assets this job fetches, named by their pinned SHA-256
-          PYTHONPATH="$RUNNER_TEMP/tools" python -m oft --root work fetch --list "${projects[@]}" \
-            | awk '$2 ~ /-bin\.tar\.zst$/ {print $3}' | sort > "$RUNNER_TEMP/asset-shas.txt"
-          [ -s "$RUNNER_TEMP/asset-shas.txt" ] || { echo "::error::no binary asset listed for: $PROJECTS"; exit 1; }
+          read -r -a finding_units <<< "$FINDINGS"
+          read -r -a finding_projects <<< "$(printf '%s\n' "${finding_units[@]%%/*}" | sort -u | tr '\n' ' ')"
+          # the assets this job fetches, named by their pinned SHA-256: the binaries and the unpatched binaries the
+          # findings run on, which check-units.sh keeps in the same directory
+          {
+            if [ "${#projects[@]}" -gt 0 ]; then
+              PYTHONPATH="$RUNNER_TEMP/tools" python -m oft --root work fetch --list "${projects[@]}"
+            fi
+            if [ "${#finding_projects[@]}" -gt 0 ]; then
+              PYTHONPATH="$RUNNER_TEMP/tools" python -m oft --root work fetch --findings --list "${finding_projects[@]}"
+            fi
+          } | awk '$2 ~ /-bin\.tar\.zst$/ {print $3}' | sort > "$RUNNER_TEMP/asset-shas.txt"
+          [ -s "$RUNNER_TEMP/asset-shas.txt" ] || { echo "::error::no binary asset listed for: $PROJECTS $FINDINGS"; exit 1; }
           echo "assets=$(sha256sum < "$RUNNER_TEMP/asset-shas.txt" | cut -c1-64)" >> "$GITHUB_OUTPUT"
       - name: the release assets, by their pinned SHA-256
         id: assets
@@ -117,14 +219,21 @@ jobs:
         with:
           path: ${{ runner.temp }}/assets
           key: release-check-assets-${{ steps.keys.outputs.assets }}
-      - name: dune's cache, from earlier runs on main
+      # Only the archives this group's projects pin in a draft, from this group's plan entry, each from its own
+      # artifact, laid over what the cache restored (.github/actions/place-drafts, from work: this workflow's own
+      # commit).
+      - name: the draft binaries this group needs, which fetch-drafts checked and this job's read-only token cannot download
+        if: join(matrix.job.drafts, ',') != ''
+        uses: ./work/.github/actions/place-drafts
+        with:
+          drafts: ${{ toJSON(matrix.job.drafts) }}
+          assets: ${{ runner.temp }}/assets
+      - name: dune's cache, from earlier runs
         uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: ${{ runner.temp }}/dune-cache
-          key: release-check-dune-${{ steps.keys.outputs.checker }}-${{ hashFiles('work/release.yaml') }}-${{ matrix.job.index }}-${{ github.sha }}
-          restore-keys: |
-            release-check-dune-${{ steps.keys.outputs.checker }}-${{ hashFiles('work/release.yaml') }}-${{ matrix.job.index }}-
-            release-check-dune-${{ steps.keys.outputs.checker }}-${{ hashFiles('work/release.yaml') }}-
+          key: ${{ steps.keys.outputs.key }}
+          restore-keys: ${{ steps.keys.outputs.restore }}
       - name: sign in to ghcr.io, where the pinned images are (needed while their packages are private)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -133,39 +242,53 @@ jobs:
         env:
           WORK: ${{ github.workspace }}/work
           TOOLS: ${{ runner.temp }}/tools
-          UNITS: ${{ matrix.job.units }}
+          UNITS: ${{ matrix.job.check_units }}
           PROJECTS: ${{ matrix.job.projects }}
           CX_UNITS: ${{ matrix.job.counterexamples }}
+          FINDINGS: ${{ matrix.job.findings }}
           ASSETS: ${{ runner.temp }}/assets
           PYDEPS: ${{ runner.temp }}/pydeps
           CACHE: ${{ runner.temp }}/dune-cache
           GH_TOKEN: ${{ github.token }}
         run: bash "$RUNNER_TEMP/tools/oft/ci/check-units.sh"
       # Saved only by a push to main or a maintainer's workflow_dispatch: this workflow has no pull_request trigger,
-      # and a dispatch on another branch saves into that branch's scope, which main cannot restore.
+      # and a dispatch on another branch saves into that branch's scope, which main cannot restore. Never by a job
+      # that read a draft.
       - name: keep dune's cache
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+          && join(matrix.job.drafts, ',') == ''
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: ${{ runner.temp }}/dune-cache
-          key: release-check-dune-${{ steps.keys.outputs.checker }}-${{ hashFiles('work/release.yaml') }}-${{ matrix.job.index }}-${{ github.sha }}
+          key: ${{ steps.keys.outputs.key }}
       - name: keep the release assets
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && steps.assets.outputs.cache-hit != 'true'
+        if: >-
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && steps.assets.outputs.cache-hit != 'true'
+          && join(matrix.job.drafts, ',') == ''
         uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
         with:
           path: ${{ runner.temp }}/assets
           key: release-check-assets-${{ steps.keys.outputs.assets }}
 
   release-check:
-    needs: [plan, check]
+    needs: [plan, fetch-drafts, check]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: every check green, and at least one proof checked
+      - name: every check green, and at least one harness checked
+        env:
+          UNITS: ${{ needs.plan.outputs.units }}
+          DRAFTS_LISTED: ${{ needs.plan.outputs.draft_legs != '[]' }}
         run: |
           set -euo pipefail
           [ "${{ needs.plan.result }}" = success ] || { echo "::error::the plan failed: nothing was checked"; exit 1; }
-          [ "${{ needs.plan.outputs.units }}" -gt 0 ] || { echo "::error::no harness with a committed proof was checked"; exit 1; }
+          if [ "$DRAFTS_LISTED" = true ]; then
+            [ "${{ needs.fetch-drafts.result }}" = success ] || { echo "::error::fetching the draft binaries failed or did not run"; exit 1; }
+          else
+            [ "${{ needs.fetch-drafts.result }}" = skipped ] || { echo "::error::no draft binary listed, yet fetch-drafts ran"; exit 1; }
+          fi
+          [ "${UNITS:-0}" -gt 0 ] || { echo "::error::no harness with a committed proof or finding was checked"; exit 1; }
           [ "${{ needs.check.result }}" = success ] || { echo "::error::a check failed or did not run"; exit 1; }
-          echo "harnesses checked: ${{ needs.plan.outputs.units }}"
+          echo "harnesses checked: $UNITS"

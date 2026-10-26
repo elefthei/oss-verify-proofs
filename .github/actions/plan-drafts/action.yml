@@ -1,0 +1,97 @@
+# plan-drafts: the draft binaries of a plan, for pr.yml's lint job and release-check.yml's plan job: which planned
+# binary archives are in a release that the job's read-only token cannot see (a draft), which groups need each, and
+# the legs of fetch-drafts (.github/workflows/fetch-drafts.yml) that download them.
+name: plan-drafts
+description: >-
+  Each group of an oft plan with `drafts`, the draft archives its projects pin, and the fetch-drafts legs, each draft
+  archive in exactly one leg.
+inputs:
+  plan-file:
+    description: oft plan's JSON; missing or empty when there are no facts yet
+    required: true
+  tools:
+    description: the tools directory whose `oft fetch --list` lists the pins (its PYTHONPATH)
+    required: true
+  root:
+    description: the tree whose pins the check jobs read
+    required: true
+outputs:
+  plan:
+    description: the plan's groups, each with `drafts`, the names of the draft archives its projects pin
+    value: ${{ steps.drafts.outputs.plan }}
+  draft_legs:
+    description: the fetch-drafts legs, [{index, pins [{release, file, sha256}]}]; [] when no planned archive is a draft
+    value: ${{ steps.drafts.outputs.draft_legs }}
+runs:
+  using: composite
+  steps:
+    - name: for each group of the plan, its binaries in a release this read-only token cannot see (a draft)
+      id: drafts
+      shell: bash
+      env:
+        PLAN: ${{ inputs.plan-file }}
+        TOOLS: ${{ inputs.tools }}
+        ROOT: ${{ inputs.root }}
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+        if [ ! -s "$PLAN" ]; then
+          { echo 'plan=[]'; echo 'draft_legs=[]'; } >> "$GITHUB_OUTPUT"; echo "no plan: no binary to fetch"; exit 0
+        fi
+        if [ "$(jq '.units | length' "$PLAN")" -eq 0 ]; then
+          { echo "plan=$(jq -c '[.jobs[] + {drafts: []}]' "$PLAN")"; echo 'draft_legs=[]'; } >> "$GITHUB_OUTPUT"
+          echo "no harness planned: no binary to fetch"; exit 0
+        fi
+        jq -r '[.jobs[].projects | split(" ")[] | select(length > 0)] | unique | .[]' "$PLAN" > "$RUNNER_TEMP/projects.txt"
+        mapfile -t projects < "$RUNNER_TEMP/projects.txt"
+        # a harness that withholds every build has a finding to re-run and no binary: no group needs an archive
+        if [ "${#projects[@]}" -eq 0 ]; then
+          { echo "plan=$(jq -c '[.jobs[] + {drafts: []}]' "$PLAN")"; echo 'draft_legs=[]'; } >> "$GITHUB_OUTPUT"
+          echo "no planned harness has published builds: no binary to fetch"; exit 0
+        fi
+        # Only the planned projects' binary archives are listed, never a finding's unpatched archive
+        # (<project>-unpatched-bin.tar.zst, `oft fetch --findings`): that archive must be on a published release,
+        # since no leg fetches it and the check job's read-only token cannot download it from a draft.
+        PYTHONPATH="$TOOLS" python -m oft --root "$ROOT" fetch --list "${projects[@]}" > "$RUNNER_TEMP/pins.txt" || {
+          cat "$RUNNER_TEMP/pins.txt"; echo "::error::oft fetch --list failed for the planned projects"; exit 1; }
+        # The job's token has contents: read, as the check jobs' has, so it lists the releases of this repository they
+        # could see; a pin in any other release (a draft) goes to fetch-drafts.  check-units.sh downloads the rest from
+        # fetch.RELEASES's repository (public), so a pin in a release published here but not there fails closed there
+        # with `release not found` (a pin must name a release the public can fetch).
+        gh api --paginate "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq '.[].tag_name' > "$RUNNER_TEMP/visible.txt"
+        # plan: each group of the plan, with `drafts`, the draft archives its projects pin, so that a check job gets its
+        # own list in its matrix entry.  A project's binaries are one archive, <project>-bin.tar.zst, a name
+        # tools/oft/rules.py enforces; it is how an archive is matched to its groups, and one named otherwise fails
+        # here too, not in a check job.
+        # legs: each draft archive in exactly one fetch-drafts job, one artifact each.  oft plan spreads a project's
+        # harnesses over several groups, so one artifact per group would hold copies: some 975 GB of them when every
+        # binary of release 2026.10.0 (13 GB) is a draft.  A matrix runs at most 256 jobs, and a job uploads at most 6
+        # artifacts (the cap of 6, in three places that change together: .github/workflows/fetch-drafts.yml's upload
+        # steps say which), so a leg holds ceil(n/256) archives, at most 6.
+        jq -n -c --slurpfile plan "$PLAN" --rawfile pins "$RUNNER_TEMP/pins.txt" \
+          --rawfile visible "$RUNNER_TEMP/visible.txt" '
+          def lines: split("\n") | map(select(length > 0));
+          def words: split(" ") | map(select(length > 0));
+          def project: .file | rtrimstr("-bin.tar.zst");
+          ($visible | lines) as $seen
+          | ([$plan[0].jobs[].projects | words[]] | unique) as $planned
+          | ([$pins | lines[] | words | select(.[1] | endswith("-bin.tar.zst")) | select(.[0] | IN($seen[]) | not)
+              | {release: .[0], file: .[1], sha256: .[2]}] | unique) as $drafts
+          | ([$drafts | length, 256] | min) as $n
+          | if ($drafts | map(.file) | unique | length) != ($drafts | length)
+            then error("a draft archive with two pins: \($drafts | map(.file) | join(" "))")
+            elif any($drafts[]; project | IN($planned[]) | not)
+            then error("a draft archive not named after a planned project: \($drafts | map(.file) | join(" "))")
+            elif ($drafts | length) > 256 * 6
+            then error("\($drafts | length) draft archives, more than fetch-drafts holds (256 jobs of 6)")
+            else {plan: [$plan[0].jobs[] | (.projects | words) as $ps
+                         | . + {drafts: [$drafts[] | select(project | IN($ps[])) | .file]}],
+                  legs: [range($n) as $i | {index: $i,
+                                            pins: [$drafts | to_entries[] | select(.key % $n == $i) | .value]}]}
+            end' > "$RUNNER_TEMP/drafts.json"
+        {
+          echo "plan=$(jq -c .plan "$RUNNER_TEMP/drafts.json")"
+          echo "draft_legs=$(jq -c .legs "$RUNNER_TEMP/drafts.json")"
+        } >> "$GITHUB_OUTPUT"
+        echo "draft archives: $(jq '[.legs[].pins[]] | length' "$RUNNER_TEMP/drafts.json"), in $(jq '.legs | length' "$RUNNER_TEMP/drafts.json") fetch-drafts jobs, for $(jq '[.plan[] | select(.drafts | length > 0)] | length' "$RUNNER_TEMP/drafts.json") of $(jq '.jobs | length' "$PLAN") groups"
+        jq -r '.legs[] | .index as $i | .pins[] | "fetch-drafts \($i): \(.release) \(.file) \(.sha256)"' "$RUNNER_TEMP/drafts.json"

@@ -62,6 +62,11 @@ assets:
     file: libzmq-bin.tar.zst
     bytes: 365103
     sha256: a68abd4b474c175a5c294a82a9f4596cc06a93423205e4b60a9635f43d6087f7
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libzmq-src.tar.zst

@@ -34,6 +34,11 @@ assets:
     file: xpdf-bin.tar.zst
     bytes: 459432
     sha256: 23bb823b04b7f48b60d43a9b6cb89bffb2f0ebf118e2783d08124c4354355e41
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: xpdf-src.tar.zst

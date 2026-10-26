@@ -465,22 +465,6 @@ class Drafts(unittest.TestCase):
             r.commit("the record goes")
             self.assertEqual(r.ledger(), deleted(KEY, r.base))
 
-    def test_an_input_of_a_full_payload_and_its_header_is_evidence(self):
-        """make_eval_fuzzer's get_next_mword finding: a 64 KiB payload after the six-byte header, 65,542 bytes.  Such a
-        record is anchored, so its deletion is refused, and so is one of exactly the 1 MiB finding input cap; one byte
-        over that cap it is a draft, which may go.  input.bin and control.bin alike."""
-        for name in ledger.FIXED_FILES:
-            for size, anchored in (((64 << 10) + 6, True), (1 << 20, True), ((1 << 20) + 1, False)):
-                with self.subTest(name=name, size=size), repo(findings=False) as r:
-                    r.add_findings()
-                    rel = DIR + "/" + name
-                    head = r.read(rel)
-                    r.write(rel, head + b"x" * (size - len(head)))
-                    added = r.commit("a record with a long " + name)
-                    r.remove(DIR)
-                    r.commit("the record goes")
-                    self.assertEqual(r.ledger(), deleted(KEY, added) if anchored else [])
-
 
 class Evidence(unittest.TestCase):
     def test_what_a_finding_s_runs_are_of_never_changes_and_a_restore_clears_it(self):

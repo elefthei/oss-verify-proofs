@@ -49,6 +49,11 @@ assets:
     file: openssh-bin.tar.zst
     bytes: 13011786
     sha256: 936198ec1d5a8e05e64c7deabbaffb217613fa0e7c439103ad8817d9f01501db
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: openssh-src.tar.zst

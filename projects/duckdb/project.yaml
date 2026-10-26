@@ -32,6 +32,11 @@ assets:
     file: duckdb-bin.tar.zst
     bytes: 154656850
     sha256: 3c72433c7422d81e46e37ef38fa7c8ae8c4519fecd9a6b4c32fcdb06b6383da4
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: duckdb-src.tar.zst

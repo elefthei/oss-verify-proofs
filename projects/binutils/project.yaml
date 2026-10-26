@@ -97,6 +97,11 @@ assets:
     file: binutils-bin.tar.zst
     bytes: 37290913
     sha256: ef8234bc64f63a312229716ed2d6c992215e2615bfe2f0fef75ca9884af0815f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: binutils-src.tar.zst

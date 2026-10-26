@@ -28,6 +28,11 @@ assets:
     file: piex-bin.tar.zst
     bytes: 595826
     sha256: cace6654f441e2e7cef44c809a5f6d21e4bb193316139e9a6be2bb5b105991a5
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: piex-src.tar.zst

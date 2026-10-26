@@ -38,6 +38,11 @@ assets:
     file: liboqs-bin.tar.zst
     bytes: 7420704
     sha256: a7ae3df529c0d48a58402d18c9be6cb92bcc0793d07d155b7b12b69650350f72
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: liboqs-src.tar.zst

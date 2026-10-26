@@ -29,6 +29,11 @@ assets:
     file: libsrtp-bin.tar.zst
     bytes: 560767
     sha256: 8f396ac8e60cbca56695dc8697580645d62b3796e43eb998d8d5a635b913d30d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libsrtp-src.tar.zst

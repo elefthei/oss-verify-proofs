@@ -29,6 +29,8 @@ Require OssFuzzTheorems.libpcap.fuzz_pcap.images.AsanUbsan.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top Require Final_ubsan.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top Require Final_asan_top.
 From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top Require Final_both_top.
+From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top Require Halts_plain.
+From OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top Require Halts_ubsan.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 
@@ -143,4 +145,24 @@ Theorem strong_universal_error_free_fuzz_pcap_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.libpcap.fuzz_pcap.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.libpcap.fuzz_pcap.images.AsanUbsan.M.init_pc OssFuzzTheorems.libpcap.fuzz_pcap.images.AsanUbsan.M.phdrs).
 Proof.
   exact OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top.Final_both_top.fuzz_pcap_both_main.
+Qed.
+
+Theorem halts_allowed_libpcap_fuzz_pcap_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    LibpcapFuzzPcapHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.libpcap.fuzz_pcap.images.Plain.M.loaded_segments OssFuzzTheorems.libpcap.fuzz_pcap.images.Plain.M.init_pc OssFuzzTheorems.libpcap.fuzz_pcap.images.Plain.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top.Halts_plain.fuzz_pcap_halts_plain.
+Qed.
+
+Theorem halts_allowed_libpcap_fuzz_pcap_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    LibpcapFuzzPcapHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.libpcap.fuzz_pcap.images.Ubsan.M.loaded_segments OssFuzzTheorems.libpcap.fuzz_pcap.images.Ubsan.M.init_pc OssFuzzTheorems.libpcap.fuzz_pcap.images.Ubsan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.libpcap.fuzz_pcap.lib.E2.Top.Halts_ubsan.fuzz_pcap_halts_ubsan.
 Qed.

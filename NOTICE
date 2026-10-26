@@ -13,9 +13,9 @@ of each such proof names these three files.
 Files under projects/*/*/source/ are copies of fuzz targets exactly as they were
 built. Each copy keeps its upstream licence, which its harness.yaml names, or
 gives as NOASSERTION where it is not recorded yet. Where a harness has no
-source/ directory, the files it was built from are in the release's recipe
-archive (the file that release.yaml names under recipe) or in the project's
-source archive.
+source/ directory, the files it was built from are in the project's recipe
+archive (one of those that release.yaml lists under recipes) or in the
+project's source archive.
 
 The source archives attached to a release (<project>-src.tar.zst,
 toolchain-src.tar.zst, sysroot-src.tar.zst) hold upstream source trees, each

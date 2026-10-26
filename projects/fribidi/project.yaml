@@ -29,6 +29,11 @@ assets:
     file: fribidi-bin.tar.zst
     bytes: 312028
     sha256: d181393013576f64886fe4e36ce58724273a9624f9416485145b3961fde5fec4
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: fribidi-src.tar.zst

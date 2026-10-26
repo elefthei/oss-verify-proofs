@@ -25,6 +25,11 @@ assets:
     file: libtpms-bin.tar.zst
     bytes: 2666208
     sha256: ccc499734320d9c5baf812625d6812ef579dc54f1c0a0b8e8bb4ebab41de32c3
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libtpms-src.tar.zst

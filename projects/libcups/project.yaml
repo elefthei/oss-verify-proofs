@@ -35,6 +35,11 @@ assets:
     file: libcups-bin.tar.zst
     bytes: 299364
     sha256: 91980a1e9a35f4b6218c17931ae8ecea6b29603c2c688669614c9a990d03aa2e
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libcups-src.tar.zst

@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: yajl-ruby/json_fuzzer/plain_halts
+fingerprint: 52fadab1d0f816884df55eac156bc5a46dc3653ad9d1546fa05a30ece7419723

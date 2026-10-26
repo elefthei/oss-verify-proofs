@@ -3,7 +3,7 @@
 
 OSS-Fuzz: [projects/zstd](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/zstd)
 
-**Status: available.** 14 of OSS-Fuzz's 21 fuzz targets have statements. 56 binaries, 45 MB. 184 statements: 6 proved, 0 known false, 0 suspected false, 0 blocked by the model, 178 open.
+**Status: available.** 14 of OSS-Fuzz's 21 fuzz targets have statements. 56 binaries, 45 MB. 184 statements: 13 proved, 0 known false, 0 suspected false, 0 blocked by the model, 171 open.
 
 Built from zstd (commit `82d322c4`).
 
@@ -16,14 +16,14 @@ Built from zstd (commit `82d322c4`).
 | [decompress_dstSize_tooSmall](decompress_dstSize_tooSmall/) | Checks 2 properties (listed below); the first, an API contract: Compress the input at level 1, then decompress into a buffer strictly smaller than the input: must fail, and with exactly ZSTD_error_dstSize_tooSmall (empty input: must return 0). | 2 checks (api-contract; 1 confirmed in the binary) | 13 |
 | [dictionary_decompress](dictionary_decompress/) | Train a dictionary from the input (FUZZ_train), load it by DDict/loadDictionary/refPrefix, then decompress the input with it; the decompression result is ignored. | 1 check (api-contract; 1 weak; 0 confirmed in the binary) | 13 |
 | [dictionary_loader](dictionary_loader/) | Checks 2 properties (listed below); the first, a round trip: The input is both the dictionary (random load method, content type auto/raw/full, loadDictionary vs refPrefix) and the data: if ZSTD_compress2 succeeds, decompression with the same dictionary must succeed, regenerate the input size and match byte for byte. | 2 checks (api-contract, roundtrip; all confirmed in the binary) | 13 |
-| [fse_read_ncount](fse_read_ncount/) | Checks 2 properties (listed below); the first, a round trip: Build a random valid FSE normalized count (sum = 1<<tableLog), FSE_writeNCount it, append random trailing bytes, FSE_readNCount: must succeed, consume exactly the written size, and return the same maxSymbolValue, tableLog and every count. | 2 checks (api-contract, roundtrip; all confirmed in the binary) | 13, 2 proved |
-| [huf_decompress](huf_decompress/) | HUF_readDTableX1/X2 of the input (errors skip), then HUF_decompress1X/4X_usingDTable with random flags and buffer size; result ignored. | none | 13, 1 proved |
+| [fse_read_ncount](fse_read_ncount/) | Checks 2 properties (listed below); the first, a round trip: Build a random valid FSE normalized count (sum = 1<<tableLog), FSE_writeNCount it, append random trailing bytes, FSE_readNCount: must succeed, consume exactly the written size, and return the same maxSymbolValue, tableLog and every count. | 2 checks (api-contract, roundtrip; all confirmed in the binary) | 13, 5 proved |
+| [huf_decompress](huf_decompress/) | HUF_readDTableX1/X2 of the input (errors skip), then HUF_decompress1X/4X_usingDTable with random flags and buffer size; result ignored. | none | 13, 3 proved |
 | [huf_round_trip](huf_round_trip/) | Checks 2 properties (listed below); the first, a round trip: Histogram, build and write a Huffman CTable, read it back as a DTable (X1, or X2 falling back to X1), HUF_compress1X/4X then decompress: if compression produced output, decompression must succeed, regenerate the size and match. RLE and incompressible inputs (cSize == 0, or table write failure) are skipped. | 2 checks (api-contract, roundtrip; all confirmed in the binary) | 13 |
 | [sequence_compression_api](sequence_compression_api/) | Checks 2 properties (listed below); the first, a round trip: Random valid sequence list (offsets within the window, optional 1 GiB raw dictionary, explicit or no block delimiters) -> the harness's own decodeSequences builds the source -> ZSTD_compressSequences with validateSequences=1 -> ZSTD_decompressDCtx: must succeed, regenerate the size and match byte for byte. | 2 checks (api-contract, roundtrip; 1 confirmed in the binary) | 13 |
 | [simple_compress](simple_compress/) | Checks one property, an API contract: ZSTD_compressCCtx into a random-size buffer in [0, compressBound]: any failure must be exactly ZSTD_error_dstSize_tooSmall. | 1 check (api-contract; all confirmed in the binary) | 13 |
 | [simple_decompress](simple_decompress/) | Checks one property, an API contract: If one-shot decompression succeeds, ZSTD_findDecompressedSize must not be an error and must be unknown or equal the decompressed size (frame-header content size vs actual). | 1 check (api-contract; 0 confirmed in the binary) | 13, 1 proved |
 | [stream_decompress](stream_decompress/) | Streaming decompression with fuzzer-sized input/output chunks (optionally stableOutBuffer); errors break out; nothing compared. The FUZZ_ASSERTs only check the harness's own buffer arithmetic. | none | 13 |
-| [zstd_frame_info](zstd_frame_info/) | Calls ten frame-inspection helpers (getFrameContentSize, findFrameCompressedSize, decompressBound, getFrameHeader, ...) on the input; results discarded. | none | 15, 2 proved |
+| [zstd_frame_info](zstd_frame_info/) | Calls ten frame-inspection helpers (getFrameContentSize, findFrameCompressedSize, decompressBound, getFrameHeader, ...) on the input; results discarded. | none | 15, 4 proved |
 
 Not included: **api-driver** (held from this release); **dictionary_round_trip** (not built yet); **dictionary_stream_round_trip** (not built yet); **generate_sequences** (not built yet); **raw_dictionary_round_trip** (not built yet); **seekable_roundtrip** (not built yet); **simple_round_trip** (not built yet); **stream_round_trip** (not built yet).
 
@@ -62,11 +62,18 @@ By hand: download `zstd-bin.tar.zst` from release [v2026.10.0](https://github.co
 | statement | result |
 |---|---|
 | [zstd/fse_read_ncount/asan_agrees](../../proofs/zstd/fse_read_ncount/asan_agrees) | proved |
+| [zstd/fse_read_ncount/asan_halts](../../proofs/zstd/fse_read_ncount/asan_halts) | proved |
 | [zstd/fse_read_ncount/asan_ubsan_agrees](../../proofs/zstd/fse_read_ncount/asan_ubsan_agrees) | proved |
+| [zstd/fse_read_ncount/asan_ubsan_halts](../../proofs/zstd/fse_read_ncount/asan_ubsan_halts) | proved |
+| [zstd/fse_read_ncount/plain_halts](../../proofs/zstd/fse_read_ncount/plain_halts) | proved |
 | [zstd/huf_decompress/asan_agrees](../../proofs/zstd/huf_decompress/asan_agrees) | proved |
+| [zstd/huf_decompress/asan_halts](../../proofs/zstd/huf_decompress/asan_halts) | proved |
+| [zstd/huf_decompress/plain_halts](../../proofs/zstd/huf_decompress/plain_halts) | proved |
 | [zstd/simple_decompress/asan_ubsan_agrees](../../proofs/zstd/simple_decompress/asan_ubsan_agrees) | proved |
 | [zstd/zstd_frame_info/asan_agrees](../../proofs/zstd/zstd_frame_info/asan_agrees) | proved |
+| [zstd/zstd_frame_info/asan_halts](../../proofs/zstd/zstd_frame_info/asan_halts) | proved |
 | [zstd/zstd_frame_info/asan_ubsan_agrees](../../proofs/zstd/zstd_frame_info/asan_ubsan_agrees) | proved |
+| [zstd/zstd_frame_info/asan_ubsan_halts](../../proofs/zstd/zstd_frame_info/asan_ubsan_halts) | proved |
 
 ## Licence
-The licence of zstd is not recorded here yet. Each binary is a combined work of zstd, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `zstd-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `zstd-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+The licence of zstd is not recorded here yet. Each binary is a combined work of zstd, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `zstd-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `zstd-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

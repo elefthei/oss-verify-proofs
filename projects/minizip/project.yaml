@@ -29,6 +29,11 @@ assets:
     file: minizip-bin.tar.zst
     bytes: 3535163
     sha256: 15bd85a62e298c286b65fc2ee7b94fab30cda687c6b1a1e2a0d0456f577a81b2
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: minizip-src.tar.zst

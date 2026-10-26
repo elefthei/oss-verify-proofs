@@ -149,6 +149,11 @@ assets:
     file: curl-bin.tar.zst
     bytes: 478778
     sha256: 83ce2641b780b2eae9b0f022d94f0bf291bae07583b8aabfd16ff32e499bce1a
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: curl-src.tar.zst

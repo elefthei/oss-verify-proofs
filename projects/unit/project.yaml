@@ -42,6 +42,11 @@ assets:
     file: unit-bin.tar.zst
     bytes: 341622
     sha256: 12091dbccf888f849db10eb9012f2d96e920fe85f41cb9d20a71fd86a6bbaf45
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: unit-src.tar.zst

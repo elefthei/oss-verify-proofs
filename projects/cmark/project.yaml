@@ -28,6 +28,11 @@ assets:
     file: cmark-bin.tar.zst
     bytes: 552892
     sha256: 5ef8e5cb1ac257a52ca1a5358fc24bc15bbcce8c4174dc0d5d41294c51879c5f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cmark-src.tar.zst

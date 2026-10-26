@@ -274,11 +274,14 @@ End SpuriousCfgM.
 
 Require OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PemTop.
 Require OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PunyFinal.
-
+Require OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PemTopHalts.
 
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
 
 
 
@@ -304,6 +307,11 @@ Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 
 
+Module OpensslPemHaltsPlainExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslPemHaltsPlainExits.
 
 
 
@@ -317,19 +325,11 @@ Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+Module OpensslPemHaltsBothExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslPemHaltsBothExits.
 
 
 
@@ -1130,12 +1130,30 @@ Qed.
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+Theorem halts_allowed_openssl_pem_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslPemHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.pem.images.Plain.M.loaded_segments OssFuzzTheorems.openssl.pem.images.Plain.M.init_pc OssFuzzTheorems.openssl.pem.images.Plain.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PemTopHalts.halts_plain OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PunyFinal.p_realizes).
+Qed.
 
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+Theorem halts_allowed_openssl_pem_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslPemHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.pem.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.openssl.pem.images.AsanUbsan.M.init_pc OssFuzzTheorems.openssl.pem.images.AsanUbsan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PemTopHalts.halts_both OssFuzzTheorems.Proofs.openssl.pem.lib.Top.PunyFinal.b_realizes).
+Qed.
 
 (* [comment removed for export] *)
 

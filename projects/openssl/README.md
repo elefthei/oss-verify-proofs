@@ -3,7 +3,7 @@
 
 [openssl.org](https://www.openssl.org) · OSS-Fuzz: [projects/openssl](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/openssl)
 
-**Status: available.** 34 of OSS-Fuzz's 186 fuzz targets have statements. 136 binaries, 739 MB. 442 statements: 12 proved, 0 known false, 0 suspected false, 21 blocked by the model, 409 open.
+**Status: available.** 34 of OSS-Fuzz's 186 fuzz targets have statements. 136 binaries, 739 MB. 442 statements: 29 proved, 0 known false, 0 suspected false, 21 blocked by the model, 392 open.
 
 Built from openssl (commit `47aae188`).
 
@@ -13,26 +13,26 @@ Built from openssl (commit `47aae188`).
 | [acert](acert/) | d2i_X509_ACERT, X509_ACERT_print to a null BIO, i2d_X509_ACERT; the re-encoding is freed without comparison. | none | 13 |
 | [asn1](asn1/) | For 144 ASN.1 item types (111 unconditional, 33 under OPENSSL_NO_CMS/OCSP/RFC3779/DH/EC/DEPRECATED_3_0 guards that the default Configure leaves enabled) plus TS/ESS/DH/DSA/RSA/EC/EVP_PKEY/SSL_SESSION d2i functions: d2i, print to a null BIO, i2d; outputs discarded (a d2i->i2d shape with no comparison). | none | 13 |
 | [asn1parse](asn1parse/) | ASN1_parse_dump() of the input to a null BIO; result cast to void. | none | 13 |
-| [bignum](bignum/) | Checks one property, a differential check: BN_mod_exp (optimised) vs BN_mod_exp_simple (reference) on the same a, b, m decoded from the input; a mismatch only prints the five numbers to stdout and the function still returns 0 (the OPENSSL_assert(success) was removed by c263ea553c, 2026-07-15). | 1 check (differential; 0 confirmed in the binary) | 13, 2 proved |
-| [bndiv](bndiv/) | No summary of this harness is recorded yet; its checks, if any, are listed below. | none | 13, 2 proved |
+| [bignum](bignum/) | Checks one property, a differential check: BN_mod_exp (optimised) vs BN_mod_exp_simple (reference) on the same a, b, m decoded from the input; a mismatch only prints the five numbers to stdout and the function still returns 0 (the OPENSSL_assert(success) was removed by c263ea553c, 2026-07-15). | 1 check (differential; 0 confirmed in the binary) | 13, 5 proved |
+| [bndiv](bndiv/) | No summary of this harness is recorded yet; its checks, if any, are listed below. | none | 13, 5 proved |
 | [client](client/) | TLS client handshake over a memory BIO fed the input, then SSL_read until error; nothing compared. | none | 13 |
 | [cmp](cmp/) | d2i_OSSL_CMP_MSG_bio, i2d + ASN1_item_print to a null BIO, then client-side ossl_cmp_msg_check_update and a CMP server processing the message with stub callbacks; results discarded. | none | 13 |
 | [cms](cms/) | d2i_CMS_bio then i2d_CMS_bio to a null BIO; re-encoding not compared. | none | 13 |
 | [conf](conf/) | NCONF_load_bio() on the input; result ignored. | none | 13 |
 | [crl](crl/) | d2i_X509_CRL, X509_CRL_print to a null BIO, i2d_X509_CRL; not compared. | none | 13 |
-| [ct](ct/) | d2i_SCT_LIST, SCT_LIST_print, i2d_SCT_LIST; re-encoding not compared. | none | 13, 1 proved |
+| [ct](ct/) | d2i_SCT_LIST, SCT_LIST_print, i2d_SCT_LIST; re-encoding not compared. | none | 13, 2 proved |
 | [decoder](decoder/) | OSSL_DECODER_from_data into an EVP_PKEY, print public/private/params, EVP_PKEY_dup + EVP_PKEY_eq(pkey, dup) with the result IGNORED, then param/public/private/pairwise checks with results ignored. | none | 13 |
 | [dtlsclient](dtlsclient/) | DTLS client handshake over memory BIOs, SSL_read loop; nothing compared. | none | 13 |
 | [dtlsserver](dtlsserver/) | DTLS server with fixed RSA/ECDSA/DSA keys and certs, handshake + SSL_read loop over the input; nothing compared. | none | 13 |
-| [echconfiglist_parser](echconfiglist_parser/) | OSSL_ECHSTORE_read_echconfiglist on the raw input and again on a copy whose length/version header is patched to pass the first checks; results ignored. | none | 13, 2 proved |
-| [hashtable](hashtable/) | Checks 3 properties (listed below); the first, a reference oracle: OP_FOREACH: ossl_ht_foreach_until finds the key's value iff the prediction table marks it allocated; OP_FILTER: ossl_ht_filter returns exactly 0 or 1 matching value as predicted. Only an empty table in a single-input run. | 1 check (reference-oracle; all confirmed in the binary) | 13, 1 proved |
+| [echconfiglist_parser](echconfiglist_parser/) | OSSL_ECHSTORE_read_echconfiglist on the raw input and again on a copy whose length/version header is patched to pass the first checks; results ignored. | none | 13, 5 proved |
+| [hashtable](hashtable/) | Checks 3 properties (listed below); the first, a reference oracle: OP_FOREACH: ossl_ht_foreach_until finds the key's value iff the prediction table marks it allocated; OP_FILTER: ossl_ht_filter returns exactly 0 or 1 matching value as predicted. Only an empty table in a single-input run. | 1 check (reference-oracle; all confirmed in the binary) | 13, 2 proved |
 | [ml-dsa](ml-dsa/) | Raw-key import from input bytes, keygen, todata/fromdata export-import (result unchecked), EVP_PKEY_eq(alice, alice)/(alice, bob) with results ignored. | none | 13, 7 blocked by the model |
 | [ml-kem](ml-kem/) | Key exchange op derives both ways but explicitly does not compare ("TODO add check of shared secrets"); export/import and EVP_PKEY_eq results ignored. | 1 check (roundtrip; 0 confirmed in the binary) | 13, 7 blocked by the model |
-| [pem](pem/) | PEM_read_bio_ex with flags from byte 0; on success writes the parts back into a BIO to touch the allocations; nothing compared. | none | 13, 1 proved |
+| [pem](pem/) | PEM_read_bio_ex with flags from byte 0; on success writes the parts back into a BIO to touch the allocations; nothing compared. | none | 13, 3 proved |
 | [pkcs12](pkcs12/) | d2i_PKCS12_bio, PKCS12_verify_mac with NULL and "" passwords, PKCS12_parse with NULL and ""; results ignored. | none | 13 |
 | [pkcs7_verify](pkcs7_verify/) | d2i_PKCS7 then PKCS7_verify(PKCS7_NOVERIFY) with the trailing bytes as detached content; result ignored. | none | 13 |
 | [provider](provider/) | Picks a digest/cipher/KDF/MAC/RAND algorithm from all providers by input index, fills its settable params from the input, runs a fixed operation; sig/asym/KEM/keyexch/keymgmt ops are stubs returning 0; results ignored. | none | 13 |
-| [punycode](punycode/) | ossl_punycode_decode into a 16-slot buffer and ossl_a2ulabel into 16 bytes; results ignored. | none | 13, 3 proved |
+| [punycode](punycode/) | ossl_punycode_decode into a 16-slot buffer and ossl_a2ulabel into 16 bytes; results ignored. | none | 13, 7 proved |
 | [quic-client](quic-client/) | QUIC client state machine (handshake, read/echo, accept/create/swap streams) over a datagram memory BIO with fake time; return codes otherwise only steer the loop. | 2 checks (api-contract, invariant; 1 weak; all confirmed in the binary) | 13 |
 | [quic-lcidm](quic-lcidm/) | Command interpreter over ossl_quic_lcidm_* (enrol/retire ODCID, generate, retire, cull, lookup); results ignored. | none | 13 |
 | [quic-rcidm](quic-rcidm/) | Command interpreter over ossl_quic_rcidm_* (add from initial/retry/NCID, handshake complete, packet sent, roll, pop/peek retire, preferred DCID); results ignored. | none | 13 |
@@ -99,17 +99,34 @@ By hand: download `openssl-bin.tar.zst` from release [v2026.10.0](https://github
 | statement | result |
 |---|---|
 | [openssl/bignum/asan_agrees](../../proofs/openssl/bignum/asan_agrees) | proved |
+| [openssl/bignum/asan_halts](../../proofs/openssl/bignum/asan_halts) | proved |
 | [openssl/bignum/asan_ubsan_agrees](../../proofs/openssl/bignum/asan_ubsan_agrees) | proved |
+| [openssl/bignum/asan_ubsan_halts](../../proofs/openssl/bignum/asan_ubsan_halts) | proved |
+| [openssl/bignum/plain_halts](../../proofs/openssl/bignum/plain_halts) | proved |
 | [openssl/bndiv/asan_agrees](../../proofs/openssl/bndiv/asan_agrees) | proved |
+| [openssl/bndiv/asan_halts](../../proofs/openssl/bndiv/asan_halts) | proved |
+| [openssl/bndiv/plain_halts](../../proofs/openssl/bndiv/plain_halts) | proved |
 | [openssl/bndiv/ubsan_agrees](../../proofs/openssl/bndiv/ubsan_agrees) | proved |
+| [openssl/bndiv/ubsan_halts](../../proofs/openssl/bndiv/ubsan_halts) | proved |
 | [openssl/ct/asan_ubsan_agrees](../../proofs/openssl/ct/asan_ubsan_agrees) | proved |
+| [openssl/ct/asan_ubsan_halts](../../proofs/openssl/ct/asan_ubsan_halts) | proved |
 | [openssl/echconfiglist_parser/asan_agrees](../../proofs/openssl/echconfiglist_parser/asan_agrees) | proved |
+| [openssl/echconfiglist_parser/asan_halts](../../proofs/openssl/echconfiglist_parser/asan_halts) | proved |
+| [openssl/echconfiglist_parser/plain_halts](../../proofs/openssl/echconfiglist_parser/plain_halts) | proved |
 | [openssl/echconfiglist_parser/ubsan_agrees](../../proofs/openssl/echconfiglist_parser/ubsan_agrees) | proved |
+| [openssl/echconfiglist_parser/ubsan_halts](../../proofs/openssl/echconfiglist_parser/ubsan_halts) | proved |
 | [openssl/hashtable/asan_agrees](../../proofs/openssl/hashtable/asan_agrees) | proved |
+| [openssl/hashtable/asan_halts](../../proofs/openssl/hashtable/asan_halts) | proved |
 | [openssl/pem/asan_ubsan_agrees](../../proofs/openssl/pem/asan_ubsan_agrees) | proved |
+| [openssl/pem/asan_ubsan_halts](../../proofs/openssl/pem/asan_ubsan_halts) | proved |
+| [openssl/pem/plain_halts](../../proofs/openssl/pem/plain_halts) | proved |
 | [openssl/punycode/asan_agrees](../../proofs/openssl/punycode/asan_agrees) | proved |
+| [openssl/punycode/asan_halts](../../proofs/openssl/punycode/asan_halts) | proved |
 | [openssl/punycode/asan_ubsan_agrees](../../proofs/openssl/punycode/asan_ubsan_agrees) | proved |
+| [openssl/punycode/asan_ubsan_halts](../../proofs/openssl/punycode/asan_ubsan_halts) | proved |
+| [openssl/punycode/plain_halts](../../proofs/openssl/punycode/plain_halts) | proved |
 | [openssl/punycode/ubsan_agrees](../../proofs/openssl/punycode/ubsan_agrees) | proved |
+| [openssl/punycode/ubsan_halts](../../proofs/openssl/punycode/ubsan_halts) | proved |
 
 ## Licence
-openssl is under `Apache-2.0`. Each binary is a combined work of openssl, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `openssl-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `openssl-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+openssl is under `Apache-2.0`. Each binary is a combined work of openssl, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `openssl-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `openssl-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

@@ -28,6 +28,11 @@ assets:
     file: easywsclient-bin.tar.zst
     bytes: 449879
     sha256: f4e3e44f67fe2131aa876fdafa3b60c6d4f925f99be541f31af8d9d94331d539
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: easywsclient-src.tar.zst

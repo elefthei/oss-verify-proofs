@@ -47,6 +47,11 @@ assets:
     file: wireshark-bin.tar.zst
     bytes: 926590192
     sha256: edaa44f149c3a97ec3035a51eb6e572066557624903020a76b9e073c4488108b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wireshark-src.tar.zst

@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: fast_float/from_chars/ubsan_agrees
-fingerprint: 264811872299b34828fd1c95a7c197b22ee4e844af76d6db4875138b28ac3d33
+fingerprint: c205578e8db30a2de11087e17d7dc1aa1420c26ce5f9b349b08e2c498e968aa6

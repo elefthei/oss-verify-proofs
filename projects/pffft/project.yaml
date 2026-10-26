@@ -31,6 +31,11 @@ assets:
     file: pffft-bin.tar.zst
     bytes: 416653
     sha256: e10e5484a663950190d3b41df451904160d250779e7b45881a69e4ec6860eb30
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: pffft-src.tar.zst

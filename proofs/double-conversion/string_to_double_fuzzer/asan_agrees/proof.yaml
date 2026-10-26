@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: double-conversion/string_to_double_fuzzer/asan_agrees
-fingerprint: 46c7a00dfd11c815a47ab15c45cdeea849af8f185560e0ee975c591ba6b90110
+fingerprint: 78bd51ee0c8f1974d60f7e8e3c0f1ea52cc3c3d7ec696a21e094eef2a1f16427

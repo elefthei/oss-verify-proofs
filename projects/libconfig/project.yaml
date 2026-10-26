@@ -29,6 +29,11 @@ assets:
     file: libconfig-bin.tar.zst
     bytes: 464107
     sha256: 726aba9f428c7f084c6fb7bd38df64b6cdc92a556d10649c97ca60d9922a6479
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libconfig-src.tar.zst

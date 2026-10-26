@@ -27,6 +27,9 @@ Require OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.
 From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top Require BaseUbsan.
 From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top Require BaseAsan.
 From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top Require BaseBoth.
+From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top Require PlainClosed UbsanClosed.
+From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top Require HaltsAsan.
+From OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top Require HaltsBoth.
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
@@ -91,4 +94,44 @@ Theorem strong_universal_error_free_boost_json_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.M.init_pc OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.M.phdrs).
 Proof.
 exact OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top.BaseBoth.both_base.
+Qed.
+
+Theorem halts_allowed_boost_json_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostJsonHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_json.fuzz_parse.images.Asan.M.loaded_segments OssFuzzTheorems.boost_json.fuzz_parse.images.Asan.M.init_pc OssFuzzTheorems.boost_json.fuzz_parse.images.Asan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top.HaltsAsan.asan_halts.
+Qed.
+
+Theorem halts_allowed_boost_json_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostJsonHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.M.init_pc OssFuzzTheorems.boost_json.fuzz_parse.images.AsanUbsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top.HaltsBoth.both_halts.
+Qed.
+
+Theorem halts_allowed_boost_json_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostJsonHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_json.fuzz_parse.images.Plain.M.loaded_segments OssFuzzTheorems.boost_json.fuzz_parse.images.Plain.M.init_pc OssFuzzTheorems.boost_json.fuzz_parse.images.Plain.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top.PlainClosed.plain_halts_closed.
+Qed.
+
+Theorem halts_allowed_boost_json_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostJsonHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_json.fuzz_parse.images.Ubsan.M.loaded_segments OssFuzzTheorems.boost_json.fuzz_parse.images.Ubsan.M.init_pc OssFuzzTheorems.boost_json.fuzz_parse.images.Ubsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.boost_json.fuzz_parse.lib.Top.UbsanClosed.ubsan_halts_closed.
 Qed.

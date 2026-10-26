@@ -86,6 +86,11 @@ assets:
     file: mpv-bin.tar.zst
     bytes: 315835
     sha256: 0fff62c8697c3d593014c48342c5379542a1ee075a3a390d10a99ba591acca6a
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: mpv-src.tar.zst

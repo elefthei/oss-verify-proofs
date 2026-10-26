@@ -72,7 +72,7 @@ Lemma same_io_wvb : forall md mat, same_io md (with_vm_backing (m_vm_lazy md) ma
 Proof. intros md mat. repeat split; img_refl. Qed.
 Lemma SRr_with_AI {imgk : img} : forall (Wx : world tfxsegs) cx (Q : world tfxsegs -> config -> Prop),
 SRr tfxsegs Wx cx Q -> SRr tfxsegs Wx cx (fun W' c' => AI tfxsegs (w_H W') (w_A W') (cfg_model c') /\ Q W' c').
-Proof. intros Wx cx Q H HI T HK. img_apply (H HI T). intros W' c' Hle HI' HQ. img_exact (HK W' c' Hle HI' (conj HI' HQ)). Qed.
+Proof. intros Wx cx Q H b HI T HK. img_apply (H b HI T). intros W' c' Hle HI' HQ. img_exact (HK W' c' Hle HI' (conj HI' HQ)). Qed.
 Section f. Context {imgk : img}.
 Variable B : asyms.
 Hypothesis TS : TfxSyms B.
@@ -217,7 +217,7 @@ assert (EcM : cfg_model c1 = with_vm_backing (m_vm_lazy md0) mat1 md0) by (img_t
 img_apply (@YF7l.nodeS fx _ imgk W ly regs0 mem0 md0 n ch idx res j0 j1 j2 j3 j4 j5 j6 j7 j8 j9 i1 i2 i3 0 HLY IMG HSP Nrange HI HR B S HARm HQ _ S1 (YF7t.KSEC ly regs0 n ch S) (@YF7t.QLEAF fx _ imgk W ly regs0 mem0 md0 n ch B S) c1 HAR HEV HN HAI).
 - intros z Hz. img_exact Hz.
 -
-intros c' HRf _ _ _. rewrite EcM in HRf.
+intros c' HRf _ _ _. rewrite EcM in HRf. img_apply amreal_E.
 img_exact (@YF7t.refuseS fx _ imgk W ly regs0 mem0 md0 n ch idx res j0 j1 j2 j3 j4 j5 j6 j7 j8 j9 i1 i2 i3 0 HLY IMG HTP HRA HSP Nrange HI HR (fun _ _ => True) B S TS HARm Hidx_def Hres_def mat1 c' HAR HEV HRf).
 -
 intros a W3 ms E'. cbv zeta. rewrite EcM.

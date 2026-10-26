@@ -121,6 +121,11 @@ assets:
     file: freetype2-bin.tar.zst
     bytes: 10244792
     sha256: b814909f7d0a40c56f0671cf16cf576f374f65da329b53ae6775a16dcec79015
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: freetype2-src.tar.zst

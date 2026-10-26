@@ -92,6 +92,11 @@ assets:
     file: wolfssl-bin.tar.zst
     bytes: 805606
     sha256: db954e795d98f218c694213357e99727983cb92312535e0e90b1bcc76479ff76
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wolfssl-src.tar.zst

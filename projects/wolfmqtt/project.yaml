@@ -32,6 +32,11 @@ assets:
     file: wolfmqtt-bin.tar.zst
     bytes: 408817
     sha256: b1101fdc12f5041c67371b8c0eeb4b538b90e3dfac6fb1085b3e9737d6983d9b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wolfmqtt-src.tar.zst

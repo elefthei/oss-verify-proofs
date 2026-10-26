@@ -34,6 +34,8 @@ check TSEGS IT0 TRB NX0G YA02.LIMIT (XNG TSEGS trb_XN1) XE0 XB0 HS_trb hole_le_t
 (init_acs_of_g TRB) startup_plan_trb
 = COk startup_shape.
 Proof. vm_cast_no_check (@eq_refl cres (COk startup_shape)). Qed.
+Lemma startup_live : lv startup_plan_trb = true.
+Proof. vm_compute. reflexivity. Qed.
 #[local] Instance trbcert_fx : YK11.FPState := YK11.fx0.
 Section a.
 Variable sp : word. Variable rdraw : EntryDraw. Variable brk0 mbase : word. Variable argv envp : list (list byte).
@@ -56,7 +58,7 @@ srealizes TSEGS (init_config TSEGS AsanUbsan.M.init_pc TPH sp brk0 mbase rdraw Y
 (sd HOLES t_nil (E0 TPH sp rdraw brk0 argv envp uid hw) FSQ startup_shape).
 Proof.
 exact (trb_startup sp rdraw brk0 mbase argv envp fs stdin uid gid hw groups net nofile sigmask urnd tmp Hsp Hbrk Hva Hve Hfit Huid Hhw
-IT0 IT0_ok HS_trb hole_le_trb startup_plan_trb startup_shape KC0 BFUEL FUEL startup_cert
+IT0 IT0_ok HS_trb hole_le_trb startup_plan_trb startup_shape KC0 BFUEL FUEL startup_cert startup_live
 HOLES HOLES_agree HOLES_nil HOLES_le HOLES_sound).
 Qed.
 End a.

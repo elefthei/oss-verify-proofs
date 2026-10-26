@@ -214,7 +214,7 @@ eapply srz_exit_at_lazy; [exact HF | exact HE | exact (co_halt _ _ _ _ _ _ _ _ _
 Qed.
 Theorem node_sys_sound_YSetTid : sys_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 YSetTid.
 Proof.
-intros cs cs' E R FULL model T HC Hec Hn Hk.
+intros bm cs cs' E R FULL model T HC Hec Hn Hk.
 destruct (is_ecall_at_sound SEGS cs Hec) as (Hpc0 & Hpc4 & w & HF & HE).
 cbn [node_sys] in Hn. unfold node_settid in Hn.
 destruct (reg_lit cs 17) as [a7|] eqn:H17; [|discriminate].
@@ -226,7 +226,7 @@ destruct (reg_lit_sound SEGS A LIMIT TOP SINV argH FS0 E cs R FULL model 17 96 H
 pose proof (co_tid _ _ _ _ _ _ _ _ _ _ _ _ HC Hts) as Htid.
 destruct (fresh_ok_parts nx0 cs Hfresh) as (Fsr & Fkn & Fmaps & Fallow & Fbrk & Ffd & Fle).
 unfold cfg_of.
-eapply (srz_set_tid_lazy SEGS); [exact HF | exact HE | exact (co_halt _ _ _ _ _ _ _ _ _ _ _ _ HC) | exact G17 | exact Htid |].
+eapply (srz_set_tid_lazy SEGS bm); [exact HF | exact HE | exact (co_halt _ _ _ _ _ _ _ _ _ _ _ _ HC) | exact G17 | exact Htid |].
 intros tid Htidr.
 set (v := nxt cs) in *.
 set (E' := ext1 E v tid).
@@ -312,7 +312,7 @@ Qed.
 Ltac Zify.zify_convert_to_euclidean_division_equations_flag ::= constr:(false).
 Theorem node_sys_sound_YBrk : sys_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 YBrk.
 Proof.
-intros cs cs' E R FULL model T HC Hec Hn Hk.
+intros bm cs cs' E R FULL model T HC Hec Hn Hk.
 destruct (is_ecall_at_sound SEGS cs Hec) as (Hpc0 & Hpc4 & w & HF & HE).
 cbn [node_sys] in Hn. unfold node_brk1 in Hn.
 destruct (reg_lit cs 17) as [a7|] eqn:H17; [|discriminate].
@@ -320,7 +320,7 @@ destruct a7 as [|p|p]; try discriminate; repeat (destruct p as [p|p|]; try discr
 destruct (reg_lit_sound SEGS A LIMIT TOP SINV argH FS0 E cs R FULL model 17 214 HC ltac:(lia) H17) as [G17 _].
 pose proof (co_halt _ _ _ _ _ _ _ _ _ _ _ _ HC) as Hh.
 assert (POST : forall ok : bool, (if ok then Some (set_pc (set_reg cs 10 (a_brk cs)) (pc cs + 4)) else None) = Some cs' ->
-srealizes SEGS (mkCfg (mkst (regupd R 10 (vm_brk (m_vmmaps model))) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL (seg_rom SEGS)) model) T).
+srealizesM SEGS bm (mkCfg (mkst (regupd R 10 (vm_brk (m_vmmaps model))) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL (seg_rom SEGS)) model) T).
 { intros ok Hok. destruct ok; [|discriminate]. apply Some_inj in Hok.
 rewrite (v_addi_pc (pc cs) Hpc0 Hpc4).
 replace (pc cs + 4) with (pc cs') by (rewrite <- Hok; reflexivity).
@@ -330,7 +330,7 @@ unfold cfg_of.
 destruct (reg_lit cs 10) as [[|p|p]|] eqn:H10.
 1: {
 destruct (reg_lit_sound SEGS A LIMIT TOP SINV argH FS0 E cs R FULL model 10 0 HC ltac:(lia) H10) as [G10 _].
-eapply (srz_brk_query_lazy SEGS); [exact HF | exact HE | exact Hh | exact G17 | exact G10 |].
+eapply (srz_brk_query_lazy SEGS bm); [exact HF | exact HE | exact Hh | exact G17 | exact G10 |].
 exact (POST true Hn). }
 all: destruct (brk_req cs) as [d|] eqn:Hreq; [|discriminate].
 all: destruct (brk_grow_blocked A cs d) eqn:Hblk; [|discriminate].
@@ -344,7 +344,7 @@ all: pose proof (lin_ge0_sound SEGS E _ (kn cs) _ _ (co_know _ _ _ _ _ _ _ _ _ _
 pose proof (lin_ge0_sound SEGS E _ (kn cs) _ _ (co_know _ _ _ _ _ _ _ _ _ _ _ _ HC) Hm2) as L2;
 cbn [xt_den] in L1, L2; rewrite <- (co_brk _ _ _ _ _ _ _ _ _ _ _ _ HC) in L1, L2.
 all: pose proof (u64_range (vm_brk (m_vmmaps model))) as Hbr.
-all: eapply (srz_brk_grow_blocked_lazy SEGS); [exact HF | exact HE | exact Hh | exact G17 | exact G10
+all: eapply (srz_brk_grow_blocked_lazy SEGS bm); [exact HF | exact HE | exact Hh | exact G17 | exact G10
 | rewrite u64_lit by (unfold KHI in *; lia); lia
 | rewrite u64_lit by (unfold KHI in *; lia); pose proof (co_sbrk _ _ _ _ _ _ _ _ _ _ _ _ HC); lia
 | rewrite u64_lit by (unfold KHI in *; lia); lia
@@ -380,7 +380,7 @@ Qed.
 
 Theorem node_brk2_sound : brk2_stmt SEGS A nx0 LIMIT TOP SINV argH FS0.
 Proof.
-intros cs csa csb E R FULL model TA TB HC Hec Hn Hincl HTAnil HkA HkB.
+intros bm cs csa csb E R FULL model TA TB HC Hec Hn Hincl HTAnil HkA HkB.
 destruct (is_ecall_at_sound SEGS cs Hec) as (Hpc0 & Hpc4 & w & HF & HE).
 pose proof HULL_ok as HU; unfold hull_ok in HU; destruct HU as (U0 & U1 & U2 & U3).
 unfold node_brk2g in Hn.
@@ -416,9 +416,9 @@ assert (Ureq : bv_unsigned req = bv_unsigned b + d) by (unfold req; apply u64_li
 unfold cfg_of.
 destruct (Mmap.brk_grow_ok model req req) eqn:Hadm.
 2:{
-eapply srz_conseq.
+eapply srzM_conseq.
 2:{ intros tr. unfold t_alt2. split; [intros Ht; left; exact Ht | intros [Ht|Ht]; [exact Ht | exact (Hincl tr Ht)]]. }
-eapply (srz_brk_grow_blocked_lazy SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w req TA HF HE Hh G17);
+eapply (srz_brk_grow_blocked_lazy SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w req TA HF HE Hh G17);
 fold h b; [rewrite bv5_10; exact G10 | rewrite Ureq; lia | rewrite Ureq; lia | rewrite Ureq; lia | exact Hadm |].
 rewrite (v_addi_pc (pc cs) Hpc0 Hpc4).
 replace (pc cs + 4) with (pc csa) by (rewrite <- EcsA; reflexivity).
@@ -487,7 +487,7 @@ destruct (flat_x_sound SEGS E _ (kn csB) bb bk (ELit d) HKf Hflat) as (Fb1 & Fb2
 cbn [edenot] in Fb2, Fb3. rewrite (u64_lit d) in Fb2, Fb3 by (unfold KHI in *; lia).
 assert (Hest : estart E (SA bb bk) = bv_unsigned b).
 { rewrite <- Eb. symmetry. apply (u_of_split E (a_brk cs) bb bk Hsplit). lia. }
-eapply (srz_brk_grow_lazy SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w d TA TB HF HE Hh G17);
+eapply (srz_brk_grow_lazy SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w d TA TB HF HE Hh G17);
 fold h b; [exact B1 | exact D2 | exact D1 | exact B2 | unfold KHI in *; lia
 | lia | exact G10 | exact Hadm | |].
 -
@@ -918,14 +918,14 @@ Proof.
 intros T g h l. induction l as [|x l IH]; cbn; [reflexivity|].
 destruct (g x); cbn; rewrite IH; destruct (h x); cbn; rewrite ?orb_true_r; reflexivity.
 Qed.
-Lemma node_munmap_sound : forall cs cs' E R FULL model T,
+Lemma node_munmap_sound : forall (bm : bool) cs cs' E R FULL model T,
 CSOK E cs R FULL model -> is_ecall_at SEGS cs = true ->
 node_munmap A cs = Some cs' ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') T) ->
-srealizes SEGS (cfg R (pc cs) FULL model) T.
+srealizesM SEGS bm (cfg R' (pc cs') FULL' model') T) ->
+srealizesM SEGS bm (cfg R (pc cs) FULL model) T.
 Proof.
-intros cs cs' E R FULL model T HC Hec Hn HK.
+intros bm cs cs' E R FULL model T HC Hec Hn HK.
 destruct (YA09.is_ecall_at_sound SEGS cs Hec) as (w & Hf & He & Hp0 & Hp4).
 pose proof (co_know _ _ _ _ _ _ _ _ _ _ _ _ HC) as HKN.
 rewrite node_munmap_eq in Hn.   unfold node_munmap_ref in Hn.
@@ -1069,12 +1069,12 @@ rewrite Z_to_bv_unsigned, bv_wrap64_mod in D. unfold uE in A8b, A8n. lia.
 Ltac Zify.zify_convert_to_euclidean_division_equations_flag ::= constr:(false). }
 pose proof (co_halt _ _ _ _ _ _ _ _ _ _ _ _ HC) as Hhalt. pose proof (co_wf _ _ _ _ _ _ _ _ _ _ _ _ HC) as Hwf. pose proof Hwf as (W1 & W2 & W3 & Wsp).
 unfold cfg_of.
-eapply (srz_munmap_lazy SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len T Hf He Hhalt R17 R10 B2 R11 ltac:(lia)).
+eapply (srz_munmap_lazy SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len T Hf He Hhalt R17 R10 B2 R11 ltac:(lia)).
 { unfold TASK_SIZE. fold nZ. unfold CEIL in *. lia. }
 { fold nZ. rewrite HnZw. apply map_has_intro. rewrite <- Haddr. exact HIN. }
 fold nZ. rewrite HnZw. rewrite (v_addi_pc (pc cs) Hp0 Hp4).
 set (model' := munmap_model addr n model). set (FULL' := unfill addr n FULL).
-match goal with |- srealizes _ (mkCfg _ ?mo) _ => change mo with model' end.
+match goal with |- srealizesM _ _ (mkCfg _ ?mo) _ => change mo with model' end.
 set (cs' := ACS _ _ _ _ _ _ _ _ _ _ _) in HK.
 specialize (HK E (regupd R (Z_to_bv 5 (Z.of_nat 10)) (Z_to_bv 64 0)) FULL' model' (conj (env_agree_refl' _ _) (env_agree_refl' _ _))).
 unfold cfg_of in HK. replace (pc cs') with (pc cs + 4) in HK by reflexivity. rewrite bv5_10. apply HK; [|reflexivity]. clear HK.
@@ -1270,7 +1270,7 @@ destruct (argH E x); [discriminate|]. cbn in Z0. exact Z0.
 -   eapply SINV_frame; [|exact Xsinv]. intros x Hx. unfold FULL'. apply unfill_out. pose proof (argH_high _ _ Hx). rewrite Un. subst hi. lia.
 Qed.
 Theorem node_sys_sound_YMunmap : sys_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 YMunmap.
-Proof. intros cs cs' E R FULL model T HC Hpre Hn HK. eapply node_munmap_sound; eauto. Qed.
+Proof. intros bm cs cs' E R FULL model T HC Hpre Hn HK. eapply node_munmap_sound; eauto. Qed.
 End u.
 Section a0.
 Variable SEGS : list Segment.

@@ -152,7 +152,7 @@ Let sl_vis_in_G := YA09.sl_vis_in_G SEGS A LIMIT TOP SINV argH FS0 RES_len HULL_
 Let sl_vis_out := YA09.sl_vis_out SEGS A LIMIT TOP SINV argH FS0 RES_len HULL_ok.
 Let sl_wf' := YA09.sl_wf' SEGS A LIMIT TOP SINV argH FS0 RES_len HULL_ok.
 Let slice_cs1_ok := YA09.slice_cs1_ok SEGS A LIMIT TOP SINV argH FS0 RES_len HULL_ok SHADOW_ok TOP_ok' argH_high SINV_frame.
-Lemma mmap_null_g_sound2 : forall cs kd (eager visible : bool) cs' E R FULL model TA TB,
+Lemma mmap_null_g_sound2 : forall (b : bool) cs kd (eager visible : bool) cs' E R FULL model TA TB,
 CSOK E cs R FULL model -> is_ecall_at SEGS cs = true ->
 reg_lit cs 17 = Some 222 -> reg_lit cs 10 = Some 0 ->
 reg_lit cs 12 = Some (if kind_none kd then 0 else 3) ->
@@ -162,12 +162,12 @@ reg_lit cs 14 = Some (two64 - 1) -> reg_lit cs 15 = Some 0 ->
 visible = negb (kind_none kd) ->
 mmap_null_g A nx0 LIMIT cs kd eager visible = Some cs' ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' (refuse cs) R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc (refuse cs)) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc (refuse cs)) FULL' model') TA) ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS b (cfg R' (pc cs') FULL' model') TB) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Proof.
-intros cs kd eager visible cs' E R FULL model TA TB HC Hec H17 H10 H12 H13 H14 H15 Hkind Hkfog Hvisible Hn HKA HK.
+intros b cs kd eager visible cs' E R FULL model TA TB HC Hec H17 H10 H12 H13 H14 H15 Hkind Hkfog Hvisible Hn HKA HK.
 destruct (is_ecall_at_sound SEGS cs Hec) as (w & Hf & He & Hp0 & Hp4).
 pose proof Hn as Hn0. pose proof TOP_ok' as HT; unfold top_ok, CEIL in HT.
 unfold mmap_null_g in Hn.
@@ -193,11 +193,11 @@ pose proof (proj2 (proj2 (proj2 (co_wf _ _ _ _ _ _ _ _ _ _ _ _ HC)))) as Hisp.
 pose proof (co_top _ _ _ _ _ _ _ _ _ _ _ _ HC) as Htop.
 destruct (gap_ok_sound E cs R FULL model nhi nZ HC Hgap ltac:(lia)) as [a0 Ha0].
 pose proof (grant_ok_na_pin_of_gate _ _ _ _ Hisp Ha0) as Ha0'.
-pose proof (refuse_cont cs E R FULL model TA HC Hp0 Hp4 HKA) as CONTA.
+pose proof (refuse_cont false cs E R FULL model TA HC Hp0 Hp4 HKA) as CONTA.
 assert (CONT : forall (a : word) model' FULL',
 grant_ok_na_pin model a nZ = true ->
 grant_post kd a n model model' -> grant_mem kd a n FULL FULL' -> m_fs model' = m_fs model ->
-srealizes SEGS (mkCfg (mkst (regupd R 10 a) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL' (seg_rom SEGS)) model') TB).
+srealizesM SEGS b (mkCfg (mkst (regupd R 10 a) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL' (seg_rom SEGS)) model') TB).
 { intros a model' FULL' Hg GPo GM Hfs.
 destruct (mmap_null_g_cs1 cs kd eager ne nlo nhi E R FULL model a model' FULL' HC HML Hfresh Hnev
 ltac:(intros ->; cbn in Hbud; unfold budget_ok in Hbud; apply Z.leb_le in Hbud; exact Hbud)
@@ -230,7 +230,7 @@ unfold cfg_of.
 destruct kd; cbn [kind_none kind_lazy negb orb] in *; [| | | | discriminate Hkfog | discriminate Hkfog].
 -
 destruct eager; [|discriminate].
-eapply (srz_mmap_rw2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 34) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_22 R14 R15).
+eapply (srz_mmap_rw2 SEGS b R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 34) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_22 R14 R15).
 + exists a0. split; [exact Ha0'|]. unfold mmap_noreserve_backed_ok. rewrite mmap_noreserve_b_22.
 apply Z.leb_le. cbn in Hbud. eapply Z.le_trans; [|eapply (budget_slack E cs R FULL model nhi HC Hbud)]. fold nZ. lia.
 + exact CONTA.
@@ -239,7 +239,7 @@ apply Z.leb_le. cbn in Hbud. eapply Z.le_trans; [|eapply (budget_slack E cs R FU
 * split; [intros x Hx; apply zfill_out; exact Hx | intros x Hx; apply zfill_in; exact Hx].
 -
 destruct eager; [discriminate|].
-eapply (srz_mmap_rw2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 16418) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_4022 R14 R15).
+eapply (srz_mmap_rw2 SEGS b R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 16418) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_4022 R14 R15).
 + exists a0. split; [exact Ha0'|]. unfold mmap_noreserve_backed_ok. rewrite mmap_noreserve_b_4022. reflexivity.
 + exact CONTA.
 + intros a Hg _. rewrite (with_mmap_backing_lazy _ _ _ _ mmap_noreserve_b_4022). apply (CONT a); [exact Hg | | | reflexivity].
@@ -251,7 +251,7 @@ unfold vm_add_lazy. rewrite m_vm_lazy_with_vm_backing. rewrite lazy_interior_fre
 * split; [intros x Hx; apply zfill_out; exact Hx | intros x Hx; apply zfill_in; exact Hx].
 -
 destruct eager; [discriminate|].
-eapply (srz_mmap_none2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 34) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_22 R14 R15).
+eapply (srz_mmap_none2 SEGS b R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 34) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_22 R14 R15).
 + exists a0. exact Ha0'.
 + exact CONTA.
 + intros a Hg. rewrite (with_mmap_backing_plain _ _ _ _ mmap_noreserve_b_22). apply (CONT a); [exact Hg | | | reflexivity].
@@ -259,7 +259,7 @@ eapply (srz_mmap_none2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w l
 * split; [intros x Hx; apply unfill_out; exact Hx | intros x Hx; apply unfill_in; exact Hx].
 -
 destruct eager; [discriminate|].
-eapply (srz_mmap_none2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 16418) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_4022 R14 R15).
+eapply (srz_mmap_none2 SEGS b R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w len (Z_to_bv 64 16418) TA TB Hf He Hhalt Hisp R17 R11 Hlen R12 R13 mmap_flags_core_4022 R14 R15).
 + exists a0. exact Ha0'.
 + exact CONTA.
 + intros a Hg. rewrite (with_mmap_backing_lazy _ _ _ _ mmap_noreserve_b_4022). apply (CONT a); [exact Hg | | | reflexivity].
@@ -270,7 +270,7 @@ constructor; try reflexivity.
 unfold vm_add_lazy. rewrite m_vm_lazy_with_vm_backing. rewrite lazy_interior_fresh; [reflexivity | exact Hal | | |]; subst n; rewrite u64_lit by lia; [exact HnZal | lia | lia].
 * split; [intros x Hx; apply unfill_out; exact Hx | intros x Hx; apply unfill_in; exact Hx].
 Qed.
-Lemma mmap_fixed_grant_sound2 : forall cs ms0 top b off ne nlo nhi kd (eager visible : bool) fl cs' E R FULL model TA TB,
+Lemma mmap_fixed_grant_sound2 : forall (bm : bool) cs ms0 top b off ne nlo nhi kd (eager visible : bool) fl cs' E R FULL model TA TB,
 CSOK E cs R FULL model -> is_ecall_at SEGS cs = true ->
 reg_lit cs 17 = Some 222 ->
 reg_lit cs 12 = Some (if kind_none kd then 0 else 3) ->
@@ -288,12 +288,12 @@ bv_unsigned (edenot E (reg cs 10)) + page_round_up_Z (bv_unsigned (edenot E (reg
 \/ uE E (am_base m) + uE E (am_len m) <= bv_unsigned (edenot E (reg cs 10))) ->
 mmap_fixed_grant_g A LIMIT cs ms0 b off ne nhi kd eager visible = Some cs' ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' (refuse cs) R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc (refuse cs)) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc (refuse cs)) FULL' model') TA) ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS bm (cfg R' (pc cs') FULL' model') TB) ->
+srealizesM SEGS bm (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Proof.
-intros cs ms0 top b off ne nlo nhi kd eager visible fl cs' E R FULL model TA TB HC Hec H17 H12 H13 Hff H14 H15 Hkind Hkfog Hvisible HFA Htop Hbud HC0 Hrf Hholes Hn HKA HK.
+intros bm cs ms0 top b off ne nlo nhi kd eager visible fl cs' E R FULL model TA TB HC Hec H17 H12 H13 Hff H14 H15 Hkind Hkfog Hvisible HFA Htop Hbud HC0 Hrf Hholes Hn HKA HK.
 destruct Hff as (Hffc & Hffl & Hflr).
 destruct (is_ecall_at_sound SEGS cs Hec) as (w & Hf & He & Hp0 & Hp4).
 assert (Hbudget : eager = true -> a_eager cs + a_abytes cs + nhi <= LIMIT).
@@ -320,10 +320,10 @@ assert (HaK : bv_unsigned addr + nZ <= CEIL) by lia.
 rewrite <- bv5_10 in R10.
 assert (Hce : bv_unsigned addr + page_round_up_Z len <= alloc_top (m_vmmaps model)).
 { rewrite (co_top _ _ _ _ _ _ _ _ _ _ _ _ HC). pose proof TOP_ok' as HT; unfold top_ok in HT. fold nZ. lia. }
-pose proof (refuse_cont cs E R FULL model TA HC Hp0 Hp4 HKA) as CONTA.
+pose proof (refuse_cont false cs E R FULL model TA HC Hp0 Hp4 HKA) as CONTA.
 assert (CONT : forall model' FULL',
 grant_post kd addr n model model' -> grant_mem kd addr n FULL FULL' -> m_fs model' = m_fs model ->
-srealizes SEGS (mkCfg (mkst (regupd R 10 addr) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL' (seg_rom SEGS)) model') TB).
+srealizesM SEGS bm (mkCfg (mkst (regupd R 10 addr) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL' (seg_rom SEGS)) model') TB).
 { intros model' FULL' GPo GM Hfs.
 destruct (mmap_fixed_grant_cs1 cs ms0 kd eager top b off ne nlo nhi E R FULL model model' FULL' HC HFA Htop HC0 Hrf Hholes Hbudget Hkind Hkfog GPo GM) as (HC1 & NEW).
 fold len nZ n addr in HC1, NEW.
@@ -376,7 +376,7 @@ unfold cfg_of.
 destruct kd; cbn [kind_none kind_lazy negb orb] in *; [| | | | discriminate Hkfog | discriminate Hkfog].
 -
 destruct eager; [|discriminate].
-eapply (srz_mmap_ff_rw_free2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
+eapply (srz_mmap_ff_rw_free2 SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
 Hf He Hhalt R17 R10 Hal Hpos R11 ltac:(lia) Hce R12 R13 Hffc R14 R15 Hrf).
 + unfold mmap_noreserve_backed_ok. rewrite Hffl. apply Z.leb_le. cbn in Hbud.
 eapply Z.le_trans; [|eapply (budget_slack E cs R FULL model nhi HC Hbud)]. fold nZ. lia.
@@ -386,7 +386,7 @@ apply CONT; [constructor; reflexivity | | reflexivity].
 split; [intros x Hx; apply zfill_out; exact Hx | intros x Hx; apply zfill_in; exact Hx].
 -
 destruct eager; [discriminate|].
-eapply (srz_mmap_ff_rw_free2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
+eapply (srz_mmap_ff_rw_free2 SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
 Hf He Hhalt R17 R10 Hal Hpos R11 ltac:(lia) Hce R12 R13 Hffc R14 R15 Hrf).
 + unfold mmap_noreserve_backed_ok. rewrite Hffl. reflexivity.
 + exact CONTA.
@@ -398,7 +398,7 @@ rewrite lazy_interior_fresh; [reflexivity | exact Hal | rewrite Un; exact HnZal 
 * split; [intros x Hx; apply zfill_out; exact Hx | intros x Hx; apply zfill_in; exact Hx].
 -
 destruct eager; [discriminate|].
-eapply (srz_mmap_ff_none_free2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
+eapply (srz_mmap_ff_none_free2 SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
 Hf He Hhalt R17 R10 Hal Hpos R11 ltac:(lia) Hce R12 R13 Hffc R14 R15 Hrf).
 + exact CONTA.
 + rewrite with_mmap_backing_plain by exact Hffl.
@@ -406,7 +406,7 @@ apply CONT; [constructor; reflexivity | | reflexivity].
 split; [intros x Hx; apply unfill_out; exact Hx | intros x Hx; apply unfill_in; exact Hx].
 -
 destruct eager; [discriminate|].
-eapply (srz_mmap_ff_none_free2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
+eapply (srz_mmap_ff_none_free2 SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len (Z_to_bv 64 fl) TA TB
 Hf He Hhalt R17 R10 Hal Hpos R11 ltac:(lia) Hce R12 R13 Hffc R14 R15 Hrf).
 + exact CONTA.
 + rewrite with_mmap_backing_lazy by exact Hffl.
@@ -416,7 +416,7 @@ unfold vm_add_lazy. rewrite m_vm_lazy_with_vm_backing.
 rewrite lazy_interior_fresh; [reflexivity | exact Hal | rewrite Un; exact HnZal | rewrite Un; lia | rewrite Un; unfold CEIL in HaK; lia].
 * split; [intros x Hx; apply unfill_out; exact Hx | intros x Hx; apply unfill_in; exact Hx].
 Qed.
-Lemma mmap_fixed_free_sound2 : forall cs kd (eager visible : bool) fl cs' E R FULL model TA TB,
+Lemma mmap_fixed_free_sound2 : forall (bm : bool) cs kd (eager visible : bool) fl cs' E R FULL model TA TB,
 CSOK E cs R FULL model -> is_ecall_at SEGS cs = true ->
 reg_lit cs 17 = Some 222 ->
 reg_lit cs 12 = Some (if kind_none kd then 0 else 3) ->
@@ -426,12 +426,12 @@ reg_lit cs 14 = Some (two64 - 1) -> reg_lit cs 15 = Some 0 ->
 visible = eager ->
 mmap_fixed_free_g A LIMIT cs kd eager visible = Some cs' ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' (refuse cs) R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc (refuse cs)) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc (refuse cs)) FULL' model') TA) ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS bm (cfg R' (pc cs') FULL' model') TB) ->
+srealizesM SEGS bm (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Proof.
-intros cs kd eager visible fl cs' E R FULL model TA TB HC Hec H17 H12 H13 Hff H14 H15 Hkind Hkfog Hvisible Hn HKA HK.
+intros bm cs kd eager visible fl cs' E R FULL model TA TB HC Hec H17 H12 H13 Hff H14 H15 Hkind Hkfog Hvisible Hn HKA HK.
 unfold mmap_fixed_free_g in Hn.
 destruct (fixed_args A cs KHI) as [[[[[b off] ne] nlo] nhi]|] eqn:HFA.
 -
@@ -439,7 +439,7 @@ match type of Hn with (if ?c then _ else _) = _ => destruct c eqn:Hcond; [|discr
 apply andb_prop in Hcond as [Hcond Hav]. apply andb_prop in Hcond as [Hcond Hnev].
 apply andb_prop in Hcond as [Hcond Hbud]. apply andb_prop in Hcond as [Hnf Hall].
 destruct (mmap_fixed_old_facts cs b off ne nlo nhi E R FULL model HC HFA Hnf Hall) as (HC0 & Hrf & Hholes).
-eapply (mmap_fixed_grant_sound2 cs (a_maps cs) KHI b off ne nlo nhi kd eager visible fl cs' E R FULL model TA TB
+eapply (mmap_fixed_grant_sound2 bm cs (a_maps cs) KHI b off ne nlo nhi kd eager visible fl cs' E R FULL model TA TB
 HC Hec H17 H12 H13 Hff H14 H15 Hkind Hkfog Hvisible HFA ltac:(unfold KHI, CEIL; lia) Hbud
 HC0 Hrf Hholes Hn HKA HK).
 -
@@ -449,20 +449,20 @@ match type of Hn with (if ?c then _ else _) = _ => destruct c eqn:Hcond; [|discr
 apply andb_prop in Hcond as [Hcond Hav]. apply andb_prop in Hcond as [Hcond Hnev].
 apply andb_prop in Hcond as [Hap Hbud].
 destruct (mmap_fixed_hole_facts cs b off ne nlo nhi h E R FULL model HC HFA2 Hfh Hap) as (HC0 & Hrf & Hholes).
-eapply (mmap_fixed_grant_sound2 cs (unhole (a_maps cs) h) CEIL b off ne nlo nhi kd eager visible fl cs' E R FULL model TA TB
+eapply (mmap_fixed_grant_sound2 bm cs (unhole (a_maps cs) h) CEIL b off ne nlo nhi kd eager visible fl cs' E R FULL model TA TB
 HC Hec H17 H12 H13 Hff H14 H15 Hkind Hkfog Hvisible HFA2 ltac:(lia) Hbud
 HC0 Hrf Hholes Hn HKA HK).
 Qed.
-Lemma node_mprotect_sound2 : forall cs cs' E R FULL model TA TB,
+Lemma node_mprotect_sound2 : forall (bm : bool) cs cs' E R FULL model TA TB,
 CSOK E cs R FULL model -> is_ecall_at SEGS cs = true ->
 node_mprotect_g A LIMIT cs = Some cs' ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' (refuse cs) R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc (refuse cs)) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc (refuse cs)) FULL' model') TA) ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS bm (cfg R' (pc cs') FULL' model') TB) ->
+srealizesM SEGS bm (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Proof.
-intros cs cs' E R FULL model TA TB HC Hec Hn HKA HK.
+intros bm cs cs' E R FULL model TA TB HC Hec Hn HKA HK.
 destruct (is_ecall_at_sound SEGS cs Hec) as (w & Hf & He & Hp0 & Hp4).
 rewrite node_mprotect_g_eq in Hn.   unfold node_mprotect_g_ref in Hn.
 destruct (reg_lit cs 17) as [z17|] eqn:H17; [|discriminate].
@@ -493,13 +493,13 @@ assert (Hna : map_contains (vm_noaccess (m_vmmaps model)) addr n = true).
 { pose proof (proj1 (Forall_forall _ _) (co_none _ _ _ _ _ _ _ _ _ _ _ _ HC) m Hm Hkind') as X.
 eapply map_contains_intro; [exact X | exact Hin1 | rewrite Un; exact Hin2]. }
 unfold cfg_of.
-eapply (srz_mprotect2 SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len TA TB Hf He Hhalt R17 R10 Hal R11 ltac:(lia)).
+eapply (srz_mprotect2 SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w addr len TA TB Hf He Hhalt R17 R10 Hal R11 ltac:(lia)).
 - unfold two_pow_64. fold nZ. pose proof TOP_ok' as HT; unfold top_ok, CEIL in HT. lia.
 - exact R12.
 - exact Hna.
 - exact Hmc.
 - apply mprotect_budget_ok_intro_gen; [exact Hwf|]. pose proof (budget_slack E cs R FULL model nhi HC ltac:(unfold budget_ok; apply Z.leb_le; exact Hbud)). fold nZ n. lia.
-- exact (refuse_cont cs E R FULL model TA HC Hp0 Hp4 HKA).
+- exact (refuse_cont false cs E R FULL model TA HC Hp0 Hp4 HKA).
 - fold nZ. fold n.
 set (model' := mprotect_model addr n model). set (FULL' := zfill addr n FULL).
 assert (SPo : slice_post SlM addr n model model') by (constructor; reflexivity).
@@ -563,7 +563,7 @@ destruct (reg_lit cs 10) as [[|p10|p10]|]; intros H; try discriminate H. reflexi
 Qed.
 Theorem node_mmap2g_sound : mm2_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 (node_mmap2g A nx0 LIMIT).
 Proof.
-intros cs csa csb E R FULL model TA TB HC Hec Hn HKA HKB.
+intros b cs csa csb E R FULL model TA TB HC Hec Hn HKA HKB.
 unfold node_mmap2g in Hn.
 destruct (mmap_gate cs) as [[[prot flags] isnull]|] eqn:Hg; [|discriminate].
 destruct (mmap_gate_sound cs prot flags isnull Hg) as (H17 & H12 & H13 & H14 & H15 & H10).
@@ -577,10 +577,10 @@ assert (ARMS : (prot = 3 /\ flags = 34 /\ mmap_null_g A nx0 LIMIT cs KRW true tr
 \/ (prot = 0 /\ flags = 16418 /\ mmap_null_g A nx0 LIMIT cs KNONELAZY false false = Some csG)).
 { repeat match type of HG with context [match ?x with _ => _ end] => destruct x; try discriminate end; tauto. }
 destruct ARMS as [(-> & -> & Hm)|[(-> & -> & Hm)|[(-> & -> & Hm)|(-> & -> & Hm)]]].
-+ eapply (mmap_null_g_sound2 cs KRW true true); eauto; reflexivity.
-+ eapply (mmap_null_g_sound2 cs KRWLAZY false true); eauto; reflexivity.
-+ eapply (mmap_null_g_sound2 cs KNONE false false); eauto; reflexivity.
-+ eapply (mmap_null_g_sound2 cs KNONELAZY false false); eauto; reflexivity.
++ eapply (mmap_null_g_sound2 b cs KRW true true); eauto; reflexivity.
++ eapply (mmap_null_g_sound2 b cs KRWLAZY false true); eauto; reflexivity.
++ eapply (mmap_null_g_sound2 b cs KNONE false false); eauto; reflexivity.
++ eapply (mmap_null_g_sound2 b cs KNONELAZY false false); eauto; reflexivity.
 -
 assert (ARMS : (prot = 3 /\ ff_class flags true /\ mmap_fixed_free_g A LIMIT cs KRWLAZY false false = Some csG)
 \/ (prot = 3 /\ ff_class flags false /\ mmap_fixed_free_g A LIMIT cs KRW true true = Some csG)
@@ -590,14 +590,14 @@ assert (ARMS : (prot = 3 /\ ff_class flags true /\ mmap_fixed_free_g A LIMIT cs 
 pose proof ff_class_104022. pose proof ff_class_104032.
 repeat match type of HG with context [match ?x with _ => _ end] => destruct x; try discriminate end; tauto. }
 destruct ARMS as [(-> & Hff & Hm)|[(-> & Hff & Hm)|[(-> & Hff & Hm)|(-> & Hff & Hm)]]].
-+ eapply (mmap_fixed_free_sound2 cs KRWLAZY false false); eauto; reflexivity.
-+ eapply (mmap_fixed_free_sound2 cs KRW true true); eauto; reflexivity.
-+ eapply (mmap_fixed_free_sound2 cs KNONELAZY false false); eauto; reflexivity.
-+ eapply (mmap_fixed_free_sound2 cs KNONE false false); eauto; reflexivity.
++ eapply (mmap_fixed_free_sound2 b cs KRWLAZY false false); eauto; reflexivity.
++ eapply (mmap_fixed_free_sound2 b cs KRW true true); eauto; reflexivity.
++ eapply (mmap_fixed_free_sound2 b cs KNONELAZY false false); eauto; reflexivity.
++ eapply (mmap_fixed_free_sound2 b cs KNONE false false); eauto; reflexivity.
 Qed.
 Theorem node_mprotect2g_sound : mm2_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 (node_mprotect2g A LIMIT).
 Proof.
-intros cs csa csb E R FULL model TA TB HC Hec Hn HKA HKB.
+intros b cs csa csb E R FULL model TA TB HC Hec Hn HKA HKB.
 unfold node_mprotect2g in Hn.
 destruct (node_mprotect_g A LIMIT cs) as [csG|] eqn:HG; [|discriminate]. injection Hn as <- <-.
 eapply node_mprotect_sound2; eauto.
@@ -641,7 +641,7 @@ destruct (lin_ge0 (kn cs) [(mb, -1); (ml, 0)] [(a, 0); (ne, 0)]) eqn:H1.
 * destruct rne; [left | right; left]; reflexivity.
 Qed.
 
-Lemma mmap_fixed_in_sound3 : forall (hole : bool) cs arm b off ne nlo nhi m csO E R FULL model TA TB TC,
+Lemma mmap_fixed_in_sound3 : forall (hole : bool) (bm : bool) cs arm b off ne nlo nhi m csO E R FULL model TA TB TC,
 CSOK E cs R FULL model -> is_ecall_at SEGS cs = true ->
 reg_lit cs 17 = Some 222 ->
 reg_lit cs 12 = Some (match arm with ArmG => 0 | _ => 3 end) ->
@@ -650,15 +650,15 @@ reg_lit cs 14 = Some (two64 - 1) -> reg_lit cs 15 = Some 0 ->
 fixed_in_args_g cs arm = Some (b, off, ne, nlo, nhi, m) ->
 mmap_fixed_in_g A LIMIT cs arm = Some csO ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' (refuse cs) R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc (refuse cs)) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc (refuse cs)) FULL' model') TA) ->
 (forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' csO R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csO) FULL' model') TB) ->
+srealizesM SEGS bm (cfg R' (pc csO) FULL' model') TB) ->
 (forall csc E' R' FULL' model', In csc (mmap_destroyed A hole cs b off ne m) ->
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> CSOK E' csc R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csc) FULL' model') TC) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA (t_alt2 TB TC)).
+srealizesM SEGS false (cfg R' (pc csc) FULL' model') TC) ->
+srealizesM SEGS bm (cfg R (pc cs) FULL model) (t_alt2 TA (t_alt2 TB TC)).
 Proof.
-intros hole cs arm b off ne nlo nhi m csO E R FULL model TA TB TC HC Hec H17 H12 H13 H14 H15 HFI Hn HKA HKB HKC.
+intros hole bm cs arm b off ne nlo nhi m csO E R FULL model TA TB TC HC Hec H17 H12 H13 H14 H15 HFI Hn HKA HKB HKC.
 destruct (is_ecall_at_sound SEGS cs Hec) as (w & Hf & He & Hp0 & Hp4).
 rewrite fixed_in_args_g_eq in HFI.   unfold fixed_in_args_g_ref in HFI.
 destruct (fixed_args_g cs TOPMAX) as [[[[[b0 off0] ne0] nlo0] nhi0]|] eqn:HFA; [|discriminate].
@@ -694,7 +694,7 @@ assert (Hprot : prot = 0 \/ prot = 3) by (destruct arm; cbn; lia).
 assert (Hcore : mmap_flags_core (Z_to_bv 64 flg) = 50) by (destruct arm; [apply mmap_flags_core_32 | apply mmap_flags_core_4032 | apply mmap_flags_core_32]).
 assert (CONTB : forall model' FULL',
 slice_post (slarm_of arm) addr n model model' -> slice_mem (slarm_of arm) addr n FULL FULL' -> m_fs model' = m_fs model ->
-srealizes SEGS (mkCfg (mkst (regupd R 10 addr) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL' (seg_rom SEGS)) model') TB).
+srealizesM SEGS bm (mkCfg (mkst (regupd R 10 addr) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL' (seg_rom SEGS)) model') TB).
 { intros model' FULL' SPo SM Hfs.
 assert (SH : slice_hyps E cs R FULL model (slarm_of arm) m addr n nZ model' FULL') by (constructor; assumption).
 rewrite (v_addi_pc (pc cs) Hp0 Hp4). rewrite bv5_10.
@@ -743,7 +743,7 @@ injection Hn as <-. exact (CS1 _ (pc cs + 4) (s_next (a_ss cs)) nhi Hregs' Hk' H
 assert (Hk' : know_ok SEGS E (MR E cs model' FULL') (kimg_clip A (kn_cutout (kn cs) b off ne))).
 { apply know_ok_filter. eapply (APSG.know_ok_cutout SEGS); [exact (co_know _ _ _ _ _ _ _ _ _ _ _ _ HC) | exact MROUT']. }
 injection Hn as <-. exact (CS1 _ (pc cs + 4) (s_next (a_ss cs)) nhi Hregs' Hk' HnZ ltac:(intros HH; discriminate HH)). }
-assert (CONTC : srealizes SEGS (mkCfg (mkst (regupd R 10 (errno_ret ENOMEM)) (v_addi (Z_to_bv 64 (pc cs)) 4) (unfill addr n FULL) (seg_rom SEGS))
+assert (CONTC : srealizesM SEGS false (mkCfg (mkst (regupd R 10 (errno_ret ENOMEM)) (v_addi (Z_to_bv 64 (pc cs)) 4) (unfill addr n FULL) (seg_rom SEGS))
 (fixedin_destroyed_model addr n model)) TC).
 { set (model' := fixedin_destroyed_model addr n model). set (FULL' := unfill addr n FULL).
 set (lne := bv_unsigned (edenot E (am_base m)) <? bv_unsigned addr).
@@ -807,9 +807,9 @@ assert (HBUD : prot = 3 -> mmap_fixed_rw_budget_ok (Z_to_bv 64 flg) model addr n
 unfold budget_ok in Hbud. pose proof (budget_slack E cs R FULL model nhi HC Hbud). lia.
 + apply mmap_fixed_rw_budget_ok_recommit_intro; [apply mmap_noreserve_b_4032 | exact Hwf | exact Hal | unfold page_size; rewrite Un; exact HnZal | rewrite Un; lia | rewrite Un; pose proof TOP_ok' as HT'; unfold top_ok, CEIL in HT'; unfold CEIL in *; lia |].
 eapply vm_backing_used_limit; [exact (co_minv _ _ _ _ _ _ _ _ _ _ _ _ HC) | apply A_wf_allowA']. }
-assert (HA' : srealizes SEGS (mkCfg (mkst (regupd R 10 (errno_ret ENOMEM)) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL (seg_rom SEGS)) model) TA)
-by exact (refuse_cont cs E R FULL model TA HC Hp0 Hp4 HKA).
-assert (HB' : srealizes SEGS (mkCfg (mkst (regupd R 10 addr) (v_addi (Z_to_bv 64 (pc cs)) 4)
+assert (HA' : srealizesM SEGS false (mkCfg (mkst (regupd R 10 (errno_ret ENOMEM)) (v_addi (Z_to_bv 64 (pc cs)) 4) FULL (seg_rom SEGS)) model) TA)
+by exact (refuse_cont false cs E R FULL model TA HC Hp0 Hp4 HKA).
+assert (HB' : srealizesM SEGS bm (mkCfg (mkst (regupd R 10 addr) (v_addi (Z_to_bv 64 (pc cs)) 4)
 (if Z.eqb prot 0 then unfill addr n FULL else zfill addr n FULL) (seg_rom SEGS))
 (fixedin_ok_model prot (Z_to_bv 64 flg) addr n model)) TB).
 { destruct arm; subst prot flg; cbn [Z.eqb slarm_of] in CONTB |- *.
@@ -828,12 +828,12 @@ apply CONTB; [| | reflexivity].
 * constructor; reflexivity.
 * split; [intros x Hx; apply unfill_out; exact Hx | intros x Hx; apply unfill_in; exact Hx]. }
 fold nZ in CONTC. fold n in CONTC.
-exact (srz_mmap_fixedin_lazy SEGS R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w prot (Z_to_bv 64 flg) addr len TA TB TC
+exact (srz_mmap_fixedin_lazy SEGS bm R (Z_to_bv 64 (pc cs)) FULL (seg_rom SEGS) model w prot (Z_to_bv 64 flg) addr len TA TB TC
 Hf He Hhalt R17 Hprot Hcore R10 Hal Hpos R11 ltac:(lia) Hce R12' R13' R14 R15 Hrfres Hmc HBUD HA' HB' CONTC).
 Qed.
 Theorem node_mmapin_g_sound : forall hole : bool, mm3_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 (node_mmapin_g A LIMIT hole).
 Proof.
-intros hole cs csa csb cscs E R FULL model TA TB TC HC Hec Hn HKA HKB HKC.
+intros hole bm cs csa csb cscs E R FULL model TA TB TC HC Hec Hn HKA HKB HKC.
 unfold node_mmapin_g in Hn.
 destruct (mmap_gate cs) as [[[prot flags] isnull]|] eqn:Hg; [|discriminate].
 destruct (mmap_gate_sound cs prot flags isnull Hg) as (H17 & H12 & H13 & H14 & H15 & _).
@@ -845,18 +845,18 @@ match fixed_in_args_g cs arm, mmap_fixed_in_g A LIMIT cs arm with
 | Some (b, off, ne, nlo, nhi, m), Some csO => Some (refuse cs, csO, mmap_destroyed A hole cs b off ne m)
 | _, _ => None
 end = Some (csa, csb, cscs) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA (t_alt2 TB TC))).
+srealizesM SEGS bm (cfg R (pc cs) FULL model) (t_alt2 TA (t_alt2 TB TC))).
 { intros arm H12' H13' Hn'.
 destruct (fixed_in_args_g cs arm) as [[[[[[b off] ne] nlo] nhi] m]|] eqn:HFI; [|discriminate].
 destruct (mmap_fixed_in_g A LIMIT cs arm) as [csO|] eqn:HO; [|discriminate]. injection Hn' as <- <- <-.
-eapply (mmap_fixed_in_sound3 hole cs arm b off ne nlo nhi m csO); eauto. }
+eapply (mmap_fixed_in_sound3 hole bm cs arm b off ne nlo nhi m csO); eauto. }
 destruct prot as [|p|p]; try discriminate Hn; try (repeat (destruct p as [p|p|]; try discriminate Hn));
 destruct flags as [|q|q]; try discriminate Hn; try (repeat (destruct q as [q|q|]; try discriminate Hn));
 refine (CASES _ _ _ Hn); first [exact H12 | exact H13].
 Qed.
 Theorem node_mmapin2_g_sound : mm2_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 (node_mmapin2_g A LIMIT).
 Proof.
-intros cs csa csb E R FULL model TA TB HC Hec Hn HKA HKB.
+intros b cs csa csb E R FULL model TA TB HC Hec Hn HKA HKB.
 unfold node_mmapin2_g in Hn. discriminate Hn.
 Qed.
 End e.

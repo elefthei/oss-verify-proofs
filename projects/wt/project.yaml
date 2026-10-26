@@ -47,6 +47,11 @@ assets:
     file: wt-bin.tar.zst
     bytes: 84562314
     sha256: e194828eaf2c76a460c21982bb93979dccfa11a2271738d1eb8d6bde0038c449
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wt-src.tar.zst

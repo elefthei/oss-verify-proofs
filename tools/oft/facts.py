@@ -23,10 +23,6 @@ PHRASEBOOK = yamlio.load_file(os.path.join(os.path.dirname(os.path.abspath(__fil
 # not their bytes; `oft revisions` compares two trees under one version (docs/versioning.md).
 FINGERPRINT_TAG = "oss-fuzz-theorems/statement/2"
 THEORIES = ("theories/Shapes.v", "theories/Images.v")
-# Version 1 hashed their bytes.  Release 2026.10.1's tools reach a tree before the data that moves its pins to version
-# 2, so a proof in a tree whose release.yaml names 2026.10.1 or earlier may still pin the version-1 fingerprint.
-V1_FINGERPRINT_TAG = "oss-fuzz-theorems/statement/1"
-V1_PINS_THROUGH = (2026, 10, 1)
 
 
 # the origins of the fuzz targets OSS-Fuzz runs, in a project OSS-Fuzz has: its own files, and the project's own
@@ -147,7 +143,6 @@ class Statement:
         self.counterexample = None
         self.derived_counterexample = False   # refuted by another statement's counterexample run
         self.fingerprint = None
-        self.v1_fingerprint = None   # set only where a version-1 pin is accepted (V1_PINS_THROUGH)
 
     @property
     def id(self):
@@ -438,8 +433,10 @@ def bin_recipe(tree, proj):
     return b["recipe"] if "recipe" in b else (tree.release or {}).get("recipe")
 
 
+# A finding is hand-written, untrusted pull-request input before lint's path
+# pass.  Validate its files here, before any loader follows a link or reads
+# more than the same 64 KiB paths.py permits.
 FINDING_FILE_CAP = 64 << 10
-FINDING_INPUT_CAP = 1 << 20
 
 
 class BoundedFileError(Exception):
@@ -484,10 +481,10 @@ def read_bounded(path, cap=FINDING_FILE_CAP):
     return data
 
 
-def _finding_fd(tree, rel, cap=FINDING_FILE_CAP):
+def _finding_fd(tree, rel):
     """open_bounded, or None after recording the loader error."""
     try:
-        return open_bounded(tree.path(rel), cap)
+        return open_bounded(tree.path(rel))
     except BoundedFileError as e:
         tree.err(rel, str(e))
         return None
@@ -653,7 +650,7 @@ def _finding_record(tree, f, y):
         if not os.path.lexists(tree.path(finding_file)):
             tree.err(rel, "missing " + name)
             continue
-        fd = _finding_fd(tree, finding_file, FINDING_INPUT_CAP)
+        fd = _finding_fd(tree, finding_file)
         if fd is None:
             continue
         calls = _driver_calls(fd)
@@ -742,8 +739,6 @@ def _derive(tree):
     for f in THEORIES:
         digests[f] = code_sha256(tree.path(f)) if os.path.isfile(tree.path(f)) else None
     lps = ((tree.release or {}).get("semantics") or {}).get("version")
-    v1_digests = {f: sha256_file(tree.path(f)) if os.path.isfile(tree.path(f)) else None
-                  for f in THEORIES} if _v1_pins_accepted(tree) else None
     _refute_agreements(tree)
     for st in by_id.values():
         exported = st.data.get("status")
@@ -760,8 +755,6 @@ def _derive(tree):
             continue                # no fingerprint: it would let anyone test a guess at a withheld binary
         try:
             st.fingerprint = fingerprint(st, digests, lps)
-            if v1_digests and st.proof:
-                st.v1_fingerprint = fingerprint(st, v1_digests, lps, V1_FINGERPRINT_TAG)
         except (shapes.ShapeError, KeyError, TypeError) as e:
             tree.err(st.id, "cannot be stated: %s" % e)
 
@@ -790,24 +783,15 @@ def _refute_agreements(tree):
                     break
 
 
-def _v1_pins_accepted(tree):
-    """True when tree's release.yaml names release 2026.10.1 or earlier (V1_PINS_THROUGH)."""
-    try:
-        return tuple(int(n) for n in str((tree.release or {})["release"]).split(".")) <= V1_PINS_THROUGH
-    except (KeyError, ValueError):
-        return False
-
-
-def fingerprint(st, digests, lps, tag=None):
+def fingerprint(st, digests, lps):
     """SHA-256 over what fixes the statement's meaning, and nothing else:
     no docstring, no image, .hex or .vo digest.  digests: the SHA-256 of the
-    code of each of THEORIES (of their bytes, for V1_FINGERPRINT_TAG); tag:
-    the version's, FINGERPRINT_TAG unless given."""
+    code of each of THEORIES."""
     if digests["theories/Shapes.v"] is None or digests["theories/Images.v"] is None:
         raise KeyError("theories/Shapes.v and theories/Images.v")
     params, body = shapes.term(st.data)
     builds = st.harness.data["builds"]
-    lines = [tag or FINGERPRINT_TAG, st.id, "Definition %s%s : Prop := %s." % (st.name, params, body)]
+    lines = [FINGERPRINT_TAG, st.id, "Definition %s%s : Prop := %s." % (st.name, params, body)]
     for b in sorted(set(st.data["builds"])):
         lines.append("build %s %s" % (b, builds[b]["sha256"]))
     lines += ["shapes %s" % digests["theories/Shapes.v"], "images %s" % digests["theories/Images.v"],

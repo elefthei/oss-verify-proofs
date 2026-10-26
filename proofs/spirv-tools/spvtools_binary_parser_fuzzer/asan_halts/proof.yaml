@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: spirv-tools/spvtools_binary_parser_fuzzer/asan_halts
+fingerprint: 1d80971b6928e320172b9cfbf9f7b8af01040781c8eb987b71af0afbe4e49bd4

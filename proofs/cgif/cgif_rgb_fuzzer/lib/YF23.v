@@ -357,7 +357,8 @@ split. { intros [] _. cbn [cfg_model]. img_exact (munmap_AI tfxsegs (w_H W) (w_A
 ltac:(img_try (cbn [fst snd]; rewrite UM, UL; ceil; unfold zone3, TFX_IMG_LO, kLowShadowBeg, kHighMemBeg, ASAN_CEIL in *; img_lia))). }
 split. { intros []. cbn [aok]. img_refl. }
 split; [img_refl|]. split; [img_refl|]. split; [img_try (intros XX; discriminate XX)|]. split; [img_try (intros [] XX; discriminate XX)|].
-intros [] _. cbn [amreal].
+split; [img_try (intros [] [XX|XX]; [discriminate XX | exfalso; exact (XX eq_refl)])|].
+intros [] _. cbn [Z.eqb Pos.eqb]. cbn [amreal].
 eapply SRr_bind; [img_try (img_exact INNER)|]. intros W3 c3 _ HR. pose proof HR as (-> & regs' & mem' & mat' & Ec3 & _).
 img_apply SRr_use_AI. intros HAI3. rewrite Ec3 in HAI3 |- *. cbn [cfg_model] in HAI3.
 img_apply (SRr_world_le tfxsegs W W2).

@@ -527,7 +527,7 @@ at_N W md0 WINP PBUF S_N W c1 -> AI tfxsegs (w_H W) (w_A W) (cfg_model c1) ->
 (forall z, z = 0 \/ z = 1 -> aok sN (KMmapSec MSv) z) ->
 (forall c', at_S W (cfg_model c1) WINP PBUF (resume S_N (SLit ENOMEM_RETv) (ss_mem S_N) (ss_facts S_N)) W c' ->
 ALedger tfxsegs ly S (cfg_model c1) -> amwf (cfg_model c1) -> same_io md0 (cfg_model c1) ->
-amreal tfxsegs (K 0) W c' Q) ->
+amrealE tfxsegs (K 0) W c' Q) ->
 (forall (a : word) (W3 : world tfxsegs) (ms : machine_state) (E' : env),
 let A := bv_unsigned a in let md2 := mmap_model a (w64 MSv) (cfg_model c1) in
 grant_ok_na_pin (cfg_model c1) a MSv = true ->
@@ -551,8 +551,9 @@ node_ok tfxsegs c1 I (fun _ => []) nx /\
 (forall i, AI tfxsegs (w_H W) (w_A W) (cfg_model c1) -> AI tfxsegs (w_H W) (w_A W) (cfg_model (nx i))) /\
 (forall i, aok sN (KMmapSec MSv) (bit i)) /\ sp i0 = false /\ bit i0 = 1 /\
 (refusable (KMmapSec MSv) = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AI tfxsegs (w_H W) (w_A W) (cfg_model (nx i)) -> srealizes tfxsegs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal tfxsegs (K (bit i)) W (nx i) Q).
+(forall i, sp i = true -> AI tfxsegs (w_H W) (w_A W) (cfg_model (nx i)) -> srealizesM tfxsegs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead tfxsegs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal tfxsegs (K (bit i)) W (nx i) Q else amrealE tfxsegs (K (bit i)) W (nx i) Q).
 Proof.
 clearP. intros RT sN K Q c1 HAR Hev HN HAI Haok KEEP GRANT IO0.
 pose proof size_facts as (Z1 & Z2 & Z3 & Z4 & Z5 & Z6 & Z7 & Z8 & Z9 & _).
@@ -605,7 +606,22 @@ split. { intros i _. destruct (OUT i) as (md_i & _ & _ & [[_ [-> ->]] | (_ & Hg 
 split. { intros i. img_apply Haok. destruct (OUT i) as (md_i & _ & _ & [[Bv _] | [Bv _]]); clear - Bv; zlia. }
 split; [img_refl|]. split; [img_try (img_exact Bi0)|]. split; [img_try (intros _; exists iR; split; [img_refl | img_exact Bi1])|].
 split; [img_try (intros i E; discriminate E)|].
-intros i _. destruct (OUT i) as (md_i & Hh_i & IO_i & [[Bv [NX MD]] | (Bv & Hg & NX & MD)]); rewrite Bv, NX; rewrite MD in IO_i |- *.
+split. { (* [comment removed for export] *)
+intros i [E | Hb]; [discriminate E |].
+destruct (OUT i) as (md_i & _ & _ & [[_ [NX _]] | (Bv & _ & _ & _)]); [| exfalso; exact (Hb Bv)].
+destruct (OUT i0) as (md_0 & _ & _ & [[B0 _] | (_ & Hg0 & NX0 & _)]); [rewrite Bi0 in B0; discriminate B0 |].
+assert (H222 : bv_unsigned (getr regs 17) = 222) by (img_try (rewrite R17; img_refl)).
+assert (A0 : forall v : word, reg_get (regupd regs 10 v) (Z_to_bv 5 10) = v).
+{ intros v. replace (Z_to_bv 5 10) with (10%bv : bv 5) by (img_try (img_apply bv_eq; img_refl)). img_apply regupd_same. }
+rewrite Ec, Hms, Hpc.
+img_apply (fo_dead_node tfxsegs (pend_at regs (Z_to_bv 64 (0x64c88 + D_2c4)) mem (seg_rom tfxsegs)) mdN (getr regs 17) I (fun _ => []) nx i0 i NODE eq_refl
+(injected_family_off_mmap tfxsegs _ _ H222)).
+- rewrite NX0. img_refl.
+- rewrite NX0. cbn [cfg_ms ms_regs mkst]. rewrite A0, (refusal_b_mmap tfxsegs _ _ mdN _ H222).
+img_exact (grant_na_pin_not_errno mdN (ga i0) MSv ltac:(img_try (clear - MSB; zlia)) Hg0).
+- rewrite NX. img_refl.
+- rewrite NX. cbn [cfg_ms ms_regs mkst]. rewrite A0. img_exact (mmap_enomem_refusal tfxsegs _ _ mdN H222). }
+intros i _. destruct (OUT i) as (md_i & Hh_i & IO_i & [[Bv [NX MD]] | (Bv & Hg & NX & MD)]); rewrite Bv, NX; cbn [Z.eqb Pos.eqb]; rewrite MD in IO_i |- *.
 -
 img_apply KEEP; [| img_try (img_exact LN) | img_try (img_exact MWN) | img_try (img_exact IO0)].
 pose proof (at_N_cont W W mdN WINP PBUF S_N (SLit ENOMEM_RETv) (errno_ret ENOMEM) (fun _ => False) mem ms E' HE HS Hrv MEQ PRS (hsub_refl _)

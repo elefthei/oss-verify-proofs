@@ -63,7 +63,7 @@ same rule refuses those.
 
 A counterexample that shows a memory-safety bug in a library goes to that
 library first ([SECURITY.md](../SECURITY.md)). Checking a proof needs LPS and
-the checker image that [release.yaml](../release.yaml) names
+the checker image that [release.yaml](../release.yaml) names, both public
 ([checking.md](checking.md)).
 
 ## Checking a proof locally

@@ -35,6 +35,11 @@ assets:
     file: tcpreplay-bin.tar.zst
     bytes: 393732
     sha256: a029566bcb0d59d22b46a826c9bf4a1970044dfc7ea525de8abd8da231f153bd
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: tcpreplay-src.tar.zst

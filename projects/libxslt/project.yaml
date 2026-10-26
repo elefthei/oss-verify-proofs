@@ -31,6 +31,11 @@ assets:
     file: libxslt-bin.tar.zst
     bytes: 1787324
     sha256: 43e629935e42e58b7bf6e52a5b547db1f23b36daed1bfe56afa2d1c7d8d65d9f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libxslt-src.tar.zst

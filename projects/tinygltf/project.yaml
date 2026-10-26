@@ -33,6 +33,11 @@ assets:
     file: tinygltf-bin.tar.zst
     bytes: 472931
     sha256: a8d7d311cab5a132f04288a12d545899ab1677c7891009d62a51117699184d3a
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: tinygltf-src.tar.zst

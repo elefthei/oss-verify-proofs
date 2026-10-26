@@ -41,6 +41,11 @@ assets:
     file: cpp-httplib-bin.tar.zst
     bytes: 996015
     sha256: e318cb98e4be0d6e58da1cb2438a3a3634c2383d13a9881b44546b0b100ffd7b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cpp-httplib-src.tar.zst

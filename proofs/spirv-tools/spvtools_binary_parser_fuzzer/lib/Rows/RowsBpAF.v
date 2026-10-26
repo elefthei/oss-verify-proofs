@@ -17,3 +17,4 @@ Require OssFuzzTheorems.spirv_tools.spvtools_binary_parser_fuzzer.images.Asan.
 #[global] Unset Lia Cache. #[global] Unset Nia Cache. #[global] Unset Nra Cache.
 
 Definition base_bpA := RowsBpA.base_bpA_abort FinalS1.lib_contract_S1_final TopA.as_realizes_spec_A_final.
+Definition halts_bpA := RowsBpA.halts_bpA TopA.as_realizes_spec_A_final.

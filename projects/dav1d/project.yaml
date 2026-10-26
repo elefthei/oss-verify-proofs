@@ -33,6 +33,11 @@ assets:
     file: dav1d-bin.tar.zst
     bytes: 1738230
     sha256: 23f942f07f7a08c85b682eb79c0262d4e05744bf05e0c503b44d597b04950453
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: dav1d-src.tar.zst

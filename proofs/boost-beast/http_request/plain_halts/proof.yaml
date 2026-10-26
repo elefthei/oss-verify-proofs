@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: boost-beast/http_request/plain_halts
+fingerprint: b2fbff9ed23b3a896e1a4e18f0149aa0452d3654906f72c9986042dd737dd8d2

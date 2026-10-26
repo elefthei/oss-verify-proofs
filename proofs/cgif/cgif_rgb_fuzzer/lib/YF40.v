@@ -113,6 +113,19 @@ destruct HD as [HD|HD].
 - right. assert (y / 8 <= q * 8 / 8) by (img_try (img_apply Z.div_le_mono; img_lia)). rewrite Z.div_mul in H by img_lia. img_lia.
 Qed.
 
+Lemma amrealE_atok {imgk : img} {R} : forall (t : itree astate R) ns (P : bool -> R -> Prop) (W : world tfxsegs) c (Q : R -> world tfxsegs -> config -> Prop),
+atok ns t P -> amrealE tfxsegs t W c (fun r W' c' => (exists ns', P ns' r) -> Q r W' c') -> amrealE tfxsegs t W c Q.
+Proof.
+induction t as [r | q snap k IH | pc | f]; intros ns P W c Q AT AM; cbn in *.
+- eapply SRrF_mono; [img_try (img_exact AM)|]. intros W' c' _ H. img_apply H. exists ns. img_exact AT.
+- destruct AT as [_ Hk]. eapply SRrF_mono; [img_try (img_exact AM)|]. intros W1 c1 _ H. cbv beta in H.
+destruct q;
+try (destruct H as (z & Hz & H); exists z; split; [img_try (img_exact Hz)|]; eapply IH; [img_try (img_exact (Hk z Hz)) | img_try (img_exact H)]);
+(destruct H as (I & nx & bit & sp & i0 & N1 & N2 & N3 & N4 & N5 & N6 & N7 & N8); exists I, nx, bit, sp, i0;
+repeat (split; [img_try (assumption)|]); intros i Hi; eapply IH; [img_try (img_apply Hk; img_apply N3) | img_try (img_exact (N8 i Hi))]).
+- img_exact AM.
+- img_exact AM.
+Qed.
 Lemma amreal_atok {imgk : img} {R} : forall (t : itree astate R) ns (P : bool -> R -> Prop) (W : world tfxsegs) c (Q : R -> world tfxsegs -> config -> Prop),
 atok ns t P -> amreal tfxsegs t W c (fun r W' c' => (exists ns', P ns' r) -> Q r W' c') -> amreal tfxsegs t W c Q.
 Proof.
@@ -121,8 +134,10 @@ induction t as [r | q snap k IH | pc | f]; intros ns P W c Q AT AM; cbn in *.
 - destruct AT as [_ Hk]. eapply SRr_mono; [img_try (img_exact AM)|]. intros W1 c1 _ H. cbv beta in H.
 destruct q;
 try (destruct H as (z & Hz & H); exists z; split; [img_try (img_exact Hz)|]; eapply IH; [img_try (img_exact (Hk z Hz)) | img_try (img_exact H)]);
-(destruct H as (I & nx & bit & sp & i0 & N1 & N2 & N3 & N4 & N5 & N6 & N7 & N8); exists I, nx, bit, sp, i0;
-repeat (split; [img_try (assumption)|]); intros i Hi; eapply IH; [img_try (img_apply Hk; img_apply N3) | img_try (img_exact (N8 i Hi))]).
+(destruct H as (I & nx & bit & sp & i0 & N1 & N2 & N3 & N4 & N5 & N6 & N7 & N9 & N8); exists I, nx, bit, sp, i0;
+repeat (split; [img_try (assumption)|]); intros i Hi; specialize (N8 i Hi); destruct (Z.eqb (bit i) 1);
+[eapply IH; [img_try (img_apply Hk; img_apply N3) | img_try (img_exact N8)]
+|eapply amrealE_atok; [img_try (img_apply Hk; img_apply N3) | img_try (img_exact N8)]]).
 - img_exact AM.
 - img_exact AM.
 Qed.

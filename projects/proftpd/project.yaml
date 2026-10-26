@@ -28,6 +28,11 @@ assets:
     file: proftpd-bin.tar.zst
     bytes: 639996
     sha256: 2590fd9231221db9194d0b127056382bb6466ace4b8b4b12e3775a18c12bf5ac
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: proftpd-src.tar.zst

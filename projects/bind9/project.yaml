@@ -56,6 +56,11 @@ assets:
     file: bind9-bin.tar.zst
     bytes: 8471399
     sha256: 051ac0a12435affa1a12ebebad446d060d1b8076f05c6a6139842a8f568c668b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: bind9-src.tar.zst

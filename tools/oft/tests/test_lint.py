@@ -254,22 +254,6 @@ class Changes(unittest.TestCase):
         self.assertEqual(self.ledger_change(rewrite),
                          ["paths %s: a finding's control.bin is never changed: %s" % (rel, rel)])
 
-    def test_a_recorded_input_over_64_kib_is_never_rewritten(self):
-        """The base comparison reads input.bin and control.bin up to the finding input cap, as the loader does, so a
-        full-payload input is compared too."""
-        for name in ("input.bin", "control.bin"):
-            rel = self.FINDING + "/" + name
-            long_input = b"\0\0\0\0\0\0" + b"x" * (64 << 10)
-            with self.subTest(name=name), tree() as base, tree() as t:
-                add_findings(base)
-                add_findings(t)
-                base.write(rel, long_input, "wb")
-                t.write(rel, long_input, "wb")
-                self.assertEqual([str(f) for f in t.lint(changed=[rel], pr_kind="maintainer", base=base.root)], [])
-                t.write(rel, long_input[:-1] + b"y", "wb")
-                self.assertEqual([str(f) for f in t.lint(changed=[rel], pr_kind="maintainer", base=base.root)],
-                                 ["paths %s: a finding's %s is never changed: %s" % (rel, name, rel)])
-
     def test_the_statements_a_finding_shows_false_only_grow(self):
         """Narrowed to asan_agrees, with the asan-ubsan runs dropped beside it, the record meets every rule; the base
         narrowed the same way, the proposed tree's two statements are a stronger claim, which CI checks."""
@@ -799,27 +783,6 @@ class Proofs(unittest.TestCase):
             other = next(s for s in facts.load(t.root).statements() if s.id == "zlib/checksum_fuzzer/plain_halts")
         found = self.proof("Theorem plain_halts_holds : True. Proof. exact I. Qed.\n", fingerprint=other.fingerprint)
         self.assertEqual([f.msg.split(" (")[0] for f in found], ["fingerprint differs from the statement's current one"])
-
-    def test_a_version_1_pin_holds_through_release_2026_10_1(self):
-        """Release 2026.10.1's tools reach a tree whose pins are still version 1, which hashed the bytes of the
-        theories: there a proof may pin its statement's version-1 fingerprint, and in a later release it may not."""
-        sid = "zlib/checksum_fuzzer/plain_halts"
-        for release, found in (("2026.10.0", []), ("2026.10.1", []),
-                               ("2026.11.0", ["fingerprint differs from the statement's current one"])):
-            with self.subTest(release=release), tree() as t:
-                r = t.yaml("release.yaml")
-                r["release"] = release
-                t.put_yaml("release.yaml", r)
-                st = next(s for s in facts.load(t.root).statements() if s.id == sid)
-                v1 = facts.fingerprint(st, {f: facts.sha256_file(t.path(f)) for f in facts.THEORIES},
-                                       r["semantics"]["version"], facts.V1_FINGERPRINT_TAG)
-                self.assertNotEqual(v1, st.fingerprint)
-                t.put_yaml("proofs/%s/proof.yaml" % sid,
-                           {"schema": "oss-fuzz-theorems/proof/1", "proves": sid, "fingerprint": v1})
-                t.write("proofs/%s/Proof.v" % sid, "Theorem plain_halts_holds : True. Proof. exact I. Qed.\n")
-                t.generate()
-                self.assertEqual([f.msg.split(" (")[0] for f in t.lint() if f.rule == "proofs"
-                                  or "proof.yaml" in str(f)], found)
 
     def test_load_and_cd_are_commands_only_where_a_sentence_starts(self):
         names = ("Lemma l : forall i, i = Load 2 \\/ i <> Load 2.\n"

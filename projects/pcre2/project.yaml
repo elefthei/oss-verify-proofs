@@ -52,6 +52,11 @@ assets:
     file: pcre2-bin.tar.zst
     bytes: 1049809
     sha256: e43e0fef9b3245500e128c17a6c9e27b9b10f71423375571308dd242a4aa1315
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: pcre2-src.tar.zst

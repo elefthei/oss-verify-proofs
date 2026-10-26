@@ -26,6 +26,11 @@ assets:
     file: libvnc-bin.tar.zst
     bytes: 591675
     sha256: cc1da1eb82ea6ae4c85fb00f7c5ade747b1462216bbce0fc244643613e547182
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libvnc-src.tar.zst

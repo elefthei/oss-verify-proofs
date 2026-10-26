@@ -33,13 +33,11 @@ from . import facts, names, paths, rocq, rules, schema, urls, yamlio
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 MAX_BYTES = 5 << 20
-CAPS = [
+CAPS = [  # (pattern, bytes)
     ("index/*.tsv", 64 << 20),
     ("projects/*/*/source/**", 256 << 10),
     ("counterexamples/**", 64 << 10),
-    ("findings/*/*/*/input.bin", facts.FINDING_INPUT_CAP),
-    ("findings/*/*/*/control.bin", facts.FINDING_INPUT_CAP),
-    ("findings/**", facts.FINDING_FILE_CAP),
+    ("findings/**", 64 << 10),
     ("proofs/*/*/*/classifier/**", 1 << 20),
 ]
 PROOF_DIR_CAP = 5 << 20
@@ -821,10 +819,10 @@ def _fixed_evidence(tree, base, ledger):
             if fixed not in ledger or not os.path.lexists(tree.path(fixed)):
                 continue
             try:
-                proposed = facts.read_bounded(tree.path(fixed), facts.FINDING_INPUT_CAP)
+                proposed = facts.read_bounded(tree.path(fixed))
             except facts.BoundedFileError:
                 continue
-            if proposed != facts.read_bounded(os.path.join(base, fixed), facts.FINDING_INPUT_CAP):
+            if proposed != facts.read_bounded(os.path.join(base, fixed)):
                 out.append(Finding("paths", fixed, "a finding's %s is never changed: %s" % (name, fixed)))
         head = tree.findings.get("%s/%s/%s" % (p, h, s))
         dropped = sorted(set(was["statements"]) - set(head.data["statements"])) if head else []

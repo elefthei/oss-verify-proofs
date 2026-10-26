@@ -77,6 +77,11 @@ assets:
     file: apache-logging-log4cxx-bin.tar.zst
     bytes: 31734482
     sha256: 51f7785d0a7c36d580c37013baa439f3b616e2699094b4e53c9df2658e97c17c
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: apache-logging-log4cxx-src.tar.zst

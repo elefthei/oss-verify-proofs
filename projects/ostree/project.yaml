@@ -32,6 +32,11 @@ assets:
     file: ostree-bin.tar.zst
     bytes: 2950793
     sha256: 7419c583a259b3ef57725b9bf0ea791354cb32cafa3e0485a487be9bce9d3aac
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: ostree-src.tar.zst

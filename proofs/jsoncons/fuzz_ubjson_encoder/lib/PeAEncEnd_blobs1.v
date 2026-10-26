@@ -1,3 +1,6 @@
+(* Copyright 2026 Anthropic PBC *)
+(* SPDX-License-Identifier: Apache-2.0 OR MIT *)
+(* Modified by Theorem Labs, 2026-10: ported to the binaries of release 2026.10.0 and LPS 2afba80c; the theorem statements are restated in the form this release states them. *)
 From OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib Require KReplay.
 Ltac2 kr_b_001 () := "h01wp;1p;2p;4p-1R0p10000R1p4p710p9P0P1p4p7210p9P0P1p4p73110p9P0p1000Np4p710p8g000ej10Tg001Jj16Tg001hj12Tg002Kj21Tg0035j25Tg003[j24Tg004Mj43Tg004i#0#0#0#0#0#0#6R0#2R1P1f0R2,10,50P21402C3X01P2O1X01P2O1W0o".
 Ltac2 kr_b_002 () := "h01wh11Xp;1p;2g000ej10Tg001Jj18Tg001hj12Tg005Nj21Tg002Kj27Tg006Aj26Tg006]j13Tg007Fj24Tg007bj25Tg004i#0#0#0#0#0#0#8R0#2R1f0R2,10g008=1702R3'6%30,43'5P2b1X01P2O1X01P2O1W0o".

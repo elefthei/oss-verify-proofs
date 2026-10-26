@@ -46,6 +46,11 @@ assets:
     file: libpng-proto-bin.tar.zst
     bytes: 993508
     sha256: ea7bbd637cd81e5b36476740ca64e6d95ee5a5697ad595701d81473c4875e285
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libpng-proto-src.tar.zst

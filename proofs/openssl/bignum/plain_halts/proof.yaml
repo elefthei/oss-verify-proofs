@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/bignum/plain_halts
+fingerprint: bbf31c77d9ec7e91582f04c89b5bdc97dcbe0f62fb112e65a26f05ba76c32f50

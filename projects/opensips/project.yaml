@@ -39,6 +39,11 @@ assets:
     file: opensips-bin.tar.zst
     bytes: 600845
     sha256: b540b6530b9f30a4f08cd0f14ea69ea8d77448016ed6e64254b5322820eb5207
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: opensips-src.tar.zst

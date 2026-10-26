@@ -41,6 +41,11 @@ assets:
     file: openthread-bin.tar.zst
     bytes: 17234887
     sha256: cdf7b378ca970e76436070158ade5e0769bb6960165495b0942a23fce9a94780
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: openthread-src.tar.zst

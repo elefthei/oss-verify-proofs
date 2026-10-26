@@ -227,6 +227,11 @@ assets:
     file: ndpi-bin.tar.zst
     bytes: 835467
     sha256: 51ebe31ec0ed60a34cb8919562f426fb7e5029327b81a2edc14c47802c3e1ae7
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: ndpi-src.tar.zst

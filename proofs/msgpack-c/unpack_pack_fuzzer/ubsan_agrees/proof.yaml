@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: msgpack-c/unpack_pack_fuzzer/ubsan_agrees
-fingerprint: 289df81929ecf3b6a7a4b72c0e84b10a8ad833b274649f2498cf2b111ae3d8ed
+fingerprint: 671700970bbedf4254a57d4f642fe9b9dc042f66b025015c4e381085ca44c6c4

@@ -31,6 +31,11 @@ assets:
     file: flex-bin.tar.zst
     bytes: 265326
     sha256: 081976384fd91c3055506f2ff11fd436f33a3c4e082adced9987e27b8367e0fc
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: flex-src.tar.zst

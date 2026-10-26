@@ -32,6 +32,11 @@ assets:
     file: oss-fuzz-example-bin.tar.zst
     bytes: 315033
     sha256: 031a04a1feee6008572687ddd13f352b813722d1ab4ba270873f3b3b5c56b373
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: oss-fuzz-example-src.tar.zst

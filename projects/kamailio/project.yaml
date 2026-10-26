@@ -58,6 +58,11 @@ assets:
     file: kamailio-bin.tar.zst
     bytes: 351994
     sha256: f32aa067184c9e256f03ebf8d847ff25c8179ec55e5bda7be60c9851f6f6b085
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: kamailio-src.tar.zst

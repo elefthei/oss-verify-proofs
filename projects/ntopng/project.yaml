@@ -42,6 +42,11 @@ assets:
     file: ntopng-bin.tar.zst
     bytes: 439934
     sha256: 15d6537dd7b228e58c9af3675fb5bc1f894152c26e731497ed22bebe11495584
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: ntopng-src.tar.zst

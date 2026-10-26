@@ -110,6 +110,11 @@ assets:
     file: pjsip-bin.tar.zst
     bytes: 1273931
     sha256: fd924265b8d91a1aa10c543b34169bc169431d19f17c298911e361d9ea7dd0fc
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: pjsip-src.tar.zst

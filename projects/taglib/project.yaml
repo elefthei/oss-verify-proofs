@@ -25,6 +25,11 @@ assets:
     file: taglib-bin.tar.zst
     bytes: 2436083
     sha256: fc6fd10a666757b9658d796dada6d850c6a4ab30620fd4345d16c7b4fb141d46
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: taglib-src.tar.zst

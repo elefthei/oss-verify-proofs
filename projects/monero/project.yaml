@@ -94,6 +94,11 @@ assets:
     file: monero-bin.tar.zst
     bytes: 16736099
     sha256: ad82e5a2850c06fe0ce53265fa57a4886432448c9d05d206ac1b76e00811fc4d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: monero-src.tar.zst

@@ -21,6 +21,11 @@ Require OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.
 Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopUbsan.
 Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopAsanH.
 Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopBothH.
+Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.SpecHalts.
+Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.PAssemble.
+Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.UAssemble.
+Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopHaltsA.
+Require OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopHaltsB.
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
 End SpuriousCfgM.
@@ -84,4 +89,50 @@ Theorem strong_universal_error_free_from_chars_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.M.init_pc OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.M.phdrs).
 Proof.
   exact OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopBothH.base_both.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_fast_float_from_chars_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    FastFloatFromCharsHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.fast_float.from_chars.images.Plain.M.loaded_segments OssFuzzTheorems.fast_float.from_chars.images.Plain.M.init_pc OssFuzzTheorems.fast_float.from_chars.images.Plain.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.fast_float.from_chars.lib.SpecHalts.halts_of_realizes_SPECH _ _ _ _ _
+           (OssFuzzTheorems.Proofs.fast_float.from_chars.lib.PAssemble.plain_realizes_A_lim _ OssFuzzTheorems.Proofs.fast_float.from_chars.lib.SpecHalts.shipped_lim_source_ge)).
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_fast_float_from_chars_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    FastFloatFromCharsHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.fast_float.from_chars.images.Asan.M.loaded_segments OssFuzzTheorems.fast_float.from_chars.images.Asan.M.init_pc OssFuzzTheorems.fast_float.from_chars.images.Asan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopHaltsA.halts_asan.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_fast_float_from_chars_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    FastFloatFromCharsHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.fast_float.from_chars.images.Ubsan.M.loaded_segments OssFuzzTheorems.fast_float.from_chars.images.Ubsan.M.init_pc OssFuzzTheorems.fast_float.from_chars.images.Ubsan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.fast_float.from_chars.lib.SpecHalts.halts_of_realizes_SPECH _ _ _ _ _
+           (OssFuzzTheorems.Proofs.fast_float.from_chars.lib.UAssemble.ubsan_realizes_A_lim _ OssFuzzTheorems.Proofs.fast_float.from_chars.lib.SpecHalts.shipped_lim_source_ge)).
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_fast_float_from_chars_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    FastFloatFromCharsHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.M.init_pc OssFuzzTheorems.fast_float.from_chars.images.AsanUbsan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.fast_float.from_chars.lib.TopHaltsB.halts_both.
 Qed.

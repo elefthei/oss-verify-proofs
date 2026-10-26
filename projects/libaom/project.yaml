@@ -29,6 +29,11 @@ assets:
     file: libaom-bin.tar.zst
     bytes: 12132517
     sha256: 5a2911d94191d569323fa48c71acf4d1691c18620c37cf3b4b81fa6ee457336f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libaom-src.tar.zst

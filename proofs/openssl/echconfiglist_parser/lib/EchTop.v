@@ -4,11 +4,15 @@
 (* [comment removed for export] *)
 From Stdlib Require Import ZArith NArith List QArith Lia.
 Require LinuxProcessSemantics.EquivalenceDefinition.Equivalence.
+Require LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.
 Require OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.
 Require OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.
 From LinuxProcessSemantics.LinuxProcessSem Require Import BvBase MemImageType State Run.
 From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib Require Import Scfg ShapeAlg Spec HeapCeil HeapSecret.
+From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib Require Import EchHalts.
 From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib Require BaseUbsan.
+From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib Require RefTop.
+From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ub Require UbTop.
 From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ref Require ECH_Iface MallocSR ECH_LibTop.
 From OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ub Require ECH_Iface MallocSR ECH_LibTop.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
@@ -17,10 +21,37 @@ Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.S
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
 End SpuriousCfgM.
 
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module OpensslEchconfiglistParserHaltsPlainExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslEchconfiglistParserHaltsPlainExits.
+
+Module OpensslEchconfiglistParserHaltsUbsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslEchconfiglistParserHaltsUbsanExits.
+
 (* [comment removed for export] *)
 Definition FZ_p : forall (HCEIL : HeapCeil) (HSEC : HeapSecret),
     @OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ref.ECH_Iface.fuzz_stmt HCEIL (@OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ref.MallocSR.HS HCEIL HSEC)
   := OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ref.ECH_LibTop.fuzz_closed.
+
+Theorem halts_allowed_openssl_echconfiglist_parser_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslEchconfiglistParserHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.M.loaded_segments OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.M.init_pc OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.M.phdrs).
+Proof.
+  apply (@halts_of_realizes_spec hunspell_scfg). unfold full_stmt. intros sp brk mbase rnd inp Hsp Hbrk Hfit Hva Hve Hfs.
+  apply (RefTop.ref_realizes_spec_lim FZ_p); try assumption. unfold Equivalence.ShippedBudgets.lim_source, source_alloc_limit. lia.
+Qed.
 
 (* [comment removed for export] *)
 Definition FZ_u : forall (HCEIL : HeapCeil) (HSEC : HeapSecret),
@@ -35,3 +66,14 @@ Theorem strong_universal_error_free_echconfiglist_parser_ubsan :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.M.loaded_segments OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.M.init_pc OssFuzzTheorems.openssl.echconfiglist_parser.images.Plain.M.phdrs)
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.M.loaded_segments OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.M.init_pc OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.M.phdrs).
 Proof. exact (BaseUbsan.ubsan_base FZ_p FZ_u). Qed.
+
+Theorem halts_allowed_openssl_echconfiglist_parser_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslEchconfiglistParserHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.M.loaded_segments OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.M.init_pc OssFuzzTheorems.openssl.echconfiglist_parser.images.Ubsan.M.phdrs).
+Proof.
+  apply (@halts_of_realizes_spec hunspell_scfg). unfold full_stmt. intros sp brk mbase rnd inp Hsp Hbrk Hfit Hva Hve Hfs.
+  apply (OssFuzzTheorems.Proofs.openssl.echconfiglist_parser.lib.Ub.UbTop.ub_realizes_spec_lim FZ_u); try assumption. unfold Equivalence.ShippedBudgets.lim_source, source_alloc_limit. lia.
+Qed.

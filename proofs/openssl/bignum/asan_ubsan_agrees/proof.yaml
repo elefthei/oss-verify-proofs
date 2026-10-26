@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: openssl/bignum/asan_ubsan_agrees
-fingerprint: f435ea8cee4de986d717114924b29bcb6aaeaab0a2ea2b8112ad31fc186bc82c
+fingerprint: 738e5427efe6dede025b2c24449ce8a560b7e0a23e74eba5f05bea2a3e18def5

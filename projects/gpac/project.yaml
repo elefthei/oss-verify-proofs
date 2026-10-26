@@ -35,6 +35,11 @@ assets:
     file: gpac-bin.tar.zst
     bytes: 58671599
     sha256: 7efd4e2938bfc0d7f419c345762e3bccfa319531b9207d7d7614ab9f19bdc342
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: gpac-src.tar.zst

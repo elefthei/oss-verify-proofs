@@ -27,11 +27,11 @@ match x with
 end.
 Section b. Context {fx : YK11.FPState}.
 Lemma XE0_sound : forall SEGS A nx0 LIMIT TOP SINV argH FS0, emit_stmt SEGS A nx0 LIMIT TOP XE0 SINV argH FS0.
-Proof. intros ? ? ? ? ? ? ? ?. intros id args cs fd ps cs' E R FULL model T _ H _. discriminate H. Qed.
+Proof. intros ? ? ? ? ? ? ? ?. intros bm id args cs fd ps cs' E R FULL model T _ H _. discriminate H. Qed.
 Lemma XB0_sound : forall SEGS A nx0 LIMIT TOP SINV argH FS0, ext2_stmt SEGS A nx0 LIMIT TOP XB0 SINV argH FS0.
-Proof. intros ? ? ? ? ? ? ? ?. intros id args cs csa csb E R FULL model TA TB _ H. discriminate H. Qed.
+Proof. intros ? ? ? ? ? ? ? ?. intros bm id args cs csa csb E R FULL model TA TB _ H. discriminate H. Qed.
 Lemma x_stmt_XSniff_dead : forall SEGS A nx0 LIMIT TOP SINV argH FS0, x_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 XSniff.
-Proof. intros ? ? ? ? ? ? ? ?. intros args cs cs' E R FULL model T _ _ H. cbn [node_x] in H. discriminate H. Qed.
+Proof. intros ? ? ? ? ? ? ? ?. intros args bm cs cs' E R FULL model T _ _ H. cbn [node_x] in H. discriminate H. Qed.
 Section c.
 Variable segs : list Segment.
 Variable A : atable.
@@ -111,6 +111,7 @@ Variable startup_shape : shape.
 Variables KC0 BFUEL FUEL : nat.
 Hypothesis startup_cert :
 check segs IT0 A NX0G LIM (XNG segs XN1) XE0 XB0 HS hole_le KC0 BFUEL FUEL None (init_acs_of_g A) startup_plan = COk startup_shape.
+Hypothesis startup_live : lv startup_plan = true.
 Variable HOLES : nat -> env -> Fs.Fs -> TSet.
 Hypothesis HOLES_agree : forall h E E' fs', env_agree NX0G E E' -> HOLES h E fs' = HOLES h E' fs'.
 Hypothesis HOLES_nil : forall h E fs', HOLES h E fs' [].
@@ -168,9 +169,9 @@ HOLES HOLES_agree HOLES_nil hole_le HOLES_le FSQ KC0
 NSYS NBRK NMM2 NMIN NMIN2 NMPR NEXIT node_x_sound_all NJOIN XNG_sound
 (XE0_sound _ _ _ _ _ _ _ _) (XB0_sound _ _ _ _ _ _ _ _) HOLES_sound
 FUEL BFUEL None startup_plan (init_acs_of_g A) startup_shape startup_cert
-E0a (R0 sp) (FULL0 ph sp rdraw argv envp uid hw)
+true E0a (R0 sp) (FULL0 ph sp rdraw argv envp uid hw)
 (model0 segs sp brk0 mbase argv envp fs stdin uid gid hw groups net nofile sigmask urnd tmp) t_nil HC) as R.
-exact (R I eq_refl).
+exact (R I eq_refl startup_live).
 Qed.
 Theorem asan_startup_init : forall apc : N, Z.of_N apc = a_entry A ->
 srealizes segs (init_config segs apc ph sp brk0 mbase rdraw YA02.LIMIT

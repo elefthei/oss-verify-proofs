@@ -77,6 +77,11 @@ assets:
     file: readstat-bin.tar.zst
     bytes: 579852
     sha256: 68f60de8bfb9964cc429c0721b0cbd00b0b8898aaff20c2c5571d90e51a7edfd
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: readstat-src.tar.zst

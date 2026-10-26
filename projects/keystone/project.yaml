@@ -104,6 +104,11 @@ assets:
     file: keystone-bin.tar.zst
     bytes: 158805138
     sha256: 483c0bdcf36c6c36087ce1e55abbc25db49a7fc5e1ab9e5e299e895ab19b991d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: keystone-src.tar.zst

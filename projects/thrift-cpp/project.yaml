@@ -44,6 +44,11 @@ assets:
     file: thrift-cpp-bin.tar.zst
     bytes: 868870
     sha256: 9cba87b2b995feca0f69fb1527dcca6d195fda3ebb880d9691ef5c3122476d30
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: thrift-cpp-src.tar.zst

@@ -138,6 +138,11 @@ assets:
     file: boringssl-bin.tar.zst
     bytes: 1880063
     sha256: a93cfc1b6670baf5c89f43a74f8c902371a1957be96e2dd2434f7e1334278557
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: boringssl-src.tar.zst

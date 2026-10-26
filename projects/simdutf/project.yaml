@@ -51,6 +51,11 @@ assets:
     file: simdutf-bin.tar.zst
     bytes: 748084
     sha256: df7bbeba07ad9325775fa7efac7c4d57178cbb712faeb0625848dbc137311d0d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: simdutf-src.tar.zst

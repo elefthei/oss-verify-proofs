@@ -6,9 +6,21 @@
 
 From Stdlib Require Import NArith List QArith.
 Require LinuxProcessSemantics.EquivalenceDefinition.Equivalence.
+Require LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.
 Require OssFuzzTheorems.mbedtls.fuzz_pkcs7.images.Plain.
 Require OssFuzzTheorems.mbedtls.fuzz_pkcs7.images.Asan.
 Require OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.FinalAsan.
+Require OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.FinalHaltsAsan.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module MbedtlsFuzzPkcs7HaltsAsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End MbedtlsFuzzPkcs7HaltsAsanExits.
 
 Theorem strong_universal_error_free_fuzz_pkcs7_asan :
   LinuxProcessSemantics.EquivalenceDefinition.Equivalence.strong_universal_error_free_T_budgets
@@ -95,6 +107,15 @@ Qed.
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+Theorem halts_allowed_mbedtls_fuzz_pkcs7_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    MbedtlsFuzzPkcs7HaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.mbedtls.fuzz_pkcs7.images.Asan.M.loaded_segments OssFuzzTheorems.mbedtls.fuzz_pkcs7.images.Asan.M.init_pc OssFuzzTheorems.mbedtls.fuzz_pkcs7.images.Asan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.mbedtls.fuzz_pkcs7.lib.FinalHaltsAsan.halts_asan_assembled.
+Qed.
 
 (* [comment removed for export] *)
 

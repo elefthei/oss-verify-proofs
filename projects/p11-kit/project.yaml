@@ -40,6 +40,11 @@ assets:
     file: p11-kit-bin.tar.zst
     bytes: 271402
     sha256: cc575d0f0a6e090bc92ba50aa79598d2167c3e5630d6708f46ee0ee11379aa5c
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: p11-kit-src.tar.zst

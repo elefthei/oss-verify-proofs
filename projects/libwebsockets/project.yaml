@@ -27,6 +27,11 @@ assets:
     file: libwebsockets-bin.tar.zst
     bytes: 1453187
     sha256: 020b57e16684c2f3d825a9e9f8fc2947b9c2952f3a394e09d12f5614afbb6f38
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libwebsockets-src.tar.zst

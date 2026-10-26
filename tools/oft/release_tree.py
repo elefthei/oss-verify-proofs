@@ -39,7 +39,7 @@ import sys
 
 from . import facts, generate, paths, rules, yamlio
 
-# what only this repository has: who approves the facts, the facts review of a facts pull request and its criteria
+# what only this repository has: who approves the facts, the automated facts review of a pull request and its criteria
 # (the review runs on this repository's identity), and which proofs a release publishes
 INTERNAL = ("approvals.yaml", ".github/CODEOWNERS", ".github/workflows/facts-review.yml",
             ".claude/skills/review-facts/SKILL.md")

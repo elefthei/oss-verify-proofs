@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: simdjson/fuzz_ondemand/asan_ubsan_agrees
-fingerprint: 63a6a921d6e234ae534a731f214264144909ff8dd15f5558d69c645660054777
+fingerprint: bbe92f31b7789f5a26a11240197f058a759fd80851cd86b48d997bdb55d021f8

@@ -35,6 +35,11 @@ assets:
     file: libpcap-bin.tar.zst
     bytes: 1112700
     sha256: 3255af7992f2753543cd8f26bcc8a0b89181dfa26a5345c492d4fb4b7ef34a0e
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libpcap-src.tar.zst

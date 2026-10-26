@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/punycode/plain_halts
+fingerprint: 002c7e0d491bbd423205a89bbc61bd0b2f31b7c19669c631c9214d3e5149fb5a

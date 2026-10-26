@@ -681,7 +681,7 @@ Lemma NZ0 : forall q, In q (vm_maps (m_vmmaps md0)) -> 0 < bv_unsigned (snd q).
 Proof. img_exact (proj2 (proj1 (proj2 (proj2 (proj2 HAR))))). Qed.
 Lemma SRr_with_AI : forall (Wx : world tfxsegs) cx (Q : world tfxsegs -> config -> Prop),
 SRr tfxsegs Wx cx Q -> SRr tfxsegs Wx cx (fun W' c' => AI tfxsegs (w_H W') (w_A W') (cfg_model c') /\ Q W' c').
-Proof. clear. intros Wx cx Q H HI T HK. img_apply (H HI T). intros W' c' Hle HI' HQ. img_exact (HK W' c' Hle HI' (conj HI' HQ)). Qed.
+Proof. clear. intros Wx cx Q H b HI T HK. img_apply (H b HI T). intros W' c' Hle HI' HQ. img_exact (HK W' c' Hle HI' (conj HI' HQ)). Qed.
 Lemma lit_m1 : Z_to_bv 64 18446744073709551615 = Z_to_bv 64 (-1). Proof. clear. img_apply bv_eq. img_refl. Qed.
 Lemma lit_enomem : Z_to_bv 64 ENOMEM_RET = errno_ret ENOMEM. Proof. clear. unfold errno_ret, ENOMEM, ENOMEM_RET. img_apply bv_eq. img_refl. Qed.
 
@@ -788,6 +788,24 @@ Definition SHR (sh : Z) (a : Z) : Prop := sh <= a < sh + 32768.
 Definition P_grant {imgk : img} (W3 : world tfxsegs) (addr sh : Z) (P : (word -> option byte) -> Prop) : (word -> option byte) -> Prop :=
 fun m => P m /\ (forall a, RANGE addr a -> apresent (w_H W3) m a /\ m (w64 a) = Some (Z_to_bv 8 0)) /\
 (forall a, SHR sh a -> apresent (w_H W3) m a).
+Lemma fo_dead_commit3 : forall regs pc mem md (I : Type) (nx : I -> config) (j i : I) (a : word) mj memj mi memi,
+getr regs 17 = Z_to_bv 64 222 ->
+node_ok tfxsegs (mkCfg (pend_at regs pc mem (seg_rom tfxsegs)) md) I (fun _ => []) nx ->
+nx j = mkCfg (mkst (regupd regs 10 a) (v_addi pc 4) memj (seg_rom tfxsegs)) mj ->
+bv_unsigned a < 2 ^ 64 - 4095 ->
+nx i = mkCfg (mkst (regupd regs 10 (errno_ret ENOMEM)) (v_addi pc 4) memi (seg_rom tfxsegs)) mi ->
+fo_dead tfxsegs (mkCfg (pend_at regs pc mem (seg_rom tfxsegs)) md) (nx i).
+Proof.
+clear. intros regs pc mem md I nx j i a mj memj mi memi H17 Hnode Hj Ha Hi.
+assert (H222 : bv_unsigned (getr regs 17) = 222) by (rewrite H17; img_apply unsigned_lit_small; clear; zlia).
+assert (RG : forall v, reg_get (regupd regs 10 v) (Z_to_bv 5 10) = v).
+{ intros v. unfold regupd, reg_get. replace (Z_to_bv 5 10) with (10%bv : bv 5) by (img_apply bv_eq; img_refl). rewrite bvmap_get_set_same. img_refl. }
+img_apply (fo_dead_node tfxsegs (pend_at regs pc mem (seg_rom tfxsegs)) md (getr regs 17) I (fun _ => []) nx j i Hnode eq_refl (injected_family_off_mmap tfxsegs _ _ H222)).
+- rewrite Hj. img_refl.
+- rewrite Hj. cbn [cfg_ms ms_regs YK11.mkst]. rewrite RG. img_apply mmap_grant_not_refusal; [img_exact H222 | img_exact Ha].
+- rewrite Hi. img_refl.
+- rewrite Hi. cbn [cfg_ms ms_regs YK11.mkst]. rewrite RG. img_apply mmap_enomem_refusal. img_exact H222.
+Qed.
 Lemma node3 : forall (q : kreq) (sN : astate) (K : Z -> itree astate (unit * astate)) (Q : unit * astate -> world tfxsegs -> config -> Prop)
 (Wx : world tfxsegs) (md : Model) (X : Z -> Prop) (P : (word -> option byte) -> Prop) (ss : sstate) (c1 : config)
 (ea : sv) (addr sh : Z) (hole : bool) (cs : list YQ0b.chunk),
@@ -811,11 +829,11 @@ refusable q = true -> (forall z, z = 0 \/ z = 1 -> aok sN q z) ->
 (forall a, SHR sh a -> ~ X a) -> (forall a, SHR sh a -> mem0 (w64 a) <> None) ->
 hole = false ->
 (forall c', at_R3 Wx (cfg_model c1) X P (resume ss (SLit ENOMEM_RET) (ss_mem ss) (ss_facts ss)) Wx c' ->
-AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizes tfxsegs c' t_nil) ->
+AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizesM tfxsegs false c' t_nil) ->
 (forall c', let md3 := fixedin_destroyed_model (w64 addr) (w64 kUserMapSize) (cfg_model c1) in
 AI tfxsegs (w_H Wx) (w_A Wx) md3 -> amwf md3 -> same_io md0 md3 -> eager_used md3 <= eager_used (cfg_model c1) ->
 at_R3 Wx md3 (fun a => X a \/ RANGE addr a) P (resume ss (SLit ENOMEM_RET) (ss_mem ss) (ss_facts ss)) Wx c' ->
-amreal tfxsegs (K 0) Wx c' Q) ->
+amrealE tfxsegs (K 0) Wx c' Q) ->
 (forall (W3 : world tfxsegs) c', let md2 := grant_md hole FL50 (w64 addr) (w64 kUserMapSize) (cfg_model c1) in
 wle Wx W3 -> w_A W3 = (sh, sh + 32768) :: (addr, addr + kUserMapSize) :: w_A Wx -> hsub (w_H W3) (w_H Wx) ->
 (forall a : word, w_H Wx a = false -> w_H W3 a = false) ->
@@ -830,8 +848,9 @@ node_ok tfxsegs c1 I (fun _ => []) nx /\
 (forall i, AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c1) -> AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model (nx i))) /\
 (forall i, aok sN q (bit i)) /\ sp i0 = false /\ bit i0 = 1 /\
 (refusable q = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model (nx i)) -> srealizes tfxsegs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal tfxsegs (K (bit i)) Wx (nx i) Q).
+(forall i, sp i = true -> AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model (nx i)) -> srealizesM tfxsegs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead tfxsegs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal tfxsegs (K (bit i)) Wx (nx i) Q else amrealE tfxsegs (K (bit i)) Wx (nx i) Q).
 Proof.
 intros q sN K Q Wx md X P ss c1 ea addr sh hole cs HN HAI Hpc H17 H10 Hea Uea H11 H12 H13 H14 H15 Hnc Hhd Hsk
 Hal HaRB HaHI Hsh Hshal Hshlo Hshhi PLACE MWn HTOP SLACK Hrq Haok HPu HXsh H0sh HOLEF KEEP DESTR GRANT IO0.
@@ -915,6 +934,14 @@ ltac:(img_try (cbn [sv_denot]; img_apply lit_enomem)) Hnc ltac:(img_try (intros 
 (fun a _ (f : False) => f) ltac:(img_try (rewrite Hms in HPm; img_exact HPm))) as C.
 rewrite Hms in C. cbn [ms_regs pend_at] in C. rewrite Hpc in C.
 eapply at_R3_weaken; [img_try (img_exact C) | img_try (intros a [Ha|[]]; img_exact Ha) | img_try (intros m Hm; img_exact Hm)]. }
+split.
+{ intros i Hi. cbv beta in Hi.
+assert (Bn1 : bit i <> 1).
+{ intros E1. destruct Hi as [Hi|Hi]; [apply Z.eqb_eq in Hi; rewrite E1 in Hi; discriminate Hi | apply Hi; rewrite E1; img_refl]. }
+destruct (OUT i0) as (md_0 & _ & _ & [[B0 _] | [[_ [NX0 _]] | [B0 _]]]); [exfalso; rewrite Bi0 in B0; discriminate B0 | | exfalso; rewrite Bi0 in B0; discriminate B0].
+rewrite Ec, Hms.
+destruct (OUT i) as (md_i & _ & _ & [[_ [NXi _]] | [[Bv _] | [_ [_ [NXi _]]]]]); [| exfalso; exact (Bn1 Bv) |];
+(eapply (fo_dead_commit3 regs _ mem mdN I nx i0 i (w64 addr)); [img_exact R17 | img_exact NODE | img_exact NX0 | rewrite Uaddr; clear - A0; unfold kUserMapSize in A0; zlia | img_exact NXi]). }
 intros i Ei. apply Z.eqb_neq in Ei. destruct (OUT i) as (md_i & Hh_i & IO_i & [[Bv _] | [[Bv [NX MD]] | [Bv [_ [NX MD]]]]]); [img_try (exfalso; img_exact (Ei Bv)) | | ]; rewrite Bv, NX; rewrite MD in IO_i |- *; cbn [Z.eqb Pos.eqb].
 2:{
 set (md3 := fixedin_destroyed_model (w64 addr) (w64 kUserMapSize) mdN) in *.
@@ -1004,7 +1031,7 @@ YN05.ceil_of_top (alloc_top (m_vmmaps (cfg_model c1))) ->
 eager_used (cfg_model c1) + A_bytes (w_A Wx) + kUserMapSize <= vm_limit (m_vmmaps (cfg_model c1)) ->
 (forall m m' : word -> option byte, (forall x : word, ~ RANGE addr (bv_unsigned x) -> m' x = m x) -> P m -> P m') ->
 (forall c', at_R3 Wx (cfg_model c1) X P (resume ss (SLit ENOMEM_RET) (ss_mem ss) (ss_facts ss)) Wx c' ->
-AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizes tfxsegs c' t_nil) ->
+AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizesM tfxsegs false c' t_nil) ->
 (forall (W4 : world tfxsegs) c', let md4 := restore_md FLR (w64 addr) (w64 kUserMapSize) (cfg_model c1) in
 wle Wx W4 -> w_A W4 = (addr, addr + kUserMapSize) :: w_A Wx -> hsub (w_H W4) (w_H Wx) ->
 (forall a : word, w_H Wx a = false -> w_H W4 a = false) ->
@@ -1012,9 +1039,9 @@ wle Wx W4 -> w_A W4 = (addr, addr + kUserMapSize) :: w_A Wx -> hsub (w_H W4) (w_
 AI tfxsegs (w_H W4) (w_A W4) md4 -> amwf md4 -> same_io md0 md4 -> eager_used md4 <= eager_used (cfg_model c1) ->
 A_bytes (w_A W4) = A_bytes (w_A Wx) + kUserMapSize ->
 at_R3 W4 md4 (fun a => X a \/ RANGE addr a) P (resume ss ea (ss_mem ss) (ss_facts ss)) W4 c' ->
-amreal tfxsegs t W4 c' Q) ->
+amrealE tfxsegs t W4 c' Q) ->
 same_io md0 (cfg_model c1) ->
-amreal tfxsegs t Wx c1 Q.
+amrealE tfxsegs t Wx c1 Q.
 Proof.
 intros RT t Q Wx md X P ss c1 ea addr cs HN HAI Hpc H17 H10 Hea Uea H11 H12 H13 H14 H15 Hnc Hhd Hsk
 Hal HaRB HaHI PLACE MWn HTOP SLACK HPu ERR GRANT IO0.
@@ -1078,7 +1105,7 @@ assert (RWIN : forall r a, In r (ss_mem ss) -> base_val E' (YQ0b.r_base r) + YQ0
 assert (SCR : forall a, sp0 - RSTACK <= a < sp0 -> ~ RANGE addr a) by (img_try (intros a Ha; unfold RANGE; clear - Ha SX1 HaRB HaHI; unfold kUserMapSize in *; zlia)).
 assert (IOtr : forall m2, YG0b.same_io mdN m2 -> same_io md0 m2).
 { intros m2 (X1 & X2 & X3 & X4). destruct IO0 as (Y1 & Y2 & Y3 & Y4). unfold same_io. rewrite X1, X2, X3, X4. repeat split; assumption. }
-img_apply (amreal_silent_node tfxsegs t Wx c1 I nx (fun i => negb (ok i)) (fun i => if ok i then W4 else Wx) i0 Q).
+img_apply (amrealE_silent_node tfxsegs t Wx c1 I nx (fun i => negb (ok i)) (fun i => if ok i then W4 else Wx) i0 Q).
 - rewrite Ec, Hms. img_exact NODE.
 - intros i _. destruct (OUT i) as (md_i & _ & _ & [[Ok [MD (e & _ & NX)]] | [Ok [_ [NX MD]]]]); rewrite Ok, NX; cbn [cfg_model]; rewrite MD.
 + split; [img_try (img_apply wle_refl) | img_try (img_exact HAI)].
@@ -1124,10 +1151,10 @@ addr mod 65536 = 0 -> RBv <= addr -> addr + kUserMapSize <= RBv + 2 ^ 32 ->
 region_free (vm_reserved (m_vmmaps (cfg_model c1)) ++ vm_maps (m_vmmaps (cfg_model c1))) (w64 addr) (w64 kUserMapSize) = false ->
 YN05.ceil_of_top (alloc_top (m_vmmaps (cfg_model c1))) ->
 (forall c', at_R3 Wx (cfg_model c1) X P (resume ss (SLit ENOMEM_RET) (ss_mem ss) (ss_facts ss)) Wx c' ->
-AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizes tfxsegs c' t_nil) ->
+AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizesM tfxsegs false c' t_nil) ->
 (forall c', at_R3 Wx (cfg_model c1) X P (resume ss (SLit EEXIST_RET) (ss_mem ss) (ss_facts ss)) Wx c' ->
-AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizes tfxsegs c' t_nil) ->
-srealizes tfxsegs c1 t_nil.
+AI tfxsegs (w_H Wx) (w_A Wx) (cfg_model c') -> srealizesM tfxsegs false c' t_nil) ->
+srealizesM tfxsegs false c1 t_nil.
 Proof.
 intros Wx md X P ss c1 ea addr cs HN HAI Hpc H17 H10 Hea Uea H11 H12 H13 H14 H15 Hnc Hhd Hsk Hal HaRB HaHI PLACE HTOP ERRE ERRX.
 pose proof stack_ext_ok3 as [SX1 SX2]. pose proof derived_rangesR as DR. pose proof stack_ivsR as (_ & _ & _ & S4 & S5).
@@ -1305,8 +1332,9 @@ node_ok tfxsegs c1 I (fun _ => []) nx /\
 (forall i, AI tfxsegs (w_H W1) (w_A W1) (cfg_model c1) -> AI tfxsegs (w_H W1) (w_A W1) (cfg_model (nx i))) /\
 (forall i, aok sN q (bit i)) /\ sp i0 = false /\ bit i0 = 1 /\
 (refusable q = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AI tfxsegs (w_H W1) (w_A W1) (cfg_model (nx i)) -> srealizes tfxsegs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal tfxsegs (Kc (bit i)) W1 (nx i) Q)) ->
+(forall i, sp i = true -> AI tfxsegs (w_H W1) (w_A W1) (cfg_model (nx i)) -> srealizesM tfxsegs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead tfxsegs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal tfxsegs (Kc (bit i)) W1 (nx i) Q else amrealE tfxsegs (Kc (bit i)) W1 (nx i) Q)) ->
 amreal tfxsegs (IAsk q sN Kc) Wx cx Q.
 Proof. clear. intros q sN Kc Wx cx Q Hq H. destruct q; try (destruct Hq); cbn [amreal]; img_exact H. Qed.
 Lemma pairwise_In_any {A0 : Type} : forall (R : A0 -> A0 -> Prop) (l : list A0) x y, pairwise R l -> In x l -> In y l -> x = y \/ R x y \/ R y x.
@@ -1886,7 +1914,7 @@ assert (HPuF_q : forall m m' : word -> option byte, (forall x : word, ~ RANGE fa
 img_apply (P1_frame W (RANGE fadr) m m' Hfr); [| | img_try (img_exact HP)]; intros a Ha; unfold RANGE.
 + clear - Ha G24; zlia.
 + unfold DSTv, Pr in Ha. clear - Ha G24 M0 G33 Ymax2 DR TP Q1 Q2 HcR. try unfold T in *. numconst. unfold kFreeArrayMapSize, kUserMapSize in *. zlia. }
-eapply amreal_SRr_pre; [img_try (img_exact (SRr_with_AI _ _ _ (segD_r_e W md3_q XD_q (P1 W) W cpd_q HXD_q (pstable_P1 W) HRd_q)))|].
+eapply amrealE_SRr_pre; [img_try (img_apply SRr_F; img_exact (SRr_with_AI _ _ _ (segD_r_e W md3_q XD_q (P1 W) W cpd_q HXD_q (pstable_P1 W) HRd_q)))|].
 intros Wd_q cd_q _ [HAId_q HNd_q]. pose proof (proj1 HNd_q) as EWd_q. (subst Wd_q; cbv beta).
 pose proof NRFe_facts as (Rpc_q & R17_q & R10_q & Rea_q & R11_q & R12_q & R13_q & R14_q & R15_q & Rnc_q & Rhd_q & Rsk_q & Rres_e_q & Rres_x_q & Rres_g_q).
 destruct HNd_q as (HNwd_q & msRd_q & matRd_q & ERd_q & EcRd_q & HNrestd_q).
@@ -1910,10 +1938,10 @@ unfold mdD_q. rewrite eager_used_wvb, m_vmmaps_wvb, DLIM_q. clear - SLK_q EG3_q.
 + img_exact HPuF_q.
 + intros c3_q. rewrite EcD_q, Rres_e_q. intros HR3_q HAI3_q. img_exact (segD_re_e W mdD_q XD_q (P1 W) W c3_q HXD_q (pstable_P1 W) HR3_q HAI3_q).
 +
-intros W4_q c3_q. rewrite EcD_q. intros md4_q LE4_q A4_q SUB4_q MON4_q HEQ4_q AI4_q MW4_q IO4_q EG4_q AB4_q HR4_q. rewrite Rres_g_q in HR4_q. cbn [amreal].
+intros W4_q c3_q. rewrite EcD_q. intros md4_q LE4_q A4_q SUB4_q MON4_q HEQ4_q AI4_q MW4_q IO4_q EG4_q AB4_q HR4_q. rewrite Rres_g_q in HR4_q. cbn [amrealE].
 set (XG4_q := fun a => XD_q a \/ RANGE fadr a) in *.
 assert (HXG4_q : forall a, WINR0 a -> XG4_q a) by (img_try (intros a Ha; left; left; img_exact Ha)).
-eapply SRr_mono; [img_try (img_exact (segD_rg_e W4_q md4_q XG4_q (P1 W) W4_q c3_q HXG4_q (pstable_P1 W) HR4_q))|]. intros W' c'' _ HRET.
+eapply SRrF_mono; [img_try (img_apply SRr_F; img_exact (segD_rg_e W4_q md4_q XG4_q (P1 W) W4_q c3_q HXG4_q (pstable_P1 W) HR4_q))|]. intros W' c'' _ HRET.
 unfold MUX_e in HRET.
 img_apply (LEAF_fail mu hol false true W4_q md4_q XG4_q (P1 W) W' c'' S (eq_sym SG_S) HRET).
 * intros m HPm. img_apply (PF_fail W4_q m mu (P1_hmono W W4_q m MON4_q HPm)). intros E; exfalso; clear - E G15; unfold kUserMapSize in G15; zlia.
@@ -2118,7 +2146,7 @@ rewrite Fres_r in HRd_q.
 pose proof (place_U mdN LN NZN) as PLd_q. rewrite holeU_false in PLd_q.
 set (XD_q := fun a => WINR0 a \/ RANGE adr a) in *.
 assert (HXD_q : forall a, WINR0 a -> XD_q a) by (img_try (intros a Ha; left; img_exact Ha)).
-eapply amreal_SRr_pre; [img_try (img_exact (SRr_with_AI _ _ _ (seg3_Ur W md3_q XD_q PT W cpd_q HXD_q pstable_PT HRd_q)))|].
+eapply amrealE_SRr_pre; [img_try (img_apply SRr_F; img_exact (SRr_with_AI _ _ _ (seg3_Ur W md3_q XD_q PT W cpd_q HXD_q pstable_PT HRd_q)))|].
 intros Wd_q cd_q _ [HAId_q HNd_q]. pose proof (proj1 HNd_q) as EWd_q. (subst Wd_q; cbv beta).
 pose proof NR_facts as (Rpc_q & R17_q & R10_q & Rea_q & R11_q & R12_q & R13_q & R14_q & R15_q & Rnc_q & Rhd_q & Rsk_q & Rres_e_q & Rres_x_q & Rres_g_q).
 destruct HNd_q as (HNwd_q & msRd_q & matRd_q & ERd_q & EcRd_q & HNrestd_q).
@@ -2142,14 +2170,14 @@ unfold mdD_q. rewrite eager_used_wvb, m_vmmaps_wvb, DLIM_q. clear - SLK_q EG3_q.
 + intros m m' _ _. img_exact I.
 + intros c3_q. rewrite EcD_q, Rres_e_q. intros HR3_q HAI3_q. img_exact (seg3_URe W mdD_q XD_q PT W c3_q HXD_q pstable_PT HR3_q HAI3_q).
 +
-intros W4_q c3_q. rewrite EcD_q. intros md4_q LE4_q A4_q SUB4_q MON4_q HEQ4_q AI4_q MW4_q IO4_q EG4_q AB4_q HR4_q. rewrite Rres_g_q in HR4_q. cbn [amreal].
+intros W4_q c3_q. rewrite EcD_q. intros md4_q LE4_q A4_q SUB4_q MON4_q HEQ4_q AI4_q MW4_q IO4_q EG4_q AB4_q HR4_q. rewrite Rres_g_q in HR4_q. cbn [amrealE].
 set (XG4_q := fun a => XD_q a \/ RANGE adr a) in *.
 assert (HXG4_q : forall a, WINR0 a -> XG4_q a) by (img_try (intros a Ha; left; left; img_exact Ha)).
 apply (at_R3_strengthen W4_q md4_q XG4_q PT (P1 W4_q)) in HR4_q.
 2:{ intros m MEQ _ _. img_apply (P1_of_frameX W4_q XG4_q m SUB4_q MEQ); intros a Ha [[Hw|Hw]|Hw];
 [img_try (img_exact (fa_not_WINR0 a ltac:(clear - Ha M1; unfold kFreeArrayMax in *; zlia) Hw)) | img_try (img_exact (NAU a Ha Hw)) | img_try (img_exact (NAU a Ha Hw))
 | img_try (img_exact (slots_not_WINR0 a Ha Hw)) | img_try (img_exact (NBU a Ha Hw)) | img_try (img_exact (NBU a Ha Hw))]. }
-eapply SRr_mono; [img_try (img_exact (seg3_URg W4_q md4_q XG4_q (P1 W4_q) W4_q c3_q HXG4_q (pstable_P1 W4_q) HR4_q))|]. intros W' c'' _ HRET.
+eapply SRrF_mono; [img_try (img_apply SRr_F; img_exact (seg3_URg W4_q md4_q XG4_q (P1 W4_q) W4_q c3_q HXG4_q (pstable_P1 W4_q) HR4_q))|]. intros W' c'' _ HRET.
 img_apply (LEAF_fail mu hol true false W4_q md4_q XG4_q (P1 W4_q) W' c'' S (eq_sym SG_S) HRET).
 * intros m HPm. img_apply (PF_fail W4_q m mu HPm). intros E; exfalso; clear - E G15; unfold kUserMapSize in G15; zlia.
 * intros a [[Hw|Hw]|Hw]; unfold YF8d.XC; [img_try (unfold WINR0 in Hw; clear - Hw; tauto) | |];
@@ -2369,7 +2397,7 @@ rewrite Fres_r' in HRd_q.
 pose proof (place_F true 0 mdN' Ymax WUp LN' NZN') as PLd_q. rewrite (holeF_false true) in PLd_q.
 set (XD_q := fun a => XK a \/ RANGE fadr a) in *.
 assert (HXD_q : forall a, WINR0 a -> XD_q a) by (img_try (intros a Ha; left; img_exact (HXK a Ha))).
-eapply amreal_SRr_pre; [img_try (img_exact (SRr_with_AI _ _ _ (segD_r_g W3 md3_q XD_q PG W3 cpd_q HXD_q PSG HRd_q)))|].
+eapply amrealE_SRr_pre; [img_try (img_apply SRr_F; img_exact (SRr_with_AI _ _ _ (segD_r_g W3 md3_q XD_q PG W3 cpd_q HXD_q PSG HRd_q)))|].
 intros Wd_q cd_q _ [HAId_q HNd_q]. pose proof (proj1 HNd_q) as EWd_q. (subst Wd_q; cbv beta).
 pose proof NRFg_facts as (Rpc_q & R17_q & R10_q & Rea_q & R11_q & R12_q & R13_q & R14_q & R15_q & Rnc_q & Rhd_q & Rsk_q & Rres_e_q & Rres_x_q & Rres_g_q).
 destruct HNd_q as (HNwd_q & msRd_q & matRd_q & ERd_q & EcRd_q & HNrestd_q).
@@ -2395,10 +2423,10 @@ unfold mdD_q. rewrite eager_used_wvb, m_vmmaps_wvb, DLIM_q. clear - SLK_q EG3_q.
 * img_exact HPuG.
 * intros c3_q. rewrite EcD_q, Rres_e_q. intros HR3_q HAI3_q. img_exact (segD_re_g W3 mdD_q XD_q PG W3 c3_q HXD_q PSG HR3_q HAI3_q).
 *
-intros W4_q c3_q. rewrite EcD_q. intros md4_q LE4_q A4_q SUB4_q MON4_q HEQ4_q AI4_q MW4_q IO4_q EG4_q AB4_q HR4_q. rewrite Rres_g_q in HR4_q. cbn [amreal].
+intros W4_q c3_q. rewrite EcD_q. intros md4_q LE4_q A4_q SUB4_q MON4_q HEQ4_q AI4_q MW4_q IO4_q EG4_q AB4_q HR4_q. rewrite Rres_g_q in HR4_q. cbn [amrealE].
 set (XG4_q := fun a => XD_q a \/ RANGE fadr a) in *.
 assert (HXG4_q : forall a, WINR0 a -> XG4_q a) by (img_try (intros a Ha; left; img_exact (HXD_q a Ha))).
-eapply SRr_mono; [img_try (img_exact (segD_rg_g W4_q md4_q XG4_q PG W4_q c3_q HXG4_q PSG HR4_q))|]. intros W' c'' _ HRET.
+eapply SRrF_mono; [img_try (img_apply SRr_F; img_exact (segD_rg_g W4_q md4_q XG4_q PG W4_q c3_q HXG4_q PSG HR4_q))|]. intros W' c'' _ HRET.
 unfold MUX_g in HRET. rewrite <- G15 in HRET.
 assert (MON34_q : forall y : word, w_H W y = false -> w_H W4_q y = false) by (img_try (intros y Hy; img_exact (MON4_q y (MON3 y Hy)))).
 img_apply (LEAF_fail mu2 (del_hole mu hol) true true W4_q md4_q XG4_q PG W' c'' SUp ltac:(img_try (rewrite SG_upd; img_refl)) HRET).

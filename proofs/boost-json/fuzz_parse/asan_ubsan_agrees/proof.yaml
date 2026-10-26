@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: boost-json/fuzz_parse/asan_ubsan_agrees
-fingerprint: 287a51130a839141789b0a4ea1d49cee826c4af39662fa811f96fbca5ec1dd09
+fingerprint: c0e887e182245bdcbed2be4cf265edda1c8e33362aca44a2ccc0c0a4d8f10d14

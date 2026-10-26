@@ -44,6 +44,11 @@ assets:
     file: libmicrohttpd2-bin.tar.zst
     bytes: 5253860
     sha256: 1e3c86ca890a906d0163730c37d252a2a4c00d699e5b0c4f4be0011769d2e571
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libmicrohttpd2-src.tar.zst

@@ -30,6 +30,11 @@ assets:
     file: cpuinfo-bin.tar.zst
     bytes: 267545
     sha256: 00619c0927eeee61fab4a8c91e1925dec3d08b9e2ca79268a72999bbf4bf045f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cpuinfo-src.tar.zst

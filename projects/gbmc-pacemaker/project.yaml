@@ -28,6 +28,11 @@ assets:
     file: gbmc-pacemaker-bin.tar.zst
     bytes: 1508537
     sha256: 6551d0de235ddd19818d8c04ed3a333ccbc144c27c3d585718dc0d4c2c17d8e5
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: gbmc-pacemaker-src.tar.zst

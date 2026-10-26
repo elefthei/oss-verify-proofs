@@ -55,6 +55,11 @@ assets:
     file: openvpn-bin.tar.zst
     bytes: 268381
     sha256: 13c3088ad395d37aa04d76b823057da2403f4e24cb398e7fd1d341a24fc2dcf6
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: openvpn-src.tar.zst

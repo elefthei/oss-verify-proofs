@@ -58,6 +58,11 @@ assets:
     file: powerdns-bin.tar.zst
     bytes: 431764
     sha256: f1270ebb15d8b5d261611c6cdf42ca42767c4dcb29ed32498149e19fd4dafb6f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: powerdns-src.tar.zst

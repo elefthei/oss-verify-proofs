@@ -28,8 +28,10 @@ For each harness that it checks, `oft check`:
 1. checks every binary against its SHA-256 in `harness.yaml`;
 2. builds the memory images from the ELF files, then `Images.v`,
    `Statements.v` and `Characterise.v`;
-3. compiles the harness's proof library, `proofs/<project>/<harness>/lib/`,
-   if it has one (once), and then each proof. In CI this runs under
+3. builds the harness's proof library, `proofs/<project>/<harness>/lib/`, if
+   it has one (once), with dune from the `lib/dune` file that `oft generate`
+   writes, and refuses a library with any other build file. Then it compiles
+   each proof afresh with `rocq compile`. In CI this runs under
    `docker run --network none`, so it has no network;
 4. compiles a wrapper that it writes itself. The wrapper gives the proof's
    theorem the type of the statement, and prints what the result assumes:
@@ -112,8 +114,21 @@ not what it checks.
 | workflow | when | what |
 |---|---|---|
 | [release-check](../.github/workflows/release-check.yml) | each push to `main`, once a week, and on request | every committed proof, with `oft check` in the checker image; the badge on the README shows its result |
-| [pr](../.github/workflows/pr.yml) | each pull request, and each push to `main` | `oft lint`, `oft generate --check`, the tests of `tools/oft`, the controls in `tests/`, and `oft check` on each harness that the change affects (every harness when it changes `theories/`, `toolchain/` or `dune-project`) |
+| [pr](../.github/workflows/pr.yml) | each pull request, and each push to `main` | `oft lint`, `oft generate --check`, the tests of `tools/oft`, the controls in `tests/`, and `oft check` on each harness that the change affects (every harness when it changes `theories/` or `toolchain/`, and when a release pull request or a push to `main` changes `dune-project`). A pull request that is not a release is checked on the base's tree with its `proofs/` and `counterexamples/`, whose generated files, `dune-project` among them, the base's tools render again |
 | [weekly](../.github/workflows/weekly.yml) | once a week, after each release, and on request | every statement and every proof, with no cache (while the repository is private, each scheduled run checks a third of the harnesses in turn); a byte-for-byte comparison of ELF snapshots made on two kinds of machine; a fresh download and hash of every release asset that the facts pin by SHA-256 |
+
+release-check and pr restore dune's cache from earlier runs of this
+repository's own workflows, so a library or a statement whose sources did not
+change is not compiled again. dune reuses a compiled file only when its
+sources, its dependencies and the Rocq binary all hash the same as when it was
+compiled, and the cache is keyed by the checker image
+([tools/oft/ci/cache-key.sh](../tools/oft/ci/cache-key.sh)). Only a push to
+`main`, a maintainer's request and weekly's `warm` job save it; a pull request
+never does. Each proof and its wrapper are compiled afresh on every run, and
+weekly's sweep reads no cache. `oft check` builds a proof library only from
+the `lib/dune` that `oft generate` renders (it writes that file itself), and
+refuses a library that holds a symbolic link or any other build file, or a
+build file in a directory above it.
 
 Every counterexample and its control input are run again in the runner image,
 and a counterexample that stops reproducing fails CI.

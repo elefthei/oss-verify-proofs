@@ -15,10 +15,21 @@ Require LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.
 Require OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Plain.
 Require OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Asan.
 Require OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib.BsonPmAsanBase.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib.BsonPmHalts.
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
 End SpuriousCfgM.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module JsonconsFuzzBsonParserMaxHaltsPlainExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End JsonconsFuzzBsonParserMaxHaltsPlainExits.
 
 Theorem strong_universal_error_free_fuzz_bson_parser_max_asan :
   LinuxProcessSemantics.EquivalenceDefinition.Equivalence.strong_universal_error_free_T_scfg_budgets_abort
@@ -29,4 +40,15 @@ Theorem strong_universal_error_free_fuzz_bson_parser_max_asan :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Asan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Asan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Asan.M.phdrs).
 Proof.
 exact OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib.BsonPmAsanBase.bson_pm_asan_base_abort.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_jsoncons_fuzz_bson_parser_max_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzBsonParserMaxHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Plain.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Plain.M.init_pc OssFuzzTheorems.jsoncons.fuzz_bson_parser_max.images.Plain.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_bson_parser_max.lib.BsonPmHalts.bson_pm_halts_plain.
 Qed.

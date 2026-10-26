@@ -39,6 +39,11 @@ assets:
     file: wamr-bin.tar.zst
     bytes: 2151358
     sha256: 20daf72bae867e025df9a089537cac825082b8acc2ee2f390da80be86d2e2c87
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wamr-src.tar.zst

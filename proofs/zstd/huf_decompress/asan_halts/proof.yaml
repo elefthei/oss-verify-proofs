@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: zstd/huf_decompress/asan_halts
+fingerprint: 96fd80184091ab0f402721dd032bf70243830acd108781450e2d26cf901f0771

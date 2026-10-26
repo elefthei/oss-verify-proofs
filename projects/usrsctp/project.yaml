@@ -36,6 +36,11 @@ assets:
     file: usrsctp-bin.tar.zst
     bytes: 2064626
     sha256: 519aa5909a3129cd23410d12ec992408b4922e6d93c8fa1af2cbe3097f264393
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: usrsctp-src.tar.zst

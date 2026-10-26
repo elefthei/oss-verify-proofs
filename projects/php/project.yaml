@@ -46,6 +46,11 @@ assets:
     file: php-bin.tar.zst
     bytes: 86188658
     sha256: 353164f72ff67785e42c813850231484d5a575dd0a7fdc52bbfc2d57cd5f4ce5
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: php-src.tar.zst

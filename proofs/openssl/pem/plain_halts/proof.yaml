@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/pem/plain_halts
+fingerprint: 9ff9a421b0e07db76104588a2dfbb7dac1bc1ac2aa792d9f90ee554a33a3667d

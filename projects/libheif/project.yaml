@@ -43,6 +43,11 @@ assets:
     file: libheif-bin.tar.zst
     bytes: 29818497
     sha256: 015a085d91dcb42fc82a93edcf2846399a179928b6a9eb537a7facc28dcdac69
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libheif-src.tar.zst

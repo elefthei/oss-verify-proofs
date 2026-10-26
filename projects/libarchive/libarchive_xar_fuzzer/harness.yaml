@@ -24,6 +24,8 @@ modifications:
 - In every build, getenv() returns NULL, getpid() returns 1 and mkstemp() uses a fixed name, so the program
   depends only on its input.
 - A small driver reads the input file, calls the harness one to four times and prints each return value.
+- libFuzzer's dictionary libarchive_xar_fuzzer.dict and the options in libarchive_xar_fuzzer.options are not
+  used.
 builds:
   plain:
     file: libarchive_xar_fuzzer.plain
@@ -226,7 +228,17 @@ statements:
     reading: may-fail
     budgets: asan
     abort: signal
-    status: open
+    status: witnessed-false
+    witness:
+      build: plain
+      input_hex: 00000000000078617221001c00010000000000000000000000000000000000000000
+      refused:
+        call: mmap
+        position: 6
+        bytes: 16384
+      outcome: abort
+      after: uncaught-bad-alloc
+      runner: qemu-riscv64 10.0.11
   ubsan_agrees:
     kind: agreement
     builds:
@@ -235,7 +247,17 @@ statements:
     reading: may-fail
     budgets: standard
     abort: signal
-    status: open
+    status: witnessed-false
+    witness:
+      build: plain
+      input_hex: 00000000000078617221001c00010000000000000000000000000000000000000000
+      refused:
+        call: mmap
+        position: 6
+        bytes: 16384
+      outcome: abort
+      after: uncaught-bad-alloc
+      runner: qemu-riscv64 10.0.11
   asan_ubsan_agrees:
     kind: agreement
     builds:
@@ -244,7 +266,17 @@ statements:
     reading: may-fail
     budgets: asan
     abort: signal
-    status: open
+    status: witnessed-false
+    witness:
+      build: plain
+      input_hex: 00000000000078617221001c00010000000000000000000000000000000000000000
+      refused:
+        call: mmap
+        position: 6
+        bytes: 16384
+      outcome: abort
+      after: uncaught-bad-alloc
+      runner: qemu-riscv64 10.0.11
   plain_halts:
     kind: halts
     builds:
@@ -262,7 +294,17 @@ statements:
     reading: may-fail
     exits: any
     binds_checks: false
-    status: open
+    status: witnessed-false
+    witness:
+      build: plain
+      input_hex: 00000000000078617221001c00010000000000000000000000000000000000000000
+      refused:
+        call: mmap
+        position: 6
+        bytes: 16384
+      outcome: abort
+      after: uncaught-bad-alloc
+      runner: qemu-riscv64 10.0.11
   asan_halts:
     kind: halts
     builds:
@@ -290,7 +332,17 @@ statements:
     reading: may-fail
     exits: any
     binds_checks: false
-    status: open
+    status: witnessed-false
+    witness:
+      build: ubsan
+      input_hex: 00000000000078617221001c00010000000000000000000000000000000000000000
+      refused:
+        call: mmap
+        position: 6
+        bytes: 16384
+      outcome: abort
+      after: uncaught-bad-alloc
+      runner: qemu-riscv64 10.0.11
   asan_ubsan_halts:
     kind: halts
     builds:

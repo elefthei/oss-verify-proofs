@@ -38,6 +38,11 @@ assets:
     file: knot-dns-bin.tar.zst
     bytes: 1609373
     sha256: 06b8e4b68b09a7e53b7af7e50173dca43d0edc4c214046e86e66bc23f52d061c
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: knot-dns-src.tar.zst

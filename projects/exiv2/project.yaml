@@ -31,6 +31,11 @@ assets:
     file: exiv2-bin.tar.zst
     bytes: 20603532
     sha256: a95249a12998787b6ced419120f0e5b8d5c0297659a5bb9ea2c4e375c93a70c8
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: exiv2-src.tar.zst

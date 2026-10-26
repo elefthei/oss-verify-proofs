@@ -44,6 +44,11 @@ assets:
     file: ogre-bin.tar.zst
     bytes: 33458594
     sha256: 28f34a057e5bbe6f8b9661828eb348bb0f9e80ca57b4eeab26fe40737aed6eda
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: ogre-src.tar.zst

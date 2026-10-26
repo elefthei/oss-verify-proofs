@@ -18,14 +18,27 @@ Local Set Warnings "-abstract-large-number".
 Local Open Scope Z_scope.
 Section d. Context {fx : YK11.FPState} {rc : YN05.RunCeil}.
 Local Open Scope am_scope.
+Lemma amrealE_then_SRr {imgk : img} {R} : forall (t : itree astate R) W c (P Q : R -> world tfxsegs -> config -> Prop),
+amrealE tfxsegs t W c P -> (forall r W' c', P r W' c' -> SRr tfxsegs W' c' (Q r)) -> amrealE tfxsegs t W c Q.
+Proof.
+induction t as [r | q s k IH | pc | f]; intros W c P Q H HPQ; cbn [amrealE] in *.
+- eapply SRrF_bind; [img_try (img_exact H)|]. intros W' c' _ HP. img_exact (SRr_F _ _ _ _ (HPQ r W' c' HP)).
+- eapply SRrF_mono; [img_try (img_exact H)|]. intros W1 c1 _ Hk. destruct q; cbn beta iota in *;
+try (destruct Hk as (J & nx & bit & sp & i0 & H1 & H2 & H3 & H4 & H5 & H6 & H7 & H8); exists J, nx, bit, sp, i0;
+repeat (split; [img_try (assumption)|]); intros i Hi; eapply IH; [img_try (img_exact (H8 i Hi)) | img_try (img_exact HPQ)]).
+destruct Hk as (z & Hz & HR). exists z. split; [img_try (img_exact Hz)|]. eapply IH; [img_try (img_exact HR) | img_try (img_exact HPQ)].
+- img_exact H.
+- img_exact I.
+Qed.
 Lemma amreal_then_SRr {imgk : img} {R} : forall (t : itree astate R) W c (P Q : R -> world tfxsegs -> config -> Prop),
 amreal tfxsegs t W c P -> (forall r W' c', P r W' c' -> SRr tfxsegs W' c' (Q r)) -> amreal tfxsegs t W c Q.
 Proof.
 induction t as [r | q s k IH | pc | f]; intros W c P Q H HPQ; cbn [amreal] in *.
 - eapply SRr_bind; [img_try (img_exact H)|]. intros W' c' _ HP. img_exact (HPQ r W' c' HP).
 - eapply SRr_mono; [img_try (img_exact H)|]. intros W1 c1 _ Hk. destruct q; cbn beta iota in *;
-try (destruct Hk as (J & nx & bit & sp & i0 & H1 & H2 & H3 & H4 & H5 & H6 & H7 & H8); exists J, nx, bit, sp, i0;
-repeat (split; [img_try (assumption)|]); intros i Hi; eapply IH; [img_try (img_exact (H8 i Hi)) | img_try (img_exact HPQ)]).
+try (destruct Hk as (J & nx & bit & sp & i0 & H1 & H2 & H3 & H4 & H5 & H6 & H7 & Hd & H8); exists J, nx, bit, sp, i0;
+repeat (split; [img_try (assumption)|]); intros i Hi; specialize (H8 i Hi); destruct (Z.eqb (bit i) 1);
+[eapply IH; [img_try (img_exact H8) | img_try (img_exact HPQ)] | eapply amrealE_then_SRr; [img_try (img_exact H8) | img_try (img_exact HPQ)]]).
 destruct Hk as (z & Hz & HR). exists z. split; [img_try (img_exact Hz)|]. eapply IH; [img_try (img_exact HR) | img_try (img_exact HPQ)].
 - img_exact H.
 - img_exact I.

@@ -35,6 +35,11 @@ assets:
     file: picotls-bin.tar.zst
     bytes: 504004
     sha256: 3ba77464d343a0dc3cebd34cda96a707c98fb5b679ac590fcc3792778703a3d8
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: picotls-src.tar.zst

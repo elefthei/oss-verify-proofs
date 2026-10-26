@@ -121,17 +121,13 @@ def templates(reading, san, with_distribution, machine="rv64g"):
 # The status a Rust fuzz target exits with when it panics: the OSS Verify port's panic hook ends the process with it
 # (docs/running.md), where a libFuzzer build would abort().
 RUST_PANIC_STATUS = 79
-# The status the process ends with when a fuzz target calls exit() while it runs, whatever status it passes: the
-# driver's exit guard ends it with this one (docs/running.md, theories/Driver.v's harness_exited).
-HARNESS_EXIT_STATUS = 77
 
 
 def binds(check, st):
     """Does a failure of `check` contradict halts statement `st`?
 
     Computed, never read: a check that stops by abort, assert, trap or throw
-    contradicts every halts statement; one that stops by exit(), which ends the
-    process with status 77 whatever status the source passes, or by a Rust
+    contradicts every halts statement; one that stops by exit(n), or by a Rust
     panic, which exits with status 79, only a halts statement whose exit set
     leaves out that status; a print-only or return-only check contradicts
     nothing.  Only checks observed live in the binaries count."""
@@ -142,6 +138,6 @@ def binds(check, st):
         return True
     if stop in ("exit", "panic"):
         exits = st.get("exits", "any")
-        status = RUST_PANIC_STATUS if stop == "panic" else HARNESS_EXIT_STATUS
+        status = RUST_PANIC_STATUS if stop == "panic" else check.get("exit_status")
         return exits != "any" and status not in exits
     return False

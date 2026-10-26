@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: skcms/iccprofile_info/asan_ubsan_agrees
-fingerprint: 345903ff37c471b384f03b6002cef62fa3d6ab2d0a00e5465ea2092dd50ad95e
+fingerprint: 7897b0da6ccf334444ea79bb7ebd059fe60775cdfef8b8a935c333b5dcc06b7f

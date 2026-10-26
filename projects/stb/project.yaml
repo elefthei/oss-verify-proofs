@@ -32,6 +32,11 @@ assets:
     file: stb-bin.tar.zst
     bytes: 483555
     sha256: c49406ab9144c39eb01daedca829205e9a34cf668e1727994d349d4b1f74af9f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: stb-src.tar.zst

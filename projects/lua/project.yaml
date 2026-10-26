@@ -336,6 +336,11 @@ assets:
     file: lua-bin.tar.zst
     bytes: 1262786
     sha256: ee5a8d7c7eea56c9bd6e3b643e819c4f6f904db8ea243648479a951ac39b6762
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: lua-src.tar.zst

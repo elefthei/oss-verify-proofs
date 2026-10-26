@@ -16,6 +16,23 @@ Require OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.Plain.
 Require OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.Asan.
 Require OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.AsanUbsan.
 From OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.lib Require YZ00 YZ01.
+From OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.lib Require Halts_tra Halts_trb.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module CgifCgifRgbFuzzerHaltsAsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End CgifCgifRgbFuzzerHaltsAsanExits.
+
+Module CgifCgifRgbFuzzerHaltsBothExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End CgifCgifRgbFuzzerHaltsBothExits.
 
 (* [comment removed for export] *)
 
@@ -230,3 +247,25 @@ Qed.
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+
+(* [comment removed for export] *)
+Theorem halts_allowed_cgif_cgif_rgb_fuzzer_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    CgifCgifRgbFuzzerHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.Asan.M.loaded_segments OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.Asan.M.init_pc OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.Asan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.lib.Halts_tra.halts_allowed_cgif_cgif_rgb_fuzzer_halts_asan_closed.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_cgif_cgif_rgb_fuzzer_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    CgifCgifRgbFuzzerHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.cgif.cgif_rgb_fuzzer.images.AsanUbsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.cgif.cgif_rgb_fuzzer.lib.Halts_trb.halts_allowed_cgif_cgif_rgb_fuzzer_halts_both_closed.
+Qed.

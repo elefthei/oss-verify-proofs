@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: leptonica/edge_fuzzer/ubsan_agrees
-fingerprint: a363f9f3cff494ffaf5fc5e4efe169e058aa2940b52dd253d41917e7a8cb5934
+fingerprint: f4e8b4a995c2db33c879736eab2aa944dabe7172f7898d045bc4bff2e2078559

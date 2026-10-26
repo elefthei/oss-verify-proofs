@@ -29,6 +29,11 @@ assets:
     file: opusfile-bin.tar.zst
     bytes: 862646
     sha256: 1ed66c5bc7efa8171e152da2177ef24b69170f63601215ad868679cd532c21d5
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: opusfile-src.tar.zst

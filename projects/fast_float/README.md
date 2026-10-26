@@ -3,14 +3,14 @@
 
 [fastfloat/fast_float](https://github.com/fastfloat/fast_float) · OSS-Fuzz: [projects/fast_float](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/fast_float)
 
-**Status: available.** 1 of OSS-Fuzz's 1 fuzz target has statements. 4 binaries, 2.4 MB. 13 statements: 3 proved, 0 known false, 0 suspected false, 0 blocked by the model, 10 open.
+**Status: available.** 1 of OSS-Fuzz's 1 fuzz target has statements. 4 binaries, 2.4 MB. 13 statements: 7 proved, 0 known false, 0 suspected false, 0 blocked by the model, 6 open.
 
 Built from fast_float (commit `a8a02f77`).
 
 ## At a glance
 | harness | what it does | checks beyond "does not crash" | statements |
 |---|---|---|---|
-| [from_chars](from_chars/) | fast_float::from_chars on three FDP strings (up to 128 chars) into double and float with a fuzzed chars_format and into int; the parsed values and from_chars_result are discarded. | none | 13, 3 proved |
+| [from_chars](from_chars/) | fast_float::from_chars on three FDP strings (up to 128 chars) into double and float with a fuzzed chars_format and into int; the parsed values and from_chars_result are discarded. | none | 13, 7 proved |
 
 Not included: **api-driver** (held from this release).
 
@@ -39,8 +39,12 @@ By hand: download `fast_float-bin.tar.zst` from release [v2026.10.0](https://git
 | statement | result |
 |---|---|
 | [fast_float/from_chars/asan_agrees](../../proofs/fast_float/from_chars/asan_agrees) | proved |
+| [fast_float/from_chars/asan_halts](../../proofs/fast_float/from_chars/asan_halts) | proved |
 | [fast_float/from_chars/asan_ubsan_agrees](../../proofs/fast_float/from_chars/asan_ubsan_agrees) | proved |
+| [fast_float/from_chars/asan_ubsan_halts](../../proofs/fast_float/from_chars/asan_ubsan_halts) | proved |
+| [fast_float/from_chars/plain_halts](../../proofs/fast_float/from_chars/plain_halts) | proved |
 | [fast_float/from_chars/ubsan_agrees](../../proofs/fast_float/from_chars/ubsan_agrees) | proved |
+| [fast_float/from_chars/ubsan_halts](../../proofs/fast_float/from_chars/ubsan_halts) | proved |
 
 ## Licence
-The licence of fast_float is not recorded here yet. Each binary is a combined work of fast_float, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `fast_float-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `fast_float-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+The licence of fast_float is not recorded here yet. Each binary is a combined work of fast_float, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `fast_float-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `fast_float-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

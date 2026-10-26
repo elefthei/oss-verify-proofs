@@ -30,6 +30,11 @@ assets:
     file: msgpack-c-bin.tar.zst
     bytes: 426003
     sha256: f5f8f585a1ac3d7e62d5a274b9cac1eec397d03f8437fe5a987b4ad600d74d71
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: msgpack-c-src.tar.zst

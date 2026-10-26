@@ -37,6 +37,11 @@ assets:
     file: tinysparql-bin.tar.zst
     bytes: 47589616
     sha256: 88a0387f7232f670c1f2c271488098f375a9d36a04cdff95d2bd5d4dd57e442f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: tinysparql-src.tar.zst

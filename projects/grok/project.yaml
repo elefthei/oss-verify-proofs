@@ -32,6 +32,11 @@ assets:
     file: grok-bin.tar.zst
     bytes: 20755861
     sha256: 7934f5b3ed90cad960725e85f0139d6025f785fe2036a4bf579f3d4d1f611ab2
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: grok-src.tar.zst

@@ -28,6 +28,11 @@ assets:
     file: cctz-bin.tar.zst
     bytes: 800383
     sha256: b0d90ce1fda11887502ef7b04ad0964549bf514ca8511830b700b6764aa40991
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cctz-src.tar.zst

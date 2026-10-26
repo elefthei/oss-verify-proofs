@@ -29,6 +29,11 @@ assets:
     file: phosphor-networkd-bin.tar.zst
     bytes: 1974344
     sha256: 884552664fdf5e30e7ec82123d343b1d28e6bfcc9abb4349d98c289d8012adf4
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: phosphor-networkd-src.tar.zst

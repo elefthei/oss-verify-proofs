@@ -99,3 +99,8 @@ assets:
     file: mosquitto-bin.tar.zst
     bytes: 311724
     sha256: 17c79c38cdd068fa635a127f298c8889f8f749bc6519fb9cacb32827f06640f9
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5

@@ -33,6 +33,11 @@ assets:
     file: boost-json-bin.tar.zst
     bytes: 1118340
     sha256: 57fa2bfe5c9a1627594fcf887bfc7f13ac19ecc1114e91b3a794340b62c82b99
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: boost-json-src.tar.zst

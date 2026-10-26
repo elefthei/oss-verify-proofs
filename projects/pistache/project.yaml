@@ -25,6 +25,11 @@ assets:
     file: pistache-bin.tar.zst
     bytes: 1754619
     sha256: a438ad5a3e56c478b6282afc067a83bef2ac37d4d6c07867efa7da18a17ac06c
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: pistache-src.tar.zst

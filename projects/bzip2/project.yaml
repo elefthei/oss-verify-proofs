@@ -35,6 +35,11 @@ assets:
     file: bzip2-bin.tar.zst
     bytes: 699820
     sha256: 9b0fb3cb02a8dd5920803ffd90e4f358b8fe002f7f0a909b97e3eada82d8892d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: bzip2-src.tar.zst

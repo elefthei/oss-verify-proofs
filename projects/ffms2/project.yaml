@@ -24,6 +24,11 @@ assets:
     file: ffms2-bin.tar.zst
     bytes: 30039995
     sha256: 982e0d30c6e81ba31b9c5a8aa20885ea54e10df1a940a2e7d96198f44fbff519
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: ffms2-src.tar.zst

@@ -30,6 +30,11 @@ assets:
     file: hoextdown-bin.tar.zst
     bytes: 423527
     sha256: 030c52fca9c445cb8ca309bcc0c24b959a6f8ec504f1bf5c4ef8725d97471729
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: hoextdown-src.tar.zst

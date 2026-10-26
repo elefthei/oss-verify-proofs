@@ -35,6 +35,11 @@ assets:
     file: cgif-bin.tar.zst
     bytes: 491959
     sha256: cea9d4272510b2ad68765de3399c35920d2a56b7172fba9fd912751eaa3dc602
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cgif-src.tar.zst

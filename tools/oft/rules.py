@@ -568,7 +568,7 @@ def _proof(tree, sid, pd):
         tree.err(y, "a bound proof names its bound")
     if st.kind != "bound" and "bound" in pd.data:
         tree.err(y, "only a bound proof names a bound")
-    if st.fingerprint and pd.data["fingerprint"] not in (st.fingerprint, st.v1_fingerprint):
+    if st.fingerprint and pd.data["fingerprint"] != st.fingerprint:
         tree.err(y, "fingerprint differs from the statement's current one (%s): re-check the proof; when only the "
                  "fingerprint's version changed, `./oft revisions PREVIOUS --write-pins` sets it (docs/versioning.md)"
                  % st.fingerprint)

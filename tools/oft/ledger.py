@@ -8,25 +8,24 @@ of one, to the rule instead.
 
 A record is a findings/<project>/<harness>/<slug>/ with finding.yaml.  Its
 anchor is its first version that is evidence, which is decided by the record's
-own files alone: its input.bin and control.bin are regular files of at most the
-finding input cap that begin with a complete driver header; each of its
-statements is an agreement or halts statement by its name, which gives its
-builds (names.statement_builds); and its input and control each hold a run of
-every build its statements name, each of the shape `oft check --record` prints
-(an exit status from 0 to 255, an optional signal, and two SHA-256s).  Any
-recorded runs of that shape anchor a record, whether or not they show its
-statements false, so a record's runs must come only from `oft check --record`,
-which prints them only when the input shows each statement false and the
-control none.  No schema, harness.yaml or unpatched.yaml is consulted, so
-neither another file nor a change to the tools can turn evidence back into a
-draft.  Before its anchor a record is a draft, which CI never re-ran, so it may
-change in any way and may be renamed or deleted.  Anchors are found by ancestry
-over TIP's whole history, not by the order of a walk: the anchors of a record
-are its versions that are evidence at commits none of whose ancestors had a
-version of it that was evidence.  Two anchors that differ in input.bin,
-control.bin, statements or recorded runs are refused, when one of them is in
-BASE..TIP: two branches that each recorded the slug, merged in either order or
-with either tree kept.
+own files alone: its input.bin and control.bin are regular files that begin
+with a complete driver header; each of its statements is an agreement or halts
+statement by its name, which gives its builds (names.statement_builds); and its
+input and control each hold a run of every build its statements name, each of
+the shape `oft check --record` prints (an exit status from 0 to 255, an
+optional signal, and two SHA-256s).  Any recorded runs of that shape anchor a
+record, whether or not they show its statements false, so a record's runs must
+come only from `oft check --record`, which prints them only when the input
+shows each statement false and the control none.  No schema,
+harness.yaml or unpatched.yaml is consulted, so neither another file nor a
+change to the tools can turn evidence back into a draft.  Before its anchor a
+record is a draft, which CI never re-ran, so it may change in any way and may
+be renamed or deleted.  Anchors are found by ancestry over TIP's whole history,
+not by the order of a walk: the anchors of a record are its versions that are
+evidence at commits none of whose ancestors had a version of it that was
+evidence.  Two anchors that differ in input.bin, control.bin, statements or
+recorded runs are refused, when one of them is in BASE..TIP: two branches that
+each recorded the slug, merged in either order or with either tree kept.
 
 From its anchor on, a record is never deleted or renamed: every file of it
 that a commit at or after its anchor had is in TIP, among the commits of
@@ -70,17 +69,15 @@ stays held.  A record's state, summary, upstream and patch text may change.
 The rule is net: only TIP is judged against what the history had.  A file of a
 record that paths.py does not list (an old run.sh beside it) may go, and
 restoring what was deleted or changed clears the finding, since a proof branch
-is never rewritten (ledger.yml fails a forced push to one) and its history has to
+is never rewritten (pr.yml fails a forced push to one) and its history has to
 be able to come right.  The history is read as git has it, with no replace ref
 or graft: either could hide a commit.
 
 Only git objects are read: commits and trees, the finding.yaml, input.bin and
 control.bin of each version and the unpatched.yaml of each commit at or after
-an anchor, each within its cap in the finding (facts.FINDING_INPUT_CAP for
-input.bin and control.bin, facts.FINDING_FILE_CAP for the others), and the
-release.yaml of TIP and of each reference commit above, within its own cap
-(lint.file_cap).  In a clone fetched without blobs, git fetches those on
-demand.
+an anchor, each within the finding file cap, and the release.yaml of TIP and of
+each reference commit above, within its own cap (lint.file_cap).  In a clone
+fetched without blobs, git fetches those on demand.
 """
 import os
 import re
@@ -140,11 +137,13 @@ class _Git:
         return self.docs[oid]
 
     def header(self, obj):
+        """The driver calls the header of a regular file's blob gives, or None if it is not a regular file of at most
+        the finding file cap or its header is incomplete."""
         mode, oid = obj
         if mode not in REGULAR:
             return None
         if oid not in self.headers:
-            fits = int(self.out("cat-file", "-s", oid)) <= facts.FINDING_INPUT_CAP
+            fits = int(self.out("cat-file", "-s", oid)) <= facts.FINDING_FILE_CAP
             self.headers[oid] = facts.driver_calls(self.out("cat-file", "blob", oid)) if fits else None
         return self.headers[oid]
 
@@ -211,6 +210,11 @@ class _Evidence:
 
 
 def _anchor(git, rec):
+    """The _Evidence of this version of a record (its files), or None if it is a draft.  A draft: its input.bin or
+    control.bin is not a regular file of at most the finding file cap that begins with a complete driver header; its
+    finding.yaml does not parse, or names a statement that is not an agreement or halts statement by its name
+    (names.statement_builds); or its input or its control lacks a run of a build its statements name, or has one that
+    is not of the shape `oft check --record` prints.  A run of another build is not evidence; lint refuses it."""
     if any(name not in rec or git.header(rec[name]) is None for name in FIXED_FILES):
         return None
     doc = git.yaml(rec["finding.yaml"])

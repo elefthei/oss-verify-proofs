@@ -83,6 +83,11 @@ assets:
     file: libvips-bin.tar.zst
     bytes: 153492003
     sha256: 1624c345d08e9c1f84d992b78a32b4704591eb8282ef883bc2c143044ad60d3e
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libvips-src.tar.zst

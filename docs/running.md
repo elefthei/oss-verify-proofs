@@ -17,14 +17,14 @@ build reads the input file whole and splits it as
 with both integers little-endian. The low 15 bits of the config word are the
 config length. The driver calls the fuzz target (`LLVMFuzzerTestOneInput`) on the
 payload `(config[0] & 3) + 1` times, once when there is no config, and prints
-each return value. An OSS-Fuzz testcase therefore needs the six bytes
+each return value. A fuzz testcase therefore needs the six bytes
 `00 00 00 00 00 00` in front of it: no config, no allocation mask.
 
-The OSS-Fuzz harness binaries ignore the allocation mask. The mask is for API
+The fuzz-target harness binaries ignore the allocation mask. The mask is for API
 drivers that make chosen allocations fail, and no API driver is in this
 release. Bit 15 of the config word turns on counting mode
-([theories/Driver.v](../theories/Driver.v)). The OSS-Fuzz harness binaries count
-no allocations, so in counting mode they exit with status 0.
+([theories/Driver.v](../theories/Driver.v)). The fuzz-target harness binaries
+count no allocations, so in counting mode they exit with status 0.
 
 [theories/Driver.v](../theories/Driver.v) writes this format down in Rocq.
 
@@ -33,10 +33,11 @@ no allocations, so in counting mode they exit with status 0.
 | status | meaning |
 |---:|---|
 | 0 | every harness call returned 0 or -1 |
-| 2 | the driver refused the input without calling the harness: a wrong argument count, a missing or unreadable input file, a file shorter than its header or of 64 MiB or more, or no memory before the first call |
+| 2 | the driver refused the input without calling the harness: a wrong argument count, a missing or unreadable input file, a file shorter than its header or of 64 MiB or more, or no memory before the first call; in a Rust fuzz target, also a failed allocation at any point, which the port's allocation-error hook ends with one line on standard error |
 | 77 | the harness called `exit()` |
-| 78 | a harness call returned a value other than 0 or -1 |
-| 134 | `abort()`: a failed `assert()`, an AddressSanitizer report or an uncaught C++ exception |
+| 78 | a harness call returned a value other than 0 or -1; a halts statement with `exits: any` allows it, and a halts statement with a finite exit set allows it only where the harness lists the places where its fuzz target turns an input away (`rejects`) ([statements.md](statements.md#halting-build_halts-build_halts_may_fail)) |
+| 79 | a Rust fuzz target panicked: a failed `assert!`, an `unwrap` of an error, an overflow check or a failed rustc UB check. The port's panic hook writes the panic's source location on standard error and exits, where a libFuzzer build would `abort()` |
+| 134 | `abort()`: a failed `assert()`, an AddressSanitizer report, or an uncaught C++ exception |
 | 132 | `SIGILL`: a failed UndefinedBehaviorSanitizer check, which traps in these builds |
 | 139 | `SIGSEGV`: a crash |
 
@@ -53,11 +54,13 @@ a starved start-up. Run the ASan builds with no address-space limit, and with a
 timeout. LPS defines which resource limits a valid input may set
 ([semantics.md](semantics.md)).
 
-## What differs from OSS-Fuzz's builds
+## What differs from a libFuzzer build
 
 - The target is riscv64, statically linked against musl. The recipe compiles
   with `-Os`; a library's own build system may add flags, for example `-O3
   -DNDEBUG` in a CMake `Release` build ([building.md](building.md#compiler-and-flags)).
+  The Rust code of a Rust fuzz target is compiled with its cargo release
+  profile ([building.md](building.md#rust-fuzz-targets)).
 - The sanitizer runtimes are configured differently ([building.md](building.md)):
   UndefinedBehaviorSanitizer runs in trap mode with clang's `undefined` checks
   except `function` and `vptr`; AddressSanitizer is a sealed static runtime that ignores
@@ -71,4 +74,4 @@ timeout. LPS defines which resource limits a valid input may set
   input file.
 
 Each harness page says which of these its builds use, and lists anything else
-that differs from what OSS-Fuzz runs.
+that differs from a libFuzzer build of its fuzz target.

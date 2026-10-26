@@ -147,7 +147,7 @@ f_equal. rewrite STR0_eq, word_add_nat, u64_lit by (unfold STR0 in *; lia). refl
 Qed.
 Theorem x_sound_envscan : x_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 XEnvScan.
 Proof.
-intros args cs cs' E R FULL model T HC _ Hn Hk. cbn [node_x] in Hn. unfold node_envscan in Hn.
+intros args bm cs cs' E R FULL model T HC _ Hn Hk. cbn [node_x] in Hn. unfold node_envscan in Hn.
 destruct (Z.eqb (pc cs) (x_envscan A) && len_eqb (kn cs) (reg cs 9) e_envp)%bool eqn:Hc; [|discriminate].
 injection Hn as <-. apply andb_prop in Hc as [Hpc Heq]. apply Z.eqb_eq in Hpc.
 pose proof len_av as Lav. pose proof len_ev as Lev. pose proof usp_lo as U1. pose proof usp_hi as U2.
@@ -171,7 +171,7 @@ ltac:(intros k Kk; split; [apply rd_envp_k; [exact Kk | exact HM] | apply (cat_e
 unfold cfg_of. fold ms.
 assert (Hms' : msteps SEGS (restrict H2 ms) (mkst R' (Z_to_bv 64 (x_envscan A + 12)) (mrestrict H2 FULL) (seg_rom SEGS))).
 { unfold ms. rewrite restrict_mkst, Hpc. exact Hms. }
-apply (srz_msteps_restricted_T SEGS H2 (H_off_segments_vis E cs model) SEGS_wx (allowA A E cs)
+apply (srzM_msteps_restricted_T SEGS H2 (H_off_segments_vis E cs model) SEGS_wx bm (allowA A E cs)
 ms _ model T (lazy_cover_vis E cs R FULL model HC) (A_wf_allowA' A E cs)
 (co_minv _ _ _ _ _ _ _ _ _ _ _ _ HC) (co_halt _ _ _ _ _ _ _ _ _ _ _ _ HC) Hms').
 intros model' Hinv' Hsame Hclean.
@@ -194,7 +194,7 @@ rewrite Z.mod_small by (unfold EA; lia). unfold envc. lia.
 Qed.
 Theorem x_sound_pnscan : x_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 XPnScan.
 Proof.
-intros args cs cs' E R FULL model T HC _ Hn Hk. cbn [node_x] in Hn. unfold node_pnscan in Hn.
+intros args bm cs cs' E R FULL model T HC _ Hn Hk. cbn [node_x] in Hn. unfold node_pnscan in Hn.
 destruct (reg_lit cs 10) as [p|] eqn:Hp10; [|discriminate].
 destruct (reg_lit cs 12) as [c|] eqn:Hp12; [|discriminate].
 destruct c as [|pc|pc]; try discriminate.
@@ -239,7 +239,7 @@ s0 0%nat R M0 eq_refl ltac:(lia) H10 H11' H12 (cellrel_refl M0 p)) as (R' & M' &
 unfold cfg_of. fold ms.
 assert (Hms' : msteps SEGS (restrict H2 ms) (mkst R' (Z_to_bv 64 (x_pnscan A + 12)) M' (seg_rom SEGS))).
 { unfold ms. rewrite restrict_mkst, Hpc. exact Hms. }
-apply (srz_msteps_restricted_T SEGS H2 (H_off_segments_vis E cs model) SEGS_wx (allowA A E cs)
+apply (srzM_msteps_restricted_T SEGS H2 (H_off_segments_vis E cs model) SEGS_wx bm (allowA A E cs)
 ms _ model T (lazy_cover_vis E cs R FULL model HC) (A_wf_allowA' A E cs)
 (co_minv _ _ _ _ _ _ _ _ _ _ _ _ HC) (co_halt _ _ _ _ _ _ _ _ _ _ _ _ HC) Hms').
 intros model' Hinv' Hsame Hclean.
@@ -306,7 +306,7 @@ kentry_ok SEGS E M (kw_argv1 v) -> edenot E v' = edenot E v -> kentry_ok SEGS E 
 Proof. intros E M v v' HK Hv. unfold kw_argv1 in *. cbn [kentry_ok] in *. rewrite Hv. exact HK. Qed.
 Theorem x_sound_layout : x_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 XLayout.
 Proof.
-intros args cs cs' E R FULL model T HC _ Hn Hk. cbn [node_x] in Hn. unfold node_layout in Hn.
+intros args bm cs cs' E R FULL model T HC _ Hn Hk. cbn [node_x] in Hn. unfold node_layout in Hn.
 destruct (existsb (kentry_eqb (kw_argv1 e_argv1w)) (kn cs)) eqn:Hex; [|discriminate]. cbn [negb] in Hn.
 pose proof (co_know _ _ _ _ _ _ _ _ _ _ _ _ HC) as HK.
 apply existsb_exists in Hex as [K0 [Hin Heqb]]. apply kentry_eqb_eq in Heqb. subst K0.
@@ -316,7 +316,7 @@ assert (HK' : know_ok SEGS E (Mr A TOP argH E cs model FULL)
 by (apply know_ok_filter; exact HK).
 assert (FIN : forall v, edenot E v = edenot E e_argv1w ->
 cs' = set_kn cs (kw_argv1 v :: List.filter (fun K => negb (kentry_eqb (kw_argv1 e_argv1w) K)) (kn cs)) ->
-srealizes SEGS (cfg_of SEGS R (pc cs) FULL model) T).
+srealizesM SEGS bm (cfg_of SEGS R (pc cs) FULL model) T).
 { intros v Hv ->. specialize (Hk E R FULL model (conj (env_agree_refl nx0 E) (env_agree_refl (nxt cs) E))).
 rewrite pc_set_kn in Hk. apply Hk; [|reflexivity].
 apply cs_ok_set_kn; [exact HC|]. constructor; [|exact HK'].

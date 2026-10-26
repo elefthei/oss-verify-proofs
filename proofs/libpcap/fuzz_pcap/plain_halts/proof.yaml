@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: libpcap/fuzz_pcap/plain_halts
+fingerprint: 5079f70fde0eac1218643d41ad090ac819a92ecffab2529653fef77965d008e6

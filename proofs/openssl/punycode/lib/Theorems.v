@@ -33,6 +33,7 @@ End SpuriousCfgM.
 
 Require OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTop.
 Require OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.
+Require OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTopHalts.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
@@ -478,4 +479,44 @@ Theorem strong_universal_error_free_punycode_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.punycode.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.openssl.punycode.images.AsanUbsan.M.init_pc OssFuzzTheorems.openssl.punycode.images.AsanUbsan.M.phdrs).
 Proof.
   exact (OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTop.base_both OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.p_realizes_san OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.b_realizes).
+Qed.
+
+Theorem halts_allowed_openssl_punycode_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslPunycodeHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.punycode.images.Plain.M.loaded_segments OssFuzzTheorems.openssl.punycode.images.Plain.M.init_pc OssFuzzTheorems.openssl.punycode.images.Plain.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTopHalts.halts_plain OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.p_realizes).
+Qed.
+
+Theorem halts_allowed_openssl_punycode_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslPunycodeHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.punycode.images.Asan.M.loaded_segments OssFuzzTheorems.openssl.punycode.images.Asan.M.init_pc OssFuzzTheorems.openssl.punycode.images.Asan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTopHalts.halts_asan OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.a_realizes).
+Qed.
+
+Theorem halts_allowed_openssl_punycode_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslPunycodeHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.punycode.images.Ubsan.M.loaded_segments OssFuzzTheorems.openssl.punycode.images.Ubsan.M.init_pc OssFuzzTheorems.openssl.punycode.images.Ubsan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTopHalts.halts_ubsan OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.u_realizes).
+Qed.
+
+Theorem halts_allowed_openssl_punycode_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslPunycodeHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.punycode.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.openssl.punycode.images.AsanUbsan.M.init_pc OssFuzzTheorems.openssl.punycode.images.AsanUbsan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyTopHalts.halts_both OssFuzzTheorems.Proofs.openssl.punycode.lib.Top.PunyFinal.b_realizes).
 Qed.

@@ -88,6 +88,11 @@ assets:
     file: libarchive-bin.tar.zst
     bytes: 20340299
     sha256: b8a6f14663ec10530fbd407c70d5f98040e14b4aaf7d7c062c6be26085ad0d7e
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libarchive-src.tar.zst

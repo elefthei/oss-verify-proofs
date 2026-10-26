@@ -31,6 +31,11 @@ assets:
     file: shaderc-bin.tar.zst
     bytes: 51916695
     sha256: 0874dcb035193f170effdb53e52db97ba3a175d12376b2895d4dbd4250bec612
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: shaderc-src.tar.zst

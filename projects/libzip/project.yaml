@@ -40,6 +40,11 @@ assets:
     file: libzip-bin.tar.zst
     bytes: 9474627
     sha256: d2ec8271837fc7ffe07189e76bd566400886806adcda6594374aeea6e92ac268
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libzip-src.tar.zst

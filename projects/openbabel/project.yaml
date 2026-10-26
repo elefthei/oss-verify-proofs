@@ -41,6 +41,11 @@ assets:
     file: openbabel-bin.tar.zst
     bytes: 52314237
     sha256: 5b73355bb259e3eac6ed950c3f0ef1e6886b2feff5d3e9c02ac2e4962f212fe5
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: openbabel-src.tar.zst

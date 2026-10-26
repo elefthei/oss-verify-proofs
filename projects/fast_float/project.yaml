@@ -29,6 +29,11 @@ assets:
     file: fast_float-bin.tar.zst
     bytes: 473443
     sha256: 6f2b2eae8ee2bd21d16767af522c538d72b163e2e793a948e8f2a1b24b4c28c9
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: fast_float-src.tar.zst

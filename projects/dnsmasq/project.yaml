@@ -28,6 +28,11 @@ assets:
     file: dnsmasq-bin.tar.zst
     bytes: 451310
     sha256: 0461d99b51b9d7121aa11c1091d24682b33a09d050fe8e9b321a4f9f4e4a86f2
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: dnsmasq-src.tar.zst

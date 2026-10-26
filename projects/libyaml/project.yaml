@@ -44,6 +44,11 @@ assets:
     file: libyaml-bin.tar.zst
     bytes: 1539144
     sha256: 24c25891cb2830d7296f4188bf916b7d74989f55548600cd83371e3b1d6cbe90
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libyaml-src.tar.zst

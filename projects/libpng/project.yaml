@@ -38,6 +38,11 @@ assets:
     file: libpng-bin.tar.zst
     bytes: 664993
     sha256: 7f8240b52e42e4a4c2e9c7a7172383c1433a03611d64ab3e4834f31735807ea3
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libpng-src.tar.zst

@@ -96,6 +96,11 @@ assets:
     file: glaze-bin.tar.zst
     bytes: 547569
     sha256: 73cb2a0ee414f42f77565a6988c7b116adc2b8e02a484d31da095eb2dde35491
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: glaze-src.tar.zst

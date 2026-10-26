@@ -78,6 +78,11 @@ assets:
     file: dovecot-bin.tar.zst
     bytes: 656115
     sha256: 3e7dd5d44960c9fb5cc942bd86ebb12820721113a7d6d5b0ffdd1c5b3e8d107f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: dovecot-src.tar.zst

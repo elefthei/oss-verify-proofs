@@ -480,7 +480,7 @@ Variable FS0 : Fs.Fs.
 Theorem xn_sealedtop_sound : forall args,
 node1_stmt trbsegs A nx0 LIMIT TOP SINV argH FS0 always (xn_sealedtop nx0 args).
 Proof.
-intros args cs cs' E R FULL model T HC _ Hn Hk.
+intros args bm cs cs' E R FULL model T HC _ Hn Hk.
 unfold xn_sealedtop in Hn.
 destruct (Z.eqb (pc cs) SEALEDTOP_PC) eqn:Hpc; [|discriminate Hn]. cbn [negb] in Hn. apply Z.eqb_eq in Hpc.
 destruct (xlo (kn cs) (reg cs 10)) as [lo|] eqn:Hlo; [|discriminate Hn].

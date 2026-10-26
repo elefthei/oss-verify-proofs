@@ -170,6 +170,11 @@ assets:
     file: open62541-bin.tar.zst
     bytes: 9300655
     sha256: 421c6c75bfa9381b1f321b2e3d47a5a825a44430ee9274e9af576dec0d8c0e83
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: open62541-src.tar.zst

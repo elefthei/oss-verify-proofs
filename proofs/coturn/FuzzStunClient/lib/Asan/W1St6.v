@@ -1,3 +1,4 @@
+(* Machine-generated data computed from the task's compiled program image (decoder-built tables and encoded data blocks); may contain fragments of third-party object code - see NOTICE. No Anthropic licence header applies to this file. *)
 From Stdlib Require Import ZArith List.
 From LinuxProcessSemantics.Riscv Require Import Instr.
 From OssFuzzTheorems.Proofs.coturn.FuzzStunClient.lib.Asan Require Import AxSymExec3 AsanPlan.

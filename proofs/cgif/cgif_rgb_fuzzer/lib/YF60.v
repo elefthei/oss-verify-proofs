@@ -1097,7 +1097,7 @@ pose proof (f_equal ms_svc_pending SH) as Hsv. pose proof (f_equal ms_pc_val SH)
 replace (ss_pc D_END12) with (0x60500 + D_2c4) in Hpc by (img_try ((img_case; vm_compute); img_refl)).
 unfold is_self_jump, ms_pc. rewrite Hsv, Hpc. rewrite (tfxtbl_rtD_ok (0x60500 + D_2c4) 111 ltac:(img_try ((try img_inst; img_case; vm_compute); img_refl))). img_case; vm_compute. all: img_refl.
 Qed.
-Theorem dieV : idx = res -> forall c, at_S Wy md1 XZ PZ D_0 Wy c -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c) -> srealizes tfxsegs c t_nil.
+Theorem dieV : idx = res -> forall c, at_S Wy md1 XZ PZ D_0 Wy c -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c) -> srealizesM tfxsegs false c t_nil.
 Proof.
 intros Heq c HR HAI.
 assert (SR : SRr tfxsegs Wy c (fun (W'' : world tfxsegs) (c'' : config) => is_self_jump tfxsegs (cfg_ms c'') = true)).
@@ -1127,7 +1127,7 @@ replace (YF4f.tighten aQS (YF4f.hexfact 12) D_1) with D_1_12 in HR by (img_try (
 eapply SRr_bind; [img_try (img_exact (segD1_12 Wy c HR))|]. clear HR. intros W1 c1 _ HR.
 eapply SRr_bind; [img_try (img_exact (digits_12 W1 c1 HR))|]. clear HR. intros W2 c2 _ HR. img_exact (segEND_12 W2 c2 HR).
 }
-img_apply (SR HAI t_nil). intros W' c' _ HI' HJ. img_apply srz_spinning.
+img_apply (SR false HAI t_nil). intros W' c' _ HI' HJ. img_apply srz_spinning.
 split; [img_try (img_apply is_self_jump_to_spin; img_exact HJ) | img_try (img_exact (AI_halted _ _ _ _ HI'))].
 Qed.
 End h.

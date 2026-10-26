@@ -32,6 +32,11 @@ assets:
     file: lzo-bin.tar.zst
     bytes: 393311
     sha256: f06e24faaf1c9a89c6487fc7327076475962c8345cdf10a5a25f499c76edcd9d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: lzo-src.tar.zst

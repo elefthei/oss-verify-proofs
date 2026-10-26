@@ -42,6 +42,11 @@ assets:
     file: opencensus-cpp-bin.tar.zst
     bytes: 1500053
     sha256: 9b755dd3b242fb88f44b53910e8c33813083630359711fcdc7d29b95516c7b56
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: opencensus-cpp-src.tar.zst

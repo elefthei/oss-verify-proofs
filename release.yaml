@@ -1,6 +1,6 @@
 schema: oss-fuzz-theorems/release/1
-release: 2026.10.0
-date: '2026-10-22'
+release: 2026.10.1
+date: '2026-10-27'
 oss_fuzz:
   repository: https://github.com/google/oss-fuzz
   commit: bd2ce21991a94a362b92fb1bf25f86d5a1a60842
@@ -27,8 +27,8 @@ counts:
   available: 427
   harnesses: 2148
   binaries: 8578
-recipe:
-  release: v2026.10.0-src
+recipes:
+- release: v2026.10.0-src
   file: recipe.tar.zst
   bytes: 938459
   sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5

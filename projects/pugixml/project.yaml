@@ -32,6 +32,11 @@ assets:
     file: pugixml-bin.tar.zst
     bytes: 1133509
     sha256: 076892ae0930550832e5f406c3dd9cb3411e9cc5b3b92fa6e742e056e1d626fd
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: pugixml-src.tar.zst

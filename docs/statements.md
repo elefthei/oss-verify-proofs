@@ -18,9 +18,11 @@ harness README, never in the `.v` file.
 Each harness has up to four builds: `plain`, `ubsan` (UndefinedBehaviorSanitizer;
 a failed check traps), `asan` (AddressSanitizer; a report aborts) and
 `asan-ubsan` (both; its statements and image are named `asan_ubsan`). A few
-harnesses have only `plain` and one sanitizer build.
-[building.md](building.md) gives the flags of each build and the checks it
-makes.
+harnesses have only `plain` and one sanitizer build. In a Rust harness, `ubsan`
+means rustc's UB checks, whose failure exits with status 79 after naming its
+source location on standard error, with UndefinedBehaviorSanitizer only in the
+C code its crates build. [building.md](building.md) gives the flags of each
+build and the checks it makes.
 
 Statements quantify over every valid process input (the arguments, the
 environment, the file system, standard input, the identities and the limits)
@@ -47,10 +49,35 @@ bound statement and a decidability statement. So a harness has between 5 and
 `plain_halts` (shape `halts_within_budget`) has two premises. The build is
 never refused memory for exceeding 16 GiB, and the environment refuses nothing
 that the process's state does not force. On every input that meets them, every
-execution exits with an allowed status: status 0 or 2 for every harness except
-espeak-ng's `ssml-fuzzer`, which allows any status. So no execution of a
-covered input runs forever, crashes, fails an assertion or a sanitizer check,
-or leaves LPS. Nothing is said about output.
+execution exits with an allowed status: status 0 or 2 for most harnesses, and
+any status for espeak-ng's `ssml-fuzzer`. So no execution of a covered input
+runs forever, crashes, fails an assertion or a sanitizer check, or leaves LPS.
+Nothing is said about output.
+
+Status 78 means that a call of the fuzz target returned a value other than 0
+or -1. libFuzzer's documentation reserves those values, and a libFuzzer built
+without assertions treats them as -1: the input is turned away, and nothing is
+reported. Some fuzz targets return 1 to turn away an input they do not take,
+for example one outside a size range. Where a harness.yaml lists those places
+(`rejects`), its halts statements with a finite exit set allow 78 too: status
+0, 2 or 78. The
+status does not say which line returned, so in such a harness every return of
+a value other than 0 or -1 is allowed, including one from a check that reports
+a failure by returning (`stops_with: return-only`). Such a check binds no halts
+statement in any harness (`binds_checks`), and the harness's page names it
+beside the inputs turned away. A fuzz target that returns a value other than 0
+or -1 only to report a failure lists no `rejects`, and its halts statements
+with a finite exit set do not allow 78.
+
+In this release no harness lists `rejects` yet. So a fuzz target that returns
+1 to turn an input away still has halts statements that do not allow 78, and
+those statements are false on such an input. A later release lists their
+`rejects` and restates those statements.
+
+Status 77, a call of `exit()` from the fuzz target, is allowed by no halts
+statement with a finite set. libFuzzer's documentation says that a fuzz target
+must not call `exit()` on any input, and libFuzzer reports such a call as a
+crash ("fuzz target exited").
 
 The 16 GiB is a premise. An input on which the build needs more memory is not
 covered, and the statement says nothing about it. It is not a claim that the
@@ -98,7 +125,7 @@ Some harnesses are stated in a variant. The statement's docstring names it.
 | variant | shape | LPS definition | what changes |
 |---|---|---|---|
 | none | `agrees` | `strong_universal_error_free_T_budgets` | The environment may refuse every kind of call that LPS lets fail, at any time ([semantics.md](semantics.md#vocabulary)). |
-| alloc-forced-only | `agrees_in Env.alloc_forced_only` | `strong_universal_error_free_T_scfg_budgets` | The same, except that a memory request is refused only when the budget is spent or no address range is free. Without it, a harness whose own code aborts when an allocation fails would make the statement false, for a reason that has nothing to do with the sanitizer. |
+| alloc-forced-only | `agrees_in Env.alloc_forced_only` | `strong_universal_error_free_T_scfg_budgets` | The same, except that a memory request is refused only when the budget is spent or no address range is free. Without it, a harness whose own code aborts when an allocation fails would make the statement false, for a reason that has nothing to do with the sanitizer. It is also used for the AddressSanitizer pairs of a Rust fuzz target: the port's allocation-failure hook writes the failed allocation's size and exits with status 2, and ASan's allocator asks the kernel for memory at other allocations than musl's does, so the two builds, refused at will, could write different lines. |
 | abort read as SIGABRT | `agrees_abort_modelled`, `agrees_in_abort_modelled` | the `_abort` variants | LPS reads `abort()` as death by a signal, not as a step that LPS does not cover. The statement still forbids it. It is used for harnesses (most of them C++) where an uncaught exception reaches `abort()` through the C++ runtime. |
 | RV64GC | the `_rv64gc` shapes (this release uses `agrees_abort_modelled_rv64gc`) | the `_hwcap_rv64gc` variants, for the agreement and classifier shapes | The process is told that its machine has no vector unit. It is used for binaries that take vector code paths when the processor advertises the vector extension. |
 
@@ -154,8 +181,9 @@ A statement's identifier is `project/harness/statement`, for example
 `zlib/checksum_fuzzer/plain_halts`. Its fingerprint (in
 [index/statements.tsv](../index/statements.tsv)) is a SHA-256 over what fixes
 its meaning: its identifier, its definition, the SHA-256 of each binary it
-names, `theories/Shapes.v`, `theories/Images.v`, the LPS version string from
-release.yaml (`unreleased` in this release; the commit is not hashed) and, for
-a bound, its distribution. Cite a statement with its revision,
-`project/harness/statement@r1` ([versioning.md](versioning.md)). A withheld
-statement has no fingerprint.
+names, the code of `theories/Shapes.v` and `theories/Images.v` (not their
+comments or layout), the LPS version string from release.yaml (`unreleased` in
+this release; the commit is not hashed) and, for a bound, its distribution.
+Cite a statement with its revision, `project/harness/statement@r1`; the
+revision changes whenever its meaning does ([versioning.md](versioning.md)). A
+withheld statement has no fingerprint.

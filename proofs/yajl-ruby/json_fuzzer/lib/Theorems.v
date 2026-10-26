@@ -20,6 +20,10 @@ Require OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.
 From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require RU_FinalCfg.
 From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require RA_FinalCfg.
 From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require RB_FinalCfg.
+From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require HaltsFinalR.
+From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require HaltsFinalU.
+From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require HaltsFinalA.
+From OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top Require HaltsFinalB.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
@@ -86,4 +90,44 @@ Theorem strong_universal_error_free_json_fuzzer_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.M.phdrs).
 Proof.
 exact OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top.RB_FinalCfg.strong_universal_error_free_json_fuzzer_both.
+Qed.
+
+Theorem halts_allowed_yajl_ruby_json_fuzzer_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    YajlRubyJsonFuzzerHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Asan.M.loaded_segments OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Asan.M.init_pc OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Asan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top.HaltsFinalA.halts_asan.
+Qed.
+
+Theorem halts_allowed_yajl_ruby_json_fuzzer_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    YajlRubyJsonFuzzerHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.yajl_ruby.json_fuzzer.images.AsanUbsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top.HaltsFinalB.halts_both.
+Qed.
+
+Theorem halts_allowed_yajl_ruby_json_fuzzer_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    YajlRubyJsonFuzzerHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Plain.M.loaded_segments OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Plain.M.init_pc OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Plain.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top.HaltsFinalR.halts_plain.
+Qed.
+
+Theorem halts_allowed_yajl_ruby_json_fuzzer_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    YajlRubyJsonFuzzerHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Ubsan.M.loaded_segments OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Ubsan.M.init_pc OssFuzzTheorems.yajl_ruby.json_fuzzer.images.Ubsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.yajl_ruby.json_fuzzer.lib.Top.HaltsFinalU.halts_ubsan.
 Qed.

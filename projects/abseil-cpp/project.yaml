@@ -29,6 +29,11 @@ assets:
     file: abseil-cpp-bin.tar.zst
     bytes: 1044447
     sha256: 7e856db3a1ea3e26614f85a22e7ee7690d67f786265f67b1e934305fc3529c94
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: abseil-cpp-src.tar.zst

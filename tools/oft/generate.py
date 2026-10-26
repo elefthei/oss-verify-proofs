@@ -1013,6 +1013,7 @@ def readme(tree):
         proved_table = proved_lead
     n_halts = sum(1 for x in proved for s in x["statements"] if s.kind == "halts")
     halts_words = (_t(T, "halts_none") if not n_halts else
+                   _t(T, "halts_one") if n_halts == 1 else
                    _t(T, "halts_some", n_halts=render.thousands(n_halts)))
     # the OSS-Fuzz paragraph counts OSS-Fuzz's projects and their OSS-Fuzz targets alone (no OSS Verify target and no
     # API driver), as each project page and index/projects.tsv do

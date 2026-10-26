@@ -30,6 +30,11 @@ assets:
     file: ots-bin.tar.zst
     bytes: 1573786
     sha256: 28946dc48ad87db4a5db086a01c6372e06806549964ea1528eb498f3d295985f
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: ots-src.tar.zst

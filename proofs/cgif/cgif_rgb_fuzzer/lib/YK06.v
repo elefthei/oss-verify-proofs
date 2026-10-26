@@ -42,4 +42,23 @@ Proof.
 intros A ms msr' model T.
 exact (rz_msteps_restricted' segs H HH Hwx (SP_of T) (SP_of_silent1 T) A ms msr' model).
 Qed.
+
+Let SPM_of (b : bool) (T : TSet) : config -> Prop := fun c => srealizesM segs b c T.
+Let SPM_of_silent1 (b : bool) (T : TSet) : forall c c',
+YK05.node_ok segs c unit (fun _ => []) (fun _ => c') ->
+SPM_of b T c' -> SPM_of b T c :=
+fun c c' Hn Hr => srzM_silent1 segs b c c' T Hn Hr.
+Theorem srzM_msteps_restricted_T : forall b A ms msr' model T,
+lazy_cover H (m_vm_lazy model) A -> A_wf A -> MInv A model ->
+m_halted model = None ->
+msteps segs (restrict H ms) msr' ->
+(forall model',
+MInv A model' -> same_but_materialized model model' ->
+hclean H msr' ->
+srealizesM segs b (mkCfg (unrestrict H (ms_mem ms) msr') model') T) ->
+srealizesM segs b (mkCfg ms model) T.
+Proof.
+intros b A ms msr' model T.
+exact (rz_msteps_restricted' segs H HH Hwx (SPM_of b T) (SPM_of_silent1 b T) A ms msr' model).
+Qed.
 End a.

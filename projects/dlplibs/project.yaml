@@ -233,6 +233,11 @@ assets:
     file: dlplibs-bin.tar.zst
     bytes: 569508
     sha256: acf5ed8ff8f57de4686a694727d0352cf61a840d2572895f64f4e0970e6f1b47
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: dlplibs-src.tar.zst

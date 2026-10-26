@@ -1,7 +1,7 @@
 # What the statuses mean
 
-Every OSS-Fuzz project has exactly one project status, every fuzz target of an
-available project has a harness status, and every statement has a statement
+Every project has exactly one project status, every fuzz target of an available
+project has a harness status, and every statement has a statement
 status. The lists are closed: `oft lint` refuses any other value, and each
 reason sentence on a project page comes from [tools/oft/phrasebook.yaml](../tools/oft/phrasebook.yaml),
 filled in only from the project's typed facts.
@@ -13,13 +13,14 @@ Built, and listed in this release with its harnesses and their statements. The
 binaries are attached to the release unless they are withheld: a project whose
 every build is withheld is still available, its statements are listed by name,
 and [index/STATUS.md](../index/STATUS.md) shows its binaries as withheld. The
-project page lists every fuzz target OSS-Fuzz builds, and says for each one
-that has no statements why not.
+project page lists every fuzz target OSS-Fuzz runs and every one OSS Verify
+builds, and says for each one that has no statements why not.
 
 ## language-pending
 The fuzz targets are in a language this release does not cover yet (Python,
 Java and other JVM languages, Go, Rust, JavaScript, Ruby). This release covers
-C and C++.
+C and C++, and Rust only for the projects whose fuzz targets OSS Verify builds
+([building.md](building.md#rust-fuzz-targets)).
 
 
 ## not-yet-built
@@ -41,8 +42,8 @@ statements are false in LPS for the same kind of reason.
 There is no compiler for the project's language that targets riscv64 Linux.
 
 ## no-harness
-There is nothing to build: OSS-Fuzz lists no fuzz target for the project at the
-pinned commit, or the repository that holds its harness can no longer be
+There is no fuzz target to build: OSS-Fuzz lists no fuzz target for the project
+at the pinned commit, or the repository that holds its harness can no longer be
 cloned.
 
 ## excluded

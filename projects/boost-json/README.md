@@ -3,14 +3,14 @@
 
 OSS-Fuzz: [projects/boost-json](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/boost-json)
 
-**Status: available.** 1 of OSS-Fuzz's 4 fuzz targets has statements. 4 binaries, 5.4 MB. 13 statements: 3 proved, 0 known false, 0 suspected false, 0 blocked by the model, 10 open.
+**Status: available.** 1 of OSS-Fuzz's 4 fuzz targets has statements. 4 binaries, 5.4 MB. 13 statements: 7 proved, 0 known false, 0 suspected false, 0 blocked by the model, 6 open.
 
 Built from boost (commit `4daa5786`).
 
 ## At a glance
 | harness | what it does | checks beyond "does not crash" | statements |
 |---|---|---|---|
-| [fuzz_parse](fuzz_parse/) | boost::json::parse(sv, ec). Returns jv.is_number(), which the entry point discards; catch(...). | none | 13, 3 proved |
+| [fuzz_parse](fuzz_parse/) | boost::json::parse(sv, ec). Returns jv.is_number(), which the entry point discards; catch(...). | none | 13, 7 proved |
 
 Not included: **fuzz_basic_parser** (not built yet); **fuzz_direct_parse** (not built yet); **fuzz_parser** (not built yet).
 
@@ -39,8 +39,12 @@ By hand: download `boost-json-bin.tar.zst` from release [v2026.10.0](https://git
 | statement | result |
 |---|---|
 | [boost-json/fuzz_parse/asan_agrees](../../proofs/boost-json/fuzz_parse/asan_agrees) | proved |
+| [boost-json/fuzz_parse/asan_halts](../../proofs/boost-json/fuzz_parse/asan_halts) | proved |
 | [boost-json/fuzz_parse/asan_ubsan_agrees](../../proofs/boost-json/fuzz_parse/asan_ubsan_agrees) | proved |
+| [boost-json/fuzz_parse/asan_ubsan_halts](../../proofs/boost-json/fuzz_parse/asan_ubsan_halts) | proved |
+| [boost-json/fuzz_parse/plain_halts](../../proofs/boost-json/fuzz_parse/plain_halts) | proved |
 | [boost-json/fuzz_parse/ubsan_agrees](../../proofs/boost-json/fuzz_parse/ubsan_agrees) | proved |
+| [boost-json/fuzz_parse/ubsan_halts](../../proofs/boost-json/fuzz_parse/ubsan_halts) | proved |
 
 ## Licence
-boost is under `BSL-1.0`. Each binary is a combined work of boost, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `boost-json-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `boost-json-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+boost is under `BSL-1.0`. Each binary is a combined work of boost, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `boost-json-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `boost-json-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

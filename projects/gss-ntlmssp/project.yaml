@@ -25,6 +25,11 @@ assets:
     file: gss-ntlmssp-bin.tar.zst
     bytes: 2157499
     sha256: 9a679bfa758a96a0f30d505a5773aabb2a9823a95deb9323fcace86a4bfc1bcc
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: gss-ntlmssp-src.tar.zst

@@ -268,22 +268,22 @@ Require OssFuzzTheorems.openssl.ct.images.AsanUbsan.
 
 
 Require OssFuzzTheorems.Proofs.openssl.ct.lib.TopCtBoth.
-
+Require OssFuzzTheorems.Proofs.openssl.ct.lib.TopCtHaltsB.
 
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
 End SpuriousCfgM.
 
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
 
-
-
-
-
-
-
-
-
+Module OpensslCtHaltsBothExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslCtHaltsBothExits.
 
 
 
@@ -1256,4 +1256,13 @@ Qed.
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+Theorem halts_allowed_openssl_ct_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslCtHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.ct.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.openssl.ct.images.AsanUbsan.M.init_pc OssFuzzTheorems.openssl.ct.images.AsanUbsan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.openssl.ct.lib.TopCtHaltsB.halts_ct_both.
+Qed.
 

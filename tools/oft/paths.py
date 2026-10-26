@@ -47,7 +47,6 @@ TABLE = [
     ("hand", ".github/workflows/fetch-drafts.yml"),
     ("hand", ".github/actions/plan-drafts/action.yml"),
     ("hand", ".github/actions/place-drafts/action.yml"),
-    ("hand", ".github/workflows/ledger.yml"),
     ("hand", ".github/actionlint.yaml"),
     # what an agent reads first, and the instructions it follows to add a proof
     ("hand", "AGENTS.md"),

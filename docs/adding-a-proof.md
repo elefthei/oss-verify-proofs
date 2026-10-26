@@ -7,14 +7,17 @@ write one.
 ## Requirements
 
 1. **Binaries.** The proof is about binaries this repository publishes: the
-   ones `harness.yaml` pins by SHA-256. New binaries, built with the release's
-   recipe and builder images (`release.yaml`), enter only through a release
-   pull request. A rebuild from the published recipe and sources gives the same
-   SHA-256 for each.
+   ones `harness.yaml` pins by SHA-256. New binaries, built in builder images
+   that `release.yaml` lists, with a recipe it lists or by the OSS Verify port
+   (`build.oss_verify`), enter only through a release pull request. When a
+   port-built binary has an attached port archive, `assets.port` contains the
+   port source, including the linked `infra/base-builder/driver/`. A rebuild
+   from the published recipe and sources gives the same SHA-256 for each
+   recipe-built binary.
 2. **Statements.** The release's statements, unedited, on the LPS version
    that `release.yaml` names. A proof does not change LPS.
-3. **Check.** In the checker image, with PyYAML from tools/oft/requirements.txt
-   on PYTHONPATH, `./oft check <project>/<harness> --parts statements,proofs` passes:
+3. **Check.** In the checker image, with the packages tools/oft/requirements.txt
+   pins on PYTHONPATH, `./oft check <project>/<harness> --parts statements,proofs` passes:
    every proof compiles on Rocq 9.2.0 and assumes only the axioms in
    [toolchain/allowed-axioms.txt](../toolchain/allowed-axioms.txt)
    ([checking.md](checking.md)).
@@ -24,9 +27,51 @@ write one.
 5. **Text.** Comments and names hold nothing private: no internal names and no
    paths from the machine the proof was written on.
 6. **Records.** `proofs/<project>/<harness>/provenance/` holds the binaries'
-   build record (`PROVENANCE.yaml`, `PROVENANCE.md`, `recipe/`) and the licence
-   of every program in them (`LICENSES/`). GPL and LGPL code has its source
-   archive in the source release.
+   build record: `PROVENANCE.yaml`, `PROVENANCE.md`, what built them, and the
+   licence of every program in them (`LICENSES/`). What built them is
+   `recipe/`, the slice of the recipe that built the target, for a
+   recipe-built project; for a port-built project (`build.oss_verify` in its
+   `project.yaml`) it is `port/`: `port/manifest.yaml`, the build manifest the
+   port's `tools/check --twice` wrote, less every `host` key (its `rebuild`
+   block names the machine of the second build, and lint refuses a `host`
+   there), and `port/projects/<project>/`, the port's files for the project
+   (its `Dockerfile`, `build.sh`, `sources` and the rest) at
+   `build.oss_verify.commit`. A build record has one of the two, the one its
+   `project.yaml` says, and a port-built project's `PROVENANCE.yaml` cites no
+   recipe. GPL and LGPL code has its source archive and manifest in the source
+   release, and the recipe or port archive that built it is attached too. The
+   maintainer writes and updates the build record.
+7. **Licences.** Each file has the licence lines of the first of these cases
+   that fits it. A file's licence lines are its first lines that say where it
+   comes from and under which licence it is, and each `Modified by` line under
+   them. A proof library file (`lib/`) with Anthropic's two lines came from
+   Anthropic's proofs and stays under Apache-2.0 OR MIT
+   ([licensing.md](licensing.md)); a file with no licence lines was written
+   here, under the MIT licence.
+   1. A file that restates the instruction words of a program, or holds data
+      computed from one, begins with the one-line comment of its kind (as in
+      the file it came from, or in another file here of the same kind), then
+      the `Modified by` lines of the file it came from. It has no Anthropic
+      lines: the program's code in it keeps the program's licences.
+   2. A file that holds code from a file with Anthropic's two lines,
+      `Copyright 2026 Anthropic PBC` and
+      `SPDX-License-Identifier: Apache-2.0 OR MIT`, a whole copy or a part, has
+      those lines and the lines that file has under them, unchanged. A file
+      made from part of a file with the one-line comment, holding none of its
+      instruction words or data, has Anthropic's two lines, then that file's
+      `Modified by` lines.
+   3. Any other file, written new or with code only from files with no
+      licence lines, is under the MIT licence and has no licence lines.
+
+   A file of case 1 or 2 that was changed has one more line under its licence
+   lines, true of this file: who changed it, when, and what changed in it,
+   from its diff against the file it came from. A change of addresses, numbers
+   or module names is a change. The pull request adds no notices, attribution
+   or licence file, and changes nothing in `LICENSES/`, `NOTICE` or `LICENSE`.
+   It says which files came from which files of the repository; the
+   maintainer records that in the build record.
+8. **No unused files.** Each `.v` file that the pull request adds is required
+   by a proof, directly or through other files.
 
 ## Steps
 
@@ -38,11 +83,16 @@ write one.
    a letter, a digit or `_` is written as `_` (knot-dns is `knot_dns`), and a
    name that starts with a digit gets `h_` in front (`64bit_fuzzer` is
    `h_64bit_fuzzer`).
-2. Run what CI runs, and commit what `oft generate` renders. Commit first, so
-   that `git diff` lists every changed path:
+2. Remove each file that no proof requires (requirement 8), and give every
+   file its licence lines (requirement 7). An agent follows
+   [the adding-a-proof skill](../.claude/skills/adding-a-proof/SKILL.md),
+   which goes through the files one at a time.
+3. Run what CI runs. Commit, with what `oft generate` renders and a DCO
+   sign-off, before the lint, so that `git diff` lists every changed path:
 
        ./oft fetch <project>
        ./oft generate
+       git add -A && git commit -s
        git diff --name-only origin/main HEAD > changed.txt
        ./oft lint --changed changed.txt --pr-kind contributor
        python3 -m pip install --require-hashes --target "$HOME/oft-pydeps" -r tools/oft/requirements.txt
@@ -53,7 +103,7 @@ write one.
    A harness's counterexamples are checked in the runner image with
    `--parts counterexamples`.
 
-3. Open a pull request. CI runs the same checks
-   ([checking.md](checking.md#what-ci-runs)). A maintainer reviews the proof
-   and its build record, and merges it. If the harness has no build record yet,
-   the maintainer adds it.
+4. Open a pull request, and say in it which files came from which files of the
+   repository. CI runs the same checks
+   ([checking.md](checking.md#what-ci-runs)). A maintainer reviews the proof,
+   writes or updates its build record, and merges it.

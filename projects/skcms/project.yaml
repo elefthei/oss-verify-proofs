@@ -36,6 +36,11 @@ assets:
     file: skcms-bin.tar.zst
     bytes: 673404
     sha256: 34d7ed75847cdfe5129349a9c8bd04ecb0ad0311ba0314c5e393a905604cbe1a
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: skcms-src.tar.zst

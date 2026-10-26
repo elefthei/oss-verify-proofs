@@ -29,6 +29,11 @@ assets:
     file: yoga-bin.tar.zst
     bytes: 438531
     sha256: a0c9e5f470b191f57ed81329356336ed6e34a2d9f515a7c5f9015adab8efc1da
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: yoga-src.tar.zst

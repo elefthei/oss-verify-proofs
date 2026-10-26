@@ -17,6 +17,17 @@ Require OssFuzzTheorems.cgif.cgif_file_fuzzer.images.Asan.
 Require OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.
 Require OssFuzzTheorems.cgif.cgif_file_fuzzer.images.Plain.
 Require OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib.YZ05.
+Require OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib.Halts_tfib.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module CgifCgifFileFuzzerHaltsBothExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End CgifCgifFileFuzzerHaltsBothExits.
 
 Theorem strong_universal_error_free_cgif_file_fuzzer_both :
   LinuxProcessSemantics.EquivalenceDefinition.Equivalence.strong_universal_error_free_T_scfg_budgets
@@ -27,4 +38,14 @@ Theorem strong_universal_error_free_cgif_file_fuzzer_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.M.phdrs).
 Proof.
 exact OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib.YZ05.strong_universal_error_free_cgif_file_fuzzer_both_closed.
+Qed.
+
+Theorem halts_allowed_cgif_cgif_file_fuzzer_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    CgifCgifFileFuzzerHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.cgif.cgif_file_fuzzer.images.AsanUbsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.cgif.cgif_file_fuzzer.lib.Halts_tfib.halts_allowed_cgif_cgif_file_fuzzer_halts_both_closed.
 Qed.

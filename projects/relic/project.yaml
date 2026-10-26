@@ -26,6 +26,11 @@ assets:
     file: relic-bin.tar.zst
     bytes: 5675339
     sha256: 247a49c4abfe0cb35d5c2c97f1252b35103a65df714b5e1714ec3970ad405d64
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: relic-src.tar.zst

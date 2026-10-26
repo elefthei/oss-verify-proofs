@@ -27,6 +27,7 @@ Require OssFuzzTheorems.boost_beast.http_request.images.Asan.
 Require OssFuzzTheorems.boost_beast.http_request.images.Ubsan.
 Require OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.
 Require OssFuzzTheorems.Proofs.boost_beast.http_request.lib.PairUbsan.
+Require OssFuzzTheorems.Proofs.boost_beast.http_request.lib.HaltsPlain.
 Require OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Ref.XFuzz.
 Require OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Ub.XFuzz.
 Require OssFuzzTheorems.Proofs.boost_beast.http_request.lib.As.AsanFinal.
@@ -97,4 +98,48 @@ Theorem strong_universal_error_free_boost_beast_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.M.init_pc OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.M.phdrs).
 Proof.
   exact (OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Bo.BothFinal.both_base_of OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Bo.X8_H_ZZ.BFUZZ_closed OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Bo.X8_H_ZZ.BCOST_closed OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Ref.XFuzz.xfuzz_plain).
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_boost_beast_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostBeastHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_beast.http_request.images.Plain.M.loaded_segments OssFuzzTheorems.boost_beast.http_request.images.Plain.M.init_pc OssFuzzTheorems.boost_beast.http_request.images.Plain.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.boost_beast.http_request.lib.HaltsPlain.halts_plain OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Ref.XFuzz.xfuzz_plain).
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_boost_beast_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostBeastHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_beast.http_request.images.Asan.M.loaded_segments OssFuzzTheorems.boost_beast.http_request.images.Asan.M.init_pc OssFuzzTheorems.boost_beast.http_request.images.Asan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.boost_beast.http_request.lib.As.AsanFinal.halts_asan_of OssFuzzTheorems.Proofs.boost_beast.http_request.lib.As.X8_H_ZZ.AFUZZ_closed OssFuzzTheorems.Proofs.boost_beast.http_request.lib.As.X8_H_ZZ.ACOST_closed).
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_boost_beast_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostBeastHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_beast.http_request.images.Ubsan.M.loaded_segments OssFuzzTheorems.boost_beast.http_request.images.Ubsan.M.init_pc OssFuzzTheorems.boost_beast.http_request.images.Ubsan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.boost_beast.http_request.lib.PairUbsan.halts_ubsan OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Ub.XFuzz.xfuzz_ubsan).
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_boost_beast_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    BoostBeastHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.M.init_pc OssFuzzTheorems.boost_beast.http_request.images.AsanUbsan.M.phdrs).
+Proof.
+  exact (OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Bo.BothFinal.halts_both_of OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Bo.X8_H_ZZ.BFUZZ_closed OssFuzzTheorems.Proofs.boost_beast.http_request.lib.Bo.X8_H_ZZ.BCOST_closed).
 Qed.

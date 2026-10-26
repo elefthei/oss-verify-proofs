@@ -1124,7 +1124,7 @@ intros W' c' _ HP. img_exact (LEAF W' c' HP).
 Qed.
 Lemma SRr_with_AI : forall (Wx : world tfxsegs) cx (Q : world tfxsegs -> config -> Prop),
 SRr tfxsegs Wx cx Q -> SRr tfxsegs Wx cx (fun W' c' => AI tfxsegs (w_H W') (w_A W') (cfg_model c') /\ Q W' c').
-Proof. clear. intros Wx cx Q H HI T HK. img_apply (H HI T). intros W' c' Hle HI' HQ. img_exact (HK W' c' Hle HI' (conj HI' HQ)). Qed.
+Proof. clear. intros Wx cx Q H b HI T HK. img_apply (H b HI T). intros W' c' Hle HI' HQ. img_exact (HK W' c' Hle HI' (conj HI' HQ)). Qed.
 Lemma amreal_askV : forall (q : kreq) (sN : astate) (Kc : Z -> itree astate (sptr * astate)) (Wx : world tfxsegs) (cx : config)
 (Q : sptr * astate -> world tfxsegs -> config -> Prop),
 match q with KDepot _ => False | _ => True end ->
@@ -1133,8 +1133,9 @@ node_ok tfxsegs c1 I (fun _ => []) nx /\
 (forall i, AI tfxsegs (w_H W1) (w_A W1) (cfg_model c1) -> AI tfxsegs (w_H W1) (w_A W1) (cfg_model (nx i))) /\
 (forall i, aok sN q (bit i)) /\ sp i0 = false /\ bit i0 = 1 /\
 (refusable q = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AI tfxsegs (w_H W1) (w_A W1) (cfg_model (nx i)) -> srealizes tfxsegs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal tfxsegs (Kc (bit i)) W1 (nx i) Q)) ->
+(forall i, sp i = true -> AI tfxsegs (w_H W1) (w_A W1) (cfg_model (nx i)) -> srealizesM tfxsegs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead tfxsegs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal tfxsegs (Kc (bit i)) W1 (nx i) Q else amrealE tfxsegs (Kc (bit i)) W1 (nx i) Q)) ->
 amreal tfxsegs (IAsk q sN Kc) Wx cx Q.
 Proof. clear. intros q sN Kc Wx cx Q Hq H. destruct q; try (destruct Hq); cbn [amreal]; img_exact H. Qed.
 Lemma same_io_wvb : forall md mat', same_io md0 md -> same_io md0 (with_vm_backing (m_vm_lazy md) mat' md).
@@ -1262,14 +1263,14 @@ Qed.
 Hypothesis DIEVX : forall (XZ : Z -> Prop), (forall a, WIN a -> XZ a) -> (forall a, XZ a -> WIN a \/ ~ (TFX_IMG_LO <= a < TFX_IMG_END)) ->
 forall md c', idx = res ->
 at_S W3 md XZ (PSR W3 SH2 (fun _ => True)) (resume S_V (SLit ENOMEM_RETv) (ss_mem S_V) (ss_facts S_V)) W3 c' ->
-AI tfxsegs (w_H W3) (w_A W3) (cfg_model c') -> srealizes tfxsegs c' t_nil.
+AI tfxsegs (w_H W3) (w_A W3) (cfg_model c') -> srealizesM tfxsegs false c' t_nil.
 Lemma DIEV : forall md c', idx = res ->
 at_S W3 md WIN (PSR W3 SH2 (fun _ => True)) (resume S_V (SLit ENOMEM_RETv) (ss_mem S_V) (ss_facts S_V)) W3 c' ->
-AI tfxsegs (w_H W3) (w_A W3) (cfg_model c') -> srealizes tfxsegs c' t_nil.
+AI tfxsegs (w_H W3) (w_A W3) (cfg_model c') -> srealizesM tfxsegs false c' t_nil.
 Proof. img_exact (DIEVX WIN (fun a H => H) (fun a H => or_introl H)). Qed.
 Lemma DIEV3 : forall md c', idx = res ->
 at_S W3 md (fun a => WIN a \/ QR a) (PSR W3 SH2 (fun _ => True)) (resume S_V (SLit ENOMEM_RETv) (ss_mem S_V) (ss_facts S_V)) W3 c' ->
-AI tfxsegs (w_H W3) (w_A W3) (cfg_model c') -> srealizes tfxsegs c' t_nil.
+AI tfxsegs (w_H W3) (w_A W3) (cfg_model c') -> srealizesM tfxsegs false c' t_nil.
 Proof.
 intros md c' Heq. img_apply (DIEVX (fun a => WIN a \/ QR a) (fun a H => or_introl H)); [| img_try (img_exact Heq)].
 intros a [Ha|Ha]; [img_try (left; img_exact Ha) | img_try (right)]. pose proof (QR_facts Heq) as (E1 & _ & QA & F9 & Q5 & F10 & EQR). apply (proj1 (EQR a)) in Ha.

@@ -84,6 +84,11 @@ assets:
     file: poppler-bin.tar.zst
     bytes: 111858522
     sha256: 6912324b1ea6e6f90f578f3c41570c66129860fceec26a88051d46abcd83da4e
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: poppler-src.tar.zst

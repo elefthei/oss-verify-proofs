@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: leptonica/kernel_fuzzer/asan_agrees
-fingerprint: 43f23c78239e853b24d82964859e31adbc3972c2f587216d42007196bf14d7f5
+fingerprint: 80289c65d8df32a71d9fe17a477cb7e4605e504018076c2dce0008dae06de5f4

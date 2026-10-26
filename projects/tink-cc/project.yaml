@@ -29,6 +29,11 @@ assets:
     file: tink-cc-bin.tar.zst
     bytes: 1509017
     sha256: 411cffdd920131c17d19e75b3fc477fe176873ef02ed9f14ad8cf6a644ac7925
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: tink-cc-src.tar.zst

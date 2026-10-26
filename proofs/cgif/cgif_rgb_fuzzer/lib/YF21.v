@@ -379,7 +379,7 @@ End f.
 Lemma amreal_spin_sj {R} : forall pc (W5 : world tfxsegs) c (Q : R -> world tfxsegs -> config -> Prop),
 SRr tfxsegs W5 c (fun W' c' => is_self_jump tfxsegs (cfg_ms c') = true) -> amreal tfxsegs (ISpin pc) W5 c Q.
 Proof.
-clear. intros pc W5 c Q H. cbn [amreal]. intros HI. img_apply (H HI t_nil). intros W' c' _ HI' HJ. img_apply srz_spinning.
+clear. intros pc W5 c Q H. cbn [amreal]. intros HI. img_apply (H false HI t_nil). intros W' c' _ HI' HJ. img_apply srz_spinning.
 split; [img_try (img_apply is_self_jump_to_spin; img_exact HJ) | img_try (img_exact (AI_halted _ _ _ _ HI'))].
 Qed.
 Lemma SPIN : forall (W5 : world tfxsegs) regs5 mem5 md5 mat5 X5,

@@ -33,6 +33,10 @@ Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmAsanB
 Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmSan.
 Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.Common.BudgetBridge.
 Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmBothBase.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsS.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsU.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsA.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsB.
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
@@ -505,4 +509,44 @@ Theorem strong_universal_error_free_fuzz_ubjson_parser_max_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.AsanUbsan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.AsanUbsan.M.phdrs).
 Proof.
 exact (OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmSan.shipped_to_sanitizer OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.Common.BudgetBridge.sue_budgets_abort_source_shrink _ _ _ OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmBothBase.ubjson_pm_both_base_abort).
+Qed.
+
+Theorem halts_allowed_jsoncons_fuzz_ubjson_parser_max_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonParserMaxHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Plain.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Plain.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Plain.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsS.ubjson_pm_halts_plain.
+Qed.
+
+Theorem halts_allowed_jsoncons_fuzz_ubjson_parser_max_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonParserMaxHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Asan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Asan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Asan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsA.ubjson_pm_halts_asan.
+Qed.
+
+Theorem halts_allowed_jsoncons_fuzz_ubjson_parser_max_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonParserMaxHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Ubsan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Ubsan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.Ubsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsU.ubjson_pm_halts_ubsan.
+Qed.
+
+Theorem halts_allowed_jsoncons_fuzz_ubjson_parser_max_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonParserMaxHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.AsanUbsan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_parser_max.images.AsanUbsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_parser_max.lib.UbjsonPmHaltsB.ubjson_pm_halts_both.
 Qed.

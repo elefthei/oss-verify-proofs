@@ -28,6 +28,11 @@ assets:
     file: wolftpm-bin.tar.zst
     bytes: 877064
     sha256: c9a719a0e638ae35377986034286e26c2a51013450e77520c11793b1337de128
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wolftpm-src.tar.zst

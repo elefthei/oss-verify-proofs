@@ -14,8 +14,12 @@ Each proof has a build record:
 - the entry point (the function that the driver calls, normally
   `LLVMFuzzerTestOneInput`) and the harness source file, with its origin and
   licence;
-- the recipe (the release's recipe archive, with its SHA-256, and the target
-  in it), and a copy of the files that this build uses, in `recipe/`;
+- the recipe (the recipe archive that the binaries were built with, with its
+  SHA-256, and the target in it), and a copy of the files that this build uses,
+  in `recipe/`; for a port-built project (`build.oss_verify` in its
+  `project.yaml`), in place of the recipe, the OSS Verify port's build manifest
+  (`port/manifest.yaml`) and its files for the project
+  (`port/projects/<project>/`);
 - the build system, the compiler, the builder image digest and the static
   AddressSanitizer commit;
 - the file name, size and SHA-256 of each of the four builds;
@@ -170,6 +174,48 @@ inserts no check there. It is of three kinds:
 The `uninstrumented` list of each build in `harness.yaml`, shown in the
 harness's README, says which of these its link took. A build without the list
 has not recorded it in this release.
+
+## Rust fuzz targets
+
+The OSS Verify port builds a Rust fuzz target, a cargo-fuzz `[[bin]]`, in its
+Rust toolchain image (`ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain-rust`,
+pinned in the port's `infra/toolchains.tsv`; release.yaml lists it in
+`images.builder` once a release holds a Rust build): the C and C++ toolchain
+image with rustc 1.90.0-nightly (2025-07-15) added. The fuzz target and every
+crate it uses, the Rust standard library included (`-Zbuild-std`), are compiled
+into one static library with the project's cargo release profile and
+`panic = "abort"`, and linked with the driver as a C fuzz target is. A crate's
+C code is compiled by clang with the flags of the build. The Rust flags of each
+build are:
+
+| build | Rust flags | a detected error |
+|---|---|---|
+| `plain` | `-Zub-checks=no` | - |
+| `ubsan` | `-Zub-checks=yes` | a failed rustc UB check exits with status 79, below; UBSan in the C code traps, as above |
+| `asan` | `-Zub-checks=no -Zsanitizer=address` | `abort()` (SIGABRT, status 134); nothing is printed |
+| `asan-ubsan` | `-Zub-checks=yes -Zsanitizer=address` | either |
+
+rustc's UB checks are the standard library's checks of the preconditions of its
+unsafe functions (for example that the pointer given to
+`slice::from_raw_parts` is aligned and not null), not clang's `undefined`
+group. A failed one panics without unwinding. `panic = "abort"` means a panic
+never unwinds, in every build, and the port's adapter (its `oft-rust-rt` crate
+and `plugin_rust.h`) installs two hooks before `main`. A panic, a failed UB
+check included, writes its source location on standard error and exits with
+status 79; an allocation failure writes its size on standard error and exits
+with status 2. A libFuzzer build would `abort()` in both cases; the hooks keep
+SIGABRT the signal of an AddressSanitizer report. A project can
+also turn on `-Cdebug-assertions` in all four builds; its harness page says
+so. The standard library is compiled with each build's flags, so
+AddressSanitizer instruments it like the rest of the Rust code.
+
+The standard library compiled is not the stock one: it is the toolchain image's
+sealed copy (its `seal-std.sh`), with two edits that remove a dependence on
+state the process model does not describe. std's `HashMap` keys come from
+`getrandom` with `GRND_NONBLOCK` rather than `GRND_INSECURE`, and
+`available_parallelism()` returns 1 without reading cgroup files or CPU
+affinity. A third edit, to standard output, is compiled in only for a build
+that asks for it; each harness page lists the edits its builds carry.
 
 ## What this means for a statement
 

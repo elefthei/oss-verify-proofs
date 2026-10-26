@@ -43,6 +43,11 @@ assets:
     file: vulkan-loader-bin.tar.zst
     bytes: 334294
     sha256: 0baa4bb65c7f6dc5e756d22fb2c04ed1c432e031ecd450615cee091b550889e4
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: vulkan-loader-src.tar.zst

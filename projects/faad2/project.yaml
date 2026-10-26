@@ -42,6 +42,11 @@ assets:
     file: faad2-bin.tar.zst
     bytes: 1099057
     sha256: b2e059779fefca2db38ed8b9947e534d7ef995e54bbf24314024fd5fcdfe6aa3
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: faad2-src.tar.zst

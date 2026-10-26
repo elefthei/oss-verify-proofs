@@ -29,6 +29,11 @@ assets:
     file: tinyxml2-bin.tar.zst
     bytes: 600671
     sha256: 1915415d7039386dcb858a22748acb9386cdfaa96af8c8dd49d60fc1aaaa2629
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: tinyxml2-src.tar.zst

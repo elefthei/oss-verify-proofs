@@ -35,40 +35,147 @@ m_fd md' = m_fd md /\ m_io md' = m_io md /\ m_fsys md' = m_fsys md /\ m_proc md'
 Section h.
 Variable segs : list Segment.
 Local Notation AIw W md := (AI segs (w_H W) (w_A W) md).
+(* [comment removed for export] *)
+Definition SRrF (W : world segs) (c : config) (Q : world segs -> config -> Prop) : Prop :=
+AIw W (cfg_model c) ->
+forall T, (forall W' c', wle W W' -> AIw W' (cfg_model c') -> Q W' c' -> srealizesM segs false c' T) ->
+srealizesM segs false c T.
+Lemma SRr_F : forall W c Q, SRr segs W c Q -> SRrF W c Q.
+Proof. intros W c Q H HI T HK. exact (H false HI T HK). Qed.
+Lemma SRrF_ret : forall W c (Q : world segs -> config -> Prop), Q W c -> SRrF W c Q.
+Proof. intros W c Q HQ HI T HK. exact (HK W c (wle_refl segs W) HI HQ). Qed.
+Lemma SRrF_bind : forall W c (R Q : world segs -> config -> Prop),
+SRrF W c R -> (forall W' c', wle W W' -> R W' c' -> SRrF W' c' Q) -> SRrF W c Q.
+Proof.
+intros W c R Q H1 H2 HI T HK. apply (H1 HI T). intros W' c' Hle HI' HR.
+apply (H2 W' c' Hle HR HI' T). intros W'' c'' Hle' HI'' HQ.
+exact (HK W'' c'' (wle_trans segs _ _ _ Hle Hle') HI'' HQ).
+Qed.
+Lemma SRrF_mono : forall W c (Q Q' : world segs -> config -> Prop),
+SRrF W c Q -> (forall W' c', wle W W' -> Q W' c' -> Q' W' c') -> SRrF W c Q'.
+Proof.
+intros W c Q Q' H HQQ HI T HK. apply (H HI T). intros W' c' Hle HI' HQ.
+exact (HK W' c' Hle HI' (HQQ W' c' Hle HQ)).
+Qed.
+Lemma SRrF_world_le : forall W W' c Q,
+wle W W' -> (AIw W (cfg_model c) -> AIw W' (cfg_model c)) -> SRrF W' c Q -> SRrF W c Q.
+Proof.
+intros W W' c Q Hle Htr H HI T HK. apply (H (Htr HI) T).
+intros W'' c'' Hle' HI'' HQ. exact (HK W'' c'' (wle_trans segs _ _ _ Hle Hle') HI'' HQ).
+Qed.
+(* [comment removed for export] *)
+Inductive ckind := KLive | KDeadF | KSpin.
+Lemma SRr_node_kinds : forall (W : world segs) c (I : Type) (nx : I -> config) (kd : I -> ckind) (i0 : I) Q,
+node_ok segs c I (fun _ => []) nx ->
+(forall i, AIw W (cfg_model c) -> AIw W (cfg_model (nx i))) ->
+kd i0 = KLive ->
+(forall i, kd i = KSpin -> AIw W (cfg_model (nx i)) -> srealizesM segs false (nx i) t_nil) ->
+(forall i, kd i = KDeadF -> SRrF W (nx i) Q) ->
+(forall i, kd i <> KLive -> fo_dead segs c (nx i)) ->
+(forall i, kd i = KLive -> SRr segs W (nx i) Q) ->
+SRr segs W c Q.
+Proof.
+intros W c I nx kd i0 Q Hnode HIt Hi0 Hspin Hdf Hdead Hk b HI T HK.
+assert (HKF : forall W' c', wle W W' -> AIw W' (cfg_model c') -> Q W' c' -> srealizesM segs false c' T).
+{ intros W' c' Hle HI' HQ. apply (srealizesM_mono segs b false); [destruct b; exact Logic.I | exact (HK W' c' Hle HI' HQ)]. }
+assert (HT0 : T []).
+{ eapply srealizesM_nonempty. apply (Hk i0 Hi0 b (HIt i0 HI) T HK). }
+apply (srzM_conseq segs b c (t_alt (fun i : I => t_emit [] (match kd i with KSpin => t_nil | _ => T end)))).
+- apply (srzM_node_dead segs b c I (fun _ => []) nx (fun i => match kd i with KSpin => t_nil | _ => T end) i0 (fun i => kd i <> KLive) Hnode).
++ rewrite Hi0. intros X; exact (X eq_refl).
++ intros i Hs. split; [| intros _; exact (Hdead i Hs)]. destruct (kd i) eqn:Ek; [exfalso; exact (Hs eq_refl) | |].
+* exact (srealizesM_E segs _ _ _ (Hdf i Ek (HIt i HI) T HKF)).
+* exact (srealizesM_E segs _ _ _ (Hspin i Ek (HIt i HI))).
++ intros i Hs. destruct (kd i) eqn:Ek; [| exfalso; apply Hs; discriminate | exfalso; apply Hs; discriminate].
+exact (Hk i Ek b (HIt i HI) T HK).
+- intro tr. split.
++ intros [i Hi]. destruct (kd i).
+* exact (proj1 (t_emit_nil_eq T HT0 tr) Hi).
+* exact (proj1 (t_emit_nil_eq T HT0 tr) Hi).
+* apply (t_emit_nil_eq t_nil eq_refl tr) in Hi. unfold t_nil in Hi. subst tr. exact HT0.
++ intros Htr. exists i0. rewrite Hi0. exact (proj2 (t_emit_nil_eq T HT0 tr) Htr).
+Qed.
+(* [comment removed for export] *)
+Lemma SRrF_node_kinds : forall (W : world segs) c (I : Type) (nx : I -> config) (kd : I -> ckind) (i0 : I) Q,
+node_ok segs c I (fun _ => []) nx ->
+(forall i, AIw W (cfg_model c) -> AIw W (cfg_model (nx i))) ->
+kd i0 <> KSpin ->
+(forall i, kd i = KSpin -> AIw W (cfg_model (nx i)) -> srealizesM segs false (nx i) t_nil) ->
+(forall i, kd i <> KSpin -> SRrF W (nx i) Q) ->
+SRrF W c Q.
+Proof.
+intros W c I nx kd i0 Q Hnode HIt Hi0 Hspin Hk HI T HK.
+assert (HT0 : T []).
+{ eapply srealizesM_nonempty. apply (Hk i0 Hi0 (HIt i0 HI) T HK). }
+apply (srzM_conseq segs false c (t_alt (fun i : I => t_emit [] (match kd i with KSpin => t_nil | _ => T end)))).
+- apply (srzM_node segs false c I (fun _ => []) nx (fun i => match kd i with KSpin => t_nil | _ => T end) i0 Hnode).
+intros i. destruct (kd i) eqn:Ek.
++ exact (Hk i ltac:(rewrite Ek; discriminate) (HIt i HI) T HK).
++ exact (Hk i ltac:(rewrite Ek; discriminate) (HIt i HI) T HK).
++ exact (Hspin i Ek (HIt i HI)).
+- intro tr. split.
++ intros [i Hi]. destruct (kd i).
+* exact (proj1 (t_emit_nil_eq T HT0 tr) Hi).
+* exact (proj1 (t_emit_nil_eq T HT0 tr) Hi).
+* apply (t_emit_nil_eq t_nil eq_refl tr) in Hi. unfold t_nil in Hi. subst tr. exact HT0.
++ intros Htr. exists i0. destruct (kd i0); [| | exfalso; exact (Hi0 eq_refl)]; exact (proj2 (t_emit_nil_eq T HT0 tr) Htr).
+Qed.
+(* [comment removed for export] *)
 Lemma SRr_node_tnil : forall (W : world segs) c (I : Type) (nx : I -> config) (sp : I -> bool) (i0 : I) Q,
 node_ok segs c I (fun _ => []) nx ->
 (forall i, AIw W (cfg_model c) -> AIw W (cfg_model (nx i))) ->
 sp i0 = false ->
-(forall i, sp i = true -> AIw W (cfg_model (nx i)) -> srealizes segs (nx i) t_nil) ->
+(forall i, sp i = true -> AIw W (cfg_model (nx i)) -> srealizesM segs false (nx i) t_nil) ->
+(forall i, sp i = true -> fo_dead segs c (nx i)) ->
 (forall i, sp i = false -> SRr segs W (nx i) Q) ->
 SRr segs W c Q.
 Proof.
-intros W c I nx sp i0 Q Hnode HIt Hi0 Hspin Hk HI T HK.
-assert (HT0 : T []).
-{ eapply srealizes_nonempty. apply (Hk i0 Hi0 (HIt i0 HI) T HK). }
-apply (srz_conseq segs c (t_alt (fun i : I => t_emit [] (if sp i then t_nil else T)))).
-- apply (srz_node segs c I (fun _ => []) nx (fun i => if sp i then t_nil else T) i0 Hnode).
-intros i. destruct (sp i) eqn:Hs.
-+ exact (Hspin i Hs (HIt i HI)).
-+ exact (Hk i Hs (HIt i HI) T HK).
-- intro tr. split.
-+ intros [i Hi]. destruct (sp i).
-* apply (t_emit_nil_eq t_nil eq_refl tr) in Hi. unfold t_nil in Hi. subst tr. exact HT0.
-* exact (proj1 (t_emit_nil_eq T HT0 tr) Hi).
-+ intros Htr. exists i0. rewrite Hi0. exact (proj2 (t_emit_nil_eq T HT0 tr) Htr).
+intros W c I nx sp i0 Q Hnode HIt Hi0 Hspin Hdead Hk.
+apply (SRr_node_kinds W c I nx (fun i => if sp i then KSpin else KLive) i0 Q Hnode HIt).
+- rewrite Hi0. reflexivity.
+- intros i Hi. destruct (sp i) eqn:Es; [exact (Hspin i Es) | discriminate Hi].
+- intros i Hi. destruct (sp i); discriminate Hi.
+- intros i Hi. destruct (sp i) eqn:Es; [exact (Hdead i Es) | exfalso; exact (Hi eq_refl)].
+- intros i Hi. destruct (sp i) eqn:Es; [discriminate Hi | exact (Hk i Es)].
 Qed.
-Lemma SRr_tnil : forall (W : world segs) c (P : world segs -> config -> Prop),
-SRr segs W c P -> (forall W' c', wle W W' -> P W' c' -> AIw W' (cfg_model c') -> srealizes segs c' t_nil) ->
-AIw W (cfg_model c) -> srealizes segs c t_nil.
+Lemma SRrF_tnil : forall (W : world segs) c (P : world segs -> config -> Prop),
+SRrF W c P -> (forall W' c', wle W W' -> P W' c' -> AIw W' (cfg_model c') -> srealizesM segs false c' t_nil) ->
+AIw W (cfg_model c) -> srealizesM segs false c t_nil.
 Proof. intros W c P H HP HI. apply (H HI t_nil). intros W' c' Hle HI' HP'. exact (HP W' c' Hle HP' HI'). Qed.
+Lemma SRr_tnil : forall (W : world segs) c (P : world segs -> config -> Prop),
+SRr segs W c P -> (forall W' c', wle W W' -> P W' c' -> AIw W' (cfg_model c') -> srealizesM segs false c' t_nil) ->
+AIw W (cfg_model c) -> srealizesM segs false c t_nil.
+Proof. intros W c P H HP HI. exact (SRrF_tnil W c P (SRr_F W c P H) HP HI). Qed.
 Definition refusable (q : kreq) : bool :=
 match q with KMapUser _ _ _ | KMapFreeArray _ _ _ | KMmapSec _ => true | _ => false end.
+(* [comment removed for export] *)
+Fixpoint amrealE {R : Type} (t : itree astate R) : world segs -> config -> (R -> world segs -> config -> Prop) -> Prop :=
+fun W c Q =>
+match t with
+| IRet r => SRrF W c (Q r)
+| IFail _ => True
+| ISpin _ => AIw W (cfg_model c) -> srealizesM segs false c t_nil
+| IAsk q snap k =>
+SRrF W c (fun W1 c1 =>
+match q with
+| KDepot _ => exists z, aok snap q z /\ amrealE (k z) W1 c1 Q
+| _ => exists (I : Type) (nx : I -> config) (bit : I -> Z) (sp : I -> bool) (i0 : I),
+node_ok segs c1 I (fun _ => []) nx /\
+(forall i, AIw W1 (cfg_model c1) -> AIw W1 (cfg_model (nx i))) /\
+(forall i, aok snap q (bit i)) /\
+sp i0 = false /\ bit i0 = 1 /\
+(refusable q = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
+(forall i, sp i = true -> AIw W1 (cfg_model (nx i)) -> srealizesM segs false (nx i) t_nil) /\
+(forall i, sp i = false -> amrealE (k (bit i)) W1 (nx i) Q)
+end)
+end.
+(* [comment removed for export] *)
 Fixpoint amreal {R : Type} (t : itree astate R) : world segs -> config -> (R -> world segs -> config -> Prop) -> Prop :=
 fun W c Q =>
 match t with
 | IRet r => SRr segs W c (Q r)
 | IFail _ => True
-| ISpin _ => AIw W (cfg_model c) -> srealizes segs c t_nil
+| ISpin _ => AIw W (cfg_model c) -> srealizesM segs false c t_nil
 | IAsk q snap k =>
 SRr segs W c (fun W1 c1 =>
 match q with
@@ -79,21 +186,58 @@ node_ok segs c1 I (fun _ => []) nx /\
 (forall i, aok snap q (bit i)) /\
 sp i0 = false /\ bit i0 = 1 /\
 (refusable q = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AIw W1 (cfg_model (nx i)) -> srealizes segs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal (k (bit i)) W1 (nx i) Q)
+(forall i, sp i = true -> AIw W1 (cfg_model (nx i)) -> srealizesM segs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead segs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal (k (bit i)) W1 (nx i) Q else amrealE (k (bit i)) W1 (nx i) Q)
 end)
 end.
+Lemma amrealE_mono {R} : forall (t : itree astate R) W c (Q Q' : R -> world segs -> config -> Prop),
+(forall r W' c', Q r W' c' -> Q' r W' c') -> amrealE t W c Q -> amrealE t W c Q'.
+Proof.
+induction t as [r | q s k IH | pc | f]; intros W c Q Q' HQ H; cbn in *.
+- eapply SRrF_mono; [exact H | intros W' c' _ H'; apply HQ, H'].
+- eapply SRrF_mono; [exact H |]. intros W1 c1 _ Hk. destruct q;
+try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs & Hb & Hr & Hz & Hc); exists J, nx, bit, sp, i0;
+split; [exact Hn|]; split; [exact Ht|]; split; [exact Ha|]; split; [exact Hs|]; split; [exact Hb|]; split; [exact Hr|];
+split; [exact Hz|]; intros i Hi; eapply IH; [exact HQ | apply Hc, Hi]).
+destruct Hk as (z & Hz & Hc). exists z. split; [exact Hz|]. eapply IH; [exact HQ | exact Hc].
+- exact H.
+- exact I.
+Qed.
+Lemma amreal_E {R} : forall (t : itree astate R) W c (Q : R -> world segs -> config -> Prop),
+amreal t W c Q -> amrealE t W c Q.
+Proof.
+induction t as [r | q s k IH | pc | f]; intros W c Q H; cbn in *.
+- apply SRr_F. exact H.
+- apply SRr_F in H. eapply SRrF_mono; [exact H |]. intros W1 c1 _ Hk. destruct q;
+try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs & Hb & Hr & Hz & Hd & Hc); exists J, nx, bit, sp, i0;
+split; [exact Hn|]; split; [exact Ht|]; split; [exact Ha|]; split; [exact Hs|]; split; [exact Hb|]; split; [exact Hr|];
+split; [exact Hz|]; intros i Hi; specialize (Hc i Hi); destruct (Z.eqb (bit i) 1); [apply IH; exact Hc | exact Hc]).
+destruct Hk as (z & Hz & Hc). exists z. split; [exact Hz|]. apply IH. exact Hc.
+- exact H.
+- exact I.
+Qed.
 Lemma amreal_mono {R} : forall (t : itree astate R) W c (Q Q' : R -> world segs -> config -> Prop),
 (forall r W' c', Q r W' c' -> Q' r W' c') -> amreal t W c Q -> amreal t W c Q'.
 Proof.
 induction t as [r | q s k IH | pc | f]; intros W c Q Q' HQ H; cbn in *.
 - eapply SRr_mono; [exact H | intros W' c' _ H'; apply HQ, H'].
 - eapply SRr_mono; [exact H |]. intros W1 c1 _ Hk. destruct q;
-try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs & Hb & Hr & Hz & Hc); exists J, nx, bit, sp, i0;
+try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs & Hb & Hr & Hz & Hd & Hc); exists J, nx, bit, sp, i0;
 split; [exact Hn|]; split; [exact Ht|]; split; [exact Ha|]; split; [exact Hs|]; split; [exact Hb|]; split; [exact Hr|];
-split; [exact Hz|]; intros i Hi; eapply IH; [exact HQ | apply Hc, Hi]).
+split; [exact Hz|]; split; [exact Hd|]; intros i Hi; specialize (Hc i Hi); destruct (Z.eqb (bit i) 1);
+[eapply IH; [exact HQ | exact Hc] | eapply amrealE_mono; [exact HQ | exact Hc]]).
 destruct Hk as (z & Hz & Hc). exists z. split; [exact Hz|]. eapply IH; [exact HQ | exact Hc].
 - exact H.
+- exact I.
+Qed.
+Lemma amrealE_SRr_pre {R} : forall (t : itree astate R) W c Q (P : world segs -> config -> Prop),
+SRrF W c P -> (forall W' c', wle W W' -> P W' c' -> amrealE t W' c' Q) -> amrealE t W c Q.
+Proof.
+intros t W c Q P HP H. destruct t as [r | q s k | pc | f]; cbn in *.
+- eapply SRrF_bind; [exact HP | exact H].
+- eapply SRrF_bind; [exact HP | exact H].
+- apply (SRrF_tnil W c P HP). intros W' c' Hle HP' HI'. exact (H W' c' Hle HP' HI').
 - exact I.
 Qed.
 Lemma amreal_SRr_pre {R} : forall (t : itree astate R) W c Q (P : world segs -> config -> Prop),
@@ -105,6 +249,15 @@ intros t W c Q P HP H. destruct t as [r | q s k | pc | f]; cbn in *.
 - apply (SRr_tnil W c P HP). intros W' c' Hle HP' HI'. exact (H W' c' Hle HP' HI').
 - exact I.
 Qed.
+Lemma amrealE_world_le {R} : forall (t : itree astate R) W W' c Q,
+wle W W' -> (AIw W (cfg_model c) -> AIw W' (cfg_model c)) -> amrealE t W' c Q -> amrealE t W c Q.
+Proof.
+intros t W W' c Q Hle Htr H. destruct t as [r | q s k | pc | f]; cbn in *.
+- eapply SRrF_world_le; eassumption.
+- eapply SRrF_world_le; eassumption.
+- intros HI. exact (H (Htr HI)).
+- exact I.
+Qed.
 Lemma amreal_world_le {R} : forall (t : itree astate R) W W' c Q,
 wle W W' -> (AIw W (cfg_model c) -> AIw W' (cfg_model c)) -> amreal t W' c Q -> amreal t W c Q.
 Proof.
@@ -114,13 +267,13 @@ intros t W W' c Q Hle Htr H. destruct t as [r | q s k | pc | f]; cbn in *.
 - intros HI. exact (H (Htr HI)).
 - exact I.
 Qed.
-Lemma amreal_ibind {A R} : forall (t : itree astate A) (f : A -> itree astate R) W c
+Lemma amrealE_ibind {A R} : forall (t : itree astate A) (f : A -> itree astate R) W c
 (P : A -> world segs -> config -> Prop) (Q : R -> world segs -> config -> Prop),
-amreal t W c P -> (forall a W' c', P a W' c' -> amreal (f a) W' c' Q) -> amreal (ibind t f) W c Q.
+amrealE t W c P -> (forall a W' c', P a W' c' -> amrealE (f a) W' c' Q) -> amrealE (ibind t f) W c Q.
 Proof.
 induction t as [a | q s k IH | pc | e]; intros f W c P Q H Hf; cbn in *.
-- eapply amreal_SRr_pre; [exact H | intros W' c' _ HP; exact (Hf a W' c' HP)].
-- eapply SRr_mono; [exact H|]. intros W1 c1 _ Hk. destruct q;
+- eapply amrealE_SRr_pre; [exact H | intros W' c' _ HP; exact (Hf a W' c' HP)].
+- eapply SRrF_mono; [exact H|]. intros W1 c1 _ Hk. destruct q;
 try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs & Hb & Hr & Hz & Hc); exists J, nx, bit, sp, i0;
 split; [exact Hn|]; split; [exact Ht|]; split; [exact Ha|]; split; [exact Hs|]; split; [exact Hb|]; split; [exact Hr|];
 split; [exact Hz|]; intros i Hi; eapply IH; [apply Hc, Hi | exact Hf]).
@@ -128,15 +281,63 @@ destruct Hk as (z & Hz & Hc). exists z. split; [exact Hz|]. eapply IH; [exact Hc
 - exact H.
 - exact I.
 Qed.
+Lemma amreal_ibind {A R} : forall (t : itree astate A) (f : A -> itree astate R) W c
+(P : A -> world segs -> config -> Prop) (Q : R -> world segs -> config -> Prop),
+amreal t W c P -> (forall a W' c', P a W' c' -> amreal (f a) W' c' Q) -> amreal (ibind t f) W c Q.
+Proof.
+induction t as [a | q s k IH | pc | e]; intros f W c P Q H Hf; cbn in *.
+- eapply amreal_SRr_pre; [exact H | intros W' c' _ HP; exact (Hf a W' c' HP)].
+- eapply SRr_mono; [exact H|]. intros W1 c1 _ Hk. destruct q;
+try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs & Hb & Hr & Hz & Hd & Hc); exists J, nx, bit, sp, i0;
+split; [exact Hn|]; split; [exact Ht|]; split; [exact Ha|]; split; [exact Hs|]; split; [exact Hb|]; split; [exact Hr|];
+split; [exact Hz|]; split; [exact Hd|]; intros i Hi; specialize (Hc i Hi); destruct (Z.eqb (bit i) 1);
+[eapply IH; [exact Hc | exact Hf] | eapply amrealE_ibind; [exact Hc | intros a W' c' HP; apply amreal_E; exact (Hf a W' c' HP)]]).
+destruct Hk as (z & Hz & Hc). exists z. split; [exact Hz|]. eapply IH; [exact Hc | exact Hf].
+- exact H.
+- exact I.
+Qed.
+Lemma amrealE_mbind {A R} : forall (m : M A) (f : A -> M R) (s : astate) W c
+(P : A * astate -> world segs -> config -> Prop) (Q : R * astate -> world segs -> config -> Prop),
+amrealE (m s) W c P -> (forall a s' W' c', P (a, s') W' c' -> amrealE (f a s') W' c' Q) -> amrealE (bind m f s) W c Q.
+Proof.
+intros m f s W c P Q H Hf. unfold bind. eapply amrealE_ibind; [exact H|]. intros [a s'] W' c' HP. apply Hf, HP.
+Qed.
 Lemma amreal_mbind {A R} : forall (m : M A) (f : A -> M R) (s : astate) W c
 (P : A * astate -> world segs -> config -> Prop) (Q : R * astate -> world segs -> config -> Prop),
 amreal (m s) W c P -> (forall a s' W' c', P (a, s') W' c' -> amreal (f a s') W' c' Q) -> amreal (bind m f s) W c Q.
 Proof.
 intros m f s W c P Q H Hf. unfold bind. eapply amreal_ibind; [exact H|]. intros [a s'] W' c' HP. apply Hf, HP.
 Qed.
+Lemma amrealE_ret {R} : forall (r : R) (s : astate) W c (Q : R * astate -> world segs -> config -> Prop),
+Q (r, s) W c -> amrealE (ret r s) W c Q.
+Proof. intros r s W c Q H. cbn. apply SRrF_ret. exact H. Qed.
 Lemma amreal_ret {R} : forall (r : R) (s : astate) W c (Q : R * astate -> world segs -> config -> Prop),
 Q (r, s) W c -> amreal (ret r s) W c Q.
 Proof. intros r s W c Q H. cbn. apply SRr_ret. exact H. Qed.
+Theorem amrealE_SRrF {R} : forall (t : itree astate R) W c (Q : R -> world segs -> config -> Prop),
+amrealE t W c Q -> asafe t -> agprog t -> is_spin t = false ->
+SRrF W c (fun W' c' => exists r tr, apath t tr r /\ Q r W' c').
+Proof.
+induction t as [r | q s k IH | pc | f]; intros W c Q H Hs Hg Hns; cbn in *.
+- eapply SRrF_mono; [exact H | intros W' c' _ H'; exists r, []; split; [reflexivity | exact H']].
+- destruct Hg as [Hg1 Hg2]. eapply SRrF_bind; [exact H|]. intros W1 c1 _ Hk.
+assert (STEP : forall z W2 c2, aok s q z -> is_spin (k z) = false -> amrealE (k z) W2 c2 Q ->
+SRrF W2 c2 (fun W' c' => exists r tr, apath (IAsk q s k) tr r /\ Q r W' c')).
+{ intros z W2 c2 Hz Hz' Hm. eapply SRrF_mono; [eapply IH; [exact Hm | apply Hs; exact Hz | apply Hg2; exact Hz | exact Hz']|].
+intros W' c' _ (r & tr & Hy & HQ). exists r, ((q, z) :: tr). cbn. auto. }
+destruct q; cbn in STEP;
+try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs0 & Hb & Hr & Hz & Hc);
+apply (SRrF_node_kinds W1 c1 J nx (fun i => if (sp i || is_spin (k (bit i)))%bool then KSpin else KDeadF) i0);
+[ exact Hn | exact Ht | rewrite Hs0, Hb, Hg1; discriminate
+| intros i Hi HIi; destruct (sp i) eqn:Es; [exact (Hz i Es HIi)|]; cbn in Hi;
+specialize (Hc i Es); destruct (k (bit i)); cbn in Hi; try discriminate; exact (Hc HIi)
+| intros i Hi; destruct (sp i) eqn:Es; [exfalso; apply Hi; reflexivity|]; cbn in Hi;
+destruct (is_spin (k (bit i))) eqn:Ez; [exfalso; apply Hi; reflexivity|];
+eapply STEP; [apply Ha | exact Ez | apply Hc, Es] ]).
+destruct Hk as (z & Hz & Hc). eapply STEP; [exact Hz | apply Hg1; exact Hz | exact Hc].
+- discriminate.
+- destruct Hs.
+Qed.
 Theorem amreal_SRr {R} : forall (t : itree astate R) W c (Q : R -> world segs -> config -> Prop),
 amreal t W c Q -> asafe t -> agprog t -> is_spin t = false ->
 SRr segs W c (fun W' c' => exists r tr, apath t tr r /\ Q r W' c').
@@ -148,13 +349,26 @@ assert (STEP : forall z W2 c2, aok s q z -> is_spin (k z) = false -> amreal (k z
 SRr segs W2 c2 (fun W' c' => exists r tr, apath (IAsk q s k) tr r /\ Q r W' c')).
 { intros z W2 c2 Hz Hz' Hm. eapply SRr_mono; [eapply IH; [exact Hm | apply Hs; exact Hz | apply Hg2; exact Hz | exact Hz']|].
 intros W' c' _ (r & tr & Hy & HQ). exists r, ((q, z) :: tr). cbn. auto. }
-destruct q; cbn in STEP;
-try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs0 & Hb & Hr & Hz & Hc);
-apply (SRr_node_tnil W1 c1 J nx (fun i => sp i || is_spin (k (bit i)))%bool i0);
+assert (STEPF : forall z W2 c2, aok s q z -> is_spin (k z) = false -> amrealE (k z) W2 c2 Q ->
+SRrF W2 c2 (fun W' c' => exists r tr, apath (IAsk q s k) tr r /\ Q r W' c')).
+{ intros z W2 c2 Hz Hz' Hm. eapply SRrF_mono; [eapply amrealE_SRrF; [exact Hm | apply Hs; exact Hz | apply Hg2; exact Hz | exact Hz']|].
+intros W' c' _ (r & tr & Hy & HQ). exists r, ((q, z) :: tr). cbn. auto. }
+destruct q; cbn in STEP, STEPF;
+try (destruct Hk as (J & nx & bit & sp & i0 & Hn & Ht & Ha & Hs0 & Hb & Hr & Hz & Hd & Hc);
+apply (SRr_node_kinds W1 c1 J nx
+(fun i => if (sp i || is_spin (k (bit i)))%bool then KSpin else if Z.eqb (bit i) 1 then KLive else KDeadF) i0);
 [ exact Hn | exact Ht | rewrite Hs0, Hb, Hg1; reflexivity
 | intros i Hi HIi; destruct (sp i) eqn:Es; [exact (Hz i Es HIi)|]; cbn in Hi;
-specialize (Hc i Es); destruct (k (bit i)); cbn in Hi; try discriminate; exact (Hc HIi)
-| intros i Hi; apply Bool.orb_false_elim in Hi as [Hi1 Hi2]; eapply STEP; [apply Ha | exact Hi2 | apply Hc, Hi1] ]).
+specialize (Hc i Es); destruct (k (bit i)); cbn in Hi; destruct (Z.eqb (bit i) 1); try discriminate; exact (Hc HIi)
+| intros i Hi; destruct (sp i) eqn:Es; [discriminate Hi|]; cbn in Hi;
+destruct (is_spin (k (bit i))) eqn:Ez; [discriminate Hi|]; specialize (Hc i Es);
+destruct (Z.eqb (bit i) 1); [discriminate Hi|]; eapply STEPF; [apply Ha | exact Ez | exact Hc]
+| intros i Hi; apply Hd; destruct (sp i) eqn:Es; [left; reflexivity | right]; cbn in Hi;
+destruct (Z.eqb (bit i) 1) eqn:Eb; [| apply Z.eqb_neq in Eb; exact Eb];
+apply Z.eqb_eq in Eb; rewrite Eb, Hg1 in Hi; exfalso; apply Hi; reflexivity
+| intros i Hi; destruct (sp i) eqn:Es; [discriminate Hi|]; cbn in Hi;
+destruct (is_spin (k (bit i))) eqn:Ez; [discriminate Hi|]; specialize (Hc i Es);
+destruct (Z.eqb (bit i) 1); [| discriminate Hi]; eapply STEP; [apply Ha | exact Ez | exact Hc] ]).
 destruct Hk as (z & Hz & Hc). eapply STEP; [exact Hz | apply Hg1; exact Hz | exact Hc].
 - discriminate.
 - destruct Hs.

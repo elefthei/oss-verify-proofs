@@ -253,18 +253,36 @@ Require OssFuzzTheorems.openssl.bignum.images.AsanUbsan.
 (* [comment removed for export] *)
 Require OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumAsan.
 Require OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumBoth.
-
-
-
+Require OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumHaltsP.
+Require OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumHaltsA.
+Require OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumHaltsB.
 Unset Lia Cache. Unset Nia Cache. Unset Nra Cache.
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
 End SpuriousCfgM.
 
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
 
+Module OpensslBignumHaltsPlainExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslBignumHaltsPlainExits.
 
+Module OpensslBignumHaltsAsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslBignumHaltsAsanExits.
 
+Module OpensslBignumHaltsBothExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslBignumHaltsBothExits.
 
 
 
@@ -944,4 +962,37 @@ Qed.
 (* [comment removed for export] *)
 
 (* [comment removed for export] *)
+
+(* [comment removed for export] *)
+Theorem halts_allowed_openssl_bignum_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslBignumHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.bignum.images.Plain.M.loaded_segments OssFuzzTheorems.openssl.bignum.images.Plain.M.init_pc OssFuzzTheorems.openssl.bignum.images.Plain.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumHaltsP.halts_bignum_plain.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_openssl_bignum_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslBignumHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.bignum.images.Asan.M.loaded_segments OssFuzzTheorems.openssl.bignum.images.Asan.M.init_pc OssFuzzTheorems.openssl.bignum.images.Asan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumHaltsA.halts_bignum_asan.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_openssl_bignum_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslBignumHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.bignum.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.openssl.bignum.images.AsanUbsan.M.init_pc OssFuzzTheorems.openssl.bignum.images.AsanUbsan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.openssl.bignum.lib.TopBignumHaltsB.halts_bignum_both.
+Qed.
 

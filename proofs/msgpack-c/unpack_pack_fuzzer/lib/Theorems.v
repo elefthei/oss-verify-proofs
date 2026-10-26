@@ -6,6 +6,7 @@
 
 From Stdlib Require Import NArith List QArith.
 Require LinuxProcessSemantics.EquivalenceDefinition.Equivalence.
+Require LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.
 Require OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.Plain.
 Require OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.Asan.
 Require OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.Ubsan.
@@ -13,6 +14,23 @@ Require OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.
 From OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.Top Require TopLib.
 From OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.GlueAsmB.Run Require TopBothAll.
 From OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.GlueAsm.Run Require TopAsanAll.
+From OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.Top Require HaltsAsanB HaltsBothB.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module MsgpackCUnpackPackFuzzerHaltsAsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End MsgpackCUnpackPackFuzzerHaltsAsanExits.
+
+Module MsgpackCUnpackPackFuzzerHaltsBothExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End MsgpackCUnpackPackFuzzerHaltsBothExits.
 
 Theorem strong_universal_error_free_unpack_pack_fuzzer_asan :
   LinuxProcessSemantics.EquivalenceDefinition.Equivalence.strong_universal_error_free_T_scfg_budgets_abort
@@ -45,4 +63,26 @@ Theorem strong_universal_error_free_unpack_pack_fuzzer_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.M.phdrs).
 Proof.
   exact OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.GlueAsmB.Run.TopBothAll.TopBothAll.both_base1.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_msgpack_c_unpack_pack_fuzzer_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    MsgpackCUnpackPackFuzzerHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.Asan.M.loaded_segments OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.Asan.M.init_pc OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.Asan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.Top.HaltsAsanB.HaltsAsanB.halts_asanB.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_msgpack_c_unpack_pack_fuzzer_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    MsgpackCUnpackPackFuzzerHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.M.init_pc OssFuzzTheorems.msgpack_c.unpack_pack_fuzzer.images.AsanUbsan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.msgpack_c.unpack_pack_fuzzer.lib.Top.HaltsBothB.HaltsBothB.halts_bothB.
 Qed.

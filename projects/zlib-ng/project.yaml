@@ -47,6 +47,11 @@ assets:
     file: zlib-ng-bin.tar.zst
     bytes: 1043256
     sha256: 48f1caa4c191bbb55455aefc9786a5366b5721eaa063bff47a089efa0d588acb
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: zlib-ng-src.tar.zst

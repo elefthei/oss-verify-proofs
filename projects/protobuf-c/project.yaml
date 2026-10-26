@@ -28,6 +28,11 @@ assets:
     file: protobuf-c-bin.tar.zst
     bytes: 308676
     sha256: ba425b1616dd808eb5af1b7f945231ff6caf84be0a0bc4fc962bea2336878a4b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: protobuf-c-src.tar.zst

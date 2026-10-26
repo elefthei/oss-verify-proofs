@@ -29,6 +29,11 @@ assets:
     file: wolfssh-bin.tar.zst
     bytes: 593411
     sha256: 29b2a07cc67484c55fd932ace5b86da6836e88c70e39fec130d93b4e50a89cba
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: wolfssh-src.tar.zst

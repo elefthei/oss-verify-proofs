@@ -8,7 +8,7 @@ the counts, the tables of proofs and the coverage table are filled in by
 
 [![release-check](https://github.com/theorem-labs/oss-verify-proofs/actions/workflows/release-check.yml/badge.svg?branch=main)](https://github.com/theorem-labs/oss-verify-proofs/actions/workflows/release-check.yml?query=branch%3Amain)
 
-OSS-Fuzz runs the fuzz targets of open-source projects to search for inputs that make them fail. This repository holds Rocq proofs that, for some of these fuzz targets, no such input exists within stated limits. Each proof is about compiled binaries, not source code. It shows that, on every input within the limits, the build with a sanitizer behaves like the plain build, and that the sanitizer never detects an error. OSS Verify is a Theorem program; a maintainer enrolls a project at [theorem-labs/oss-verify](https://github.com/theorem-labs/oss-verify).
+OSS-Fuzz runs the fuzz targets of open-source projects to search for inputs that make them fail. This repository holds Rocq proofs that, for some of these fuzz targets, no such input exists within stated limits. Each proof is about compiled binaries, not source code. It shows that, on every input within the limits, the build with a sanitizer behaves like the plain build and the sanitizer never detects an error, or that every execution of a build ends with a status the statement allows. OSS Verify is a Theorem program; a maintainer enrolls a project at [theorem-labs/oss-verify](https://github.com/theorem-labs/oss-verify).
 
 $proved_lead The proofs are checked with Rocq $rocq_version. They are stated in LPS, a formal model of a Linux process that runs a RISC-V binary.
 
@@ -34,7 +34,7 @@ $proved_table
 Every proof is about the binaries of this release and the statements under `projects/`. All of them use one LPS version and one static AddressSanitizer ([Versions](#versions)). [docs/origin.md](docs/origin.md) says how the proofs were made: the proving task, its submissions and its checker, and how a proof enters this repository.
 
 ## The theorem, in words
-Every proof here proves one or more agreement statements. There is one agreement statement for each sanitizer build: AddressSanitizer (ASan), UndefinedBehaviorSanitizer (UBSan), or both (ASan+UBSan). An agreement statement says:
+Every proof here proves one or more agreement statements, halts statements, or both. There is one agreement statement for each sanitizer build: AddressSanitizer (ASan), UndefinedBehaviorSanitizer (UBSan), or both (ASan+UBSan). An agreement statement says:
 
 > On every input on which the plain build stays within its memory budget, neither build reaches an error, and the plain build and the sanitizer build have the same set of observable behaviours.
 
@@ -44,9 +44,13 @@ Every proof here proves one or more agreement statements. There is one agreement
 - **The memory budget** of the plain build is 2 GiB in a statement about a build with ASan (ASan or ASan+UBSan), and 16 GiB in a statement about the UBSan build. The budget is a premise: an input on which the plain build needs more memory is not covered.
 - **System-call failures.** Each statement says which system calls the environment may refuse without cause. In most of the proofs here, a memory request is refused only when the budget is spent or no address range is free.
 
-So a proof rules out every error that the sanitizer build detects, on every input that the statement covers. If the harness checks a property with `assert()`, `abort()` or a trap, and the check is in the binary, the proof also shows that the property holds on every covered input ([docs/exploring.md](docs/exploring.md)).
+So an agreement proof rules out every error that the sanitizer build detects, on every input that the statement covers.
 
-The Rocq definitions are in [theories/Shapes.v](theories/Shapes.v). Each agreement form is proved equal to its LPS definition, `strong_universal_error_free_T_budgets` or one of its variants. [docs/statements.md](docs/statements.md) explains each form.
+A halts statement is about one build alone. It says that on every covered input, every execution of that build ends, and that it ends with a status the statement allows: status 0 or 2 for most harnesses, and any status for espeak-ng's `ssml-fuzzer`. Its premises are its own: the build is never refused memory for exceeding 16 GiB, and the environment refuses nothing that the process's state does not force. A `_halts_may_fail` statement drops both premises and allows any status.
+
+If the harness checks a property with `assert()`, `abort()` or a trap, and the check is in the binary, an agreement proof shows that the property holds on every covered input, and so does every halts proof: a failed check of these kinds kills the process, which no halts statement allows. A check that ends the process with `exit(n)` instead is shown by a halts proof only when the statement's allowed statuses leave out `n` ([docs/exploring.md](docs/exploring.md), [docs/statements.md](docs/statements.md)).
+
+The Rocq definitions are in [theories/Shapes.v](theories/Shapes.v). Each agreement and halts form is proved equal to its LPS definition: an agreement form to `strong_universal_error_free_T_budgets` or one of its variants, a halts form to `halts_allowed_T_scfg_budgets` or `halts_allowed_T_scfg`. [docs/statements.md](docs/statements.md) explains each form.
 
 ## What a proof does not say
 - It does not say that the library is correct. Errors that the sanitizers cannot detect are not excluded: for example, a wrong result or a memory leak.
@@ -103,7 +107,7 @@ $example
 $coverage_rows
 | **$total_label** | **$n_projects** |
 
-The $n_available available projects have $n_harnesses harnesses with statements and $n_statements statements; $n_binaries binaries are attached to this release and $n_withheld_binaries more are withheld. [index/STATUS.md](index/STATUS.md) lists every project; `index/*.tsv` has the same data for scripts.
+The $n_available available projects have $n_harnesses harnesses with statements and $n_statements statements; $n_binaries binaries are attached to this release or an earlier one, and $n_withheld_binaries more are withheld. [index/STATUS.md](index/STATUS.md) lists every project; `index/*.tsv` has the same data for scripts.
 
 To prove or refute a statement, see [docs/proving.md](docs/proving.md) and [CONTRIBUTING.md](CONTRIBUTING.md). A counterexample that shows a bug in a library goes to that library first ([SECURITY.md](SECURITY.md)). To enroll your own project, see [theorem-labs/oss-verify](https://github.com/theorem-labs/oss-verify).
 
@@ -173,6 +177,9 @@ No entry point has a proof in this release yet.
 
 @@ halts_none
 No proof in this release proves a halts statement, so none of them rules out a run that never ends.
+@@ halts_one
+One of the proved statements is a halts statement; [index/PROOFS.md](index/PROOFS.md) lists it.
+
 @@ halts_some
 $n_halts of the proved statements are halts statements; [index/PROOFS.md](index/PROOFS.md) lists them.
 

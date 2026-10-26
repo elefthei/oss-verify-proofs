@@ -30,6 +30,11 @@ assets:
     file: muparser-bin.tar.zst
     bytes: 1487938
     sha256: 13b4719cba9ae4a837b54ec49548b25ae7d4bb60f07c4f4b519fad8c044ffa97
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: muparser-src.tar.zst

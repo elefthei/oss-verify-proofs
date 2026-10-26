@@ -28,6 +28,11 @@ assets:
     file: utf8proc-bin.tar.zst
     bytes: 345931
     sha256: 6328c25e47cd42b7d46498fdd6e326958a49809125b434bd871f01821a563566
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: utf8proc-src.tar.zst

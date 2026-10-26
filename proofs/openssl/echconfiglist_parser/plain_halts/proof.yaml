@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/echconfiglist_parser/plain_halts
+fingerprint: ca99d08f388153f65ce82390f9232d6dc9ce25834acf1832dccbb4e6e017c351

@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: openssl/pem/asan_ubsan_agrees
-fingerprint: 90b4607dae5f65d492015986ce145c7f42b37a23920ca0464ead1d70cf73d720
+fingerprint: 7c239d8e0c45055d00fa6ec9e62c8acc24949d5f5d7a7168e366edcc07bd8310

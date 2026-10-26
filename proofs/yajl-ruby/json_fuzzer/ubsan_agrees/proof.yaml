@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: yajl-ruby/json_fuzzer/ubsan_agrees
-fingerprint: 273da3c7c9995acb62dff90349c858ba38f44e477e7b1645711d91765a9dc78e
+fingerprint: 0beafe079ea60d42cc9bbb7f58a75e52802083c5b7853e2536c2db2821d306ac

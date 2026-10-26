@@ -29,6 +29,11 @@ assets:
     file: sqlite3-bin.tar.zst
     bytes: 2953967
     sha256: f32ab2da27f8f730ecd2749987ed6e189218ad467c1f6386a2e0d1e44ca6bc54
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: sqlite3-src.tar.zst

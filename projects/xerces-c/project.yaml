@@ -27,6 +27,11 @@ assets:
     file: xerces-c-bin.tar.zst
     bytes: 11398809
     sha256: 083dd5d714eb92bd3b057fb431fda91d404c3c793a1947548fcca12ebe0687ac
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: xerces-c-src.tar.zst

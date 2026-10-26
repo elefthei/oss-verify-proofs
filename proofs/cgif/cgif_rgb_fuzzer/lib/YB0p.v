@@ -54,6 +54,7 @@ Variables KC0 BFUEL FUEL : nat.
 Hypothesis startup_cert :
 check TSEGS IT0 TRA NX0G LIM (XNG TSEGS tra_XN1) XE0 XB0 HS hole_le KC0 BFUEL FUEL None (init_acs_of_g TRA) startup_plan
 = COk startup_shape.
+Hypothesis startup_live : lv startup_plan = true.
 Variable HOLES : nat -> env -> Fs.Fs -> TSet.
 Hypothesis HOLES_agree : forall h E E' fs', env_agree NX0G E E' -> HOLES h E fs' = HOLES h E' fs'.
 Hypothesis HOLES_nil : forall h E fs', HOLES h E fs' [].
@@ -71,7 +72,7 @@ tra_hull_okP (top_ok0 sp Hsp) SINV argH
 (SINV0_frame TPH sp rdraw brk0 argv envp uid hw) (SINV0_agree TPH sp rdraw brk0 argv envp uid hw) FSQ args).
 - destruct i as [|i].
 + cbn [tra_XN1]. apply xn_range_align_sound.
-+ intros cs cs' E R FULL model T _ _ H _. cbn [tra_XN1] in H. discriminate H.
++ intros bm cs cs' E R FULL model T _ _ H _. cbn [tra_XN1] in H. discriminate H.
 Qed.
 Theorem tra_startup :
 srealizes TSEGS (init_config TSEGS Asan.M.init_pc TPH sp brk0 mbase rdraw YA02.LIMIT
@@ -84,7 +85,7 @@ _ _ _ _ _ _ _ _ tra_Xenv tra_Fe1 tra_Fe2 tra_Fe3 tra_Ee tra_De1 tra_De2 tra_De3
 tra_Xpn tra_Fp0 tra_Fp1 tra_Fp2 tra_Fp3 tra_Fp4 tra_Ep tra_Dp0 tra_Dp1 tra_Dp2 tra_Dp3 tra_Dp4
 sp rdraw brk0 mbase argv envp fs stdin uid gid hw groups net nofile sigmask urnd tmp Hsp Hbrk Hva Hve Hfit Huid Hhw
 tra_SUM_imemset tra_SUM_memset tra_SUM_imemcpy tra_SUM_memcpy tra_SUM_miz tra_SUM_istrncpy tra_SUM_popfree
-tra_XN1 tra_XN1_sound IT0 IT0_ok HS hole_le startup_plan startup_shape KC0 BFUEL FUEL startup_cert
+tra_XN1 tra_XN1_sound IT0 IT0_ok HS hole_le startup_plan startup_shape KC0 BFUEL FUEL startup_cert startup_live
 HOLES HOLES_agree HOLES_nil HOLES_le HOLES_sound
 Asan.M.init_pc eq_refl).
 Qed.

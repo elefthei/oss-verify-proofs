@@ -3,14 +3,14 @@
 
 [boost.org](https://www.boost.org) · OSS-Fuzz: [projects/boost-beast](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/boost-beast)
 
-**Status: available.** 1 of OSS-Fuzz's 3 fuzz targets has statements. 4 binaries, 3.2 MB. 13 statements: 3 proved, 0 known false, 0 suspected false, 0 blocked by the model, 10 open.
+**Status: available.** 1 of OSS-Fuzz's 3 fuzz targets has statements. 4 binaries, 3.2 MB. 13 statements: 7 proved, 0 known false, 0 suspected false, 0 blocked by the model, 6 open.
 
 Built from boost (commit `4daa5786`).
 
 ## At a glance
 | harness | what it does | checks beyond "does not crash" | statements |
 |---|---|---|---|
-| [http_request](http_request/) | http::read of a request_parser<dynamic_body> from a test::stream holding the input. The error code is ignored. | none | 13, 3 proved |
+| [http_request](http_request/) | http::read of a request_parser<dynamic_body> from a test::stream holding the input. The error code is ignored. | none | 13, 7 proved |
 
 Not included: **http_response** (not built yet); **websocket_server** (not built yet).
 
@@ -39,8 +39,12 @@ By hand: download `boost-beast-bin.tar.zst` from release [v2026.10.0](https://gi
 | statement | result |
 |---|---|
 | [boost-beast/http_request/asan_agrees](../../proofs/boost-beast/http_request/asan_agrees) | proved |
+| [boost-beast/http_request/asan_halts](../../proofs/boost-beast/http_request/asan_halts) | proved |
 | [boost-beast/http_request/asan_ubsan_agrees](../../proofs/boost-beast/http_request/asan_ubsan_agrees) | proved |
+| [boost-beast/http_request/asan_ubsan_halts](../../proofs/boost-beast/http_request/asan_ubsan_halts) | proved |
+| [boost-beast/http_request/plain_halts](../../proofs/boost-beast/http_request/plain_halts) | proved |
 | [boost-beast/http_request/ubsan_agrees](../../proofs/boost-beast/http_request/ubsan_agrees) | proved |
+| [boost-beast/http_request/ubsan_halts](../../proofs/boost-beast/http_request/ubsan_halts) | proved |
 
 ## Licence
-boost is under `BSL-1.0`. Each binary is a combined work of boost, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `boost-beast-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `boost-beast-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+boost is under `BSL-1.0`. Each binary is a combined work of boost, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `boost-beast-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `boost-beast-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

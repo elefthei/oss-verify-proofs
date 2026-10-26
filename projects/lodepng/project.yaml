@@ -29,6 +29,11 @@ assets:
     file: lodepng-bin.tar.zst
     bytes: 621504
     sha256: 961edabd40a682075ebc5442272f9d19e43d216fc00ff0ec2624d643dc84c911
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: lodepng-src.tar.zst

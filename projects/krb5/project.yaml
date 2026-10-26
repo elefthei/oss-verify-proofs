@@ -89,6 +89,11 @@ assets:
     file: krb5-bin.tar.zst
     bytes: 306446
     sha256: d1af20832a4bfe3804f8168fed450e3fe7506a3b844b279f44d7a54ff7327a97
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: krb5-src.tar.zst

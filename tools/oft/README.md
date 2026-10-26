@@ -52,9 +52,6 @@ false, its state, its summary, its patch and its recorded runs),
 `input.bin`, `control.bin` and its patch.  `findings/<project>/unpatched.yaml`
 pins the binaries built without the patches, which the findings run on, and
 `findings/<project>/<harness>/series` lists the patches in build order.  A
-finding's `input.bin` and `control.bin` are whole driver inputs, header and
-payload, so they may be as large as 1 MiB (a harness may read a payload of 64
-KiB or more); every other file of `findings/` is at most 64 KiB.  A
 finding is never deleted.  It stops holding its project only through a checked
 state change to `pruned`, `not-a-defect` or `public`.  No rendered file reads
 `findings/`, and it never ships: `./oft release-tree` removes it.
@@ -63,15 +60,15 @@ A proof branch takes pushes and merges, so a finding could be added and then
 deleted or rewritten between the two trees a pull request compares.
 `./oft ledger` judges the history instead.  A record (a directory with
 `finding.yaml`) is anchored at its first version that is evidence, decided by
-its own files alone: its `input.bin` and `control.bin` are regular files of at
-most 1 MiB that begin with a complete driver header, each of its `statements`
-is an agreement or halts statement by its name, and its input and control each
-hold a run of every build those statements name, of the shape `oft check
---record` prints.  Any recorded runs of that shape anchor a record, whether or
-not they show its statements false, so a record's runs must come only from
-`oft check --record`, which prints them only when each run has that shape (no
-timeout, no signal a finding does not record), the input shows each statement
-false and the control shows none.  No schema, `harness.yaml` or
+its own files alone: its `input.bin` and `control.bin` are regular files that
+begin with a complete driver header, each of its `statements` is an agreement
+or halts statement by its name, and its input and control each hold a run of
+every build those statements name, of the shape `oft check --record` prints.
+Any recorded runs of that shape anchor a record, whether or not they show its
+statements false, so a record's runs must come only from `oft check
+--record`, which prints them only when each run has that shape (no timeout,
+no signal a finding does not record), the input shows each statement false and
+the control shows none.  No schema, `harness.yaml` or
 `unpatched.yaml` decides it, so neither another file nor a later change to
 the tools turns evidence back into a draft.  Before its anchor a record is a
 draft, which CI never re-ran, and may change in any way or be renamed or

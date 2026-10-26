@@ -28,6 +28,11 @@ assets:
     file: cppitertools-bin.tar.zst
     bytes: 446624
     sha256: 70eb0fa29f8d8c3292db3faec70c3e3fc8382cd269b833b319f28ab8319f2bd9
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cppitertools-src.tar.zst

@@ -6,12 +6,31 @@
 
 From Stdlib Require Import NArith List QArith.
 Require LinuxProcessSemantics.EquivalenceDefinition.Equivalence.
+Require LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.
 Require LinuxProcessSemantics.LinuxProcessSem.MemImageType.
 Require LinuxProcessSemantics.LinuxProcessSem.Run.
 Require OssFuzzTheorems.zstd.huf_decompress.images.Plain.
 Require OssFuzzTheorems.zstd.huf_decompress.images.Asan.
 Require OssFuzzTheorems.Proofs.zstd.huf_decompress.lib.AsanW.AMain_hufc.
 Require OssFuzzTheorems.Proofs.zstd.huf_decompress.lib.PlainTree.
+Require OssFuzzTheorems.Proofs.zstd.huf_decompress.lib.HaltsPlainB.
+Require OssFuzzTheorems.Proofs.zstd.huf_decompress.lib.HaltsAsanBClosed.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module ZstdHufDecompressHaltsPlainExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End ZstdHufDecompressHaltsPlainExits.
+
+Module ZstdHufDecompressHaltsAsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End ZstdHufDecompressHaltsAsanExits.
 
 Theorem strong_universal_error_free_huf_decompress_asan :
   LinuxProcessSemantics.EquivalenceDefinition.Equivalence.strong_universal_error_free_T_scfg_budgets
@@ -349,3 +368,23 @@ Qed.
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+
+Theorem halts_allowed_zstd_huf_decompress_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    ZstdHufDecompressHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.zstd.huf_decompress.images.Plain.M.loaded_segments OssFuzzTheorems.zstd.huf_decompress.images.Plain.M.init_pc OssFuzzTheorems.zstd.huf_decompress.images.Plain.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.zstd.huf_decompress.lib.HaltsPlainB.halts_plainB_fo.
+Qed.
+
+Theorem halts_allowed_zstd_huf_decompress_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    ZstdHufDecompressHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.zstd.huf_decompress.images.Asan.M.loaded_segments OssFuzzTheorems.zstd.huf_decompress.images.Asan.M.init_pc OssFuzzTheorems.zstd.huf_decompress.images.Asan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.zstd.huf_decompress.lib.HaltsAsanBClosed.halts_asanB.
+Qed.

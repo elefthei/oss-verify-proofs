@@ -3,7 +3,7 @@
 
 [libarchive/libarchive](https://github.com/libarchive/libarchive) · OSS-Fuzz: [projects/libarchive](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/libarchive)
 
-**Status: available.** 21 of OSS-Fuzz's 21 fuzz targets have statements. 84 binaries, 174 MB. 273 statements: 0 proved, 0 known false, 0 suspected false, 0 blocked by the model, 273 open.
+**Status: available.** 21 of OSS-Fuzz's 21 fuzz targets have statements. 84 binaries, 174 MB. 273 statements: 0 proved, 5 known false, 0 suspected false, 0 blocked by the model, 268 open.
 
 Built from libarchive (commit `3670ecf7`).
 
@@ -29,7 +29,7 @@ Built from libarchive (commit `3670ecf7`).
 | [libarchive_tar_fuzzer](libarchive_tar_fuzzer/) | Reads the input as tar/gnutar (read_concatenated_archives, mac-ext, all filters); per entry calls ~16 metadata accessors, iterates sparse_next and xattr_next to exhaustion, and drains archive_read_data. Every return value is discarded. | none | 15 |
 | [libarchive_warc_fuzzer](libarchive_warc_fuzzer/) | Reads the input as a WARC archive (+ all filters); per entry calls pathname, size, mtime and drains archive_read_data. Every return value is discarded. | none | 15 |
 | [libarchive_write_fuzzer](libarchive_write_fuzzer/) | Writes up to 10 fuzz entries (file/dir/symlink, ids, mtime, <= 1 KiB data) in one of 8 formats (pax_restricted, gnutar, ustar, cpio newc, zip, 7zip, xar, pax) through one of gzip/bzip2/xz/zstd/none into an in-memory vector. The produced archive is never read back or inspected; header/data return codes ignored. | none | 9 |
-| [libarchive_xar_fuzzer](libarchive_xar_fuzzer/) | Reads the input as a XAR archive (+ all filters); per entry calls pathname(_w), size, mtime, mode, filetype, uid, gid and drains archive_read_data. Every return value is discarded. | none | 9 |
+| [libarchive_xar_fuzzer](libarchive_xar_fuzzer/) | Reads the input as a XAR archive (+ all filters); per entry calls pathname(_w), size, mtime, mode, filetype, uid, gid and drains archive_read_data. Every return value is discarded. | none | 9, 5 known false |
 | [libarchive_zip_fuzzer](libarchive_zip_fuzzer/) | Reads the input as a ZIP archive (passphrases password/test/empty, zip:ignorecrc32, all filters); per entry calls pathname(_w), size, mtime, mode, encryption predicates, format/filter names and drains archive_read_data. Every return value is discarded; CRC checking is explicitly disabled by the ignorecrc32 option. | none | 9 |
 
 Not included: **api-driver** (held from this release).
@@ -42,7 +42,13 @@ Not included: **api-driver** (held from this release).
 - **`<build>_agreement_decidable`**: some riscv64 program decides exactly the finite inputs on which the two builds agree. A program that does so, with a bound on how often it rejects, is a route to a disagreement bound (docs/statements.md).
 
 ## Known issues
-None known.
+| statement | status | why |
+|---|---|---|
+| libarchive_xar_fuzzer `plain_halts_may_fail` | false (witnessed) | with the input file `00 00 00 00 00 00 78 61 72 21 00 1c 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`, refusing the 6th memory request (an mmap of 16,384 bytes) makes the plain build end in an abort (SIGABRT) on an uncaught std::bad_alloc (run under qemu-riscv64 10.0.11) |
+| libarchive_xar_fuzzer `ubsan_halts_may_fail` | false (witnessed) | with the input file `00 00 00 00 00 00 78 61 72 21 00 1c 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`, refusing the 6th memory request (an mmap of 16,384 bytes) makes the UBSan build end in an abort (SIGABRT) on an uncaught std::bad_alloc (run under qemu-riscv64 10.0.11) |
+| libarchive_xar_fuzzer `asan_agrees` | false (witnessed) | with the input file `00 00 00 00 00 00 78 61 72 21 00 1c 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`, refusing the 6th memory request (an mmap of 16,384 bytes) makes the plain build end in an abort (SIGABRT) on an uncaught std::bad_alloc (run under qemu-riscv64 10.0.11) |
+| libarchive_xar_fuzzer `ubsan_agrees` | false (witnessed) | with the input file `00 00 00 00 00 00 78 61 72 21 00 1c 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`, refusing the 6th memory request (an mmap of 16,384 bytes) makes the plain build end in an abort (SIGABRT) on an uncaught std::bad_alloc (run under qemu-riscv64 10.0.11) |
+| libarchive_xar_fuzzer `asan_ubsan_agrees` | false (witnessed) | with the input file `00 00 00 00 00 00 78 61 72 21 00 1c 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`, refusing the 6th memory request (an mmap of 16,384 bytes) makes the plain build end in an abort (SIGABRT) on an uncaught std::bad_alloc (run under qemu-riscv64 10.0.11) |
 
 ## Get and run the binaries
     ./oft fetch libarchive
@@ -60,4 +66,4 @@ By hand: download `libarchive-bin.tar.zst` from release [v2026.10.0](https://git
 None yet. See [docs/proving.md](../../docs/proving.md).
 
 ## Licence
-libarchive is under `BSD-2-Clause` (for some of its harnesses' builds; the others are not recorded yet). Each binary is a combined work of libarchive, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `libarchive-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `libarchive-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+libarchive is under `BSD-2-Clause` (for some of its harnesses' builds; the others are not recorded yet). Each binary is a combined work of libarchive, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `libarchive-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `libarchive-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

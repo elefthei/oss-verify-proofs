@@ -3,14 +3,14 @@
 
 [msgpack.org](https://msgpack.org) · OSS-Fuzz: [projects/msgpack-c](https://github.com/google/oss-fuzz/tree/bd2ce21991a94a362b92fb1bf25f86d5a1a60842/projects/msgpack-c)
 
-**Status: available.** 1 of OSS-Fuzz's 1 fuzz target has statements. 4 binaries, 2.2 MB. 15 statements: 3 proved, 0 known false, 0 suspected false, 0 blocked by the model, 12 open.
+**Status: available.** 1 of OSS-Fuzz's 1 fuzz target has statements. 4 binaries, 2.2 MB. 15 statements: 5 proved, 0 known false, 0 suspected false, 0 blocked by the model, 10 open.
 
 Built from msgpack-c 8.0.0 (commit `a5250ecb`).
 
 ## At a glance
 | harness | what it does | checks beyond "does not crash" | statements |
 |---|---|---|---|
-| [unpack_pack_fuzzer](unpack_pack_fuzzer/) | msgpack::unpack with all six unpack_limit fields set to 1000, then msgpack::pack of the unpacked object into an sbuffer. The packed bytes are NEVER compared to the input (nor re-unpacked), so this is an unchecked unpack->pack round trip; every exception is swallowed by catch (...). | none | 15, 3 proved |
+| [unpack_pack_fuzzer](unpack_pack_fuzzer/) | msgpack::unpack with all six unpack_limit fields set to 1000, then msgpack::pack of the unpacked object into an sbuffer. The packed bytes are NEVER compared to the input (nor re-unpacked), so this is an unchecked unpack->pack round trip; every exception is swallowed by catch (...). | none | 15, 5 proved |
 
 Not included: **api-driver** (held from this release).
 
@@ -40,8 +40,10 @@ By hand: download `msgpack-c-bin.tar.zst` from release [v2026.10.0](https://gith
 | statement | result |
 |---|---|
 | [msgpack-c/unpack_pack_fuzzer/asan_agrees](../../proofs/msgpack-c/unpack_pack_fuzzer/asan_agrees) | proved |
+| [msgpack-c/unpack_pack_fuzzer/asan_halts](../../proofs/msgpack-c/unpack_pack_fuzzer/asan_halts) | proved |
 | [msgpack-c/unpack_pack_fuzzer/asan_ubsan_agrees](../../proofs/msgpack-c/unpack_pack_fuzzer/asan_ubsan_agrees) | proved |
+| [msgpack-c/unpack_pack_fuzzer/asan_ubsan_halts](../../proofs/msgpack-c/unpack_pack_fuzzer/asan_ubsan_halts) | proved |
 | [msgpack-c/unpack_pack_fuzzer/ubsan_agrees](../../proofs/msgpack-c/unpack_pack_fuzzer/ubsan_agrees) | proved |
 
 ## Licence
-msgpack-c is under `BSL-1.0`. Each binary is a combined work of msgpack-c, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `msgpack-c-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `msgpack-c-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, this release's build recipe (the build scripts, pins and patches).
+msgpack-c is under `BSL-1.0`. Each binary is a combined work of msgpack-c, the harness, the C library, the compiler's runtime and every library it links; the SPDX expression of each is not recorded here yet. Corresponding source, in release [v2026.10.0-src](https://github.com/theorem-labs/oss-verify-proofs/releases/tag/v2026.10.0-src): `msgpack-c-src.tar.zst`, the upstream source trees exactly as upstream publishes them; `msgpack-c-src.MANIFEST.tsv`, which says where the build lays each one down; and `recipe.tar.zst`, that release's build recipe (the build scripts, pins and patches).

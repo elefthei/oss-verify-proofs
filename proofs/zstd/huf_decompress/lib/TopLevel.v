@@ -245,5 +245,10 @@ ltac2:(KReplay.run1 (kr_t_TopLevel ()) [] "h02H1h12H2h22T1h32T2h42T3h55lemmah62t
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+
+From OssFuzzTheorems.zstd.huf_decompress.images Require Import Plain.
+
+Module SrcImg := Plain.M.
+
 (* [comment removed for export] *)
 (* [comment removed for export] *)

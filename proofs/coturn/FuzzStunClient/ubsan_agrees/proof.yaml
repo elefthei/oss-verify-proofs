@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: coturn/FuzzStunClient/ubsan_agrees
-fingerprint: 9bb79849e8ad80e77e7e163cf166a210a9707d1edd67353f38ac07c8b470a3ca
+fingerprint: f1a182312fb3c7dff6ca3393bce15aea0591b702b0325641b94dc00170d2fdec

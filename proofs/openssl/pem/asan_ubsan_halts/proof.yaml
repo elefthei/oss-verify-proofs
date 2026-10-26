@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/pem/asan_ubsan_halts
+fingerprint: 748932993a4110ef2c342558c81072baa2b72838a3cf1d2c67a6e98c835fb991

@@ -42,7 +42,7 @@ img_change (znth pclass0 kBatchClass (st_cache X1)) with (cache X1 kBatchClass).
 destruct (pc_chunks (cache X1 kBatchClass)) as [|z l0]; cbn [ibind]; intros HH; img_exact HH. }
 unfold refill_tree in HK. apply amreal_bind_assoc in HK. cbn beta in HK.
 unfold bind at 1. unfold bind at 1 in HK.
-eapply amreal_ibind_ext; [|img_try (img_exact HK)]. intros [a s'] W1 c1 HH. cbn beta iota in HH |- *.
-img_apply amreal_bind_assoc'. img_exact HH.
+eapply amreal_ibind_ext; [| |img_try (img_exact HK)]; intros [a s'] W1 c1 HH; cbn beta iota in HH |- *;
+[img_apply amreal_bind_assoc' | img_apply amrealE_bind_assoc']; img_exact HH.
 Qed.
 End b.

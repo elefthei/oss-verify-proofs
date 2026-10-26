@@ -24,6 +24,11 @@ assets:
     file: phosphor-certificate-manager-bin.tar.zst
     bytes: 3169198
     sha256: a987f1e20fc390cb319aaeb25e6dc19dbbde44a30c540765016026fef89d076e
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: phosphor-certificate-manager-src.tar.zst

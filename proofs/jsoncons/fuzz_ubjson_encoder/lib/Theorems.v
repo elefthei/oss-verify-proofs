@@ -30,6 +30,8 @@ Require OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.
 (* [comment removed for export] *)
 Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.UbjEncPmBase.
 Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.UbjEncPmAsanBase.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.S8.UbjEncPmHaltsA.
+Require OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.S9.UbjEncPmHaltsB.
 
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
@@ -502,4 +504,48 @@ Theorem strong_universal_error_free_fuzz_ubjson_encoder_both :
     (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.M.phdrs).
 Proof.
 exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.UbjEncPmAsanBase.ue_both_base.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_jsoncons_fuzz_ubjson_encoder_halts_plain :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonEncoderHaltsPlainExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Plain.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Plain.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Plain.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.UbjEncPmBase.ue_halts_plain.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_jsoncons_fuzz_ubjson_encoder_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonEncoderHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Asan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Asan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Asan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.S8.UbjEncPmHaltsA.ue_halts_asan.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_jsoncons_fuzz_ubjson_encoder_halts_ubsan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonEncoderHaltsUbsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Ubsan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Ubsan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.Ubsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.UbjEncPmBase.ue_halts_ubsan.
+Qed.
+
+(* [comment removed for export] *)
+Theorem halts_allowed_jsoncons_fuzz_ubjson_encoder_halts_both :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    JsonconsFuzzUbjsonEncoderHaltsBothExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.M.loaded_segments OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.M.init_pc OssFuzzTheorems.jsoncons.fuzz_ubjson_encoder.images.AsanUbsan.M.phdrs).
+Proof.
+exact OssFuzzTheorems.Proofs.jsoncons.fuzz_ubjson_encoder.lib.S9.UbjEncPmHaltsB.ue_halts_both.
 Qed.

@@ -30,6 +30,11 @@ assets:
     file: file-bin.tar.zst
     bytes: 512475
     sha256: fe3dad3ddd8be3270b6073ae27ba6bf9b988726a707869b1ef01a17d6e8c2c48
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: file-src.tar.zst

@@ -372,9 +372,7 @@ class Shapes(unittest.TestCase):
         halts = {"kind": "halts", "builds": ["plain"], "reading": "budget", "exits": [0, 2]}
         check = {"stops_with": "exit", "exit_status": 1, "live": True}
         self.assertTrue(shapes.binds(check, halts))
-        # the process ends with 77 whatever status the source passes, so exit_status does not decide this
-        self.assertTrue(shapes.binds(dict(check, exit_status=2), halts))
-        self.assertFalse(shapes.binds(check, dict(halts, exits=[0, 2, 77])))
+        self.assertFalse(shapes.binds(dict(check, exit_status=2), halts))
         self.assertFalse(shapes.binds(dict(check, live="unknown"), halts))
         self.assertFalse(shapes.binds({"stops_with": "print-only", "live": True}, halts))
 

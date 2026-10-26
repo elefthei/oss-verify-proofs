@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: jsoncons/fuzz_ubjson_parser_max/plain_halts
+fingerprint: fcb270baff934e23458b60021c4f5029a8fe2e480d4eaf1cdf198a7012924a7a

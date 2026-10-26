@@ -43,6 +43,11 @@ assets:
     file: poco-bin.tar.zst
     bytes: 14541142
     sha256: 4bc70d52a5c0cd47d6d10b4e93ce5726060b3fb8b7c36d73d3085685ac340608
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: poco-src.tar.zst

@@ -67,7 +67,7 @@ assert (FLUSH : tflush_spec B) by (eapply (tra_flushFrame B); eassumption).
 assert (TNEWGIF : tnewgif_spec B) by (eapply (tra_cgif_newgif B); eassumption).
 assert (TADDF : taddframe_specG B) by (eapply (tra_cgif_addframeG B); eassumption).
 assert (TCLOSE : tclose_spec B) by (eapply (tra_cgif_close B); eassumption).
-unfold tra_liblink_contract. repeat split; assumption.
+exact (conj RAWNEW (conj FLUSH (conj TNEWGIF (conj TADDF TCLOSE)))). (* [comment removed for export] *)
 Qed.
 End b.
 End a.

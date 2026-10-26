@@ -98,12 +98,17 @@ Module Exits.
   Definition any : list word := HaltsAllowed.AnyExit.codes.
   (** 0 (every harness call returned 0 or -1) or 2 (the driver refused the
       input file, or ran out of memory, before or instead of calling the
-      harness).
+      harness; in a Rust fuzz target, also an allocation that failed at any
+      point, which the OSS Verify port's allocation-error hook ends with one
+      line on standard error).
       docs/running.md lists the others: 77 (the harness called exit()),
-      78 (a harness call returned a value other than 0 or -1); an abort,
-      including a failed assert() and a sanitizer report, is not an exit at
-      all.  In the driver's counting mode (bit 15 of the config-length word)
-      a harness binary exits 0 whatever the harness returned. *)
+      78 (a harness call returned a value other than 0 or -1), 79 (a Rust
+      fuzz target panicked: a failed assertion, an unwrap, an overflow check
+      or a failed rustc UB check, which the port's panic hook ends with one
+      line on standard error); an abort, including a failed assert() and a
+      sanitizer report, is not an exit at all.  In the driver's counting mode
+      (bit 15 of the config-length word) a harness binary exits 0 whatever
+      the harness returned. *)
   Definition ok_or_refused : list word := [Z_to_bv 64 0; Z_to_bv 64 2].
 End Exits.
 
@@ -136,10 +141,13 @@ Lemma agrees_is_lps : forall lp ls p s,
 Proof. reflexivity. Qed.
 
 (** [agrees_in env ...]: the same claim when the environment refuses only
-    what [env] allows.  Used, with [Env.alloc_forced_only], for harnesses
-    whose own error path aborts on an allocation failure: under
-    [Env.may_fail] such a statement would be false for a reason unrelated to
-    the sanitizer. *)
+    what [env] allows.  Used, with [Env.alloc_forced_only], where under
+    [Env.may_fail] the statement would be false for a reason unrelated to
+    the sanitizer: for harnesses whose own error path aborts on an
+    allocation failure, and for a Rust fuzz target's AddressSanitizer pairs,
+    whose allocation-failure hook writes the failed allocation's size while
+    the ASan allocator asks the kernel for memory at other allocations than
+    musl's, so the two builds refused at will could write different lines. *)
 Definition agrees_in (env : SpuriousCfg) (lim_plain lim_san : Z) (plain san : Image) : Prop :=
   forall (en_plain en_san : ExecEntry) (inp : ProcInput),
     valid_entry plain en_plain inp ->

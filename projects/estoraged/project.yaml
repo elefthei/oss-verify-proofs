@@ -28,6 +28,11 @@ assets:
     file: estoraged-bin.tar.zst
     bytes: 690109
     sha256: a3fb962aa71a75f57c8f77377e1399fe59f4f7a9e895574d54e0ceee66db98ed
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: estoraged-src.tar.zst

@@ -34,6 +34,11 @@ assets:
     file: tremor-bin.tar.zst
     bytes: 724300
     sha256: 41e731eca0cd2f6e4aaeee6dadc322e3ea295486cf41b4e36cb446c4bec4f124
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: tremor-src.tar.zst

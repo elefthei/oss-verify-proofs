@@ -41,6 +41,11 @@ assets:
     file: crow-bin.tar.zst
     bytes: 436331
     sha256: efe1a397f5846aaf6e9d4d0a148154d5502fb4e34d41ac69be6a32d53e5f6370
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: crow-src.tar.zst

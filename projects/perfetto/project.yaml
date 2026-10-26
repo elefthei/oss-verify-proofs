@@ -58,6 +58,11 @@ assets:
     file: perfetto-bin.tar.zst
     bytes: 14920683
     sha256: 1b20e5428f34851c735d1ff7378ef018c516396f95ae6cfc5f3a20bc930656f1
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: perfetto-src.tar.zst

@@ -32,3 +32,8 @@ assets:
     file: coturn-bin.tar.zst
     bytes: 2039478
     sha256: 35b053abc428e398e6dc25d27c7eb1ad8f3845dabef4a881ba57c09e4e4910ca
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5

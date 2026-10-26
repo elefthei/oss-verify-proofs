@@ -20,7 +20,7 @@ The harness makes no check of its own beyond not crashing, so a statement about 
 | `plain_halts` | on every input on which the plain build is never refused memory for exceeding 16 GiB (a premise), it exits with status 0 or 2 | open |
 | `ubsan_halts` | on every input on which the UBSan build is never refused memory for exceeding 16 GiB (a premise), it exits with status 0 or 2 | open |
 | `asan_halts` | on every input on which the ASan build is never refused memory for exceeding 16 GiB (a premise), it exits with status 0 or 2 | open |
-| `asan_ubsan_halts` | on every input on which the ASan+UBSan build is never refused memory for exceeding 16 GiB (a premise), it exits with status 0 or 2 | open |
+| `asan_ubsan_halts` | on every input on which the ASan+UBSan build is never refused memory for exceeding 16 GiB (a premise), it exits with status 0 or 2 | [proved](../../../proofs/cgif/cgif_file_fuzzer/asan_ubsan_halts/) |
 | `plain_halts_may_fail` | with no memory premise, and even if any request is refused at any time: the plain build exits with any status | open |
 | `ubsan_halts_may_fail` | with no memory premise, and even if any request is refused at any time: the UBSan build exits with any status | open |
 | `asan_agrees` | on every input on which the plain build is never refused memory for exceeding 2 GiB (a premise): neither build reaches an error and both have the same set of observable behaviours; ASan never fires; memory refused only when forced | open |

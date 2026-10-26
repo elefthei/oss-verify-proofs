@@ -739,10 +739,10 @@ eager_used (cfg_model c1) + A_bytes (w_A Wy) + 2 ^ 36 <= vm_limit (m_vmmaps (cfg
 YN05.ceil_of_top (alloc_top (m_vmmaps (cfg_model c1))) ->
 (forall z, z = 0 \/ z = 1 -> aok sN (KMapPtrArray (8 * idx) kPtrArrayCommit) z) ->
 (forall c', at_S Wy (cfg_model c1) WIN (PSR Wy SH2 R) (resume S_V (SLit ENOMEM_RETv) (ss_mem S_V) (ss_facts S_V)) Wy c' ->
-AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c') -> srealizes tfxsegs c' t_nil) ->
+AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c') -> srealizesM tfxsegs false c' t_nil) ->
 (forall c', let md3 := fixedin_destroyed_model (w64 QSv) (w64 131072) (cfg_model c1) in
 at_S Wy md3 (fun a => WIN a \/ QR a) (PSR Wy SH2 R) (resume S_V (SLit ENOMEM_RETv) (ss_mem S_V) (ss_facts S_V)) Wy c' ->
-AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c') -> srealizes tfxsegs c' t_nil) ->
+AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c') -> srealizesM tfxsegs false c' t_nil) ->
 (forall (W5 : world tfxsegs) (c' : config), let md5 := grant_md false (Z_to_bv 64 50) (w64 QSv) (w64 131072) (cfg_model c1) in
 wle Wy W5 -> hsub (w_H W5) (w_H Wy) -> (forall x : word, w_H Wy x = false -> w_H W5 x = false) ->
 w_A W5 = (QSv, QSv + 131072) :: w_A Wy ->
@@ -759,8 +759,9 @@ node_ok tfxsegs c1 I (fun _ => []) nx /\
 (forall i, AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c1) -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model (nx i))) /\
 (forall i, aok sN (KMapPtrArray (8 * idx) kPtrArrayCommit) (bit i)) /\ sp i0 = false /\ bit i0 = 1 /\
 (refusable (KMapPtrArray (8 * idx) kPtrArrayCommit) = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model (nx i)) -> srealizes tfxsegs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal tfxsegs (K (bit i)) Wy (nx i) Q).
+(forall i, sp i = true -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model (nx i)) -> srealizesM tfxsegs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead tfxsegs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal tfxsegs (K (bit i)) Wy (nx i) Q else amrealE tfxsegs (K (bit i)) Wy (nx i) Q).
 Proof.
 intros RT sN K Q R c1 Heq HN HAI RQ MW RSV IMGS INQ SL0 HTOP Haok DIE DIE3 GRANT IO0.
 pose proof (QR_facts Heq) as (E1 & _ & QA & F9 & Q5 & F10 & EQR).
@@ -870,9 +871,29 @@ end.
 assert (PL : (mb + 6144 <= a < mb + MSv) \/ (SMv <= a < SMv + MSv / 8)) by (img_try (unfold run_ok in RO; clear - RO Ha MZ; zlia)).
 destruct (NQR a PL) as [Nq Ua]. unfold w64. rewrite FRu by (img_try (rewrite Ua; img_exact Nq)). img_exact (proj1 (Forall_forall _ _) HRs r Hr a Ha).
 + img_exact (RQ mem _ FRu HR0). }
+split. { (* [comment removed for export] *)
+destruct (OUT i0) as (md_0 & _ & _ & [[B0 _] | [(_ & NX0 & _) | (B0 & _)]]); [img_try (rewrite Bi0 in B0; discriminate B0) | | img_try (rewrite Bi0 in B0; discriminate B0)].
+assert (H222 : bv_unsigned (getr regs 17) = 222) by (img_try (rewrite R17; img_refl)).
+assert (A0 : forall v : word, reg_get (regupd regs 10 v) (Z_to_bv 5 10) = v).
+{ intros v. replace (Z_to_bv 5 10) with (10%bv : bv 5) by (img_try (img_apply bv_eq; img_refl)). img_apply regupd_same. }
+assert (LT0 : bv_unsigned (w64 QSv) < 2 ^ 64 - 4095).
+{ pose proof (alloc_top_room (m_vmmaps mdN)) as ROOM. pose proof CEILT as CT. rewrite pru17 in CT.
+clear - ROOM CT. unfold two_pow_64, stack_max_size in ROOM. zlia. }
+assert (DEADi : forall i md_i mm, nx i = mkCfg (mkst (regupd regs 10 (errno_ret ENOMEM)) (v_addi (Z_to_bv 64 (0x64c88 + D_2c4)) 4) mm (seg_rom tfxsegs)) md_i ->
+fo_dead tfxsegs c1 (nx i)).
+{ intros i md_i mm NX. rewrite Ec, Hms, Hpc.
+img_apply (fo_dead_node tfxsegs (pend_at regs (Z_to_bv 64 (0x64c88 + D_2c4)) mem (seg_rom tfxsegs)) mdN (getr regs 17) I (fun _ => []) nx i0 i NODE eq_refl
+(injected_family_off_mmap tfxsegs _ _ H222)).
+- rewrite NX0. img_refl.
+- rewrite NX0. cbn [cfg_ms ms_regs mkst]. rewrite A0. img_exact (mmap_grant_not_refusal tfxsegs _ _ mdN (w64 QSv) H222 LT0).
+- rewrite NX. img_refl.
+- rewrite NX. cbn [cfg_ms ms_regs mkst]. rewrite A0. img_exact (mmap_enomem_refusal tfxsegs _ _ mdN H222). }
+intros i Hd. cbv beta in Hd.
+destruct (OUT i) as (md_i & _ & _ & [[_ [NX _]] | [(Bv & _) | (_ & _ & NX & _)]]);
+[img_try (img_exact (DEADi _ _ _ NX)) | img_try (exfalso; rewrite Bv in Hd; destruct Hd as [Hd|Hd]; [discriminate Hd | img_exact (Hd eq_refl)]) | img_try (img_exact (DEADi _ _ _ NX))]. }
 intros i Hspin. apply negb_false_iff in Hspin. apply Z.eqb_eq in Hspin.
 destruct (OUT i) as (md_i & Hh_i & IO_i & [[Bv _] | [(Bv & NX & MD) | (Bv & _)]]); [img_try (rewrite Bv in Hspin; discriminate Hspin) | | img_try (rewrite Bv in Hspin; discriminate Hspin)].
-rewrite Bv, NX. change (if 1 =? 1 then 1 else 0) with 1. rewrite MD in IO_i |- *.
+rewrite Bv, NX. change (if 1 =? 1 then 1 else 0) with 1. cbn [Z.eqb Pos.eqb]. rewrite MD in IO_i |- *.
 set (md5 := grant_md false (Z_to_bv 64 50) (w64 QSv) (w64 131072) mdN) in *.
 pose proof (grant_piece_shape (w64 QSv) (w64 131072) mdN) as (SH1 & SH2' & SH3 & SH4). cbv zeta in SH1, SH2', SH3, SH4. fold md5 in SH1, SH2', SH3, SH4.
 assert (AL1 : QSv <= QSv + 131072) by (img_try (clear; zlia)).

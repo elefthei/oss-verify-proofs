@@ -38,6 +38,11 @@ assets:
     file: pupnp-bin.tar.zst
     bytes: 477788
     sha256: 4526d08dfd2aaffd0834a5f20ef62f6fa3c5603de36410d955e15f16e686075a
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: pupnp-src.tar.zst

@@ -64,6 +64,11 @@ assets:
     file: libpsl-bin.tar.zst
     bytes: 353037
     sha256: 3fe146e900b123d7e374d35016f11b311530f6ac8110306036778448f4de1d8c
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libpsl-src.tar.zst

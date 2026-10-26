@@ -52,6 +52,11 @@ assets:
     file: libevent-bin.tar.zst
     bytes: 391599
     sha256: 540c3e0b1a8c810bca2218fe2ce827167c5f2cee3ad5d96624db1b6ecd712d2b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libevent-src.tar.zst

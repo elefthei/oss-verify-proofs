@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: openssl/bndiv/ubsan_halts
+fingerprint: d99201d4953742af06c19b4cff9484d6b26729be70d7d9806fd8fc503e2f1b74

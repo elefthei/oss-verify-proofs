@@ -1,0 +1,3 @@
+schema: oss-fuzz-theorems/proof/1
+proves: zstd/fse_read_ncount/asan_halts
+fingerprint: cdc62ed63450f2190f22064c980b0e60f3bea59c0775a7f2a5dc0ecf26dee173

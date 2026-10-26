@@ -30,4 +30,6 @@ Proof.
 Qed.
 
   (* [comment removed for export] *)
+  Theorem full16 : HtHaltsLib.full_stmt ConeCfg.CFG HTHfTopA.X0 LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source HTSpec.t_target_ht.
+  Proof. exact (HTHfTopA.full_x16 HTSpec.t_target_ht (HARefusedClosed.ha_full_r L0 LK)). Qed.
 End HtAsan.

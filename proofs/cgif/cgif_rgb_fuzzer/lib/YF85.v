@@ -567,7 +567,7 @@ pose proof (f_equal ms_svc_pending SH) as Hsv; pose proof (f_equal ms_pc_val SH)
 cbn [ms_svc_pending ms_pc_val YK11.mkst] in Hsv, Hpc;
 replace (ss_pc ss_sp) with (0x6ed08 + D_2c4) in Hpc by ((img_case; vm_compute); img_refl);
 unfold is_self_jump, ms_pc; rewrite Hsv, Hpc; rewrite (tfxtbl_rtC_ok (0x6ed08 + D_2c4) 111 ltac:((try img_inst; img_case; vm_compute); img_refl)); (img_case; vm_compute); img_refl)
-| img_try (img_apply (SR HAI t_nil); let W2 := fresh "W" in let c2 := fresh "c" in let HI2 := fresh "HI" in let HJ := fresh "HJ" in
+| img_try (img_apply (SR false HAI t_nil); let W2 := fresh "W" in let c2 := fresh "c" in let HI2 := fresh "HI" in let HJ := fresh "HJ" in
 intros W2 c2 _ HI2 HJ; img_apply srz_spinning; split; [img_apply is_self_jump_to_spin; img_exact HJ | img_exact (AI_halted _ _ _ _ HI2)]) ] end.
 Lemma segD_r_g : forall (Wx : world tfxsegs) md X P W' c',
 (forall a, WINR0 a -> X a) -> pstable P ->
@@ -581,11 +581,11 @@ eapply (at_R3_run_ecall Wy tfxtbl_rtC tfxtbl_rtC_ok 0x7ffffff0 mdy Xy Py ss R3_N
 Qed.
 Lemma segD_re_g : forall (Wx : world tfxsegs) md X P W' c',
 (forall a, WINR0 a -> X a) -> pstable P ->
-at_R3 Wx md X P R3_NRFge W' c' -> AI tfxsegs (w_H W') (w_A W') (cfg_model c') -> srealizes tfxsegs c' t_nil.
+at_R3 Wx md X P R3_NRFge W' c' -> AI tfxsegs (w_H W') (w_A W') (cfg_model c') -> srealizesM tfxsegs false c' t_nil.
 Proof. intros Wx md X P W' c' HX HP HR HAI. r3_spin HR HAI HX HP R3_SPFge. Qed.
 Lemma segD_rx_g : forall (Wx : world tfxsegs) md X P W' c',
 (forall a, WINR0 a -> X a) -> pstable P ->
-at_R3 Wx md X P R3_NRFgx W' c' -> AI tfxsegs (w_H W') (w_A W') (cfg_model c') -> srealizes tfxsegs c' t_nil.
+at_R3 Wx md X P R3_NRFgx W' c' -> AI tfxsegs (w_H W') (w_A W') (cfg_model c') -> srealizesM tfxsegs false c' t_nil.
 Proof. intros Wx md X P W' c' HX HP HR HAI. r3_spin HR HAI HX HP R3_SPFgx. Qed.
 Lemma segD_rg_g : forall (Wx : world tfxsegs) md X P W' c',
 (forall a, WINR0 a -> X a) -> pstable P ->

@@ -1610,12 +1610,12 @@ pose proof (proj1 (forallb_forall _ _) Hall h' Hin) as Hex. cbv beta in Hex. app
 apply andb_prop in Hle as [Hle Hha]. apply (sd_hole_all D E fs sa h tr Hha). exact (HOLES_le h' h E fs tr Hle Hh').
 Qed.
 Definition node1_stmt (pre : acs -> bool) (node : acs -> option acs) : Prop :=
-forall cs cs' E R FULL model T,
+forall (b : bool) cs cs' E R FULL model T,
 cs_ok E cs R FULL model -> pre cs = true -> node cs = Some cs' ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') T) ->
-srealizes SEGS (cfg R (pc cs) FULL model) T.
+srealizesM SEGS b (cfg R' (pc cs') FULL' model') T) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) T.
 Definition always (cs : acs) : bool := true.
 Definition sys_stmt (y : snode) : Prop := node1_stmt (is_ecall_at SEGS) (node_sys A nx0 y).
 Definition x_stmt (x : xnode) : Prop := forall args, node1_stmt always (node_x SEGS A nx0 x args).
@@ -1627,61 +1627,61 @@ Proof. intros TA TB tr. unfold t_alt2. tauto. Qed.
 Definition join_stmt : Prop := forall b off n, node1_stmt always (fun cs => node_join SEGS cs b off n).
 Definition t_incl (TB TA : TSet) : Prop := forall tr, TB tr -> TA tr.
 Definition brk2_stmt : Prop :=
-forall cs csa csb E R FULL model TA TB,
+forall (b : bool) cs csa csb E R FULL model TA TB,
 cs_ok E cs R FULL model -> is_ecall_at SEGS cs = true -> node_brk2g A LIMIT cs = Some (csa, csb) ->
 t_incl TB TA -> TA [] ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csa R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csa) FULL' model') TA) ->
+srealizesM SEGS b (cfg R' (pc csa) FULL' model') TA) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csb R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csb) FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS b (cfg R' (pc csb) FULL' model') TB) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Definition exit_stmt : Prop :=
 forall cs code E R FULL model,
 cs_ok E cs R FULL model -> is_ecall_at SEGS cs = true -> node_exit cs = Some code ->
 srealizes SEGS (cfg R (pc cs) FULL model) (t_exit (Z_to_bv 64 code) (m_fs model)).
 Definition ext_stmt : Prop := forall id args, node1_stmt always (XN id args).
 Definition ext2_stmt : Prop :=
-forall id args cs csa csb E R FULL model TA TB,
+forall (b : bool) id args cs csa csb E R FULL model TA TB,
 cs_ok E cs R FULL model -> XB id args cs = Some (csa, csb) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csa R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csa) FULL' model') TA) ->
+srealizesM SEGS b (cfg R' (pc csa) FULL' model') TA) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csb R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csb) FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS b (cfg R' (pc csb) FULL' model') TB) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Definition mm2_stmt (node : acs -> option (acs * acs)) : Prop :=
-forall cs csa csb E R FULL model TA TB,
+forall (b : bool) cs csa csb E R FULL model TA TB,
 cs_ok E cs R FULL model -> is_ecall_at SEGS cs = true -> node cs = Some (csa, csb) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csa R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csa) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc csa) FULL' model') TA) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csb R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csb) FULL' model') TB) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA TB).
+srealizesM SEGS b (cfg R' (pc csb) FULL' model') TB) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (t_alt2 TA TB).
 Definition mm3_stmt (node : acs -> option (acs * acs * list acs)) : Prop :=
-forall cs csa csb cscs E R FULL model TA TB TC,
+forall (b : bool) cs csa csb cscs E R FULL model TA TB TC,
 cs_ok E cs R FULL model -> is_ecall_at SEGS cs = true -> node cs = Some (csa, csb, cscs) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csa R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csa) FULL' model') TA) ->
+srealizesM SEGS false (cfg R' (pc csa) FULL' model') TA) ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csb R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csb) FULL' model') TB) ->
+srealizesM SEGS b (cfg R' (pc csb) FULL' model') TB) ->
 (forall csc E' R' FULL' model', In csc cscs ->
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' csc R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc csc) FULL' model') TC) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_alt2 TA (t_alt2 TB TC)).
+srealizesM SEGS false (cfg R' (pc csc) FULL' model') TC) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (t_alt2 TA (t_alt2 TB TC)).
 Definition emit_stmt : Prop :=
-forall id args cs fd ps cs' E R FULL model T,
+forall (b : bool) id args cs fd ps cs' E R FULL model T,
 cs_ok E cs R FULL model -> XE id args cs = Some (fd, ps, cs') -> T [] ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') T) ->
-srealizes SEGS (cfg R (pc cs) FULL model) (t_emit (Wp E fd ps) T).
+srealizesM SEGS b (cfg R' (pc cs') FULL' model') T) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (t_emit (Wp E fd ps) T).
 Definition holes_stmt : Prop :=
 forall h ch, HS h = Some ch ->
 forall E R FULL model, cs_ok E ch R FULL model ->
@@ -2082,15 +2082,15 @@ repeat match type of H with (_ && _)%bool = true => apply andb_prop in H as [H ?
 apply Nat.leb_le in X.
 repeat (apply andb_true_intro; split); try assumption. apply Nat.leb_le. lia.
 Qed.
-Lemma run_block_sound : forall gb bfuel stops cs cs' E R FULL model T,
+Lemma run_block_sound : forall (b : bool) gb bfuel stops cs cs' E R FULL model T,
 (nx0 <= gb)%nat ->
 run_block SEGS IT gb KC bfuel stops cs = Some cs' -> cs_ok E cs R FULL model ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') T) ->
-srealizes SEGS (cfg R (pc cs) FULL model) T.
+srealizesM SEGS b (cfg R' (pc cs') FULL' model') T) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) T.
 Proof.
-intros gb bfuel stops cs cs' E R FULL model T Hgb Hrb HC Hk.
+intros b gb bfuel stops cs cs' E R FULL model T Hgb Hrb HC Hk.
 rewrite run_block_eq in Hrb.   unfold run_block_ref in Hrb.
 destruct (fresh_ok gb cs) eqn:Hf0; [|discriminate].
 pose proof (fresh_ok_mono gb cs Hgb Hf0) as Hf.
@@ -2111,7 +2111,7 @@ pose proof (cs_ok_agree E E' cs R FULL model Hagc Hf HC) as HC'.
 assert (HH : hid E' cs model = H).
 { unfold H. eapply hid_agree; [exact Hagc | unfold nxt; rewrite Hss; exact Fle | unfold nxt; rewrite Hss; exact Fallow]. }
 unfold cfg_of, pc. rewrite Hss. cbn [a_ss s_pc].
-apply (srz_msteps_restricted_T SEGS H (H_off_segments_cs E cs model) SEGS_wx (allowA E cs)
+apply (srzM_msteps_restricted_T SEGS H (H_off_segments_cs E cs model) SEGS_wx b (allowA E cs)
 (mkst R (Z_to_bv 64 p) FULL (seg_rom SEGS)) _ model T
 (lazy_cover_cs E cs R FULL model HC) (A_wf_allowA E cs) (co_minv _ _ _ _ _ HC) (co_halt _ _ _ _ _ HC) Hms).
 intros model' Hinv' Hsame Hclean.
@@ -2134,15 +2134,15 @@ apply Hk.
 + intros a Ha. rewrite HH in Ha. unfold FULL', munrestrict. rewrite Ha. reflexivity.
 - pose proof (same_but_materialized_frame _ _ Hsame) as Hfr. apply Hfr.
 Qed.
-Lemma run_block_gc_sound : forall gb bfuel stops cs cs' E R FULL model T,
+Lemma run_block_gc_sound : forall (b : bool) gb bfuel stops cs cs' E R FULL model T,
 (nx0 <= gb)%nat ->
 run_block_gc SEGS IT gb KC bfuel stops cs = Some cs' -> cs_ok E cs R FULL model ->
 (forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') T) ->
-srealizes SEGS (cfg R (pc cs) FULL model) T.
+srealizesM SEGS b (cfg R' (pc cs') FULL' model') T) ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) T.
 Proof.
-intros gb bfuel stops cs cs' E R FULL model T Hgb H HC Hk. unfold run_block_gc in H.
+intros b gb bfuel stops cs cs' E R FULL model T Hgb H HC Hk. unfold run_block_gc in H.
 destruct (run_block SEGS IT gb KC bfuel stops cs) as [cs1|] eqn:Hrb; [|discriminate]. injection H as <-.
 eapply run_block_sound; [exact Hgb | exact Hrb | exact HC |].
 intros E' R' FULL' model' Hag HC1 Hfs. rewrite <- (pc_cs_gc gb cs1). apply (Hk E' R' FULL' model'); [exact Hag | apply cs_gc_ok; exact HC1 | exact Hfs].
@@ -2156,7 +2156,7 @@ cbn [APG.sr_vars_lt] in H. apply andb_prop in H as [H1 H2]. destruct r as [|r]; 
 Qed.
 Lemma node_fresh_sound_pf : fresh_stmt.
 Proof.
-intros r logc base cs cs' E R FULL model T HC _ Hn Hk. cbv beta in Hn. unfold node_fresh in Hn.
+intros r logc base bmode cs cs' E R FULL model T HC _ Hn Hk. cbv beta in Hn. unfold node_fresh in Hn.
 set (b := match base with Some b => b | None => ELit 0 end) in Hn.
 set (e := esub (reg cs r) b) in Hn.
 destruct (Nat.ltb 0 r && Nat.ltb r 32 && Z.leb 0 logc && Z.leb logc 40 && Z.leb logc (ealign (kn cs) e)
@@ -3807,7 +3807,7 @@ exact (co_zero0 x H1 H2 H3 H4 H5).
 Qed.
 Lemma xn_splitvis_sound : forall args, node1_stmt always (xn_splitvis LIMIT args).
 Proof.
-intros args cs cs' E R FULL model T HC _ Hn HK.
+intros args bmode cs cs' E R FULL model T HC _ Hn HK.
 unfold xn_splitvis in Hn. destruct args as [|a [|? ?]]; try discriminate Hn.
 destruct (splitvis_sound E cs R FULL model a cs' HC Hn) as [HC' Hpc].
 rewrite <- Hpc. apply (HK E R FULL model); [split; apply env_agree_refl | exact HC' | reflexivity].
@@ -4216,7 +4216,7 @@ is_self_jump SEGS ms = true.
 Proof. intros ms Hs Hf. unfold is_self_jump. rewrite Hs, Hf. vm_compute. reflexivity. Qed.
 Lemma node_spin_sound : forall cs E R FULL model,
 cs_ok E cs R FULL model -> node_spin SEGS cs = true ->
-srealizes SEGS (cfg R (pc cs) FULL model) t_nil.
+srealizesM SEGS false (cfg R (pc cs) FULL model) t_nil.
 Proof.
 intros cs E R FULL model HC Hn. unfold node_spin in Hn.
 apply andb_prop in Hn as [Hn Hw]. apply andb_prop in Hn as [H0 H4].
@@ -4229,110 +4229,138 @@ apply srz_spin.
 - apply is_self_jump_to_spin. apply self_jump_word; [reflexivity | exact Hf].
 - exact (co_halt _ _ _ _ _ HC).
 Qed.
-Definition LCOK (lc : option loopctx) (D : TSet) (E : env) (fs : Fs.Fs) : Prop :=
+Fixpoint lv (p : plan) : bool :=
+match p with
+| PRun _ k | PShDisj _ _ _ _ k | PFact _ k | PJoin _ _ _ k | PForget _ k | PDropRange _ _ k | PGcKeep _ k | PBump _ k
+| PHavoc _ k | PHavocBig _ k | PFresh _ _ _ k | PSys _ k | PX _ _ k | PExt _ _ k | PEmit _ _ k | PFog _ _ k | PFogNew _ _ k
+| PGhost _ _ k | PUnvis _ _ k | PHavocBrk _ _ k | PIntro _ _ k | PDiamond _ _ k | PRename _ k | PCompact k
+| PAbstractCell _ _ k | PHavocWords _ k | PRespell _ _ k => lv k
+| PSplit _ _ k1 k2 | PCase2 _ _ k1 k2 | PCaseDisj _ _ k1 k2 | PBrk2 k1 k2 | PExt2 _ _ k1 k2 | PLoop _ _ _ k1 k2
+| PVia _ _ _ k1 k2 => lv k1 && lv k2
+| PMmap _ kb | PMprotect _ kb | PMmapIn _ kb _ | PMmapInH _ kb _ | PMmapIn2 _ kb => lv kb
+| PContra | PNext | PHandoff _ | PExit | PMerge _ => true
+| PSpin => false
+end.
+(* [comment removed for export] *)
+Definition lvb (b : bool) (p : plan) : bool := if b then lv p else true.
+Lemma lvb_l : forall (b x y : bool), (if b then (x && y)%bool else true) = true -> (if b then x else true) = true.
+Proof. intros [|] x y H; [apply andb_prop in H as [H _]; exact H | reflexivity]. Qed.
+Lemma lvb_r : forall (b x y : bool), (if b then (x && y)%bool else true) = true -> (if b then y else true) = true.
+Proof. intros [|] x y H; [apply andb_prop in H as [_ H]; exact H | reflexivity]. Qed.
+Definition LCOK (bm : bool) (lc : option loopctx) (D : TSet) (E : env) (fs : Fs.Fs) : Prop :=
 match lc with
 | None => True
 | Some (LC h nx lo hi) => ((nx0 <= lo)%nat /\ (lo <= hi)%nat /\ length (s_regs (a_ss nx)) = 32%nat) /\
 forall E' R' F' m', env_agree lo E E' -> cs_ok E' nx R' F' m' -> m_fs m' = fs ->
-srealizes SEGS (cfg R' h F' m') D
+srealizesM SEGS bm (cfg R' h F' m') D
 | Some (JC j js sk b lo) => ((nx0 <= b)%nat /\ (b <= lo)%nat /\ length (s_regs (a_ss js)) = 32%nat) /\
 forall E' R' F' m', env_agree b E E' -> cs_ok E' js R' F' m' -> m_fs m' = fs ->
-srealizes SEGS (cfg R' (pc js) F' m') (sd D E' fs sk)
+srealizesM SEGS bm (cfg R' (pc js) F' m') (sd D E' fs sk)
 end.
-Lemma LCOK_bnd : forall lc D E fs, LCOK lc D E fs -> (nx0 <= match lc with Some c => lc_bnd c | None => nx0 end)%nat.
-Proof. intros [[h nx lo hi|j js sk b lo]|] D E fs HL; cbn [LCOK lc_bnd] in *; [destruct HL as [(H1 & H2 & _) _]; lia | destruct HL as [(H1 & _ & _) _]; lia | lia]. Qed.
+Lemma LCOK_bnd : forall b lc D E fs, LCOK b lc D E fs -> (nx0 <= match lc with Some c => lc_bnd c | None => nx0 end)%nat.
+Proof. intros bm [[h nx lo hi|j js sk b lo]|] D E fs HL; cbn [LCOK lc_bnd] in *; [destruct HL as [(H1 & H2 & _) _]; lia | destruct HL as [(H1 & _ & _) _]; lia | lia]. Qed.
 Definition lc_guard (lc : option loopctx) (cs : acs) : bool :=
 match lc with Some c => Nat.leb (lc_bnd c) (nxt cs) | None => true end.
-Lemma LCOK_agree : forall lc D E E' fs cs,
-LCOK lc D E fs -> lc_guard lc cs = true -> env_agree (nxt cs) E E' -> LCOK lc D E' fs.
+Lemma LCOK_agree : forall b lc D E E' fs cs,
+LCOK b lc D E fs -> lc_guard lc cs = true -> env_agree (nxt cs) E E' -> LCOK b lc D E' fs.
 Proof.
-intros [[h nx lo hi|j js sk b lo]|] D E E' fs cs HL Hg Hag; [| |exact I]; cbn [LCOK lc_guard lc_bnd] in *;
+intros bm [[h nx lo hi|j js sk b lo]|] D E E' fs cs HL Hg Hag; [| |exact I]; cbn [LCOK lc_guard lc_bnd] in *;
 apply Nat.leb_le in Hg; destruct HL as [(Hn0 & Hlh & Hlen) HL]; (split; [split; [exact Hn0 | split; [exact Hlh | exact Hlen]]|]);
 intros E2 R' F' m' Hag2; apply HL; (eapply env_agree_trans; [eapply env_agree_le; [exact Hag | lia] | exact Hag2]).
 Qed.
-Lemma LCOK_agree_gb : forall lc D E E' fs,
-LCOK lc D E fs -> env_agree (match lc with Some c => lc_bnd c | None => nx0 end) E E' -> LCOK lc D E' fs.
+Lemma LCOK_agree_gb : forall b lc D E E' fs,
+LCOK b lc D E fs -> env_agree (match lc with Some c => lc_bnd c | None => nx0 end) E E' -> LCOK b lc D E' fs.
 Proof.
-intros [[h nx lo hi|j js sk b lo]|] D E E' fs HL Hag; [| |exact I]; cbn [LCOK lc_bnd] in *;
+intros bm [[h nx lo hi|j js sk b lo]|] D E E' fs HL Hag; [| |exact I]; cbn [LCOK lc_bnd] in *;
 destruct HL as [(Hn0 & Hlh & Hlen) HL]; (split; [split; [exact Hn0 | split; [exact Hlh | exact Hlen]]|]);
 intros E2 R' F' m' Hag2; apply HL; (eapply env_agree_trans; [eapply env_agree_le; [exact Hag | lia] | exact Hag2]).
 Qed.
-Lemma cont_agree : forall bfuel fuel lc k cs cs' s E model D,
+Lemma LCOK_mono : forall b lc D E fs, LCOK b lc D E fs -> LCOK false lc D E fs.
+Proof.
+intros bm [[h nx lo hi|j js sk b lo]|] D E fs HL; [| |exact I]; cbn [LCOK] in *;
+destruct HL as [H3 HL]; (split; [exact H3|]); intros E2 R' F' m' Hag HC Hfs;
+(apply (srealizesM_mono SEGS bm false); [destruct bm; exact Logic.I | exact (HL E2 R' F' m' Hag HC Hfs)]).
+Qed.
+Lemma cont_agree : forall b bfuel fuel lc k cs cs' s E model D,
 CHECK bfuel fuel lc cs' k = COk s ->
-LCOK lc D E (m_fs model) -> lc_guard lc cs = true -> D [] ->
-(forall E R FULL model, cs_ok E cs' R FULL model -> LCOK lc D E (m_fs model) -> D [] ->
-srealizes SEGS (cfg R (pc cs') FULL model) (sd D E (m_fs model) s)) ->
+LCOK b lc D E (m_fs model) -> lc_guard lc cs = true -> D [] -> lvb b k = true ->
+(forall E R FULL model, cs_ok E cs' R FULL model -> LCOK b lc D E (m_fs model) -> D [] -> lvb b k = true ->
+srealizesM SEGS b (cfg R (pc cs') FULL model) (sd D E (m_fs model) s)) ->
 forall E' R' FULL' model',
 env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' -> m_fs model' = m_fs model ->
-srealizes SEGS (cfg R' (pc cs') FULL' model') (sd D E (m_fs model) s).
+srealizesM SEGS b (cfg R' (pc cs') FULL' model') (sd D E (m_fs model) s).
 Proof.
-intros bfuel fuel lc k cs cs' s E model D Hc HL Hg HD IH E' R' FULL' model' [Hag Hag2] HC' Hfs.
+intros b bfuel fuel lc k cs cs' s E model D Hc HL Hg HD Hlv IH E' R' FULL' model' [Hag Hag2] HC' Hfs.
 rewrite (sd_agree D E E' (m_fs model) s Hag (check_vars _ _ _ _ _ _ Hc)), <- Hfs.
-apply (IH E' R' FULL' model' HC'); [|exact HD]. rewrite Hfs. eapply LCOK_agree; [exact HL | exact Hg | exact Hag2].
+apply (IH E' R' FULL' model' HC'); [|exact HD|exact Hlv]. rewrite Hfs. eapply LCOK_agree; [exact HL | exact Hg | exact Hag2].
 Qed.
 Theorem check_sound : forall fuel bfuel lc p cs s,
 CHECK bfuel fuel lc cs p = COk s ->
-forall E R FULL model D, cs_ok E cs R FULL model -> LCOK lc D E (m_fs model) -> D [] ->
-srealizes SEGS (cfg R (pc cs) FULL model) (sd D E (m_fs model) s).
+forall (b : bool) E R FULL model D, cs_ok E cs R FULL model -> LCOK b lc D E (m_fs model) -> D [] -> lvb b p = true ->
+srealizesM SEGS b (cfg R (pc cs) FULL model) (sd D E (m_fs model) s).
 Proof.
-induction fuel as [|fuel IH]; intros bfuel lc p cs s Hc E R FULL model D HC HL HD; [discriminate|].
+induction fuel as [|fuel IH]; intros bfuel lc p cs s Hc b E R FULL model D HC HL HD Hlv; [discriminate|].
 cbn [APG.check] in Hc.
 match type of Hc with (if negb ?g then _ else _) = _ => destruct g eqn:Hg; [|discriminate] end. cbn [negb] in Hc.
-assert (CONT : forall k cs' s', CHECK bfuel fuel lc cs' k = COk s' ->
+assert (CONT : forall k cs' s', CHECK bfuel fuel lc cs' k = COk s' -> lvb b k = true ->
 forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' ->
-m_fs model' = m_fs model -> srealizes SEGS (cfg R' (pc cs') FULL' model') (sd D E (m_fs model) s')).
-{ intros k cs' s' Hk. eapply cont_agree; [exact Hk | exact HL | exact Hg | exact HD | intros; eapply IH; eassumption]. }
-assert (SAME : forall k cs' s', CHECK bfuel fuel lc cs' k = COk s' -> cs_ok E cs' R FULL model ->
-srealizes SEGS (cfg R (pc cs') FULL model) (sd D E (m_fs model) s')).
-{ intros k cs' s' Hk HC'. refine (CONT k cs' s' Hk E R FULL model (conj (env_agree_refl _ _) (env_agree_refl _ _)) HC' eq_refl). }
+m_fs model' = m_fs model -> srealizesM SEGS b (cfg R' (pc cs') FULL' model') (sd D E (m_fs model) s')).
+{ intros k cs' s' Hk Hlk. eapply cont_agree; [exact Hk | exact HL | exact Hg | exact HD | exact Hlk | intros; eapply IH; eassumption]. }
+assert (CONTF : forall k cs' s', CHECK bfuel fuel lc cs' k = COk s' ->
+forall E' R' FULL' model', env_agree nx0 E E' /\ env_agree (nxt cs) E E' -> cs_ok E' cs' R' FULL' model' ->
+m_fs model' = m_fs model -> srealizesM SEGS false (cfg R' (pc cs') FULL' model') (sd D E (m_fs model) s')).
+{ intros k cs' s' Hk. eapply (cont_agree false); [exact Hk | exact (LCOK_mono _ _ _ _ _ HL) | exact Hg | exact HD | reflexivity | intros; eapply IH; eassumption]. }
+assert (SAME : forall k cs' s', CHECK bfuel fuel lc cs' k = COk s' -> lvb b k = true -> cs_ok E cs' R FULL model ->
+srealizesM SEGS b (cfg R (pc cs') FULL model) (sd D E (m_fs model) s')).
+{ intros k cs' s' Hk Hlk HC'. refine (CONT k cs' s' Hk Hlk E R FULL model (conj (env_agree_refl _ _) (env_agree_refl _ _)) HC' eq_refl). }
 destruct p as [stops k|e mid k1 k2|ce cmid ck1 ck2|db1 db2 dk1 dk2|sb1 sn1 sb2 sn2 k| |K k|jb joff jn k|ixs k|db dn k|gws k|bm k|hrs k|hbK k|r logc fb k|y k|ma mb|ia ib ic|qa qb|ka kb|x args k|xid xargs k|eid eargs k|bid bargs kb1 kb2|lJ lN linv lbody lk| |h| | |fi fsz fk|gi gsz gk|gb gn gk2|ub un uk|hlo hhi hk|ilo ihi ik|djp drs dk|rnm rnk|cpk|vj vjs vlo vka vk|mj|ab an ak|hws hwk|rsr rse rsk|iha ihb ihc|i2a i2b].
 -
 destruct (run_block_gc SEGS IT _ KC bfuel (stops ++ STOPS A) cs) as [cs1|] eqn:Hrb; [|discriminate].
-pose proof (LCOK_bnd lc D E (m_fs model) HL) as Hgb.
+pose proof (LCOK_bnd b lc D E (m_fs model) HL) as Hgb.
 eapply run_block_gc_sound; [exact Hgb | exact Hrb | exact HC |].
-intros E' R' FULL' model' Hag HC1 Hfs. exact (CONT k cs1 s Hc E' R' FULL' model' Hag HC1 Hfs).
+intros E' R' FULL' model' Hag HC1 Hfs. exact (CONT k cs1 s Hc Hlv E' R' FULL' model' Hag HC1 Hfs).
 -
 destruct (APG.expr_vars_lt nx0 e) eqn:Hv; [|discriminate].
 destruct (erange (kn cs) e) as [[lo hi]|] eqn:Hr; [|discriminate].
 destruct (Z.leb lo mid && Z.ltb mid hi)%bool.
 2: {
 pose proof (erange_sound SEGS E _ (kn cs) e lo hi (co_know _ _ _ _ _ HC) Hr) as Hb.
-destruct (Z.leb_spec hi mid) as [Hle|Hgt]; [exact (SAME k1 _ s Hc HC) | exact (SAME k2 _ s Hc HC)]. }
+destruct (Z.leb_spec hi mid) as [Hle|Hgt]; [exact (SAME k1 _ s Hc (lvb_l _ _ _ Hlv) HC) | exact (SAME k2 _ s Hc (lvb_r _ _ _ Hlv) HC)]. }
 destruct (CHECK bfuel fuel lc (set_kn cs (KRange e lo mid :: kn cs)) k1) as [s1|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc (set_kn cs (KRange e (mid+1) hi :: kn cs)) k2) as [s2|] eqn:H2; [|discriminate].
 injection Hc as <-. cbn [sd].
 destruct (split_sound cs e mid lo hi E R FULL model HC Hr) as [HCl HCr].
 destruct (Z.leb_spec (bv_unsigned (edenot E e)) mid) as [Hle|Hgt].
-+ exact (SAME k1 _ s1 H1 (HCl Hle)).
-+ exact (SAME k2 _ s2 H2 (HCr ltac:(lia))).
++ exact (SAME k1 _ s1 H1 (lvb_l _ _ _ Hlv) (HCl Hle)).
++ exact (SAME k2 _ s2 H2 (lvb_r _ _ _ Hlv) (HCr ltac:(lia))).
 -
 destruct (erange (kn cs) ce) as [[lo hi]|] eqn:Hr; [|discriminate].
 destruct (Z.leb lo cmid && Z.ltb cmid hi)%bool.
-2: { cbn [negb] in Hc. destruct (Z.leb hi cmid); [exact (SAME ck1 _ s Hc HC) | exact (SAME ck2 _ s Hc HC)]. }
+2: { cbn [negb] in Hc. destruct (Z.leb hi cmid); [exact (SAME ck1 _ s Hc (lvb_l _ _ _ Hlv) HC) | exact (SAME ck2 _ s Hc (lvb_r _ _ _ Hlv) HC)]. }
 cbn [negb] in Hc. cbv zeta in Hc.
 destruct (split_sound cs ce cmid lo hi E R FULL model HC Hr) as [HCl HCr].
 destruct (kn_contra (kn (set_kn cs (KRange ce lo cmid :: kn cs)))) eqn:Hk1.
 { destruct (Z.leb_spec (bv_unsigned (edenot E ce)) cmid) as [Hle|Hgt].
 - exfalso. exact (kn_contra_sound E _ _ (co_know _ _ _ _ _ (HCl Hle)) Hk1).
-- exact (SAME ck2 _ s Hc (HCr ltac:(lia))). }
+- exact (SAME ck2 _ s Hc (lvb_r _ _ _ Hlv) (HCr ltac:(lia))). }
 destruct (kn_contra (kn (set_kn cs (KRange ce (cmid + 1) hi :: kn cs)))) eqn:Hk2.
 { destruct (Z.leb_spec (bv_unsigned (edenot E ce)) cmid) as [Hle|Hgt].
-- exact (SAME ck1 _ s Hc (HCl Hle)).
+- exact (SAME ck1 _ s Hc (lvb_l _ _ _ Hlv) (HCl Hle)).
 - exfalso. exact (kn_contra_sound E _ _ (co_know _ _ _ _ _ (HCr ltac:(lia))) Hk2). }
 destruct (CHECK bfuel fuel lc (set_kn cs (KRange ce lo cmid :: kn cs)) ck1) as [s1|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc (set_kn cs (KRange ce (cmid+1) hi :: kn cs)) ck2) as [s2|] eqn:H2; [|discriminate].
 destruct (shape_eqb s1 s2) eqn:Hse.
 { injection Hc as <-. apply shape_eqb_eq in Hse. subst s2.
 destruct (Z.leb_spec (bv_unsigned (edenot E ce)) cmid) as [Hle|Hgt].
-+ exact (SAME ck1 _ s1 H1 (HCl Hle)).
-+ exact (SAME ck2 _ s1 H2 (HCr ltac:(lia))). }
++ exact (SAME ck1 _ s1 H1 (lvb_l _ _ _ Hlv) (HCl Hle)).
++ exact (SAME ck2 _ s1 H2 (lvb_r _ _ _ Hlv) (HCr ltac:(lia))). }
 destruct (brk2_holes_ok hole_le s1 s2 && brk2_holes_ok hole_le s2 s1)%bool eqn:Hho; [|discriminate]. injection Hc as <-.
 apply andb_prop in Hho as [Hho1 Hho2].
-eapply srz_conseq; [| apply sd_salt2; exact HD].
+eapply srzM_conseq; [| apply sd_salt2; exact HD].
 destruct (Z.leb_spec (bv_unsigned (edenot E ce)) cmid) as [Hle|Hgt].
-+ eapply srz_conseq; [exact (SAME ck1 _ s1 H1 (HCl Hle))|].
++ eapply srzM_conseq; [exact (SAME ck1 _ s1 H1 (lvb_l _ _ _ Hlv) (HCl Hle))|].
 exact (t_alt2_covered _ _ (sd_has_nil D E (m_fs model) s1 HD) (brk2_holes_incl s1 s2 D E (m_fs model) Hho1 HD)).
-+ eapply srz_conseq; [exact (SAME ck2 _ s2 H2 (HCr ltac:(lia)))|].
++ eapply srzM_conseq; [exact (SAME ck2 _ s2 H2 (lvb_r _ _ _ Hlv) (HCr ltac:(lia)))|].
 apply (t_eq_trans _ (t_alt2 (sd D E (m_fs model) s2) (sd D E (m_fs model) s1)));
 [exact (t_alt2_covered _ _ (sd_has_nil D E (m_fs model) s2 HD) (brk2_holes_incl s2 s1 D E (m_fs model) Hho2 HD)) | apply t_alt2_comm].
 -
@@ -4342,65 +4370,65 @@ destruct (CHECK bfuel fuel lc csb dk2) as [s2|] eqn:H2; [|discriminate].
 destruct (shape_eqb s1 s2) eqn:Hse.
 { injection Hc as <-. apply shape_eqb_eq in Hse. subst s2.
 destruct (casedisj_g_sound cs db1 db2 csa csb E R FULL model HC Hn) as [[HC' Hpc]|[HC' Hpc]]; rewrite <- Hpc.
-+ exact (SAME dk1 _ s1 H1 HC').
-+ exact (SAME dk2 _ s1 H2 HC'). }
++ exact (SAME dk1 _ s1 H1 (lvb_l _ _ _ Hlv) HC').
++ exact (SAME dk2 _ s1 H2 (lvb_r _ _ _ Hlv) HC'). }
 destruct (brk2_holes_ok hole_le s1 s2 && brk2_holes_ok hole_le s2 s1)%bool eqn:Hho; [|discriminate]. injection Hc as <-.
 apply andb_prop in Hho as [Hho1 Hho2].
-eapply srz_conseq; [| apply sd_salt2; exact HD].
+eapply srzM_conseq; [| apply sd_salt2; exact HD].
 destruct (casedisj_g_sound cs db1 db2 csa csb E R FULL model HC Hn) as [[HC' Hpc]|[HC' Hpc]]; rewrite <- Hpc.
-+ eapply srz_conseq; [exact (SAME dk1 _ s1 H1 HC')|].
++ eapply srzM_conseq; [exact (SAME dk1 _ s1 H1 (lvb_l _ _ _ Hlv) HC')|].
 exact (t_alt2_covered _ _ (sd_has_nil D E (m_fs model) s1 HD) (brk2_holes_incl s1 s2 D E (m_fs model) Hho1 HD)).
-+ eapply srz_conseq; [exact (SAME dk2 _ s2 H2 HC')|].
++ eapply srzM_conseq; [exact (SAME dk2 _ s2 H2 (lvb_r _ _ _ Hlv) HC')|].
 apply (t_eq_trans _ (t_alt2 (sd D E (m_fs model) s2) (sd D E (m_fs model) s1)));
 [exact (t_alt2_covered _ _ (sd_has_nil D E (m_fs model) s2 HD) (brk2_holes_incl s2 s1 D E (m_fs model) Hho2 HD)) | apply t_alt2_comm].
 -
 destruct (node_shdisj A cs sb1 sn1 sb2 sn2) as [cs1|] eqn:Hn; [|discriminate].
 destruct (shdisj_sound cs sb1 sn1 sb2 sn2 cs1 E R FULL model HC Hn) as [HC' Hpc]. rewrite <- Hpc.
-exact (SAME k _ s Hc HC').
+exact (SAME k _ s Hc Hlv HC').
 -
 destruct (kn_contra (kn cs)) eqn:Hk; [|discriminate]. exfalso.
 exact (kn_contra_sound E _ (kn cs) (co_know _ _ _ _ _ HC) Hk).
 -
 destruct (fact_ok (kn cs) K) eqn:Hf; [|discriminate].
-exact (SAME k _ s Hc (fact_sound E cs R FULL model K HC Hf)).
+exact (SAME k _ s Hc Hlv (fact_sound E cs R FULL model K HC Hf)).
 -
 destruct (node_join SEGS cs jb joff jn) as [cs1|] eqn:Hn; [|discriminate].
-eapply (node_join_sound jb joff jn cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc).
+eapply (node_join_sound jb joff jn b cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc Hlv).
 -
-exact (SAME k _ s Hc (forget_sound E cs R FULL model ixs HC)).
+exact (SAME k _ s Hc Hlv (forget_sound E cs R FULL model ixs HC)).
 -
 assert (Hpc : pc (node_droprange cs db dn) = pc cs) by (unfold node_droprange; destruct (split_lit db); reflexivity).
-rewrite <- Hpc. exact (SAME k _ s Hc (droprange_sound E cs R FULL model db dn HC)).
+rewrite <- Hpc. exact (SAME k _ s Hc Hlv (droprange_sound E cs R FULL model db dn HC)).
 -
 rewrite <- (pc_set_kn cs (kn_keep (kn cs) gws)).
-exact (SAME k _ s Hc (cs_ok_set_kn E cs R FULL model _ HC (know_ok_filter E _ _ (kn cs) (co_know _ _ _ _ _ HC)))).
+exact (SAME k _ s Hc Hlv (cs_ok_set_kn E cs R FULL model _ HC (know_ok_filter E _ _ (kn cs) (co_know _ _ _ _ _ HC)))).
 -
 destruct (node_bump cs bm) as [cs1|] eqn:Hn; [|discriminate].
 destruct (bump_sound E cs R FULL model bm cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc.
-exact (SAME k _ s Hc HC1).
+exact (SAME k _ s Hc Hlv HC1).
 -
 destruct (node_havoc nx0 cs hrs) as [cs1|] eqn:Hn; [|discriminate].
 destruct (havoc_sound E cs R FULL model hrs cs1 HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
-exact (CONT k cs1 s Hc E' R FULL model Hag HC1 eq_refl).
+exact (CONT k cs1 s Hc Hlv E' R FULL model Hag HC1 eq_refl).
 -
 destruct (node_havocbig nx0 cs hbK) as [cs1|] eqn:Hn; [|discriminate].
 destruct (havocbig_sound E cs R FULL model hbK cs1 HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
-exact (CONT k cs1 s Hc E' R FULL model Hag HC1 eq_refl).
+exact (CONT k cs1 s Hc Hlv E' R FULL model Hag HC1 eq_refl).
 -
 destruct (node_fresh nx0 cs r logc fb) as [cs1|] eqn:Hn; [|discriminate].
-eapply (node_fresh_sound_pf r logc fb cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc).
+eapply (node_fresh_sound_pf r logc fb b cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc Hlv).
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_sys A nx0 y cs) as [cs1|] eqn:Hn; [|discriminate].
-eapply (node_sys_sound y cs cs1 E R FULL model); [exact HC | exact Hec | exact Hn |]. exact (CONT k cs1 s Hc).
+eapply (node_sys_sound y b cs cs1 E R FULL model); [exact HC | exact Hec | exact Hn |]. exact (CONT k cs1 s Hc Hlv).
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_mmap2g A nx0 LIMIT cs) as [[csa csb]|] eqn:Hn; [|discriminate].
 destruct (CHECK bfuel fuel lc csa ma) as [sa|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc csb mb) as [sb|] eqn:H2; [|discriminate].
 injection Hc as <-.
-eapply srz_conseq; [| apply sd_salt2; exact HD].
-eapply (node_mmap2_sound cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | exact (CONT ma csa sa H1) | exact (CONT mb csb sb H2)].
+eapply srzM_conseq; [| apply sd_salt2; exact HD].
+eapply (node_mmap2_sound b cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | exact (CONTF ma csa sa H1) | exact (CONT mb csb sb H2 Hlv)].
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_mmapin_g A LIMIT false cs) as [[[csa csb] cscs]|] eqn:Hn; [|discriminate].
@@ -4409,18 +4437,18 @@ destruct (CHECK bfuel fuel lc csb ib) as [sb|] eqn:H2; [|discriminate].
 destruct (check_all A (CHECK bfuel fuel lc) ic cscs) as [sc|] eqn:H3; [|discriminate].
 injection Hc as <-.
 pose proof (proj2 (check_all_ok _ _ _ _ H3)) as Hall.
-eapply srz_conseq; [| eapply t_eq_trans; [| apply sd_salt2; exact HD]; apply t_eq_alt2; [apply t_eq_refl' | apply sd_salt2; exact HD]].
-eapply (node_mmapin_sound false cs csa csb cscs E R FULL model);
-[exact HC | exact Hec | exact Hn | exact (CONT ia csa sa H1) | exact (CONT ib csb sb H2) |].
-intros csc E' R' FULL' model' Hin. exact (CONT ic csc sc (Hall csc Hin) E' R' FULL' model').
+eapply srzM_conseq; [| eapply t_eq_trans; [| apply sd_salt2; exact HD]; apply t_eq_alt2; [apply t_eq_refl' | apply sd_salt2; exact HD]].
+eapply (node_mmapin_sound false b cs csa csb cscs E R FULL model);
+[exact HC | exact Hec | exact Hn | exact (CONTF ia csa sa H1) | exact (CONT ib csb sb H2 Hlv) |].
+intros csc E' R' FULL' model' Hin. exact (CONTF ic csc sc (Hall csc Hin) E' R' FULL' model').
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_mprotect2g A LIMIT cs) as [[csa csb]|] eqn:Hn; [|discriminate].
 destruct (CHECK bfuel fuel lc csa qa) as [sa|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc csb qb) as [sb|] eqn:H2; [|discriminate].
 injection Hc as <-.
-eapply srz_conseq; [| apply sd_salt2; exact HD].
-eapply (node_mprotect2_sound cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | exact (CONT qa csa sa H1) | exact (CONT qb csb sb H2)].
+eapply srzM_conseq; [| apply sd_salt2; exact HD].
+eapply (node_mprotect2_sound b cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | exact (CONTF qa csa sa H1) | exact (CONT qb csb sb H2 Hlv)].
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_brk2g A LIMIT cs) as [[csa csb]|] eqn:Hn; [|discriminate].
@@ -4428,25 +4456,25 @@ destruct (CHECK bfuel fuel lc csa ka) as [sa|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc csb kb) as [sb|] eqn:H2; [|discriminate].
 destruct (brk2_holes_ok hole_le sa sb) eqn:Hho; [|discriminate].
 injection Hc as <-.
-eapply srz_conseq; [| apply sd_salt2; exact HD].
-eapply (node_brk2_sound cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | | apply sd_has_nil; exact HD | exact (CONT ka csa sa H1) | exact (CONT kb csb sb H2)].
+eapply srzM_conseq; [| apply sd_salt2; exact HD].
+eapply (node_brk2_sound b cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | | apply sd_has_nil; exact HD | exact (CONT ka csa sa H1 (lvb_l _ _ _ Hlv)) | exact (CONT kb csb sb H2 (lvb_r _ _ _ Hlv))].
 exact (brk2_holes_incl sa sb D E (m_fs model) Hho HD).
 -
 destruct (node_x SEGS A nx0 x args cs) as [cs1|] eqn:Hn; [|discriminate].
-eapply (node_x_sound x args cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc).
+eapply (node_x_sound x args b cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc Hlv).
 -
 destruct (XN xid xargs cs) as [cs1|] eqn:Hn; [|discriminate].
-eapply (node_ext_sound xid xargs cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc).
+eapply (node_ext_sound xid xargs b cs cs1 E R FULL model); [exact HC | reflexivity | exact Hn |]. exact (CONT k cs1 s Hc Hlv).
 -
 destruct (XE eid eargs cs) as [[[fd ps] cs1]|] eqn:Hn; [|discriminate].
 destruct (CHECK bfuel fuel lc cs1 k) as [s1|] eqn:H1; [|discriminate]. injection Hc as <-. cbn [sd].
-eapply (node_emit_sound eid eargs cs fd ps cs1 E R FULL model); [exact HC | exact Hn | apply sd_has_nil; exact HD |]. exact (CONT k cs1 s1 H1).
+eapply (node_emit_sound b eid eargs cs fd ps cs1 E R FULL model); [exact HC | exact Hn | apply sd_has_nil; exact HD |]. exact (CONT k cs1 s1 H1 Hlv).
 -
 destruct (XB bid bargs cs) as [[csa csb]|] eqn:Hn; [|discriminate].
 destruct (CHECK bfuel fuel lc csa kb1) as [sa|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc csb kb2) as [sb|] eqn:H2; [|discriminate].
 injection Hc as <-. cbn [sd].
-eapply (node_ext2_sound bid bargs cs csa csb E R FULL model); [exact HC | exact Hn | exact (CONT kb1 csa sa H1) | exact (CONT kb2 csb sb H2)].
+eapply (node_ext2_sound b bid bargs cs csa csb E R FULL model); [exact HC | exact Hn | exact (CONT kb1 csa sa H1 (lvb_l _ _ _ Hlv)) | exact (CONT kb2 csb sb H2 (lvb_r _ _ _ Hlv))].
 -
 destruct (loop_ok nx0 cs lJ lN linv) as [nhi|] eqn:Hlo; [|discriminate].
 destruct (Z.eqb (pc linv) (pc cs) && entails_h A (Datatypes.S lJ) (nxt linv) cs (inst linv lJ (ELit 0)))%bool eqn:Ht; [|discriminate].
@@ -4462,7 +4490,7 @@ assert (HD0 : D0 []) by (apply sd_has_nil; exact HD).
 set (h := pc cs) in *.
 assert (Q : forall m j E' R' F' m', j = Nv - Z.of_nat m -> 0 <= j -> env_agree (nxt cs) E E' ->
 cs_ok E' (inst linv lJ (ELit j)) R' F' m' -> m_fs m' = m_fs model ->
-srealizes SEGS (cfg R' h F' m') D0).
+srealizesM SEGS b (cfg R' h F' m') D0).
 { induction m as [|m IHm]; intros j E' R' F' m' Hj Hj0 Hag HCj Hfs.
 -
 assert (HNe : edenot E' lN = edenot E' (ELit j)).
@@ -4472,7 +4500,7 @@ assert (HCN : cs_ok E' (inst linv lJ lN) R' F' m').
 apply (proj1 (cs_ok_inst E' lJ (ELit j) linv R' F' m' ltac:(lia) Flog)). exact HCj. }
 unfold D0. rewrite (sd_agree D E E' (m_fs model) s ltac:(eapply env_agree_le; [exact Hag | exact Fle]) (check_vars _ _ _ _ _ _ Hk)).
 rewrite <- Hfs. replace h with (pc (inst linv lJ lN)) by (unfold h; rewrite pc_inst; exact Hpc).
-apply (IH bfuel lc lk _ s Hk E' R' F' m' D HCN); [|exact HD].
+apply (IH bfuel lc lk _ s Hk b E' R' F' m' D HCN); [|exact HD|exact (lvb_r _ _ _ Hlv)].
 rewrite Hfs. eapply LCOK_agree; [exact HL | exact Hg | exact Hag].
 -
 set (E'' := upd E' lJ (Z_to_bv 64 j)).
@@ -4491,7 +4519,7 @@ constructor; [|constructor; [|constructor]]; cbn [kentry_ok edenot].
 - unfold esub. rewrite mkAlu_denot, u_sub64. cbn [edenot]. rewrite HNE'', HJ''. fold Nv. rewrite u_small by lia.
 rewrite Z.mod_small by lia. lia. }
 replace h with (pc (loop_body_state lJ lN nhi linv)) by exact Hpc.
-refine (IH bfuel _ lbody _ SNext Hbody E'' R' F' m' D0 HCb _ HD0).
+refine (IH bfuel _ lbody _ SNext Hbody b E'' R' F' m' D0 HCb _ HD0 (lvb_l _ _ _ Hlv)).
 cbn [LCOK]. split.
 { split; [lia|]. split; [lia|]. unfold inst. cbn [a_ss s_regs mk_ss]. rewrite length_map. exact Flen. }
 intros E3 R3 F3 m3 Hag3 HC3 Hfs3.
@@ -4519,44 +4547,44 @@ rewrite Hpc. exact (HL E' R FULL model Hag HC' eq_refl).
 destruct (HS h) as [ch|] eqn:Hh; [|discriminate].
 destruct (entails cs ch) eqn:He; [|discriminate]. injection Hc as <-. cbn [sd].
 destruct (entails_sound E cs ch R FULL model HC He) as [HC' Hpc].
-rewrite <- Hpc. exact (HS_sound h ch Hh E R FULL model HC').
+rewrite <- Hpc. apply srealizesM_weaken. exact (HS_sound h ch Hh E R FULL model HC').
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_exit cs) as [code|] eqn:Hn; [|discriminate]. injection Hc as <-. cbn [sd].
-eapply node_exit_sound; eassumption.
+apply srealizesM_weaken. eapply node_exit_sound; eassumption.
 -
 destruct (node_spin SEGS cs) eqn:Hn; [|discriminate]. injection Hc as <-. cbn [sd].
-exact (node_spin_sound cs E R FULL model HC Hn).
+destruct b; [discriminate Hlv | exact (node_spin_sound cs E R FULL model HC Hn)].
 -
 destruct (node_fog cs fi fsz) as [cs1|] eqn:Hn; [|discriminate].
-destruct (fog_sound E cs R FULL model fi fsz cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME fk _ s Hc HC1).
+destruct (fog_sound E cs R FULL model fi fsz cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME fk _ s Hc Hlv HC1).
 -
 destruct (node_fognew cs gi gsz) as [cs1|] eqn:Hn; [|discriminate].
-destruct (fognew_sound E cs R FULL model gi gsz cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME gk _ s Hc HC1).
+destruct (fognew_sound E cs R FULL model gi gsz cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME gk _ s Hc Hlv HC1).
 -
 destruct (node_ghost LIMIT cs gb gn) as [cs1|] eqn:Hn; [|discriminate].
-destruct (ghost_sound E cs R FULL model gb gn cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME gk2 _ s Hc HC1).
+destruct (ghost_sound E cs R FULL model gb gn cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME gk2 _ s Hc Hlv HC1).
 -
 destruct (node_unvis_g A cs ub un) as [cs1|] eqn:Hn; [|discriminate].
-destruct (unvis_sound E cs R FULL model ub un cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME uk _ s Hc HC1).
+destruct (unvis_sound E cs R FULL model ub un cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME uk _ s Hc Hlv HC1).
 -
 destruct (node_havocbrk nx0 cs hlo hhi) as [cs1|] eqn:Hn; [|discriminate].
 destruct (havocbrk_sound E cs R FULL model hlo hhi cs1 HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
-exact (CONT hk cs1 s Hc E' R FULL model Hag HC1 eq_refl).
+exact (CONT hk cs1 s Hc Hlv E' R FULL model Hag HC1 eq_refl).
 -
 destruct (node_intro nx0 cs ilo ihi) as [cs1|] eqn:Hn; [|discriminate].
 destruct (intro_sound E cs R FULL model ilo ihi cs1 HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
-exact (CONT ik cs1 s Hc E' R FULL model Hag HC1 eq_refl).
+exact (CONT ik cs1 s Hc Hlv E' R FULL model Hag HC1 eq_refl).
 -
 destruct (branch_probe IT cs) as [e|] eqn:Hbp; [|discriminate].
 destruct (erange (kn cs) e) as [[lo hi]|] eqn:Hr; [|discriminate].
-pose proof (LCOK_bnd lc D E (m_fs model) HL) as Hgb.
+pose proof (LCOK_bnd b lc D E (m_fs model) HL) as Hgb.
 destruct (Z.ltb hi 1 || Z.ltb 0 lo)%bool eqn:Hdec.
 {
 destruct (run_block_gc SEGS IT _ KC bfuel (djp :: STOPS A) cs) as [cs1|] eqn:Hrb; [|discriminate].
 destruct (Z.eqb (pc cs1) djp); [|discriminate].
 eapply run_block_gc_sound; [exact Hgb | exact Hrb | exact HC |].
-intros E' R' FULL' model' Hag HC1 Hfs. exact (CONT dk cs1 s Hc E' R' FULL' model' Hag HC1 Hfs). }
+intros E' R' FULL' model' Hag HC1 Hfs. exact (CONT dk cs1 s Hc Hlv E' R' FULL' model' Hag HC1 Hfs). }
 cbv zeta in Hc.
 destruct (run_block_gc SEGS IT _ KC bfuel (djp :: STOPS A) (set_kn cs (KRange e lo 0 :: kn cs))) as [ca|] eqn:Hra; [|discriminate].
 destruct (run_block_gc SEGS IT _ KC bfuel (djp :: STOPS A) (set_kn cs (KRange e 1 hi :: kn cs))) as [cb|] eqn:Hrb; [|discriminate].
@@ -4569,27 +4597,27 @@ eapply run_block_gc_sound; [exact Hgb | exact Hra | exact (HCl Hle) |].
 intros E' R' FULL' model' [Hag0 Hag1] HC1 Hfs.
 destruct (Ja E' R' FULL' model' HC1) as (E'' & [Hag2a Hag2b] & HC2 & Hpc2). rewrite <- Hpc2.
 change (env_agree (nxt cs) E E') in Hag1.
-exact (CONT dk csj s Hc E'' R' FULL' model'
+exact (CONT dk csj s Hc Hlv E'' R' FULL' model'
 (conj (env_agree_trans _ _ _ _ Hag0 Hag2a) (env_agree_trans _ _ _ _ Hag1 Hag2b)) HC2 Hfs).
 + rewrite <- (pc_set_kn cs (KRange e 1 hi :: kn cs)).
 eapply run_block_gc_sound; [exact Hgb | exact Hrb | exact (HCr ltac:(lia)) |].
 intros E' R' FULL' model' [Hag0 Hag1] HC1 Hfs.
 destruct (Jb E' R' FULL' model' HC1) as (E'' & [Hag2a Hag2b] & HC2 & Hpc2). rewrite <- Hpc2.
 change (env_agree (nxt cs) E E') in Hag1.
-exact (CONT dk csj s Hc E'' R' FULL' model'
+exact (CONT dk csj s Hc Hlv E'' R' FULL' model'
 (conj (env_agree_trans _ _ _ _ Hag0 Hag2a) (env_agree_trans _ _ _ _ Hag1 Hag2b)) HC2 Hfs).
 -
 destruct (node_rename _ cs rnm) as [cs1|] eqn:Hn; [|discriminate].
-pose proof (LCOK_bnd lc D E (m_fs model) HL) as Hgb.
+pose proof (LCOK_bnd b lc D E (m_fs model) HL) as Hgb.
 destruct (rename_sound _ E cs R FULL model rnm cs1 Hgb HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
 rewrite (sd_agree D E E' (m_fs model) s (env_agree_le _ _ _ _ Hag Hgb) (check_vars _ _ _ _ _ _ Hc)).
-eapply IH; [exact Hc | exact HC1 | eapply LCOK_agree_gb; [exact HL | exact Hag] | exact HD].
+eapply IH; [exact Hc | exact HC1 | eapply LCOK_agree_gb; [exact HL | exact Hag] | exact HD | exact Hlv].
 -
 destruct (node_compact _ cs) as [cs1|] eqn:Hn; [|discriminate].
-pose proof (LCOK_bnd lc D E (m_fs model) HL) as Hgb.
+pose proof (LCOK_bnd b lc D E (m_fs model) HL) as Hgb.
 destruct (compact_sound _ E cs R FULL model cs1 Hgb HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
 rewrite (sd_agree D E E' (m_fs model) s (env_agree_le _ _ _ _ Hag Hgb) (check_vars _ _ _ _ _ _ Hc)).
-eapply IH; [exact Hc | exact HC1 | eapply LCOK_agree_gb; [exact HL | exact Hag] | exact HD].
+eapply IH; [exact Hc | exact HC1 | eapply LCOK_agree_gb; [exact HL | exact Hag] | exact HD | exact Hlv].
 -
 destruct (via_ok nx0 cs vjs vlo) eqn:Hv; [|discriminate].
 destruct (CHECK bfuel fuel lc vjs vk) as [sk|] eqn:Hk; [|discriminate].
@@ -4597,13 +4625,13 @@ unfold via_ok in Hv. repeat match type of Hv with (_ && _)%bool = true => apply 
 match goal with Hl : match s_log (a_ss vjs) with _ => _ end = true |- _ => clear Hl end.
 match goal with Hl : Nat.eqb (length _) 32 = true |- _ => apply Nat.eqb_eq in Hl; rename Hl into Hlen end.
 repeat match goal with Hl : Nat.leb _ _ = true |- _ => apply Nat.leb_le in Hl end.
-pose proof (LCOK_bnd lc D E (m_fs model) HL) as Hgb.
+pose proof (LCOK_bnd b lc D E (m_fs model) HL) as Hgb.
 assert (Hgb' : (match lc with Some c => lc_bnd c | None => nx0 end <= nxt cs)%nat).
 { destruct lc as [c|]; [apply Nat.leb_le; exact Hg | lia]. }
-apply (IH bfuel (Some (JC vj vjs sk (nxt cs) vlo)) vka cs s Hc E R FULL model D HC); [|exact HD].
+apply (IH bfuel (Some (JC vj vjs sk (nxt cs) vlo)) vka cs s Hc b E R FULL model D HC); [|exact HD|exact (lvb_l _ _ _ Hlv)].
 cbn [LCOK]. split; [split; [lia | split; [lia | exact Hlen]]|].
 intros E' R' F' m' Hag HC' Hfs. rewrite <- Hfs.
-apply (IH bfuel lc vk vjs sk Hk E' R' F' m' D HC'); [|exact HD].
+apply (IH bfuel lc vk vjs sk Hk b E' R' F' m' D HC'); [|exact HD|exact (lvb_r _ _ _ Hlv)].
 rewrite Hfs. eapply LCOK_agree_gb; [exact HL|]. eapply env_agree_le; [exact Hag | exact Hgb'].
 -
 destruct lc as [[h nx lo hi|j' js' sk' b' lo']|]; [discriminate| |discriminate].
@@ -4617,14 +4645,14 @@ rewrite (sd_agree D E E' (m_fs model) sk' (env_agree_le nx0 lo' E E' Hag Hn0l) H
 exact (HJ E' R FULL model (env_agree_le _ _ _ _ Hag Hbl) HC' eq_refl).
 -
 destruct (node_abstractcell A cs ab an) as [cs1|] eqn:Hn; [|discriminate].
-destruct (abstractcell_sound E cs R FULL model ab an cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME ak _ s Hc HC1).
+destruct (abstractcell_sound E cs R FULL model ab an cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME ak _ s Hc Hlv HC1).
 -
 destruct (node_havocwords nx0 cs hws) as [cs1|] eqn:Hn; [|discriminate].
 destruct (havocwords_sound E cs R FULL model hws cs1 HC Hn) as (E' & Hag & HC1 & Hpc). rewrite <- Hpc.
-exact (CONT hwk cs1 s Hc E' R FULL model Hag HC1 eq_refl).
+exact (CONT hwk cs1 s Hc Hlv E' R FULL model Hag HC1 eq_refl).
 -
 destruct (node_respell cs rsr rse) as [cs1|] eqn:Hn; [|discriminate].
-destruct (respell_sound E cs R FULL model rsr rse cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME rsk _ s Hc HC1).
+destruct (respell_sound E cs R FULL model rsr rse cs1 HC Hn) as [HC1 Hpc]. rewrite <- Hpc. exact (SAME rsk _ s Hc Hlv HC1).
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_mmapin_g A LIMIT true cs) as [[[csa csb] cscs]|] eqn:Hn; [|discriminate].
@@ -4633,18 +4661,18 @@ destruct (CHECK bfuel fuel lc csb ihb) as [sb|] eqn:H2; [|discriminate].
 destruct (check_all A (CHECK bfuel fuel lc) ihc cscs) as [sc|] eqn:H3; [|discriminate].
 injection Hc as <-.
 pose proof (proj2 (check_all_ok _ _ _ _ H3)) as Hall.
-eapply srz_conseq; [| eapply t_eq_trans; [| apply sd_salt2; exact HD]; apply t_eq_alt2; [apply t_eq_refl' | apply sd_salt2; exact HD]].
-eapply (node_mmapin_sound true cs csa csb cscs E R FULL model);
-[exact HC | exact Hec | exact Hn | exact (CONT iha csa sa H1) | exact (CONT ihb csb sb H2) |].
-intros csc E' R' FULL' model' Hin. exact (CONT ihc csc sc (Hall csc Hin) E' R' FULL' model').
+eapply srzM_conseq; [| eapply t_eq_trans; [| apply sd_salt2; exact HD]; apply t_eq_alt2; [apply t_eq_refl' | apply sd_salt2; exact HD]].
+eapply (node_mmapin_sound true b cs csa csb cscs E R FULL model);
+[exact HC | exact Hec | exact Hn | exact (CONTF iha csa sa H1) | exact (CONT ihb csb sb H2 Hlv) |].
+intros csc E' R' FULL' model' Hin. exact (CONTF ihc csc sc (Hall csc Hin) E' R' FULL' model').
 -
 destruct (is_ecall_at SEGS cs) eqn:Hec; [|discriminate].
 destruct (node_mmapin2_g A LIMIT cs) as [[csa csb]|] eqn:Hn; [|discriminate].
 destruct (CHECK bfuel fuel lc csa i2a) as [sa|] eqn:H1; [|discriminate].
 destruct (CHECK bfuel fuel lc csb i2b) as [sb|] eqn:H2; [|discriminate].
 injection Hc as <-.
-eapply srz_conseq; [| apply sd_salt2; exact HD].
-eapply (node_mmapin2_sound cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | exact (CONT i2a csa sa H1) | exact (CONT i2b csb sb H2)].
+eapply srzM_conseq; [| apply sd_salt2; exact HD].
+eapply (node_mmapin2_sound b cs csa csb E R FULL model); [exact HC | exact Hec | exact Hn | exact (CONTF i2a csa sa H1) | exact (CONT i2b csb sb H2 Hlv)].
 Qed.
 End a0.
 End APSG.

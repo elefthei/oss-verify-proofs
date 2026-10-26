@@ -1,3 +1,3 @@
 schema: oss-fuzz-theorems/proof/1
 proves: tinyobjloader/fuzz_tobj_c/asan_ubsan_agrees
-fingerprint: 37ec895d60a02bbbdf9bd6f9a3bb78d7aa10cf189b75d7a3560d947420ace851
+fingerprint: d162973fe51a684a9bae3df34f11ae06fe76bd96be28fc0d489b20b7784063fe

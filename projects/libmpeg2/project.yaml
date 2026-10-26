@@ -29,6 +29,11 @@ assets:
     file: libmpeg2-bin.tar.zst
     bytes: 701529
     sha256: f2b4fb840e81688071bb2e6db119a68a261ee7421ca162dd320eab07f661d15d
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libmpeg2-src.tar.zst

@@ -26,6 +26,11 @@ assets:
     file: bearssl-bin.tar.zst
     bytes: 5546264
     sha256: 5f95419f29356ee1b801cb9eb7f506378984669451a00d9ad080abcc61610bc3
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: bearssl-src.tar.zst

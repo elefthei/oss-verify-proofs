@@ -32,6 +32,11 @@ assets:
     file: spice-usbredir-bin.tar.zst
     bytes: 616707
     sha256: 25fa1dffd7a2d464c211cb2bb20debdb3431f87561ece335367f906aac44dc4b
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: spice-usbredir-src.tar.zst

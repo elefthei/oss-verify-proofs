@@ -29,6 +29,11 @@ assets:
     file: args-bin.tar.zst
     bytes: 752029
     sha256: ca914a146e27af03bdab751294ce7b9a7872fc7960f844ba824d4ac9082024f3
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: args-src.tar.zst

@@ -3,9 +3,9 @@
 
 [![release-check](https://github.com/theorem-labs/oss-verify-proofs/actions/workflows/release-check.yml/badge.svg?branch=main)](https://github.com/theorem-labs/oss-verify-proofs/actions/workflows/release-check.yml?query=branch%3Amain)
 
-OSS-Fuzz runs the fuzz targets of open-source projects to search for inputs that make them fail. This repository holds Rocq proofs that, for some of these fuzz targets, no such input exists within stated limits. Each proof is about compiled binaries, not source code. It shows that, on every input within the limits, the build with a sanitizer behaves like the plain build, and that the sanitizer never detects an error. OSS Verify is a Theorem program; a maintainer enrolls a project at [theorem-labs/oss-verify](https://github.com/theorem-labs/oss-verify).
+OSS-Fuzz runs the fuzz targets of open-source projects to search for inputs that make them fail. This repository holds Rocq proofs that, for some of these fuzz targets, no such input exists within stated limits. Each proof is about compiled binaries, not source code. It shows that, on every input within the limits, the build with a sanitizer behaves like the plain build and the sanitizer never detects an error, or that every execution of a build ends with a status the statement allows. OSS Verify is a Theorem program; a maintainer enrolls a project at [theorem-labs/oss-verify](https://github.com/theorem-labs/oss-verify).
 
-60 entry points in 25 libraries have proofs. The proofs are checked with Rocq 9.2.0. They are stated in LPS, a formal model of a Linux process that runs a RISC-V binary.
+61 entry points in 26 libraries have proofs. The proofs are checked with Rocq 9.2.0. They are stated in LPS, a formal model of a Linux process that runs a RISC-V binary.
 
 **LPS is best effort and not complete.** It describes part of Linux, and it makes some assumptions that it does not check. A proof is only as good as LPS. [docs/semantics.md](docs/semantics.md) gives the design principles of LPS and its limits.
 
@@ -80,6 +80,7 @@ OSS-Fuzz runs the fuzz targets of open-source projects to search for inputs that
 | tinyobjloader | [fuzz_tobj_c](proofs/tinyobjloader/fuzz_tobj_c/) | ASan, ASan+UBSan |
 | varnish | [esi_parse_fuzzer](proofs/varnish/esi_parse_fuzzer/) | ASan, UBSan, ASan+UBSan |
 | yajl-ruby | [json_fuzzer](proofs/yajl-ruby/json_fuzzer/) | ASan, UBSan, ASan+UBSan |
+| zlib | [checksum_fuzzer](proofs/zlib/checksum_fuzzer/) | - |
 | zstd | [fse_read_ncount](proofs/zstd/fse_read_ncount/) | ASan, ASan+UBSan |
 | zstd | [huf_decompress](proofs/zstd/huf_decompress/) | ASan |
 | zstd | [simple_decompress](proofs/zstd/simple_decompress/) | ASan+UBSan |
@@ -90,7 +91,7 @@ OSS-Fuzz runs the fuzz targets of open-source projects to search for inputs that
 Every proof is about the binaries of this release and the statements under `projects/`. All of them use one LPS version and one static AddressSanitizer ([Versions](#versions)). [docs/origin.md](docs/origin.md) says how the proofs were made: the proving task, its submissions and its checker, and how a proof enters this repository.
 
 ## The theorem, in words
-Every proof here proves one or more agreement statements. There is one agreement statement for each sanitizer build: AddressSanitizer (ASan), UndefinedBehaviorSanitizer (UBSan), or both (ASan+UBSan). An agreement statement says:
+Every proof here proves one or more agreement statements, halts statements, or both. There is one agreement statement for each sanitizer build: AddressSanitizer (ASan), UndefinedBehaviorSanitizer (UBSan), or both (ASan+UBSan). An agreement statement says:
 
 > On every input on which the plain build stays within its memory budget, neither build reaches an error, and the plain build and the sanitizer build have the same set of observable behaviours.
 
@@ -100,16 +101,20 @@ Every proof here proves one or more agreement statements. There is one agreement
 - **The memory budget** of the plain build is 2 GiB in a statement about a build with ASan (ASan or ASan+UBSan), and 16 GiB in a statement about the UBSan build. The budget is a premise: an input on which the plain build needs more memory is not covered.
 - **System-call failures.** Each statement says which system calls the environment may refuse without cause. In most of the proofs here, a memory request is refused only when the budget is spent or no address range is free.
 
-So a proof rules out every error that the sanitizer build detects, on every input that the statement covers. If the harness checks a property with `assert()`, `abort()` or a trap, and the check is in the binary, the proof also shows that the property holds on every covered input ([docs/exploring.md](docs/exploring.md)).
+So an agreement proof rules out every error that the sanitizer build detects, on every input that the statement covers.
 
-The Rocq definitions are in [theories/Shapes.v](theories/Shapes.v). Each agreement form is proved equal to its LPS definition, `strong_universal_error_free_T_budgets` or one of its variants. [docs/statements.md](docs/statements.md) explains each form.
+A halts statement is about one build alone. It says that on every covered input, every execution of that build ends, and that it ends with a status the statement allows: status 0 or 2 for most harnesses, and any status for espeak-ng's `ssml-fuzzer`. Its premises are its own: the build is never refused memory for exceeding 16 GiB, and the environment refuses nothing that the process's state does not force. A `_halts_may_fail` statement drops both premises and allows any status.
+
+If the harness checks a property with `assert()`, `abort()` or a trap, and the check is in the binary, an agreement proof shows that the property holds on every covered input, and so does every halts proof: a failed check of these kinds kills the process, which no halts statement allows. A check that ends the process with `exit(n)` instead is shown by a halts proof only when the statement's allowed statuses leave out `n` ([docs/exploring.md](docs/exploring.md), [docs/statements.md](docs/statements.md)).
+
+The Rocq definitions are in [theories/Shapes.v](theories/Shapes.v). Each agreement and halts form is proved equal to its LPS definition: an agreement form to `strong_universal_error_free_T_budgets` or one of its variants, a halts form to `halts_allowed_T_scfg_budgets` or `halts_allowed_T_scfg`. [docs/statements.md](docs/statements.md) explains each form.
 
 ## What a proof does not say
 - It does not say that the library is correct. Errors that the sanitizers cannot detect are not excluded: for example, a wrong result or a memory leak.
 - It is about the code that one entry point reaches, not about the whole library.
 - It is about these binaries: static riscv64 programs, built with clang 20.1.8 against musl. It is not about the source code, and not about the x86-64 builds of OSS-Fuzz.
 - It is true in LPS. Where LPS differs from Linux, the proof may not apply ([docs/semantics.md](docs/semantics.md)).
-- An agreement statement does not exclude a run that never ends. Only a halts statement does. No proof in this release proves a halts statement, so none of them rules out a run that never ends.
+- An agreement statement does not exclude a run that never ends. Only a halts statement does. 64 of the proved statements are halts statements; [index/PROOFS.md](index/PROOFS.md) lists them.
 
 ## Versions
 | item | version |
@@ -146,13 +151,13 @@ Each project's published binaries are attached to the [release](https://github.c
 [docs/exploring.md](docs/exploring.md) points to what the proofs show beyond "no sanitizer error": properties that the harnesses check, and lemmas about what the library code computes. It also tells you how to find the machine-generated data in a proof.
 
 ## Statements for OSS-Fuzz fuzz targets
-This repository also states theorems about many OSS-Fuzz fuzz targets, proved or not. For each of the 1,381 projects in OSS-Fuzz there is a directory under [projects/](projects/). We can build the fuzz targets of 427 of these projects. 2,148 of their 5,290 fuzz targets have statements in this release; [index/STATUS.md](index/STATUS.md) says why the others do not. Each of these fuzz targets is compiled up to four ways (2,141 of the 2,148 harnesses have all four), and each build gets Rocq statements about those exact bytes. These are statements, not results: 138 are proved, some are known to be false, and proofs are added as they are found.
+This repository also states theorems about many OSS-Fuzz fuzz targets, proved or not. For each of the 1,381 projects in OSS-Fuzz there is a directory under [projects/](projects/). We can build the fuzz targets of 427 of these projects. 2,148 of their 5,290 fuzz targets have statements in this release; [index/STATUS.md](index/STATUS.md) says why the others do not. Each of these fuzz targets is compiled up to four ways (2,141 of the 2,148 harnesses have all four), and each build gets Rocq statements about those exact bytes. These are statements, not results: 202 are proved, some are known to be false, and proofs are added as they are found.
 
-In this release: 20,164 statements: 138 proved, 0 known false (0 counterexamples, 0 false (witnessed)), 0 suspected false, 229 blocked by the model, 0 withheld (0 waiting for their source bundle, 0 not published yet), 19,797 open. [analyses/known-issues.md](analyses/known-issues.md) lists every statement that is not open or proved, with the reason.
+In this release: 20,164 statements: 202 proved, 5 known false (0 counterexamples, 5 false (witnessed)), 0 suspected false, 229 blocked by the model, 0 withheld (0 waiting for their source bundle, 0 not published yet), 19,728 open. [analyses/known-issues.md](analyses/known-issues.md) lists every statement that is not open or proved, with the reason.
 
 There are four kinds of statement: a build halts; a sanitizer build agrees with the plain build; the two builds disagree on at most a fraction *b* of a stated input distribution; and the inputs on which they agree are decidable ([docs/statements.md](docs/statements.md)). One example:
 
-[`zlib/checksum_fuzzer/plain_halts`](projects/zlib/checksum_fuzzer/Statements.v): on every input on which the plain build is never refused memory for exceeding 16 GiB, and when the environment refuses nothing that it is not forced to (both are premises), every execution exits with status 0 or 2. The harness `checksum_fuzzer` asserts that CRC-32 combine law, per chunk (chunk size = data[0], min 1): crc32_combine_op(crc_so_far, crc32(0,chunk), crc32_combine_gen(chunk_len)) must equal crc32_z(crc_so_far, chunk); chunked crc32_z over the whole input (chunk size data[0]) must equal the one-shot crc32(0, data, len) (and 4 checks more), so a proof shows that these hold on every input it covers.
+[`lzo/lzo_compress_target/plain_halts`](projects/lzo/lzo_compress_target/Statements.v): on every input on which the plain build is never refused memory for exceeding 16 GiB, and when the environment refuses nothing that it is not forced to (both are premises), every execution exits with status 0 or 2. The harness `lzo_compress_target` asserts that for compressible input (compressed_len < size), lzo1x_decompress into size+1 bytes must return LZO_E_OK and produce exactly size bytes. ONLY THE LENGTH is compared: the decompressed content is never memcmp'd against the input, so a decoder that returned the right number of wrong bytes would pass, so a proof shows that these hold on every input it covers.
 
     Definition plain_halts : Prop :=
       halts_within_budget Budgets.Standard.lim_source Exits.ok_or_refused Images.plain.
@@ -169,7 +174,7 @@ There are four kinds of statement: a build halts; a sanitizer build agrees with 
 | [held](docs/status.md#held) | 32 |
 | **all OSS-Fuzz projects** | **1,381** |
 
-The 427 available projects have 2,148 harnesses with statements and 20,164 statements; 8,578 binaries are attached to this release and 0 more are withheld. [index/STATUS.md](index/STATUS.md) lists every project; `index/*.tsv` has the same data for scripts.
+The 427 available projects have 2,148 harnesses with statements and 20,164 statements; 8,578 binaries are attached to this release or an earlier one, and 0 more are withheld. [index/STATUS.md](index/STATUS.md) lists every project; `index/*.tsv` has the same data for scripts.
 
 To prove or refute a statement, see [docs/proving.md](docs/proving.md) and [CONTRIBUTING.md](CONTRIBUTING.md). A counterexample that shows a bug in a library goes to that library first ([SECURITY.md](SECURITY.md)). To enroll your own project, see [theorem-labs/oss-verify](https://github.com/theorem-labs/oss-verify).
 
@@ -199,7 +204,7 @@ To prove or refute a statement, see [docs/proving.md](docs/proving.md) and [CONT
 | `docs/` | the documentation |
 
 ## Citing
-[CITATION.cff](CITATION.cff). A statement is cited as `project/harness/statement@r<revision>`, for example `zlib/checksum_fuzzer/plain_halts@r1`. Until LPS is released, revisions are provisional ([docs/versioning.md](docs/versioning.md)).
+[CITATION.cff](CITATION.cff). A statement is cited as `project/harness/statement@r<revision>`, for example `lzo/lzo_compress_target/plain_halts@r1`. Until LPS is released, revisions are provisional ([docs/versioning.md](docs/versioning.md)).
 
 ## Licence
 What we wrote is under the MIT licence ([LICENSE](LICENSE)): the statements, the tools, the documentation and our proofs. Proofs that we made from proofs that Anthropic licensed under the Apache License 2.0 or the MIT licence, at the recipient's option, keep those licences. The licence texts are [LICENSES/anthropic-proofs-LICENSE](LICENSES/anthropic-proofs-LICENSE) and [LICENSES/anthropic-proofs-LICENSE-MIT](LICENSES/anthropic-proofs-LICENSE-MIT) and the notices are [LICENSES/anthropic-proofs-NOTICE](LICENSES/anthropic-proofs-NOTICE); the build record of each such proof names these three files ([docs/licensing.md](docs/licensing.md)). The binaries, the source archives and the harness copies keep their own licences ([NOTICE](NOTICE)). This project is not affiliated with or endorsed by Google or the OSS-Fuzz project.

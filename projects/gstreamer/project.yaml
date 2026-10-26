@@ -62,6 +62,11 @@ assets:
     file: gstreamer-bin.tar.zst
     bytes: 198977532
     sha256: fbd6deb5254887ca6824ef8291a3939a52aa9ab2de80cdacfb692beb6df54590
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: gstreamer-src.tar.zst

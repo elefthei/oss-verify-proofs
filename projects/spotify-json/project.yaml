@@ -29,6 +29,11 @@ assets:
     file: spotify-json-bin.tar.zst
     bytes: 497728
     sha256: f62db4930c80cd05b6237e487ffcc54e71056f1810de0b601a0d604b8f9c6720
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: spotify-json-src.tar.zst

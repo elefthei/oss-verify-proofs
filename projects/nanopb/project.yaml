@@ -42,6 +42,11 @@ assets:
     file: nanopb-bin.tar.zst
     bytes: 358896
     sha256: 9c97f2986d082bb19769aefd8d94bc38fd36e3465b8129f5b538a9c2fd0c6793
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: nanopb-src.tar.zst

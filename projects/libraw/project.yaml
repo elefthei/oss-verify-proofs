@@ -32,6 +32,11 @@ assets:
     file: libraw-bin.tar.zst
     bytes: 6821319
     sha256: 9e4263b0694f5b31593c3e29cddbc3017bbd7251848520a7d7ac9d27ce7aef82
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libraw-src.tar.zst

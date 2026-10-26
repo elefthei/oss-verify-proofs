@@ -24,6 +24,11 @@ assets:
     file: simd-bin.tar.zst
     bytes: 3497293
     sha256: f8a467679513afdd22d8b71cb26320b24169c22fd471b1acb4f31ccb80a4e646
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: simd-src.tar.zst

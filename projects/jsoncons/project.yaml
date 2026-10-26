@@ -80,6 +80,11 @@ assets:
     file: jsoncons-bin.tar.zst
     bytes: 6347690
     sha256: 1da3f2b27444a225bec812b759b487a760c3aefcda2e00d87e59c40263103c81
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: jsoncons-src.tar.zst

@@ -32,6 +32,11 @@ assets:
     file: grpc-httpjson-transcoding-bin.tar.zst
     bytes: 412461
     sha256: 5861c6f24e0e0c8820090a10f9482ae1091e9489872c589a973f9e3888dd8cf4
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: grpc-httpjson-transcoding-src.tar.zst

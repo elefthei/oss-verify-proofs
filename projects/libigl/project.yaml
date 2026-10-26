@@ -28,6 +28,11 @@ assets:
     file: libigl-bin.tar.zst
     bytes: 681097
     sha256: 288db37588145b594959405e7fceab16d13e8e2e47a4ce2f18c75dde5cceb5e2
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: libigl-src.tar.zst

@@ -29,6 +29,11 @@ assets:
     file: cxxopts-bin.tar.zst
     bytes: 895976
     sha256: cecf2cbf7c029cbb4ee732cf3380447ac312d922c100a0d59454fcbbbf334fff
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: cxxopts-src.tar.zst

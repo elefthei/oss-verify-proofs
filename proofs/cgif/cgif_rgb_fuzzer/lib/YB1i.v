@@ -91,7 +91,7 @@ Qed.
 Theorem xn_range_align_sound : forall args,
 node1_stmt SEGS A nx0 LIMIT TOP SINV argH FS0 always (xn_range_align nx0 args).
 Proof.
-intros args cs cs' E R FULL model T HC _ Hn Hk.
+intros args bm cs cs' E R FULL model T HC _ Hn Hk.
 unfold xn_range_align in Hn.
 destruct (range_align_facts (kn cs) (s_regs (a_ss cs)) args) as [|f fs] eqn:Hf; [discriminate Hn|].
 injection Hn as <-.

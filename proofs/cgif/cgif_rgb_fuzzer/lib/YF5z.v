@@ -1088,7 +1088,7 @@ sr_get (ss_regs S_K) 12%bv = SLit 3 /\ sr_get (ss_regs S_K) 13%bv = SLit 0x4032 
 sr_get (ss_regs S_K) 15%bv = SLit 0 /\ no_cdata (ss_mem S_K) = true /\ ss_resv S_K = None /\ sv_atoms_lt sHAV KA0 = true /\ sv_atoms_lt sHAV KA1 = true /\
 forallb (fun r => skel_okb false (skel r)) (ss_mem S_K) = true.
 Proof. clearP. img_case; vm_compute. all: repeat split; img_refl. Qed.
-Lemma dieK : forall md c, at_S Wy md X (PSR Wy SH4 (PDX Wy RX z)) K_R0 Wy c -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c) -> srealizes tfxsegs c t_nil.
+Lemma dieK : forall md c, at_S Wy md X (PSR Wy SH4 (PDX Wy RX z)) K_R0 Wy c -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c) -> srealizesM tfxsegs false c t_nil.
 Proof.
 intros md c HR HAI. pose proof SH34_ok as [_ OK4]. pose proof (PSR_stableS Wy SH4 (PDX Wy RX z) OK4 (PDX_stableS Wy RX RXt z)) as HP4.
 assert (HX : forall a, WIN1S a -> X a) by (img_try (intros a Ha; apply HXW, WIN1S_WIN, Ha)).
@@ -1099,7 +1099,7 @@ pose proof (st_ok_restrict_mkst tfxsegs (w_H Wy) E' K_SPIN ms HS ltac:(img_try (
 pose proof (f_equal ms_svc_pending SH) as Hsv. pose proof (f_equal ms_pc_val SH) as Hpc. cbn [ms_svc_pending ms_pc_val YK11.mkst] in Hsv, Hpc.
 replace (ss_pc K_SPIN) with (0x6ea08 + D_2c4) in Hpc by (img_try ((img_case; vm_compute); img_refl)).
 unfold is_self_jump, ms_pc. rewrite Hsv, Hpc. rewrite (tfxtbl_rtD_ok (0x6ea08 + D_2c4) 111 ltac:(img_try ((try img_inst; img_case; vm_compute); img_refl))). img_case; vm_compute. all: img_refl. }
-img_apply (SR HAI t_nil). intros W' c' _ HI' HJ. img_apply srz_spinning.
+img_apply (SR false HAI t_nil). intros W' c' _ HI' HJ. img_apply srz_spinning.
 split; [img_try (img_apply is_self_jump_to_spin; img_exact HJ) | img_try (img_exact (AI_halted _ _ _ _ HI'))].
 Qed.
 Lemma nodeK : forall {RT : Type} (sN : astate) (K : Z -> itree astate RT) (Q : RT -> world tfxsegs -> config -> Prop) (base : sptr) (len8 : Z) (c1 : config),
@@ -1121,8 +1121,9 @@ node_ok tfxsegs c1 I (fun _ => []) nx /\
 (forall i, AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model c1) -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model (nx i))) /\
 (forall i, aok sN (KShadowRemap base len8) (bit i)) /\ sp i0 = false /\ bit i0 = 1 /\
 (refusable (KShadowRemap base len8) = true -> exists i1, sp i1 = false /\ bit i1 = 0) /\
-(forall i, sp i = true -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model (nx i)) -> srealizes tfxsegs (nx i) t_nil) /\
-(forall i, sp i = false -> amreal tfxsegs (K (bit i)) Wy (nx i) Q).
+(forall i, sp i = true -> AI tfxsegs (w_H Wy) (w_A Wy) (cfg_model (nx i)) -> srealizesM tfxsegs false (nx i) t_nil) /\
+(forall i, (sp i = true \/ bit i <> 1) -> fo_dead tfxsegs c1 (nx i)) /\
+(forall i, sp i = false -> if Z.eqb (bit i) 1 then amreal tfxsegs (K (bit i)) Wy (nx i) Q else amrealE tfxsegs (K (bit i)) Wy (nx i) Q).
 Proof.
 intros. exfalso. clear - Hbig Nrange. unfold YF5k.N8D in Hbig. unfold MALLOC_MAX in Nrange.
 rewrite Z.div_mul in Hbig by (img_try (clear; img_lia)).

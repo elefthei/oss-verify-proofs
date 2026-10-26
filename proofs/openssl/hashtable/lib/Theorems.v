@@ -6,6 +6,7 @@
 
 From Stdlib Require Import NArith List QArith.
 Require LinuxProcessSemantics.EquivalenceDefinition.Equivalence.
+Require LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.
 Require OssFuzzTheorems.openssl.hashtable.images.Plain.
 Require OssFuzzTheorems.openssl.hashtable.images.Asan.
 Require OssFuzzTheorems.Proofs.openssl.hashtable.lib.Rows.RowsHtAsanClosed.
@@ -13,6 +14,16 @@ Require OssFuzzTheorems.Proofs.openssl.hashtable.lib.Rows.RowsHtAsanClosed.
 Module SpuriousCfgM <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
   Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.mkSpuriousCfg false true true true true true.
 End SpuriousCfgM.
+
+Module HaltsCfgForcedOnly <: LinuxProcessSemantics.EquivalenceDefinition.Equivalence.SPURIOUS_CFG.
+  Definition cfg := LinuxProcessSemantics.LinuxProcessSem.Run.forced_only_cfg.
+End HaltsCfgForcedOnly.
+
+Module OpensslHashtableHaltsAsanExits <: LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.ALLOWED_EXITS.
+  Import stdpp.bitvector.bitvector.
+  Import ListNotations.
+  Definition codes : list (stdpp.bitvector.definitions.bv 64) := [Z_to_bv 64 0; Z_to_bv 64 2].
+End OpensslHashtableHaltsAsanExits.
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
@@ -394,6 +405,16 @@ Qed.
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)
+Theorem halts_allowed_openssl_hashtable_halts_asan :
+  LinuxProcessSemantics.EquivalenceDefinition.HaltsAllowed.halts_allowed_T_scfg_budgets
+    HaltsCfgForcedOnly.cfg
+    LinuxProcessSemantics.EquivalenceDefinition.Equivalence.ShippedBudgets.lim_source
+    OpensslHashtableHaltsAsanExits.codes
+    (LinuxProcessSemantics.LinuxProcessSem.MemImageType.mkImage OssFuzzTheorems.openssl.hashtable.images.Asan.M.loaded_segments OssFuzzTheorems.openssl.hashtable.images.Asan.M.init_pc OssFuzzTheorems.openssl.hashtable.images.Asan.M.phdrs).
+Proof.
+  exact OssFuzzTheorems.Proofs.openssl.hashtable.lib.Rows.RowsHtAsanClosed.halts_asan_closed.
+Qed.
+
 (* [comment removed for export] *)
 (* [comment removed for export] *)
 (* [comment removed for export] *)

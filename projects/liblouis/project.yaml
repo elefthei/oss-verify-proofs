@@ -35,6 +35,11 @@ assets:
     file: liblouis-bin.tar.zst
     bytes: 760603
     sha256: 45faadffdc9dc4d1ae9239497f9219ba55b7b50bd2cfb73846eff6d35a6d5648
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: liblouis-src.tar.zst

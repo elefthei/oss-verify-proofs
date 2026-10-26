@@ -192,40 +192,21 @@ class Record(unittest.TestCase):
             t.write(DIR + "/VERDICT.md", "a verdict\n")
             self.assertIn("paths %s/VERDICT.md: matches no path pattern" % DIR, [str(f) for f in t.lint()])
 
-    def grow(self, t, rel, size):
-        """rel, padded with x to size bytes."""
-        with open(t.path(rel), "ab") as f:
-            f.write(b"x" * (size - os.path.getsize(t.path(rel))))
-
-    def test_an_input_as_long_as_a_full_payload_and_its_header(self):
-        """A bug at a harness's last payload byte needs a payload of the harness's whole length: 64 KiB after the
-        six-byte header for make_eval_fuzzer.  input.bin and control.bin take up to 1 MiB."""
-        for rel in (DIR + "/input.bin", DIR + "/control.bin"):
-            for size in ((64 << 10) + 6, 1 << 20):
-                with self.subTest(rel=rel, size=size), tree() as t:
-                    add_findings(t)
-                    self.grow(t, rel, size)
-                    self.assertEqual(facts.load(t.root).errors, [])
-                    self.assertEqual([str(f) for f in t.lint()], [])
-
-    def test_a_finding_file_over_its_cap(self):
-        """input.bin and control.bin: 1 MiB; every other file of a finding: 64 KiB.  lint's paths rule reports it, by
-        its own cap (lint.CAPS), apart from the loader's schema error for the same file."""
-        for rel, cap in ((DIR + "/input.bin", 1 << 20), (DIR + "/control.bin", 1 << 20),
-                         (DIR + "/0001-stand-in.patch", 64 << 10), ("findings/zlib/checksum_fuzzer/series", 64 << 10)):
-            with self.subTest(rel=rel), tree() as t:
-                add_findings(t)
-                self.grow(t, rel, cap + 1)
-                self.assertIn("paths %s: %d bytes, over the %d-byte cap" % (rel, cap + 1, cap),
-                              [str(f) for f in t.lint()])
+    def test_a_finding_file_over_64_kib(self):
+        with tree() as t:
+            add_findings(t)
+            with open(t.path(DIR, "input.bin"), "ab") as f:
+                f.write(b"x" * (64 << 10))
+            self.assertTrue(any(f.where == DIR + "/input.bin" and "over the 65536-byte cap" in f.msg
+                                for f in t.lint()))
 
     def test_the_loader_refuses_an_oversize_finding_file_before_lint(self):
-        for rel, cap in ((DIR + "/input.bin", 1 << 20), (DIR + "/control.bin", 1 << 20),
-                         (DIR + "/0001-stand-in.patch", 64 << 10), (YAML, 64 << 10), (UNPATCHED, 64 << 10)):
-            with self.subTest(rel=rel), tree(render=False) as t:
-                add_findings(t)
-                self.grow(t, rel, cap + 1)
-                self.assertIn("%s: over the %d-byte cap" % (rel, cap), facts.load(t.root).errors)
+        with tree(render=False) as t:
+            add_findings(t)
+            with open(t.path(DIR, "input.bin"), "ab") as f:
+                f.write(b"x" * (64 << 10))
+            loaded = facts.load(t.root)
+            self.assertIn(DIR + "/input.bin: over the 65536-byte cap", loaded.errors)
 
     def test_the_loader_never_opens_a_symlinked_finding_file(self):
         with tree(render=False) as t:

@@ -174,6 +174,11 @@ assets:
     file: skia-bin.tar.zst
     bytes: 1046776
     sha256: 66ed6878405ff8366bdf22be522037012e2eb8c2a781ec0eb302c3579d53ae92
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: skia-src.tar.zst

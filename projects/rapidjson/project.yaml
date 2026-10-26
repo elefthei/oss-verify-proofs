@@ -28,6 +28,11 @@ assets:
     file: rapidjson-bin.tar.zst
     bytes: 501787
     sha256: a11af5fe82b5089d51ebb809841dfd29723f370fe3b47f10dfc4c0f35f9aba8a
+    recipe:
+      release: v2026.10.0-src
+      file: recipe.tar.zst
+      bytes: 938459
+      sha256: 0339bf3221b15cd39513d46abe99062bac9cce874ed7ba5947753f75b6219ae5
   src:
     release: v2026.10.0-src
     file: rapidjson-src.tar.zst

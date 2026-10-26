@@ -70,7 +70,7 @@ the checker image that [release.yaml](../release.yaml) names
 
     ./oft fetch zlib
     python3 -m pip install --require-hashes --target "$HOME/oft-pydeps" -r tools/oft/requirements.txt
-    docker run --rm --network none -u "$(id -u):$(id -g)" -e HOME=/tmp -e PYTHONPATH=/pydeps \
+    docker run --rm --network none --ulimit stack=-1:-1 -u "$(id -u):$(id -g)" -e HOME=/tmp -e PYTHONPATH=/pydeps \
       -v "$HOME/oft-pydeps:/pydeps:ro" -v "$PWD:/work" -w /work <checker image of release.yaml> \
       ./oft check zlib/checksum_fuzzer --parts statements,proofs
 

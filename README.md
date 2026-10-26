@@ -122,12 +122,12 @@ The Rocq definitions are in [theories/Shapes.v](theories/Shapes.v). Each agreeme
 | axioms | only the axioms in [toolchain/allowed-axioms.txt](toolchain/allowed-axioms.txt): the primitive integer, array and string types of Rocq with their specifications, and six axioms of the standard library (`classic`, `functional_extensionality_dep`, `constructive_indefinite_description`, `propositional_extensionality`, `sig_forall_dec` and `sig_not_dec`) |
 
 ## Check a proof
-You need Docker, zstd, and Python 3 with PyYAML (`tools/oft/requirements.txt`). The checker image holds Rocq and LPS, but not PyYAML, so the commands below mount it. On 16 cores, one proof check needs up to 20 GiB of memory. It compiles one file per core, so more cores need more memory; `docker run --cpuset-cpus` limits the cores.
+You need Docker, zstd, and Python 3 with PyYAML (`tools/oft/requirements.txt`). The checker image holds Rocq and LPS, but not PyYAML, so the commands below mount it. On 16 cores, one proof check needs up to 20 GiB of memory. It compiles one file per core, so more cores need more memory; `docker run --cpuset-cpus` limits the cores. `--ulimit stack=-1:-1` gives the container the stack hard limit of at least 1 GiB that Rocq needs; without it the check stops on a host whose limit is lower ([docs/checking.md](docs/checking.md#stack-size)).
 
     git clone https://github.com/theorem-labs/oss-verify-proofs && cd oss-verify-proofs
     ./oft fetch coturn                   # the project's binaries, each checked against its SHA-256
     python3 -m pip install --require-hashes --target "$HOME/oft-pydeps" -r tools/oft/requirements.txt
-    docker run --rm --network none -u "$(id -u):$(id -g)" -e HOME=/tmp -e PYTHONPATH=/pydeps \
+    docker run --rm --network none --ulimit stack=-1:-1 -u "$(id -u):$(id -g)" -e HOME=/tmp -e PYTHONPATH=/pydeps \
       -v "$HOME/oft-pydeps:/pydeps:ro" -v "$PWD:/work" -w /work ghcr.io/theorem-labs/oss-fuzz-theorems-checker@sha256:cc9ae43a9f4b0dd59d7c8d30727d36e039bfe72a2a9f9c4a99c68e413037e902 \
       ./oft check coturn/FuzzStunClient --parts statements,proofs
 

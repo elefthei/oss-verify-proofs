@@ -109,7 +109,10 @@ defs:
       sha256: {type: sha256}
       # a file GitHub cannot take whole (2 GiB per release file) ships as numbered parts of its one stream, `cat` of
       # them in order being the file; the fields above stay the whole stream's. The parts are .000, .001, ... in
-      # order, each with its own bytes and SHA-256; a bin asset and a src asset ship them the same way.
+      # order, each with its own bytes and SHA-256; a bin asset and a src asset ship them the same way. ABSENT and
+      # PRESENT-BUT-EMPTY are different: a record with no `parts` is one whole file, and a `parts` that is there
+      # says parts, so [], {}, "", null and a part of 0 bytes are refused here, and every reader (oft fetch,
+      # oft generate, the lint) refuses them too rather than falling back to the whole file.
       parts: {type: list, min: 1, items: {type: ref, name: asset_part}, optional: true}
 
   asset_part:

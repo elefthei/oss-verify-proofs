@@ -49,7 +49,7 @@ $library_licence_sentence $binary_licence_sentence $source_sentence$copyleft_sen
     ./oft fetch $project
     ./oft verify-sha $project
 
-By hand: download `$bin_file` from release [$bin_release]($bin_url), unpack it into `projects/$project/bin/`, and check each file against its SHA-256 in the harness's `harness.yaml`. Each binary is run as `<file> <input-file>` under qemu-user 10; an OSS-Fuzz testcase needs the six-byte header `00 00 00 00 00 00` in front ([docs/running.md](../../docs/running.md)).
+By hand: download $bin_files from release [$bin_release]($bin_url), $join unpack it into `projects/$project/bin/`, and check each file against its SHA-256 in the harness's `harness.yaml`. Each binary is run as `<file> <input-file>` under qemu-user 10; an OSS-Fuzz testcase needs the six-byte header `00 00 00 00 00 00` in front ([docs/running.md](../../docs/running.md)).
 @@ get_none
 No binaries are attached to this release for this project (see above).
 

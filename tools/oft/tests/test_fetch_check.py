@@ -268,20 +268,64 @@ class Fetch(unittest.TestCase):
             self.assertFalse(any(f == "zlib-bin.tar.zst" for _r, f, _s in listed), out)
 
     def test_the_harness_filter_writes_one_harness_and_still_checks_the_archive(self):
-        """--harness names what is written; every member is still read and checked against its harness.yaml."""
+        """--harness names what is WRITTEN; every member is still read and checked against its harness.yaml. The
+        tampered member belongs to the harness --harness does NOT name, so a filter applied before the check (and
+        not after it) would let the archive pass."""
         with tree() as t, tempfile.TemporaryDirectory() as a:
             files = make_release(t, a)
-            one = sorted({n.split("/")[0] for n in files})[0]
+            one = "checksum_fuzzer"
             rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, harnesses={one})
             self.assertEqual(rc, 0, out)
             for name in files:
                 self.assertEqual(os.path.exists(t.path("projects/zlib/bin", name)), name.startswith(one + "/"), name)
             self.assertIn("binaries, each SHA-256 checked", out)
-        with tree() as t, tempfile.TemporaryDirectory() as a:      # a bad archive is still refused
-            make_release(t, a, tamper=lambda f: dict(f, **{"checksum_fuzzer/checksum_fuzzer.asan": b"\x7fELF other"}))
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a, tamper=lambda f: dict(f, **{"api-driver/api-driver.asan": b"\x7fELF other"}))
             rc, out = run(fetch.fetch, t.root, ["zlib"], source=a, harnesses={"checksum_fuzzer"})
             self.assertEqual(rc, 1, out)
-            self.assertIn("does not match its harness.yaml", out)
+            self.assertIn("api-driver/api-driver.asan does not match its harness.yaml", out)
+
+    def test_parts_that_do_not_join_to_the_asset_are_refused(self):
+        """Every part matches its own pin and they add up to the asset's bytes, but their join is another stream:
+        only the whole-stream SHA-256 can see it, and it must."""
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            parts = self.split(t, a)
+            p = t.yaml("projects/zlib/project.yaml")
+            p["assets"]["bin"]["sha256"] = hashlib.sha256(b"another stream of the same length").hexdigest()
+            t.put_yaml("projects/zlib/project.yaml", p)
+            rc, out = run(fetch.fetch, t.root, ["zlib"], source=a)
+            self.assertEqual(rc, 1, out)
+            self.assertIn("its %d parts joined are" % len(parts), out)
+            self.assertFalse(os.path.isdir(t.path("projects/zlib/bin", "checksum_fuzzer")), "nothing is unpacked")
+
+    def test_a_parts_field_that_says_nothing_is_an_error_not_a_whole_file(self):
+        """Absent and present-but-empty are different: `parts` that is there and says nothing is refused, never
+        read as "one whole file" (the schema refuses these too; this is the reader's half)."""
+        for empty in ([], {}, "", None):
+            with self.assertRaises(fetch.FetchError) as e:
+                fetch.asset_files({"file": "zlib-bin.tar.zst", "release": "v1", "bytes": 1,
+                                   "sha256": "0" * 64, "parts": empty})
+            self.assertIn("not a list of records that each name a file", str(e.exception))
+        whole = {"file": "zlib-bin.tar.zst", "release": "v1", "bytes": 1, "sha256": "0" * 64}
+        self.assertEqual(fetch.asset_files(whole), [whole], "a record with no `parts` is one whole file")
+
+    def test_the_lint_refuses_a_parts_list_that_fetch_would_refuse(self):
+        """The rule lives in one reader: a page whose parts are named for another file, or whose bytes do not add
+        up, fails `oft lint` (so pr.yml sees it), not only `oft fetch` at release time."""
+        from oft import lint
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            parts = self.split(t, a)
+            self.assertEqual([str(f) for f in lint.run(t.root)], [])
+            for change, why in ((lambda ps: [dict(ps[0], file="other-bin.tar.zst.000")] + ps[1:], "in order"),
+                                (lambda ps: [dict(ps[0], bytes=ps[0]["bytes"] + 1)] + ps[1:], "bytes")):
+                p = t.yaml("projects/zlib/project.yaml")
+                p["assets"]["bin"]["parts"] = change([dict(x) for x in parts])
+                t.put_yaml("projects/zlib/project.yaml", p)
+                found = [str(f) for f in lint.run(t.root)]
+                self.assertTrue(any(why in f and "assets.bin" in f for f in found), (why, found))
+
 
 class Listing(unittest.TestCase):
     """`oft fetch --release TAG --list`, what release.yml compares a draft with: each tag lists exactly the files the

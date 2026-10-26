@@ -70,12 +70,18 @@ def _download(url_or_path, dest, want_bytes, want_sha, append=False, digest=None
 
 
 def asset_files(asset):
-    """The files an asset ships, in order: [its record] when it is one file, else its `parts`. A `parts` list that is
-    not <file>.000, .001, ... in order, or whose bytes do not add up to the record's, is refused here, before a byte
-    is downloaded."""
-    parts = asset.get("parts")
-    if not parts:
+    """The files an asset ships, in order: [its record] when the record has no `parts`, else its parts. A `parts`
+    that is there but says nothing (not a list, empty, or an entry that names no file) is an ERROR, never read as
+    "one whole file": absent and present-but-malformed are different, as the schema says (schemas/project.yaml).
+    Parts that are not <file>.000, .001, ... in order, or whose bytes do not add up to the record's, are refused
+    here too, before a byte is downloaded."""
+    if "parts" not in asset:
         return [asset]
+    parts = asset["parts"]
+    if not isinstance(parts, list) or not parts or not all(
+            isinstance(p, dict) and isinstance(p.get("file"), str) and p["file"] for p in parts):
+        raise FetchError("%s: its `parts` is %r, not a list of records that each name a file" % (asset["file"],
+                                                                                                 parts))
     want = ["%s.%03d" % (asset["file"], i) for i in range(len(parts))]
     if [p["file"] for p in parts] != want:
         raise FetchError("%s: its parts are not %s in order" % (asset["file"], ", ".join(want[:3] + ["..."])))

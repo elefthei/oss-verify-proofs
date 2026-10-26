@@ -5,7 +5,7 @@ import os
 import re
 from fractions import Fraction
 
-from . import facts, names, schema, shapes
+from . import facts, fetch, names, schema, shapes
 
 PB = facts.PHRASEBOOK
 PLACEHOLDER = re.compile(r"\{([a-z_0-9]+)\}")
@@ -177,6 +177,14 @@ def _project(tree, proj):
             tree.err(where, "assets.%s.file must be %s%s" % (k, proj.name, suffix))
     if "src" in a and "src_manifest" in a and a["src"]["release"] != a["src_manifest"]["release"]:
         tree.err(where, "assets.src and assets.src_manifest are attached to different releases")
+    # an asset of 2 GiB or more ships as numbered parts: the lint reads them with the one reader `oft fetch` uses,
+    # so a page whose parts are named for another file or do not add up fails here, not at release time
+    for k in ("bin", "src"):
+        if k in a:
+            try:
+                fetch.asset_files(a[k])
+            except fetch.FetchError as e:
+                tree.err(where, "assets.%s: %s" % (k, e))
     # a source asset and the recipe are in one release, which may be a second one, v<release>-src, for the source
     # assets alone (a GitHub release holds at most 1,000 files); `oft fetch --release` lists the recipe with them
     recipe = (tree.release or {}).get("recipe")

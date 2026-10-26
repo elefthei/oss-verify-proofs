@@ -12,7 +12,10 @@ independent rebuild ([building.md](building.md#where-a-binary-comes-from)).
 
 ## What a release attaches
 
-- `<project>-bin.tar.zst`: the project's binaries.
+- `<project>-bin.tar.zst`: the project's binaries. A file of 2 GiB or more is
+  attached as numbered parts instead, `<project>-bin.tar.zst.000`, `.001`, ...,
+  each with its own SHA-256 on the project page; `cat` of them in order is the
+  file, and `oft fetch` downloads, checks and joins them for you.
 - `<project>-src.tar.zst`, for most projects: the upstream source trees that
   the project's binaries were built from, exactly as upstream publishes them,
   before any patch. Every file in it is an upstream git blob or a file with the

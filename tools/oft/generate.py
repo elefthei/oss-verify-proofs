@@ -9,7 +9,7 @@ without its rendering all fail it.
 import os
 import sys
 
-from . import facts, names, paths, render, rules, schema, shapes
+from . import facts, fetch, names, paths, render, rules, schema, shapes
 from .facts import PHRASEBOOK as PB
 
 THEORY_DEPS = "Stdlib stdpp ReadFile Flocq LinuxProcessSemantics OssFuzzTheorems.Core"
@@ -330,12 +330,13 @@ def project_opam(tree, proj):
     a = proj.data["assets"]["bin"]
     url = "https://github.com/theorem-labs/oss-verify-proofs/releases/download/%s/%s"
     # an asset of 2 GiB or more ships as numbered parts: opam downloads each against its own SHA-256, and the build
-    # joins them into the one file before it unpacks it (oft verify-sha then checks every binary)
-    files = a.get("parts") or [a]
+    # joins them into the one file before it unpacks it (oft verify-sha then checks every binary). fetch.asset_files
+    # is the one reader of `parts`, so a record this tool cannot read is an error here too, not a whole file
+    files = fetch.asset_files(a)
     extra = "\n".join('extra-source "%s" {\n  src: "%s"\n  checksum: "sha256=%s"\n}'
                       % (f["file"], url % (a["release"], f["file"]), f["sha256"]) for f in files)
     join = ('  ["sh" "-c" "cat %s > %s"]\n' % (" ".join(f["file"] for f in files), a["file"])
-            if a.get("parts") else "")
+            if "parts" in a else "")
     return _t("project.opam.tmpl", "file", package=names.opam_package(proj.name), release=r["release"],
               project=proj.name, rocq_min="%s.%s" % (rv[0], rv[1]),
               rocq_next="%s.%d" % (rv[0], int(rv[1]) + 1), lps_name=r["semantics"]["name"],
@@ -665,7 +666,13 @@ def project_readme(tree, proj):
     a = d.get("assets") or {}
     src = a.get("src")
     rel = lambda tag: "%s/releases/tag/%s" % (REPO_URL, tag)
-    get = (_t(T, "get_binaries", project=proj.name, bin_file=a["bin"]["file"], bin_release=a["bin"]["release"],
+    # an asset of 2 GiB or more is attached as its numbered parts, so the by-hand steps name them and join them
+    bin_files = [p["file"] for p in fetch.asset_files(a["bin"])] if "bin" in a else []
+    get = (_t(T, "get_binaries", project=proj.name,
+              bin_files=render.join_words("`%s`" % f for f in bin_files),
+              join=("join them with `cat %s > %s`, then" % (" ".join(bin_files), a["bin"]["file"])
+                    if len(bin_files) > 1 else ""),
+              bin_release=a["bin"]["release"],
               bin_url=rel(a["bin"]["release"])) if "bin" in a else _t(T, "get_none"))
     licences = sorted({h.data["licence"] for h in hs})
     lib_licences = sorted({h.data["library"]["licence"] for h in hs} | {lib["licence"]})

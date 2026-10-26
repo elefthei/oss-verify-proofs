@@ -36,7 +36,7 @@ $get_binaries
 ## How these binaries were built
 - Library: [$library_label]($library_repo) $pin_long$library_version_paren, built with $build_system$patch_items
 - Harnesses: $harness_mods
-- Everywhere: static riscv64 compiled for RV64G, musl, clang $clang with `-Os -g`, and a small driver that reads the input file ([docs/running.md](../../docs/running.md)). The sanitizer flags and options are in [docs/building.md](../../docs/building.md). Each harness page lists what else its builds change, and which of its checks were confirmed in the binaries.
+- Everywhere: static riscv64 compiled for RV64G, musl, $compiled, and a small driver that reads the input file ([docs/running.md](../../docs/running.md)). The sanitizer flags and options are in [docs/building.md](../../docs/building.md). Each harness page lists what else its builds change, and which of its checks were confirmed in the binaries.
 - $builder_sentence
 
 ## Proofs
@@ -45,11 +45,16 @@ $notes
 ## Licence
 $library_licence_sentence $binary_licence_sentence $source_sentence$copyleft_sentence
 
+@@ compiled
+clang $clang with `-Os -g`
+@@ compiled_rust
+rustc for the Rust code, its standard library included, with the cargo release profile and `panic = "abort"`, and clang $clang with `-Os -g` for the C code its crates build
+
 @@ get_binaries
     ./oft fetch $project
     ./oft verify-sha $project
 
-By hand: download `$bin_file` from release [$bin_release]($bin_url), unpack it into `projects/$project/bin/`, and check each file against its SHA-256 in the harness's `harness.yaml`. Each binary is run as `<file> <input-file>` under qemu-user 10; an OSS-Fuzz testcase needs the six-byte header `00 00 00 00 00 00` in front ([docs/running.md](../../docs/running.md)).
+By hand: download `$bin_file` from release [$bin_release]($bin_url), unpack it into `projects/$project/bin/`, and check each file against its SHA-256 in the harness's `harness.yaml`. Each binary is run as `<file> <input-file>` under qemu-user 10; $testcase needs the six-byte header `00 00 00 00 00 00` in front ([docs/running.md](../../docs/running.md)).
 @@ get_none
 No binaries are attached to this release for this project (see above).
 
@@ -59,11 +64,19 @@ $description$links
 [$homepage_label]($homepage) · OSS-Fuzz: [projects/$project]($oss_fuzz_url)
 @@ links_oss_fuzz
 OSS-Fuzz: [projects/$project]($oss_fuzz_url)
+@@ links_homepage_no_oss_fuzz
+[$homepage_label]($homepage) · OSS-Fuzz: no project for $project
+@@ links_no_oss_fuzz
+OSS-Fuzz: no project for $project
 
 @@ coverage
 $n_included of OSS-Fuzz's $n_targets $have statements$api_note.
 @@ api_note
 , plus an API driver written for this repository
+@@ coverage_own
+Of $project's own fuzz targets, which OSS-Fuzz does not run, statements cover $n_included of $n_targets$api_note.
+@@ coverage_oss_verify
+Of the fuzz targets OSS Verify builds and OSS-Fuzz does not run, statements cover $n_included of $n_targets$api_note.
 @@ counts
 $n_statements statements: $n_proved proved, $n_false known false, $n_suspected suspected false, $n_model_gap blocked by the model$withheld_part, $n_open open.
 @@ binaries_some
@@ -80,6 +93,10 @@ Builder image: `$builder`. A binary whose SHA-256 differs after a rebuild with i
 Builder image: `$builder`. These binaries cannot yet be rebuilt from this release: this release does not attach this project's source trees yet ([docs/reproducing.md](../../docs/reproducing.md)).
 @@ builder_unpublished
 Builder image: not published yet, so these binaries cannot yet be rebuilt from this release ([docs/reproducing.md](../../docs/reproducing.md)).
+@@ builder_port
+Builder image: `$builder`. The OSS Verify port `$port_path` at `$port_commit` in $port_repository built every binary of this project instead of a build recipe. Its archive [`$port_file`]($port_url) holds the port's `tools/check`, which builds them again on this image with Docker: it fetches the project's source trees over the network, at the commits and SHA-256s the port pins, and does not read `$src_file` ([docs/reproducing.md](../../docs/reproducing.md)).
+@@ builder_port_no_archive
+Builder image: `$builder`. The OSS Verify port `$port_path` at `$port_commit` in $port_repository built every binary of this project instead of a build recipe. This release does not attach the port's archive, which holds its build scripts ([docs/reproducing.md](../../docs/reproducing.md)).
 
 @@ library_licence_known
 $library_name is under $library_licence.
@@ -103,11 +120,13 @@ Not included: $items.
 **$name** ($reason)
 
 @@ family_halts
-- **`<build>_halts`**: on every input on which the build is never refused memory for exceeding 16 GiB (a premise: an input that needs more is not covered), and when the environment refuses nothing it is not forced to, every execution exits with status $exits, without crashing, failing an assertion, hanging or tripping its sanitizer.
+- **`<build>_halts`**: on every input on which the build is never refused memory for exceeding 16 GiB (a premise: an input that needs more is not covered), and when the environment refuses nothing it is not forced to, every execution exits with $exits, without crashing, failing an assertion, hanging or tripping its sanitizer.
 @@ family_halts_may_fail
 - **`<build>_halts_may_fail`**: with no memory premise, and even if any request is refused at any point, every execution exits, with $exits. Stated for the plain and UBSan builds only.
 @@ family_agreement
 - **`<build>_agrees`**: on every input on which the plain build is never refused memory for exceeding its budget (a premise), neither build reaches an error, and the two have the same set of observable behaviours: every sequence of writes and exit status one can show, the other can too. A sanitizer report aborts, so this rules out every error the sanitizer build's configuration detects. It does not rule out a run that never ends; only a halts statement does.
+@@ family_agreement_rust
+- **`<build>_agrees`**: on every input on which the plain build is never refused memory for exceeding its budget (a premise), neither build reaches an error, and the two have the same set of observable behaviours: every sequence of writes and exit status one can show, the other can too. An ASan report aborts and a failed UBSan check in C code traps, both errors; a failed rustc UB check is not an error: it exits with status 79 after a line on standard error that the plain build does not write at that point. So this rules out every error the sanitizer build's configuration detects, and every failed UB check. It does not rule out a run that never ends; only a halts statement does.
 @@ family_bound
 - **`<build>_disagrees_at_most b`**: for inputs drawn from the harness's `Distribution.v`, the plain and sanitizer builds disagree with probability at most *b*.
 @@ family_decidability
@@ -147,7 +166,15 @@ $rows
 $text
 
 @@ source_with_bundle
-Corresponding source, in release [$src_release]($src_url): `$src_file`, the upstream source trees exactly as upstream publishes them; `$manifest_file`, which says where the build lays each one down; and `$recipe_file`, this release's build recipe (the build scripts, pins and patches).
+Corresponding source, in release [$src_release]($src_url): `$src_file`, the upstream source trees exactly as upstream publishes them; `$manifest_file`, which says where the build lays each one down; and $recipe.
+@@ recipe_this_release
+`$recipe_file`, this release's build recipe (the build scripts, pins and patches)
+@@ recipe_that_release
+`$recipe_file`, that release's build recipe (the build scripts, pins and patches)
+@@ recipe_apart
+the build recipe these binaries were built with (the build scripts, pins and patches), `$recipe_file` in release [$recipe_release]($recipe_url)
+@@ source_with_port
+Corresponding source, in release [$src_release]($src_url): `$src_file`, the upstream source trees exactly as upstream publishes them; `$manifest_file`, which says where the build lays each one down; and [`$port_file`]($port_url), the port archive at `$port_commit` holding its `infra/`, `tools/` and `$port_path/` files: the build scripts, and the source of the driver linked into these binaries.
 @@ copyleft_sources
 $who under a GPL-family licence, so their corresponding source also takes `$toolchain_file`, the source of the toolchain they were built with$sysroot, in release [$sources_release]($sources_url).
 @@ copyleft_who_all

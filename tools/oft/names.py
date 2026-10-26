@@ -1,8 +1,9 @@
 """Public names: Rocq identifiers, statement names, file names.
 
 Every name is computed from typed fields; nothing parses an old name to
-recover a fact.  `ident` must be injective over each population it is used
-on (projects; the harnesses of one project), which `oft lint` checks.
+recover a fact (statement_builds looks a name up among the names
+statement_name computes).  `ident` must be injective over each population it
+is used on (projects; the harnesses of one project), which `oft lint` checks.
 """
 import re
 
@@ -51,6 +52,18 @@ def statement_name(kind, builds, reading):
     if kind == "decidability":
         return san + "_agreement_decidable"
     raise ValueError(kind)
+
+
+_STATEMENT_BUILDS = dict(
+    [(statement_name("agreement", ("plain", b), None), ("plain", b)) for b in BUILD_IDENT if b != "plain"] +
+    [(statement_name("halts", (b,), r), (b,)) for b in BUILD_IDENT for r in ("budget", "may-fail")])
+
+
+def statement_builds(name):
+    """The builds of the agreement or halts statement that statement_name gives this name, or None for any other
+    name.  `oft ledger` and lint's base comparison read a finding's own files only, so they take its statements'
+    builds from their names."""
+    return _STATEMENT_BUILDS.get(name)
 
 
 def statement_id(project, harness, statement):

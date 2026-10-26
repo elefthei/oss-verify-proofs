@@ -9,7 +9,7 @@ defs:
       proves: {type: statement-id, optional: true}      # exactly one of proves / refutes
       refutes: {type: statement-id, optional: true}
       bound: {type: fraction, optional: true}            # a bound statement's b, required for kind bound
-      fingerprint: {type: sha256}                        # must equal the statement's in index/statements.tsv
+      fingerprint: {type: sha256}                        # the statement's in index/statements.tsv (docs/versioning.md)
       classifier:                                        # a classifier proof's own program
         type: object
         optional: true

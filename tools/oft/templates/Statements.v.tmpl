@@ -30,13 +30,21 @@ $count builds of OSS-Fuzz's [$harness] harness for $library
 @@ subject_upstream
 $count builds of $project's own fuzz target [$harness], as OSS-Fuzz builds it, for $library
 
+@@ subject_upstream_no_oss_fuzz
+$count builds of $project's own fuzz target [$harness], which OSS-Fuzz does not run, for $library
+
 @@ subject_this-repository
 $count builds of the API driver written for this collection, over $library
+
+@@ subject_oss-verify
+$count builds of the fuzz target [$harness], which OSS Verify builds and OSS-Fuzz does not run, for $library
 
 @@ build_plain
   plain       no sanitizer
 @@ build_ubsan
   ubsan       UndefinedBehaviorSanitizer; a failed check executes a trap
+@@ build_ubsan_rust
+  ubsan       rustc's UB checks (status 79); UBSan in C code (it traps)
 @@ build_asan
   asan        AddressSanitizer; a report aborts
 @@ build_asan-ubsan
@@ -47,6 +55,9 @@ A driver linked into every build reads FILE as [u16 config word][config bytes][u
 
 @@ driver_api
 A driver linked into every build reads FILE as [u16 config word][config bytes][u32 allocation mask][payload] (little-endian; the low 15 bits of the config word are the config length) and runs the payload as a program of calls into $library_name's API ($source); a set bit of the allocation mask makes the corresponding allocation fail.  With a wrong argument count, a missing or unreadable FILE, a FILE shorter than its header, or one of 64 MiB or more, it exits with status 2 without running anything.  Every statement quantifies over all of these cases and over every other process input (see Vocabulary in OssFuzzTheorems.Core.Shapes).
+
+@@ driver_rust
+  In this Rust fuzz target, the OSS Verify port's hooks end a failed allocation with status 2 and a panic (a failed assertion, an unwrap, an overflow check or a failed rustc UB check) with status 79, each after one line on standard error: neither aborts.
 
 @@ checks_some
 $summary  The $who checks:
@@ -86,12 +97,12 @@ How often the builds disagree
 Deciding where the builds agree
 
 @@ doc_halts_budget
-On every input on which the $build build is never refused memory for exceeding $budget, and when the environment refuses nothing it is not forced to, every execution of the $build build exits with $exits.  It never crashes, fails an assertion, hangs, or leaves the model.$binds$note
+On every input on which the $build build is never refused memory for exceeding $budget, and when the environment refuses nothing it is not forced to, every execution of the $build build exits with $exits.  It never crashes, fails an assertion, hangs, or leaves the model.$rejected$binds$note
 
 Not claimed: anything about what the program writes; anything about other compilers, architectures or $library_name commits.
 
 @@ doc_halts_may_fail
-Every execution of the $build build exits, with $exits, on every input and whatever the environment refuses (any allocation, open or read may fail at any time).$stronger$binds$note$no_asan
+Every execution of the $build build exits, with $exits, on every input and whatever the environment refuses (any allocation, open or read may fail at any time).$rejected$stronger$binds$note$no_asan
 
 Not claimed: anything about what the program writes.
 
@@ -99,7 +110,10 @@ Not claimed: anything about what the program writes.
   There is no ASan statement of this form: the ASan runtime deliberately waits forever when its start-up reservation is refused, so such a statement would be false for a reason that has nothing to do with this $who.
 
 @@ stronger
-  This is stronger than [$budget_name].
+  It covers every input and any refusal, unlike [$budget_name], but allows any exit status.
+
+@@ rejected
+  Status 78 is the driver's report that a call of the fuzz target returned a value other than 0 or -1, which this fuzz target does to turn an input away ($where).
 
 @@ binds_one
   Check $letters ends the process when it fails, which this statement excludes, so a proof establishes it for the code in this binary on every input it covers.
@@ -110,10 +124,18 @@ Not claimed: anything about what the program writes.
 
 @@ note_ubsan
   A failed UBSan check traps, so a proof also shows that no check UBSan makes in this build fails on any such input.
+@@ note_ubsan_rust
+  A failed rustc UB check writes its source location on standard error and exits with status 79, which is not allowed, and a failed UndefinedBehaviorSanitizer check in C code traps, so a proof also shows that no UB check this build makes fails on any such input.
+@@ note_ubsan_rust_any
+  A failed UndefinedBehaviorSanitizer check in C code traps, so a proof also shows that none fails on any such input.  A failed rustc UB check exits with status 79, which this statement allows: it says nothing about those checks.
+@@ stronger_rust
+  It covers every input and any refusal, unlike [$budget_name], but allows any exit status: a panic, which exits with status 79, does not falsify it.
 @@ note_asan
   An ASan report aborts, so a proof also shows that ASan detects no memory error, in the code it instruments, on any such input (the harness README lists the code this build links uninstrumented).  The runtime's own address-space reservations are not charged to the budget.
 @@ note_asan-ubsan
   An ASan report aborts and a failed UBSan check traps, so a proof also shows that neither sanitizer fires, in the code they instrument, on any such input (the harness README lists the code this build links uninstrumented).
+@@ note_asan-ubsan_rust
+  An ASan report aborts, a failed rustc UB check exits with status 79, which is not allowed, and a failed UndefinedBehaviorSanitizer check in C code traps, so a proof also shows that none of them fires, in the code they instrument, on any such input (the harness README lists the code this build links uninstrumented).
 
 @@ doc_agreement
 On every input on which the plain build is never refused memory for exceeding $plain_budget, $environment: neither build ever faults, aborts or leaves the model, and the two write the same bytes and exit with the same status.  $san_note$variant
@@ -127,10 +149,14 @@ when a memory request is refused only if the budget is spent or no address range
 
 @@ agree_ubsan
 A failed UBSan check traps, so a proof shows that no UBSan check in this build fails on any such input.
+@@ agree_ubsan_rust
+A failed rustc UB check writes its source location on standard error and exits with status 79, a line the plain build, which makes no such check, does not write at that point, and a failed UndefinedBehaviorSanitizer check in C code traps, so a proof shows that no UB check this build makes fails on any such input.
 @@ agree_asan
 An ASan report aborts, so a proof shows that ASan reports nothing on any such input: no memory error that this build's ASan detects happens in the code it instruments (the harness, $library_name and the driver, less the code the harness README lists as uninstrumented).
 @@ agree_asan-ubsan
 An ASan report aborts and a failed UBSan check traps, so a proof shows that neither sanitizer fires on any such input in the code they instrument (the harness, $library_name and the driver, less the code the harness README lists as uninstrumented).
+@@ agree_asan-ubsan_rust
+An ASan report aborts and a failed UndefinedBehaviorSanitizer check in C code traps; a failed rustc UB check writes its source location on standard error and exits with status 79, a line the plain build, which makes no such check, does not write at that point.  So a proof shows that none of them fires on any such input in the code they instrument (the harness, $library_name and the driver, less the code the harness README lists as uninstrumented).
 
 @@ not_claimed_asan
 ; memory errors ASan does not detect (for example an access that lands inside another live object, or one made in code it does not instrument)
@@ -139,6 +165,8 @@ An ASan report aborts and a failed UBSan check traps, so a proof shows that neit
   Stated with abort() read as death by SIGABRT rather than as a step the model does not cover; the statement still forbids it.
 @@ variant_rv64gc
   The process is told that its machine is RV64GC (no vector unit).
+@@ variant_alloc_rust
+  It is read alloc-forced-only because the allocation-failure hook writes the failed allocation's size on standard error, and ASan's allocator asks the kernel for memory at other allocations than musl's: refused at will, the two builds could write different lines for a reason that has nothing to do with ASan.
 
 @@ doc_bound
 For an input drawn from [Distribution.w] (Distribution.v), the probability that the plain and $san builds are not both error-free with equal traces is at most [b].  Agreement here is judged at 16 GiB / 512 GiB with no budget premise (Core.Shapes), so [$agrees] does not by itself give [$name 0].  Smaller [b] is stronger; [b = 1] holds trivially.

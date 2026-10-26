@@ -1,4 +1,5 @@
-# projects/<project>/project.yaml: one per OSS-Fuzz project at the pinned commit.
+# projects/<project>/project.yaml: one per project, each OSS-Fuzz project at the pinned commit and each project OSS-Fuzz
+# does not have (no oss_fuzz).
 #
 # This file lists every key a project.yaml may carry.  Any other key, an
 # unknown enum value, a malformed digest or a repeated key is an error
@@ -14,11 +15,13 @@ defs:
     fields:
       schema: {type: const, value: oss-fuzz-theorems/project/1}
       project: {type: project-name}
-      description: {type: text, max: 300, optional: true}     # one sentence, from OSS-Fuzz's project metadata
+      description: {type: text, max: 300, optional: true}     # one sentence, from public project metadata
       homepage: {type: url, optional: true}
       language: {type: enum, values: [c, c++, go, jvm, python, rust, javascript, ruby, swift, lua]}
+      # OSS-Fuzz's directory for the project, at release.yaml's commit; absent: OSS-Fuzz has no such project
       oss_fuzz:
         type: object
+        optional: true
         fields:
           path: {type: str, pattern: '^projects/[a-z0-9][a-z0-9_-]*$'}
           commit: {type: commit}
@@ -27,6 +30,11 @@ defs:
         type: enum
         values: [available, language-pending, not-yet-built, needs-model,
                  no-compiler, no-harness, excluded, withdrawn, held]
+      # private: kept in this repository and held from every public release. `oft release-tree` writes a project
+      # OSS-Fuzz has (oss_fuzz) in its held form (status held, reason held: its page and its index row stay) and
+      # removes the rest of it (harnesses, statements, proofs, counterexamples, notes); it removes a project OSS-Fuzz
+      # does not have whole. release.yaml's counts and image libraries are those of the public release
+      release: {type: enum, values: [private], optional: true}
       reason: {type: reason-code, optional: true}        # required unless status is available
       reason_args: {type: ref, name: reason_args, optional: true}
       library: {type: ref, name: library, optional: true}
@@ -37,18 +45,31 @@ defs:
         type: object
         optional: true
         fields:
-          bin: {type: ref, name: asset}
+          bin: {type: ref, name: bin_asset}
           # the upstream source trees the binaries were built from, unmodified (required when any binary's licence is
-          # GPL or LGPL); with src_manifest, which says where each tree goes, and the release's recipe (release.yaml)
+          # GPL or LGPL); with src_manifest, which says where each tree goes, in the same release, and what built the
+          # binaries: for a recipe-built project the recipe its binary archive names (assets.bin.recipe), for a
+          # port-built project port, the archive of the OSS Verify port at build.oss_verify.commit, in the same release
           src: {type: ref, name: asset, optional: true}
           src_manifest: {type: ref, name: manifest_asset, optional: true}
+          port: {type: ref, name: asset, optional: true}
       build:
         type: object
         optional: true
         fields:
-          system: {type: enum, values: [autotools, bazel, cmake, make, meson, scons, custom]}
+          system: {type: enum, values: [autotools, bazel, cargo, cmake, make, meson, scons, custom]}
           clang: {type: str, pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'}
           builder: {type: image}
+          # The OSS Verify port that built every binary of this project instead of a build recipe: its repository
+          # name, commit and project directory.  Its private prelaunch variant is permitted only for a project a
+          # finding holds back (rules.py).
+          oss_verify:
+            type: object
+            optional: true
+            fields:
+              repository: {type: oss-verify-repository}
+              commit: {type: commit}
+              path: {type: str, pattern: '^projects/[a-z0-9][a-z0-9_-]*$'}
 
   # typed values the phrasebook sentence for (status, reason) is filled from
   reason_args:
@@ -96,24 +117,44 @@ defs:
     fields:
       name: {type: harness-name}
       status: {type: enum, values: [included, not-included]}
-      origin: {type: enum, values: [oss-fuzz, upstream, this-repository], optional: true}
+      origin: {type: enum, values: [oss-fuzz, upstream, this-repository, oss-verify], optional: true}
       reason: {type: reason-code, optional: true}         # required when not-included
       reason_args: {type: ref, name: reason_args, optional: true}
 
   asset:
     type: object
     fields:
-      release: {type: release-tag}
+      release: {type: asset-release-tag}
+      file: {type: str, pattern: '^[a-z0-9][a-z0-9_-]*-(bin|src|port)\.tar\.zst$'}
+      bytes: {type: int, min: 1}
+      sha256: {type: sha256}
+
+  # the binary archive, and the build recipe its binaries were built with: one that release.yaml lists under recipes,
+  # in any release, which every build record of the project cites too. Required unless release.yaml has the shape
+  # before recipes, its one recipe; refused for a port-built project (build.oss_verify), which no recipe built
+  # (rules.py)
+  bin_asset:
+    type: object
+    fields:
+      release: {type: asset-release-tag}
       file: {type: str, pattern: '^[a-z0-9][a-z0-9_-]*-(bin|src)\.tar\.zst$'}
       bytes: {type: int, min: 1}
       sha256: {type: sha256}
+      recipe:
+        type: object
+        optional: true
+        fields:
+          release: {type: release-tag}
+          file: {type: str, pattern: '^recipe(-[0-9]+)?\.tar\.zst$'}
+          bytes: {type: int, min: 1}
+          sha256: {type: sha256}
 
   # the source asset's manifest: one row per tree (its upstream URL and commit, or its sha256) and where the build
   # lays it down
   manifest_asset:
     type: object
     fields:
-      release: {type: release-tag}
+      release: {type: asset-release-tag}
       file: {type: str, pattern: '^[a-z0-9][a-z0-9_-]*-src\.MANIFEST\.tsv$'}
       bytes: {type: int, min: 1}
       sha256: {type: sha256}

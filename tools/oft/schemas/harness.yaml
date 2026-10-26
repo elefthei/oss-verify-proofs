@@ -14,7 +14,7 @@ defs:
       project: {type: project-name}
       harness: {type: harness-name}
       rocq: {type: str, pattern: '^OssFuzzTheorems(\.[A-Za-z_][A-Za-z0-9_]*)+$'}   # derived; lint checks it
-      origin: {type: enum, values: [oss-fuzz, upstream, this-repository]}
+      origin: {type: enum, values: [oss-fuzz, upstream, this-repository, oss-verify]}
       summary: {type: text, max: 600}
       entry: {type: str, pattern: '^[A-Za-z_][A-Za-z0-9_]*$'}
       source:
@@ -33,6 +33,9 @@ defs:
         values: {type: ref, name: build}
       licence: {type: spdx}
       checks: {type: list, items: {type: ref, name: check}}
+      # where the fuzz target turns an input away by returning a value other than 0 or -1
+      # (the driver's status 78); its halts statements then allow 78
+      rejects: {type: list, items: {type: ref, name: reject}, min: 1, optional: true}
       distribution: {type: ref, name: distribution, optional: true}
       model_gap: {type: list, items: {type: feature}, optional: true}
       statements:
@@ -43,7 +46,8 @@ defs:
   origin_ref:
     type: object
     fields:
-      repository: {type: url}
+      # a repository's URL, or theorem-labs/oss-verify, the OSS Verify port, by its name
+      repository: {type: union, of: [{type: url}, {type: const, value: theorem-labs/oss-verify}]}
       commit: {type: commit}
       path: {type: str, pattern: '^[A-Za-z0-9._+/-]+$'}
 
@@ -94,6 +98,12 @@ defs:
       stops_with: {type: enum, values: [abort, assert, trap, throw, panic, exit, print-only, return-only]}
       exit_status: {type: int, min: 0, max: 255, optional: true}      # with stops_with: exit
       live: {type: enum, values: [true, false, unknown]}              # true only from a binary-level observation
+      where: {type: str, pattern: '^source/[A-Za-z0-9._+/-]+:[0-9]+(-[0-9]+)?$'}
+      what: {type: text, max: 400}
+
+  reject:
+    type: object
+    fields:
       where: {type: str, pattern: '^source/[A-Za-z0-9._+/-]+:[0-9]+(-[0-9]+)?$'}
       what: {type: text, max: 400}
 

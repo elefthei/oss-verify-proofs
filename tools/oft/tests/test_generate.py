@@ -3,7 +3,7 @@ import os
 import shutil
 import unittest
 
-from oft import facts, generate, schema, shapes, yamlio
+from oft import facts, generate, rocq, schema, shapes, yamlio
 from oft.tests.helpers import tree
 
 
@@ -68,6 +68,114 @@ class StatementText(unittest.TestCase):
         self.assertIn("From OssFuzzTheorems.zlib.checksum_fuzzer Require Images Distribution.", s)
         self.assertNotIn("Admitted", s)
         self.assertEqual(s.count("(*"), s.count("*)"))
+
+    def test_a_may_fail_halts_statement_is_not_called_stronger_than_the_budget_one(self):
+        """halts_may_fail with Exits.any does not imply halts_within_budget with exits 0 and 2: an exit with
+        status 77 or 78 satisfies the first and falsifies the second."""
+        with tree() as t:
+            s = " ".join(t.read("projects/zlib/checksum_fuzzer/Statements.v").split())
+        self.assertIn("It covers every input and any refusal, unlike [plain_halts], but allows any exit status.", s)
+        self.assertIn("It covers every input and any refusal, unlike [ubsan_halts], but allows any exit status.", s)
+        self.assertNotIn("stronger than", s)
+
+    HALTS_BUDGET = ("plain_halts", "ubsan_halts", "asan_halts", "asan_ubsan_halts")
+
+    def rejecting(self, t, exits=(0, 2, 78), rejects=True):
+        p = "projects/zlib/checksum_fuzzer/harness.yaml"
+        y = t.yaml(p)
+        if rejects:
+            y["rejects"] = [{"where": "source/checksum_fuzzer.c:10-12", "what": "A short input is returned 1."}]
+        for n in self.HALTS_BUDGET:
+            y["statements"][n]["exits"] = list(exits)
+        t.put_yaml(p, y)
+
+    def test_a_harness_that_rejects_allows_78(self):
+        with tree() as t:
+            self.rejecting(t)
+            self.assertEqual(t.generate(), 0, t.last_output)
+            s = t.read("projects/zlib/checksum_fuzzer/Statements.v")
+            r = t.read("projects/zlib/checksum_fuzzer/README.md")
+        self.assertIn("Definition plain_halts : Prop :=\n  halts_within_budget Budgets.Standard.lim_source "
+                      "(cons (stdpp.bitvector.definitions.Z_to_bv _ 78%Z) Exits.ok_or_refused) Images.plain.", s)
+        self.assertIn("Status 78 is", s)
+        self.assertIn("Definition plain_halts_may_fail : Prop :=\n  halts_may_fail Exits.any Images.plain.", s)
+        self.assertIn("returning a value other than 0 or -1", r)
+        self.assertIn("([lines 10-12](source/checksum_fuzzer.c#L10-L12))", r)
+
+    def test_78_goes_with_rejects_both_ways(self):
+        for exits, rejects in (((0, 2), True), ((0, 2, 78), False)):
+            with tree() as t:
+                self.rejecting(t, exits, rejects)
+                self.assertEqual(t.generate(), 1)
+                self.assertIn("exits include 78 exactly when the harness lists rejects", t.last_output)
+
+    def test_a_rejecting_project_page_names_78(self):
+        with tree() as t:
+            self.rejecting(t)
+            self.assertEqual(t.generate(), 0, t.last_output)
+            self.assertIn("0, 2 or 78", t.read("projects/zlib/README.md"))
+
+    def test_mixed_exit_sets_keep_apart(self):
+        """A statement is written "As [first]" only after one with the same exit
+        set, and the project page names an exit set other than the commonest."""
+        p = "projects/zlib/checksum_fuzzer/harness.yaml"
+        with tree() as t:
+            self.rejecting(t)
+            y = t.yaml(p)
+            y["statements"]["asan_halts"]["exits"] = "any"
+            t.put_yaml(p, y)
+            self.assertEqual(t.generate(), 0, t.last_output)
+            s = t.read("projects/zlib/checksum_fuzzer/Statements.v")
+            page = t.read("projects/zlib/README.md")
+        ubsan = s[s.index("Definition plain_halts :"):s.index("Definition ubsan_halts :")]
+        asan = s[s.index("Definition ubsan_halts :"):s.index("Definition asan_halts :")]
+        self.assertNotIn("As [plain_halts]", asan)
+        self.assertIn("As [plain_halts]", ubsan)
+        self.assertIn("any status (status 0, 2 or 78 for checksum_fuzzer)", page)
+
+    def test_a_return_only_check_beside_rejects_is_named(self):
+        """78 does not say which line returned, so a check that reports a failure by
+        returning is allowed too; the page says so."""
+        p = "projects/zlib/checksum_fuzzer/harness.yaml"
+        with tree() as t:
+            self.rejecting(t)
+            y = t.yaml(p)
+            y["checks"] = [{"kind": "invariant", "strength": "weak", "stops_with": "return-only", "live": "unknown",
+                            "where": "source/checksum_fuzzer.c:10-11", "what": "A failed round trip returns 1."}]
+            for s in y["statements"].values():
+                if "binds_checks" in s:
+                    s["binds_checks"] = False
+            t.put_yaml(p, y)
+            self.assertEqual(t.generate(), 0, t.last_output)
+            r = t.read("projects/zlib/checksum_fuzzer/README.md")
+        self.assertIn("a failure of a check above that reports it by returning (checksum_fuzzer.c:10-11) also "
+                      "exits with status 78", r)
+
+    def test_a_rejects_entry_must_point_into_the_source(self):
+        p = "projects/zlib/checksum_fuzzer/harness.yaml"
+        for where, msg in (("source/nope.c:1-2", "rejects[0].where names source/nope.c, which is not a source file"),
+                           ("source/checksum_fuzzer.c:9000-9001", "rejects[0].where runs past the end of")):
+            with tree() as t:
+                self.rejecting(t)
+                y = t.yaml(p)
+                y["rejects"][0]["where"] = where
+                t.put_yaml(p, y)
+                self.assertEqual(t.generate(), 1)
+                self.assertIn(msg, t.last_output)
+
+    def test_a_pending_source_lists_no_rejects(self):
+        p = "projects/zlib/checksum_fuzzer/harness.yaml"
+        with tree() as t:
+            self.rejecting(t)
+            y = t.yaml(p)
+            y["source"]["pending"] = True
+            y["source"]["files"] = []
+            y["checks"] = []
+            for s in y["statements"].values():
+                s.pop("binds_checks", None)
+            t.put_yaml(p, y)
+            self.assertEqual(t.generate(), 1)
+            self.assertIn("checks and rejects name lines of a source that is not published", t.last_output)
 
     def test_characterise_and_images(self):
         with tree() as t:
@@ -264,9 +372,113 @@ class Shapes(unittest.TestCase):
         halts = {"kind": "halts", "builds": ["plain"], "reading": "budget", "exits": [0, 2]}
         check = {"stops_with": "exit", "exit_status": 1, "live": True}
         self.assertTrue(shapes.binds(check, halts))
-        self.assertFalse(shapes.binds(dict(check, exit_status=2), halts))
+        # the process ends with 77 whatever status the source passes, so exit_status does not decide this
+        self.assertTrue(shapes.binds(dict(check, exit_status=2), halts))
+        self.assertFalse(shapes.binds(check, dict(halts, exits=[0, 2, 77])))
         self.assertFalse(shapes.binds(dict(check, live="unknown"), halts))
         self.assertFalse(shapes.binds({"stops_with": "print-only", "live": True}, halts))
+
+    def test_a_rust_panic_is_an_exit_with_status_79(self):
+        panic = {"stops_with": "panic", "live": True}
+        halts = {"kind": "halts", "builds": ["plain"], "reading": "budget", "exits": [0, 2]}
+        self.assertTrue(shapes.binds(panic, halts))
+        self.assertFalse(shapes.binds(panic, dict(halts, reading="may-fail", exits="any")))
+        self.assertFalse(shapes.binds(panic, dict(halts, exits=[0, 2, 79])))
+
+
+class Code(unittest.TestCase):
+    """rocq.code: what a fingerprint hashes of theories/Shapes.v and theories/Images.v."""
+
+    def test_comments_and_blanks(self):
+        self.assertEqual(rocq.code("(** doc (* nested *) *)\nDefinition  a :=\n\t0. (* end *)\n"), "Definition a := 0.")
+        self.assertEqual(rocq.code("a (*c*) b\r\n(*d*)(*e*)c"), "a b c")
+        self.assertNotEqual(rocq.code("a (*c*) b"), rocq.code("ab"))
+
+    def test_a_comment_bracket_inside_a_token_is_code(self):
+        """Rocq takes a declared token such as `tok(*` whole, so `tok(* 0 *)` and `tok(* 1 *)` are different code."""
+        self.assertNotEqual(rocq.code("Definition t := tok(* 0 *)."), rocq.code("Definition t := tok(* 1 *)."))
+        self.assertEqual(rocq.code('x."(*" "y"(* z *)'), 'x."(*" "y"(* z *)')
+        self.assertEqual(rocq.code("x (* 0 *)."), rocq.code("x (* 1 *)."))
+
+    def test_only_rocqs_blanks_are_layout(self):
+        self.assertNotEqual(rocq.code("a\fb"), rocq.code("a b"))
+        self.assertEqual(rocq.code("a \t\r\n b"), "a b")
+
+    def test_a_carriage_return_in_a_string_is_code(self):
+        with tree(render=False) as t:
+            t.write("lf.v", 'Definition s := "a\nb".\n')
+            t.write("crlf.v", 'Definition s := "a\r\nb".\r\n')
+            self.assertNotEqual(facts.code_sha256(t.path("lf.v")), facts.code_sha256(t.path("crlf.v")))
+            t.write("crlf.v", 'Definition s := "a\nb".\r\n')
+            self.assertEqual(facts.code_sha256(t.path("lf.v")), facts.code_sha256(t.path("crlf.v")))
+
+    def test_strings_are_code(self):
+        self.assertEqual(rocq.code('Definition s := "(*  ""x""  *)".'), 'Definition s := "(*  ""x""  *)".')
+        self.assertEqual(rocq.code('(* "*)" *) a'), "a")
+        self.assertNotEqual(rocq.code('Definition s := "a  b".'), rocq.code('Definition s := "a b".'))
+
+    def test_edges(self):
+        """`(*)` opens a comment, a stray `*)` is code, an unterminated comment runs to the end (Rocq rejects the
+        file), and an unterminated string stays as it is."""
+        self.assertEqual(rocq.code("a (*) b *) c"), "a c")
+        self.assertEqual(rocq.code("a *) b"), "a *) b")
+        self.assertEqual(rocq.code("a (* b"), "a")
+        self.assertEqual(rocq.code('a "b c'), 'a "b c')
+
+    def test_a_crlf_distribution_header_splits_like_an_lf_one(self):
+        self.assertEqual(facts.split_distribution("(** h *)\r\nDefinition a := 0.\r\n")[1], "Definition a := 0.\r\n")
+        self.assertEqual(facts.split_distribution("(** h *)\nDefinition a := 0.\n")[1], "Definition a := 0.\n")
+
+
+class Fingerprints(unittest.TestCase):
+    """A statement's fingerprint hashes the code of theories/Shapes.v and theories/Images.v, not their bytes."""
+    SHAPES = ('(** * The shapes\n\n    Prose (* nested *) about them. *)\nDefinition tag : string := "(* not a comment".\n'
+              "Definition halts (x : nat) : Prop :=\n  x = 0.\n")
+
+    def edited(self, rel, edit):
+        """Every statement's fingerprint, before and after rel goes from SHAPES to edit(SHAPES)."""
+        with tree() as t:
+            t.write(rel, self.SHAPES)
+            before = {s.id: s.fingerprint for s in facts.load(t.root).statements() if s.fingerprint}
+            t.write(rel, edit(self.SHAPES))
+            after = {s.id: s.fingerprint for s in facts.load(t.root).statements() if s.fingerprint}
+        self.assertTrue(before)
+        self.assertEqual(sorted(before), sorted(after))
+        return before, after
+
+    def test_a_comment_edit_changes_none(self):
+        for rel in ("theories/Shapes.v", "theories/Images.v"):
+            before, after = self.edited(rel, lambda s: s.replace("about them", "about (* the *) shapes") + "(* end *)\n")
+            self.assertEqual(before, after, rel)
+
+    def test_a_layout_edit_changes_none(self):
+        before, after = self.edited("theories/Shapes.v", lambda s: s.replace(":=\n  x = 0.", ":=   x\t= 0.\n\n"))
+        self.assertEqual(before, after)
+
+    def test_a_comment_bracket_in_a_string_opens_no_comment(self):
+        before, after = self.edited("theories/Shapes.v", lambda s: s.replace("x = 0", "x = 1"))
+        self.assertTrue(all(before[k] != after[k] for k in before))
+
+    def test_a_string_literal_is_code(self):
+        before, after = self.edited("theories/Shapes.v", lambda s: s.replace("not a comment", "not  a comment"))
+        self.assertTrue(all(before[k] != after[k] for k in before))
+
+    def test_a_carriage_return_in_a_distribution_string_is_hashed(self):
+        bound, dist = "zlib/checksum_fuzzer/asan_disagrees_at_most", "projects/zlib/checksum_fuzzer/Distribution.v"
+        with tree() as t:
+            text = t.read(dist)
+            seen = set()
+            for literal in ('"a\nb"', '"a\r\nb"'):
+                t.write(dist, text + "Definition s := %s.\n" % literal)
+                seen.add(next(s.fingerprint for s in facts.load(t.root).statements() if s.id == bound))
+        self.assertEqual(len(seen), 2)
+
+    def test_a_carriage_return_in_a_distribution_string_survives_generate_then_check(self):
+        dist = "projects/zlib/checksum_fuzzer/Distribution.v"
+        with tree() as t:
+            t.write(dist, t.read(dist) + 'Definition s := "a\rb".\n')
+            self.assertEqual(t.generate(), 0, t.last_output)
+            self.assertEqual(t.generate(check=True), 0, t.last_output)
 
 
 class Schemas(unittest.TestCase):

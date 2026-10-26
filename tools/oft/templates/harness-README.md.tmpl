@@ -31,8 +31,12 @@ $check_it
 OSS-Fuzz's fuzz target `$harness` ($source_link) over $library.
 @@ intro_upstream
 $project's own fuzz target `$harness` ($source_link), one of the targets OSS-Fuzz builds, over $library.
+@@ intro_upstream_no_oss_fuzz
+$project's own fuzz target `$harness` ($source_link), which OSS-Fuzz does not run, over $library.
 @@ intro_this-repository
 The API driver written for this repository ($source_link), over $library.
+@@ intro_oss-verify
+The fuzz target `$harness` ($source_link), which OSS Verify builds and OSS-Fuzz does not run, over $library.
 
 @@ source_link
 [source]($file), $modified
@@ -49,6 +53,9 @@ source not in this release yet
 @@ modifications
 ## How this program differs from what OSS-Fuzz runs
 $items
+@@ modifications_libfuzzer
+## How this program differs from a libFuzzer build of this fuzz target
+$items
 
 @@ check_row
 - $what ([$lines]($file#$anchor)): $stops; $live.
@@ -56,6 +63,13 @@ $items
 A failed check marked as ending the process contradicts every halts statement below, so a proof of one implies $that on every input it covers.
 @@ checks_none
 The $who makes no check of its own beyond not crashing, so a statement about it says only that the code it calls $claim.
+@@ rejects
+The $who turns some inputs away by returning a value other than 0 or -1, which the driver reports as status $status, so its halts statements allow $status as well:
+$rows
+@@ reject_row
+- $what ([$lines]($file#$anchor)).
+@@ rejects_return_only
+The status does not say which line returned, so a failure of a check above that reports it by returning ($lines) also exits with status $status, and these statements allow it.
 
 @@ model_gap
 **Blocked by the model.** On ordinary inputs each of these binaries $features, which this release's model treats as an error, so every statement here is false in this model for that reason alone. The program is not at fault; the statements become meaningful when the model covers it.
@@ -70,7 +84,13 @@ on every input on which the $build build is never refused memory for exceeding $
 @@ line_halts_may_fail
 with no memory premise, and even if any request is refused at any time: the $build build exits with $exits
 @@ line_agreement
-on every input on which the plain build is never refused memory for exceeding $budget (a premise): neither build reaches an error and both have the same set of observable behaviours; $san never fires$variant
+on every input on which the plain build is never refused memory for exceeding $budget (a premise): neither build reaches an error and both have the same set of observable behaviours; $fires$variant
+@@ fires
+$san never fires
+@@ fires_ubsan_rust
+no UB check fails
+@@ fires_asan-ubsan_rust
+neither ASan nor a UB check fires
 @@ line_bound
 P[plain and $san disagree] <= b under [Distribution.v](Distribution.v)
 @@ line_decidability

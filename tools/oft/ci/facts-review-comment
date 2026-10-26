@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Writes the comment facts-review.yml posts on a facts pull request, to standard output:
+#
+#   [HEAD_SHA=<commit>] [BASE_REF=<branch>] tools/oft/ci/facts-review-comment <review.md> [<why there is no review>]
+#
+# The comment starts with the marker the workflow finds it by, so each run replaces it. Everything this script writes
+# comes before the review's text: what was reviewed, and that the review decides nothing. The review's text comes from a
+# model that read the pull request, so it is refused if it holds what looks like a credential, it cannot open an HTML
+# comment (which could hide what follows it), and it is cut to a length GitHub takes (65,536 characters at most).
+set -euo pipefail
+
+review_file=${1:?usage: facts-review-comment <review.md> [<why>]}
+why=${2:-}
+marker='<!-- facts-review -->'
+limit=40000
+# A GitHub identity token (a JWT), an Anthropic token or key, a GitHub token.
+credential='eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|sk-ant-[A-Za-z0-9_-]{8,}|gh[opsu]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}'
+
+review=$(cat "$review_file" 2> /dev/null || true)
+if grep -qE -- "$credential" <<< "$review"; then
+  review="" why="its text held what looks like a credential, so it was not posted"
+fi
+review=${review//"<!--"/"&lt;!--"}
+if [ "${#review}" -gt "$limit" ]; then
+  review="${review:0:$limit}"$'\n\n'"(Cut at $limit characters: the rest is in the review job's log.)"
+fi
+
+of=""
+[[ ${HEAD_SHA:-} =~ ^[0-9a-f]{40}$ ]] && of=" of commit ${HEAD_SHA:0:12}"
+[[ ${BASE_REF:-} =~ ^[A-Za-z0-9._/+-]+$ ]] && of="$of against \`$BASE_REF\`"
+
+printf '%s\n## Facts review\n\n' "$marker"
+if [ -n "${review//[[:space:]]/}" ]; then
+  printf '<sub>An AI review agent wrote this review%s, following `.claude/skills/review-facts/SKILL.md`. It can be wrong. It is replaced on each push, and it decides nothing: the maintainers approve the facts.</sub>\n\n' "$of"
+  printf '%s\n' "$review"
+else
+  printf 'The AI review agent did not review this push%s: %s. The maintainers review the facts.\n' "$of" "${why:-the review job failed}"
+fi

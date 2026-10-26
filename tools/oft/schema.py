@@ -15,16 +15,21 @@ import re
 from . import yamlio
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KINDS = ("project", "harness", "release", "proof", "counterexample")
+KINDS = ("project", "harness", "release", "proof", "counterexample", "finding", "unpatched", "approvals")
 
 BUILDS = ("plain", "ubsan", "asan", "asan-ubsan")
 SANITIZER_BUILDS = BUILDS[1:]
+
+# The OSS Verify port, and its private prelaunch variant, which only a project a finding holds back builds from.
+OSS_VERIFY_REPOSITORY = "theorem-labs/oss-verify"
+PRELAUNCH_REPOSITORY = OSS_VERIFY_REPOSITORY + "-prelaunch"
 
 SCALARS = {
     "project-name": r"[a-z0-9][a-z0-9_-]{0,99}",
     "harness-name": r"[A-Za-z0-9][A-Za-z0-9._+-]{0,149}",
     "statement-name": r"[a-z][a-z0-9_]{0,99}",
     "statement-id": r"[a-z0-9][a-z0-9_-]*/[A-Za-z0-9][A-Za-z0-9._+-]*/[a-z][a-z0-9_]*",
+    "fuzz-target": r"[a-z0-9][a-z0-9_-]{0,99}/[A-Za-z0-9][A-Za-z0-9._+-]{0,149}",
     "reason-code": r"[a-z][a-z-]{0,39}",
     "feature": r"[a-z][a-z0-9-]{0,39}",
     "sha256": r"[0-9a-f]{64}",
@@ -35,9 +40,13 @@ SCALARS = {
     "fraction": r"(0|[1-9][0-9]*)(/[1-9][0-9]*)?",
     "image": r"ghcr\.io/theorem-labs/[a-z0-9._/-]+@sha256:[0-9a-f]{64}",
     "release-version": r"[0-9]{4}\.[0-9]{1,2}\.[0-9]+(-rc\.[0-9]+)?",
-    # v<release>, or v<release>-src: a second release holding the source assets and the recipe (a GitHub release holds
-    # at most 1,000 files)
+    # v<release>, or v<release>-src: a second release holding source assets and, for projects a recipe built, a build
+    # recipe (a GitHub release holds at most 1,000 files)
     "release-tag": r"v[0-9]{4}\.[0-9]{1,2}\.[0-9]+(-rc\.[0-9]+)?(-src)?",
+    # A project asset may instead live on its internal findings-<project>
+    # release while a finding holds that project back.
+    "asset-release-tag": r"v[0-9]{4}\.[0-9]{1,2}\.[0-9]+(-rc\.[0-9]+)?(-src)?|findings-[a-z0-9][a-z0-9_-]*",
+    "oss-verify-repository": "|".join(re.escape(r) for r in (OSS_VERIFY_REPOSITORY, PRELAUNCH_REPOSITORY)),
     "build-name": "|".join(re.escape(b) for b in BUILDS),
     "archive-name": r"[A-Za-z0-9._+-]+\.a",
     # an SPDX expression whose parenthesised groups may sit anywhere, as a library's own files state it
@@ -60,6 +69,14 @@ def validate(kind, data):
     s = load_schema(kind)
     errors = []
     _check(s["root"], data, kind, s["defs"], errors)
+    return errors
+
+
+def validate_def(kind, name, value, path):
+    """Structural errors in `value` against the definition `name` of schemas/<kind>.yaml, reported at `path`."""
+    s = load_schema(kind)
+    errors = []
+    _check(s["defs"][name], value, path, s["defs"], errors)
     return errors
 
 

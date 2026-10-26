@@ -71,20 +71,22 @@ Definition asan_ubsan_halts : Prop :=
 
 (** Every execution of the plain build exits, with any status, on every input
     and whatever the environment refuses (any allocation, open or read may fail
-    at any time).  This is stronger than [plain_halts].  Check (a) ends the
-    process when it fails, which this statement excludes, so a proof establishes
-    it for the code in this binary on every input it covers.  There is no ASan
-    statement of this form: the ASan runtime deliberately waits forever when its
-    start-up reservation is refused, so such a statement would be false for a
-    reason that has nothing to do with this harness.
+    at any time).  It covers every input and any refusal, unlike [plain_halts],
+    but allows any exit status.  Check (a) ends the process when it fails, which
+    this statement excludes, so a proof establishes it for the code in this
+    binary on every input it covers.  There is no ASan statement of this form:
+    the ASan runtime deliberately waits forever when its start-up reservation is
+    refused, so such a statement would be false for a reason that has nothing to
+    do with this harness.
 
     Not claimed: anything about what the program writes. *)
 Definition plain_halts_may_fail : Prop :=
   halts_may_fail Exits.any Images.plain.
 
-(** As [plain_halts_may_fail], for the UBSan build.  This is stronger than
-    [ubsan_halts].  A failed UBSan check traps, so a proof also shows that no
-    check UBSan makes in this build fails on any such input. *)
+(** As [plain_halts_may_fail], for the UBSan build.  It covers every input and
+    any refusal, unlike [ubsan_halts], but allows any exit status.  A failed
+    UBSan check traps, so a proof also shows that no check UBSan makes in this
+    build fails on any such input. *)
 Definition ubsan_halts_may_fail : Prop :=
   halts_may_fail Exits.any Images.ubsan.
 

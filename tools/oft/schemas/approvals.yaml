@@ -1,0 +1,30 @@
+# approvals.yaml: the proofs a release carries, by fuzz target and statement, each with who approved it and when.
+# `./oft release-tree` keeps the proofs of these statements, removes the others, and removes this file;
+# `./oft approvals` writes it from the proofs in a checkout.
+tag: oss-fuzz-theorems/approvals/1
+root: {type: ref, name: approvals}
+defs:
+  approvals:
+    type: object
+    fields:
+      schema: {type: const, value: oss-fuzz-theorems/approvals/1}
+      fuzz_targets:
+        type: list
+        min: 1
+        items: {type: ref, name: approval}
+  approval:
+    type: object
+    fields:
+      fuzz_target: {type: fuzz-target}
+      # the statements of this fuzz target whose proofs a release carries; the fuzz target's lib/ ships whole with
+      # them, so approving any statement approves everything in its lib/
+      statements:
+        type: list
+        min: 1
+        items: {type: statement-name}
+      approved_by: {type: str, pattern: '^[A-Za-z0-9](-?[A-Za-z0-9])*$', max: 39}   # a GitHub login
+      date: {type: date}
+      # where the proofs began: written in this repository, or submitted
+      origin: {type: enum, values: [this-repository, submission]}
+      # a submission only: the record of the review behind this approval
+      record: {type: str, pattern: '^[a-z0-9][a-z0-9._-]*$', max: 100, optional: true}

@@ -53,7 +53,7 @@ By hand: download `gpsd-bin.tar.zst` from release [v2026.10.0](https://github.co
 
 ## How these binaries were built
 - Library: [gitlab.com/gpsd/gpsd](https://gitlab.com/gpsd/gpsd) at `46977faa8f94eb036ca68c24a3fc0d233732e707`, built with its own build scripts
-- Harnesses: the harness files are modified in `FuzzClient`, `FuzzDrivers`, `FuzzDriversStructured`, `FuzzJson` and `FuzzPacket` (see each harness page); the others are unmodified
+- Harnesses: the harness files are modified in `FuzzClient`, `FuzzDrivers`, `FuzzDriversStructured`, `FuzzJson` and `FuzzPacket` (see each harness page)
 - Everywhere: static riscv64 compiled for RV64G, musl, clang 20.1.8 with `-Os -g`, and a small driver that reads the input file ([docs/running.md](../../docs/running.md)). The sanitizer flags and options are in [docs/building.md](../../docs/building.md). Each harness page lists what else its builds change, and which of its checks were confirmed in the binaries.
 - Builder image: `ghcr.io/theorem-labs/oss-fuzz-theorems-toolchain@sha256:6a6b4816865c7ec61801ae0fcab6d9c81a599ffcb20616576a9c668abd8b0a7b`. A binary whose SHA-256 differs after a rebuild with it is a bug: please open an issue.
 

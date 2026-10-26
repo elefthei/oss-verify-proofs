@@ -16,7 +16,7 @@ defs:
         fields:
           repository: {type: const, value: https://github.com/google/oss-fuzz}
           commit: {type: commit}
-          projects: {type: int, min: 1}
+          projects: {type: int, min: 1}   # the projects under projects/ whose project.yaml names OSS-Fuzz's (oss_fuzz)
       semantics:
         type: object
         fields:
@@ -39,16 +39,16 @@ defs:
           checker: {type: image}      # Rocq and the process model, nothing else (toolchain/checker.Dockerfile)
           runner: {type: image}       # qemu-user 10 and tools/oft (toolchain/runner.Dockerfile)
           builder: {type: list, items: {type: image}, min: 1}
-      # the build recipe: the build scripts, pins and patches every binary of this release was built with, one
-      # archive for the release; a project's source asset (assets.src) ships with it, in the same GitHub release
-      recipe:
-        type: object
-        optional: true
-        fields:
-          release: {type: release-tag}
-          file: {type: str, pattern: '^recipe(-[0-9]+)?\.tar\.zst$'}
-          bytes: {type: int, min: 1}
-          sha256: {type: sha256}
+      # the build recipes: the build scripts, pins and patches binaries were built with, at most one archive per
+      # GitHub release and each file name once. Each recipe-built project's binary archive pins the one it was built
+      # with, in any release (project.yaml assets.bin.recipe), and so does each of its build records
+      # (proofs/<p>/<h>/provenance/PROVENANCE.yaml recipe.asset); a port-built project's (build.oss_verify) pins none,
+      # and its corresponding archive is its assets.port instead
+      recipes: {type: list, items: {type: ref, name: recipe}, min: 1, optional: true}
+      # the shape before recipes, which a published tree still has: the release's one recipe, which every binary
+      # archive but a port-built project's was built with and none names another; read as a one-entry recipes. Not
+      # with recipes (rules.py)
+      recipe: {type: ref, name: recipe, optional: true}
       # the release-wide source archives: the toolchain every binary was built with, and the libraries a binary links
       # from the build image; a copyleft binary's corresponding source includes both (pages name them, by file); each
       # pinned by size and sha256 like every other asset
@@ -88,6 +88,13 @@ defs:
           available: {type: int, min: 0}
           harnesses: {type: int, min: 0}
           binaries: {type: int, min: 0}
+  recipe:
+    type: object
+    fields:
+      release: {type: release-tag}
+      file: {type: str, pattern: '^recipe(-[0-9]+)?\.tar\.zst$'}
+      bytes: {type: int, min: 1}
+      sha256: {type: sha256}
   image_library:
     type: object
     fields:

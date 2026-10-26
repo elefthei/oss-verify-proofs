@@ -1,0 +1,5 @@
+--- a/crc32.c
++++ b/crc32.c
+@@ -1 +1 @@
+-a stand-in line
++another stand-in line

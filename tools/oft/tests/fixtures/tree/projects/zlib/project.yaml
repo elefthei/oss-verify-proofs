@@ -21,7 +21,12 @@ harnesses:
 - {name: minigzip_fuzzer, status: not-included, reason: not-attempted}
 - {name: api-driver, status: included, origin: this-repository}
 assets:
-  bin: {release: v2026.11.0, file: zlib-bin.tar.zst, bytes: 18000000, sha256: 4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a}
+  bin:
+    release: v2026.11.0
+    file: zlib-bin.tar.zst
+    bytes: 18000000
+    sha256: 4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a
+    recipe: {release: v2026.11.0, file: recipe.tar.zst, bytes: 2000000, sha256: 5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d}
   src: {release: v2026.11.0, file: zlib-src.tar.zst, bytes: 9000000, sha256: 5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b}
   src_manifest: {release: v2026.11.0, file: zlib-src.MANIFEST.tsv, bytes: 4000, sha256: 5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c}
 build:

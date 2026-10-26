@@ -9,9 +9,11 @@ Classes:
 A path must match exactly one pattern.  In a pattern, `*` is one path
 segment (with fnmatch wildcards inside it), `**` is any number of segments,
 and `{project}`, `{harness}` and `{statement}` are one segment each, which
-`paths` then checks against the facts.
+`paths` then checks against the facts.  A placeholder that appears twice in a
+pattern matches the same segment both times.
 """
-import fnmatch
+import re
+from functools import lru_cache
 
 TABLE = [
     # hand
@@ -42,7 +44,29 @@ TABLE = [
     ("hand", ".github/workflows/weekly.yml"),
     ("hand", ".github/workflows/release.yml"),
     ("hand", ".github/workflows/release-check.yml"),
+    ("hand", ".github/workflows/fetch-drafts.yml"),
+    ("hand", ".github/actions/plan-drafts/action.yml"),
+    ("hand", ".github/actions/place-drafts/action.yml"),
+    ("hand", ".github/workflows/ledger.yml"),
     ("hand", ".github/actionlint.yaml"),
+    # what an agent reads first, and the instructions it follows to add a proof
+    ("hand", "AGENTS.md"),
+    ("hand", ".claude/skills/adding-a-proof/SKILL.md"),
+    # the facts review: who approves a change to the facts that need judgement (in the internal repository, the code
+    # owners .github/CODEOWNERS names), and the advisory AI review that facts-review.yml runs on a facts pull request
+    ("hand", ".github/CODEOWNERS"),
+    ("hand", ".github/workflows/facts-review.yml"),
+    ("hand", ".claude/skills/review-facts/SKILL.md"),
+    # which proofs a release publishes, by fuzz target and statement; `oft release-tree` removes it from the release
+    ("hand", "approvals.yaml"),
+    # findings: library bugs found while proving, on the proof branch until they are public; a maintainer's or a
+    # release pull request changes them, since a change of state can release the hold on a project
+    ("hand", "findings/{project}/unpatched.yaml"),
+    ("hand", "findings/{project}/{harness}/series"),
+    ("hand", "findings/{project}/{harness}/*/finding.yaml"),
+    ("hand", "findings/{project}/{harness}/*/input.bin"),
+    ("hand", "findings/{project}/{harness}/*/control.bin"),
+    ("hand", "findings/{project}/{harness}/*/*.patch"),
     # facts
     ("facts", "release.yaml"),
     ("facts", "NOTICE"),
@@ -79,19 +103,22 @@ TABLE = [
     ("contrib", "proofs/{project}/{harness}/{statement}/classifier/**"),
     # a harness's proof library, shared by its proofs and compiled once (OssFuzzTheorems.Proofs.<p>.<h>.lib)
     ("contrib", "proofs/{project}/{harness}/lib/**/*.v"),
-    # the build record of the binaries a harness's proofs are about
+    # the build record of the binaries a harness's proofs are about: what built them is recipe/ (the slice of the recipe
+    # that built them) or port/ (the OSS Verify port's project directory and the manifest its tools/check wrote)
     ("contrib", "proofs/{project}/{harness}/provenance/PROVENANCE.yaml"),
     ("contrib", "proofs/{project}/{harness}/provenance/PROVENANCE.md"),
     ("contrib", "proofs/{project}/{harness}/provenance/recipe/**"),
+    ("contrib", "proofs/{project}/{harness}/provenance/port/manifest.yaml"),
+    ("contrib", "proofs/{project}/{harness}/provenance/port/projects/{project}/**"),
     ("contrib", "proofs/{project}/{harness}/provenance/LICENSES/**"),
     ("contrib", "counterexamples/{project}/{harness}/{statement}/input.bin"),
     ("contrib", "counterexamples/{project}/{harness}/{statement}/control.bin"),
     ("contrib", "counterexamples/{project}/{harness}/{statement}/expect.yaml"),
 ]
 
-# Never tracked: filled by `oft fetch` or a build.
+# Never tracked: filled by `oft fetch` (projects/<p>/bin/, and findings/<p>/bin/ with --findings) or a build.
 IGNORED_DIRS = ("_build", ".git")
-IGNORED_PATTERNS = ("projects/*/bin/**",)
+IGNORED_PATTERNS = ("projects/*/bin/**", "findings/*/bin/**")
 
 # A path segment that is a placeholder must not be one of these words,
 # so that `projects/zlib/README.md` is not read as a harness named README.md.
@@ -99,37 +126,55 @@ _NOT_A_NAME = {"README.md", "project.yaml", "harness.yaml", "dune", "images", "s
                "Images.v", "Statements.v", "Characterise.v", "Distribution.v", "lib", "provenance"}
 
 
-def _match(pat, parts, binds):
-    if not pat:
-        return not parts
-    head, rest = pat[0], pat[1:]
-    if head == "**":
-        return any(_match(rest, parts[i:], binds) for i in range(len(parts) + 1))
-    if not parts:
-        return False
-    if head.startswith("{") and head.endswith("}"):
-        if parts[0] in _NOT_A_NAME or parts[0].startswith("."):
-            return False
-        binds[head[1:-1]] = parts[0]
-        return _match(rest, parts[1:], binds)
-    return fnmatch.fnmatchcase(parts[0], head) and _match(rest, parts[1:], binds)
+def _segment(seg, seen):
+    """The regex of one pattern segment, with its trailing slash (a path is matched with a slash appended).  A
+    placeholder already in `seen` matches the segment it matched before."""
+    if seg.startswith("{") and seg.endswith("}"):
+        name = seg[1:-1]
+        if name in seen:
+            return "(?P=%s)/" % name
+        seen.add(name)
+        not_a_name = "|".join(re.escape(n) for n in sorted(_NOT_A_NAME))
+        return "(?P<%s>(?!\\.)(?!(?:%s)/)[^/]*)/" % (name, not_a_name)
+    if "[" in seg:
+        raise ValueError("unsupported path pattern segment %r" % seg)
+    return "".join("[^/]*" if c == "*" else "[^/]" if c == "?" else re.escape(c) for c in seg) + "/"
+
+
+@lru_cache(maxsize=None)
+def _compile(pattern):
+    seen = set()
+    return re.compile("".join("(?:[^/]*/)*" if s == "**" else _segment(s, seen) for s in pattern.split("/")))
+
+
+def match(pattern, rel):
+    """The placeholder bindings if `rel` matches `pattern`, else None."""
+    m = _compile(pattern).fullmatch(rel + "/")
+    return None if m is None else m.groupdict()
+
+
+# The patterns of TABLE by their first segment, which is a literal in each: a path is tried only against the patterns
+# that start with its own first segment.
+_BY_FIRST = {}
+for _cls, _pat in TABLE:
+    _first = _pat.split("/", 1)[0]
+    if any(c in _first for c in "*?[{"):
+        raise ValueError("a path pattern's first segment is a literal: %r" % _pat)
+    _BY_FIRST.setdefault(_first, []).append((_cls, _pat, _compile(_pat)))
 
 
 def classify(rel):
-    """[(class, pattern, bindings)] of every pattern `rel` matches."""
-    parts = rel.split("/")
+    """[(class, pattern, bindings)] of every pattern `rel` matches, in TABLE's order."""
     out = []
-    for cls, pat in TABLE:
-        binds = {}
-        if _match(pat.split("/"), parts, binds):
-            out.append((cls, pat, binds))
+    for cls, pat, rx in _BY_FIRST.get(rel.split("/", 1)[0], ()):
+        m = rx.fullmatch(rel + "/")
+        if m is not None:
+            out.append((cls, pat, m.groupdict()))
     return out
 
 
 def ignored(rel):
-    parts = rel.split("/")
-    return any(p in IGNORED_DIRS for p in parts) or any(
-        _match(p.split("/"), parts, {}) for p in IGNORED_PATTERNS)
+    return any(p in IGNORED_DIRS for p in rel.split("/")) or any(match(p, rel) is not None for p in IGNORED_PATTERNS)
 
 
 def is_gen(rel):

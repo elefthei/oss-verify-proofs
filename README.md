@@ -95,7 +95,7 @@ Every proof here proves one or more agreement statements. There is one agreement
 > On every input on which the plain build stays within its memory budget, neither build reaches an error, and the plain build and the sanitizer build have the same set of observable behaviours.
 
 - **Every input** means every process input that LPS accepts as valid: the arguments, the environment variables, the files (so the input file, its contents or its absence), standard input, and the rest of what a process receives. LPS leaves out a few inputs; for example, an argument after the program name may not contain `/` ([docs/semantics.md](docs/semantics.md)).
-- **An error** is a crash, an invalid memory access, an `abort()` (a failed `assert()`, a sanitizer report or an uncaught C++ exception), a failed UBSan check, or a step that LPS does not interpret.
+- **An error** is a crash, an invalid memory access, an `abort()` (a failed `assert()`, a sanitizer report or an uncaught C++ exception), a failed UBSan check, or a step that LPS does not interpret. In a Rust fuzz target, a failed rustc UB check is not an error: it exits with status 79 after a line on standard error that the plain build does not write at that point, so agreement rules it out too.
 - **Observable behaviours** are the bytes that the process reads and writes on its standard streams and connections, in order, its exit status, and the final contents of its files.
 - **The memory budget** of the plain build is 2 GiB in a statement about a build with ASan (ASan or ASan+UBSan), and 16 GiB in a statement about the UBSan build. The budget is a premise: an input on which the plain build needs more memory is not covered.
 - **System-call failures.** Each statement says which system calls the environment may refuse without cause. In most of the proofs here, a memory request is refused only when the budget is spent or no address range is free.
@@ -122,7 +122,7 @@ The Rocq definitions are in [theories/Shapes.v](theories/Shapes.v). Each agreeme
 | axioms | only the axioms in [toolchain/allowed-axioms.txt](toolchain/allowed-axioms.txt): the primitive integer, array and string types of Rocq with their specifications, and six axioms of the standard library (`classic`, `functional_extensionality_dep`, `constructive_indefinite_description`, `propositional_extensionality`, `sig_forall_dec` and `sig_not_dec`) |
 
 ## Check a proof
-You need Docker, zstd, and Python 3 with PyYAML (`tools/oft/requirements.txt`). The checker image holds Rocq and LPS, but not PyYAML, so the commands below mount it. On 16 cores, one proof check needs up to 20 GiB of memory. It compiles one file per core, so more cores need more memory; `docker run --cpuset-cpus` limits the cores.
+You need Docker, zstd, and Python 3 with the packages `tools/oft/requirements.txt` pins (PyYAML; for `./oft lint`, also idna). The checker image holds Rocq and LPS, but not PyYAML, so the commands below mount it. On 16 cores, one proof check needs up to 20 GiB of memory. It compiles one file per core, so more cores need more memory; `docker run --cpuset-cpus` limits the cores.
 
     git clone https://github.com/theorem-labs/oss-verify-proofs && cd oss-verify-proofs
     ./oft fetch coturn                   # the project's binaries, each checked against its SHA-256
@@ -138,7 +138,9 @@ CI runs the same check. The [release-check](.github/workflows/release-check.yml)
 ## How the binaries are built
 Each binary is a static riscv64 Linux program, built with clang 20.1.8 against musl. An entry point has up to four builds: plain, ASan, UBSan and ASan+UBSan. [docs/building.md](docs/building.md) gives the compiler flags and the sanitizer settings. [docs/running.md](docs/running.md) tells you how to run a binary and what its input file holds.
 
-Each proof has a build record in `proofs/<project>/<harness>/provenance/`. The record gives the upstream repository and commit, the harness file, the recipe, the compiler, the builder image, the static AddressSanitizer commit, the compiler and linker flags, the SHA-256 of each binary, and the licences. [docs/reproducing.md](docs/reproducing.md) tells you how to rebuild a binary and compare its SHA-256.
+Each proof has a build record in `proofs/<project>/<harness>/provenance/`. The record gives the upstream repository and commit, the harness file, the recipe (for a port-built project, the OSS Verify port's build manifest and its files for the project), the compiler, the builder image, the static AddressSanitizer commit, the compiler and linker flags, the SHA-256 of each binary, and the licences. [docs/reproducing.md](docs/reproducing.md) tells you how to rebuild a binary and compare its SHA-256.
+
+Each project's published binaries are attached to the [release](https://github.com/theorem-labs/oss-verify-proofs/releases) as one archive, and each binary is pinned by its SHA-256 in its `harness.yaml`. Where a project page names them, the project's upstream source trees are attached with the build recipe its binaries were built with, in the releases the page links (the source trees beside the binaries, or in a second release, `v<release>-src`, since a GitHub release holds at most 1,000 files); together they rebuild the binaries ([docs/reproducing.md](docs/reproducing.md)).
 
 ## Explore the proofs
 [docs/exploring.md](docs/exploring.md) points to what the proofs show beyond "no sanitizer error": properties that the harnesses check, and lemmas about what the library code computes. It also tells you how to find the machine-generated data in a proof.

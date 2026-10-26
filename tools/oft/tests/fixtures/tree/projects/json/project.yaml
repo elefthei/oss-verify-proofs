@@ -13,7 +13,12 @@ library:
 harnesses:
 - {name: fuzzer-parse_bjdata, status: included, origin: upstream}
 assets:
-  bin: {release: v2026.11.0, file: json-bin.tar.zst, bytes: 3000000, sha256: aaaa444444444444444444444444444444444444444444444444444444444444}
+  bin:
+    release: v2026.11.0
+    file: json-bin.tar.zst
+    bytes: 3000000
+    sha256: aaaa444444444444444444444444444444444444444444444444444444444444
+    recipe: {release: v2026.11.0, file: recipe.tar.zst, bytes: 2000000, sha256: 5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d}
 build:
   system: cmake
   clang: 20.1.8

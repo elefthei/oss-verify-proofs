@@ -115,10 +115,10 @@ and `proofs` parts. Below that it stops before it compiles anything:
 The hard limit is unlimited unless the host lowers it. `oft check` raises
 the soft limit, usually 8 MiB, to the hard limit itself.
 
-Without `--ulimit`, a container gets its limits from the Docker services
-that start it. On a host with systemd, these usually get them from systemd's
-`DefaultLimitSTACK`. `docker run --ulimit stack=-1:-1` gives the container
-an unlimited stack limit, whatever the host sets. The commands in
+Without `--ulimit`, a container gets its stack limit from the Docker services
+that start it. On a host with systemd, these services usually get it from
+systemd's `DefaultLimitSTACK`. `docker run --ulimit stack=-1:-1` gives the
+container an unlimited stack limit, whatever the host sets. The commands in
 [proving.md](proving.md#checking-a-proof-locally) and
 [adding-a-proof.md](adding-a-proof.md#steps) pass it.
 

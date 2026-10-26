@@ -74,6 +74,8 @@ the checker image that [release.yaml](../release.yaml) names
       -v "$HOME/oft-pydeps:/pydeps:ro" -v "$PWD:/work" -w /work <checker image of release.yaml> \
       ./oft check zlib/checksum_fuzzer --parts statements,proofs
 
+`--ulimit stack=-1:-1` gives Rocq the stack it needs ([checking.md](checking.md#stack-size)).
+
 `oft check` builds the images and statements, checks every proof of the harness
 (counterexamples are checked in the runner image, with `--parts counterexamples`)
 through a wrapper that it writes itself, and checks every assumption the wrapper

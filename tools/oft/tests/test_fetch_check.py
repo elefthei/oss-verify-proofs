@@ -261,21 +261,11 @@ class Tools:
 
 
 class Check(unittest.TestCase):
-    # [check.raise_stack_limit] refuses a stack hard limit below 1 GiB, which a host can impose on every process
-    # (systemd's DefaultLimitSTACK) and which a test cannot raise.  Only [test_rocq_runs_with_the_largest_stack_allowed]
-    # is about that refusal; the others are about what `oft check` does, so on such a host they run with a stand-in
-    # that raises the soft limit to the hard limit and refuses nothing.
     def setUp(self):
         self.d = tempfile.TemporaryDirectory()
         self.old_path = os.environ["PATH"]
-        hard = resource.getrlimit(resource.RLIMIT_STACK)[1]
-        self.stack_limit_is_low = hard != resource.RLIM_INFINITY and hard < check.STACK_NEEDED
-        self.old_raise_stack_limit = check.raise_stack_limit
-        if self.stack_limit_is_low:
-            check.raise_stack_limit = lambda: resource.setrlimit(resource.RLIMIT_STACK, (hard, hard))
 
     def tearDown(self):
-        check.raise_stack_limit = self.old_raise_stack_limit
         os.environ["PATH"] = self.old_path
         self.d.cleanup()
 
@@ -423,7 +413,6 @@ class Check(unittest.TestCase):
     @unittest.skipUnless(HAVE_ZSTD, "zstd is not installed")
     def test_rocq_runs_with_the_largest_stack_allowed(self):
         # large proof terms overflow the usual 8 MiB stack in the release checker image
-        check.raise_stack_limit = self.old_raise_stack_limit
         with tree() as t:
             self.ready(t)
             self._proof(t)
@@ -434,13 +423,6 @@ class Check(unittest.TestCase):
                 rc, out = run(check.run, t.root, ["zlib/checksum_fuzzer"], parts="proofs")
             finally:
                 resource.setrlimit(resource.RLIMIT_STACK, (soft, hard))
-            if self.stack_limit_is_low:
-                # this host gives every process a hard limit below the 1 GiB Rocq needs, and a test cannot raise it:
-                # what `oft check` owes here is the refusal, before it compiles anything
-                self.assertEqual(rc, 1, out)
-                self.assertIn("the stack's hard limit is %d bytes" % hard, out)
-                self.assertIn("docker run --ulimit stack=-1:-1", out)
-                return
             self.assertEqual(rc, 0, out)
             want = "unlimited" if hard == resource.RLIM_INFINITY else str(hard // 1024)
             seen = {l for l in tl.calls().splitlines() if l == "unlimited" or l.isdigit()}

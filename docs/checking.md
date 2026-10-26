@@ -112,11 +112,14 @@ and `proofs` parts. Below that it stops before it compiles anything:
 
     FAIL the stack's hard limit is 10485760 bytes; Rocq needs at least 1073741824 (docker run --ulimit stack=-1:-1)
 
-A container takes the limit of the Docker daemon, which takes it from the
-system (systemd's `DefaultLimitSTACK`, 8 MiB on many hosts and lower on
-some). Thus the documented commands pass `--ulimit stack=-1:-1`, which gives
-the container an unlimited stack limit. Outside a container, raise the hard
-limit of the shell first (`ulimit -s unlimited`).
+The hard limit is unlimited unless the host lowers it; `oft check` raises the
+soft limit, usually 8 MiB, to the hard limit itself. A container gets the
+limits of the Docker daemon, which gets them from systemd's
+`DefaultLimitSTACK`. `docker run --ulimit stack=-1:-1` gives the container an
+unlimited stack limit whatever the host sets, so the commands in
+[proving.md](proving.md) and [adding-a-proof.md](adding-a-proof.md) pass it.
+Outside a container, `ulimit -Hs` shows the hard limit, and only root can
+raise it.
 
 ## What CI runs
 

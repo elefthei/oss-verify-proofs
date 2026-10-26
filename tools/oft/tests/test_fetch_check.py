@@ -236,6 +236,26 @@ class Fetch(unittest.TestCase):
             self.assertEqual(rc, 1)
             self.assertIn(parts[0]["file"], out)
 
+    def test_the_opam_file_downloads_every_part_and_joins_them(self):
+        """opam fetches by SHA-256 too: an asset in parts gives one extra-source per part and a build that joins
+        them before it unpacks. CONTROL: an asset in one file gives one extra-source and no join."""
+        with tree() as t, tempfile.TemporaryDirectory() as a:
+            make_release(t, a)
+            opam = t.path("projects/zlib/rocq-oss-fuzz-theorems-zlib.opam")
+            with open(opam) as f:
+                whole = f.read()
+            self.assertEqual(whole.count("extra-source"), 1)
+            self.assertNotIn("cat ", whole)
+            parts = self.split(t, a)
+            with open(opam) as f:
+                split = f.read()
+            for p in parts:
+                self.assertIn('extra-source "%s"' % p["file"], split)
+                self.assertIn("sha256=%s" % p["sha256"], split)
+            self.assertEqual(split.count("extra-source"), len(parts))
+            self.assertIn('["sh" "-c" "cat %s > zlib-bin.tar.zst"]'
+                          % " ".join(p["file"] for p in parts), split)
+
     def test_the_listing_prints_one_line_per_part(self):
         with tree() as t, tempfile.TemporaryDirectory() as a:
             make_release(t, a)

@@ -328,10 +328,18 @@ def project_opam(tree, proj):
     r = tree.release
     rv = r["rocq"]["version"].split(".")
     a = proj.data["assets"]["bin"]
+    url = "https://github.com/theorem-labs/oss-verify-proofs/releases/download/%s/%s"
+    # an asset of 2 GiB or more ships as numbered parts: opam downloads each against its own SHA-256, and the build
+    # joins them into the one file before it unpacks it (oft verify-sha then checks every binary)
+    files = a.get("parts") or [a]
+    extra = "\n".join('extra-source "%s" {\n  src: "%s"\n  checksum: "sha256=%s"\n}'
+                      % (f["file"], url % (a["release"], f["file"]), f["sha256"]) for f in files)
+    join = ('  ["sh" "-c" "cat %s > %s"]\n' % (" ".join(f["file"] for f in files), a["file"])
+            if a.get("parts") else "")
     return _t("project.opam.tmpl", "file", package=names.opam_package(proj.name), release=r["release"],
               project=proj.name, rocq_min="%s.%s" % (rv[0], rv[1]),
               rocq_next="%s.%d" % (rv[0], int(rv[1]) + 1), lps_name=r["semantics"]["name"],
-              bin_file=a["file"], bin_release=a["release"], bin_sha256=a["sha256"]) + "\n"
+              bin_file=a["file"], extra_sources=extra, join=join) + "\n"
 
 
 # ------------------------------------------------------------- Distribution.v

@@ -79,3 +79,55 @@ the checker image that [release.yaml](../release.yaml) names
 through a wrapper that it writes itself, and checks every assumption the wrapper
 prints against the allowlist ([checking.md](checking.md)). `--rocqchk` adds an
 independent re-check with `rocqchk`, which can take hours for one proof.
+
+## Junco liveness workflow
+
+[`liveness.yml`](../liveness.yml) and [`liveness.ts`](../liveness.ts) assign one
+GPT-6.1-sol verifier to each of the README table's 25 libraries and to zlib,
+which the README names in its statement example. Each verifier inventories all
+of that library's harnesses and available builds, not only its existing proofs.
+An Opus 5.5 proof reviewer/minimizer sends corrections back to the same
+verifiers; review rounds have no fixed cap. A separate Counter-example reviewer
+checks the infinite-execution witnesses and source locations before publication.
+
+Requires Bun, the public `junco-agency` and `@earendil-works/pi-*` packages,
+Junco's working native tool collection, and a saved Pi GitHub Copilot login
+with `gpt-6.1-sol` and `claude-opus-5.5` access. CTrees, TICL and the Linux
+process semantics, including its `rocq-linux-process-semantics-liveness`
+package, must be installed from `~/git/ctrees`, `~/git/ticl` and
+`~/git/rocq-linux-process-semantics` into the opam switch `lps-ctree`, and every
+library's published binaries must be present (`./oft fetch LIB`; the workflow
+never downloads). There is no model fallback.
+
+    bun run liveness.ts
+    bun run liveness.check.ts            # credential-free review/CSV/preflight boundary check
+
+The shared liveness definitions and their real-image checks live in that
+package (`LinuxProcessSemantics.Liveness.AF` and `.Checks`), not here. Before
+any model or agent is acquired, `liveness.ts` runs the shared gate
+[`liveness/check.sh`](../liveness/check.sh) in a fresh
+`liveness/preflight-*` directory: it checks every library's published ELFs
+against their SHA-256s, loads the installed stack in one closure (recording the
+assumptions of its theorems and the hashes of every library it resolved), and
+builds each published harness's `Images.vo`. To run the gate alone:
+
+    env -u COQPATH -u ROCQPATH opam exec --switch=lps-ctree -- bash liveness/check.sh EMPTY_DIR [LIBRARY...]
+
+If these packages are already installed in a sibling Junco checkout rather
+than resolvable from this repository, prefix either command with
+`NODE_PATH="$HOME/git:$HOME/git/junco-agency/node_modules"`.
+
+Proof attempts and checker evidence go under `liveness/<library>/`; the final
+report is `liveness/report.md`. Confirmed counter-examples produce
+`liveness/counterexamples.csv` with columns `bugId,file,function,line number,counter-example of liveness`.
+One bugId may occupy multiple source-location rows. No confirmed counter-example
+means no CSV, not a proof of liveness. Existing report/CSV files are not overwritten.
+A failed preflight or other missing prerequisite ends the workflow with a
+BLOCKED report and nonzero exit; SIGINT/SIGTERM or an operational error writes a
+CANCELLED/FAILED INCOMPLETE report with each node's status, never a verdict.
+
+This development uses the local CTrees/TICL/CSL frameworks separately from the
+release checker. It does not extend `oft`'s permitted dependencies or make a
+proof a release result. Agreement, finite trace equivalence, timeouts and
+bounded execution do not prove non-spinning; each claimed result needs its
+divergence-sensitive whole-program bridge and actual kernel checks.
